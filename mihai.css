@@ -1,0 +1,53 @@
+DY, P, TH, TD, UL, OL, H1, H2, H3, H4, PRE, SMALL, BLOCKQUOTE, DT, DL, DD {
+font-family : sans-serif;
+}
+
+BODY, P, H1, H2, H3, H4, PRE, TR, TD {
+background : black; 
+color : white; 
+}
+
+PRE {
+text-decoration: none;
+}
+
+DT { 
+margin-top : 10px;
+}
+
+BODY, P, PRE {
+margin : 1em;
+}
+
+TABLE {
+empty-cells: show;
+}
+
+PRE  {
+font-family : monospace;
+}
+
+TH {
+background : darkgreen;
+color : white; 
+}
+
+A:LINK  {
+text-decoration : underline;
+color : cyan;
+}
+
+A:VISITED  {
+text-decoration : underline;
+color : silver;
+}
+
+A:HOVER  {
+text-decoration : underline;
+color : lime;
+}
+
+.code    {
+font-family : monospace;
+}
+

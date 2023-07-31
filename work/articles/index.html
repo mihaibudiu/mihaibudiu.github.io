@@ -1,0 +1,576 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html> 
+<head>
+   <title>PC Report Romania Articles by Mihai Budiu</title>
+   <link rel="StyleSheet" href="../mihai.css" type="text/css">
+</head>
+<BODY>
+
+<h1>Mihai Budiu's Romanian Articles</h1>
+
+This page contains mostly references to the articles I wrote 
+monthly for the Romanian computer magazine <a
+href="http://www.pcreport.ro">Net Report</a> between 1996 and 2002.  
+Because of the limited
+intended audience, the rest of the page is written in Romanian.
+
+<P>Back to <a href="../index.html">Mihai's homepage</a>.
+
+<hr>
+
+<h2>Cuprins</h2>
+
+<ul>
+<li><a href="#ghid">Ghidul</a> doctorandului in Statele Unite
+<li>Articolele din <a href="http://www.pcreport.ro">PC Report</a> sortate
+dupa <a href="#categorii">categorii</a> 
+<li>Articolele din <a href="http://www.pcreport.ro">PC Report</a>
+sortate <a href="#cronologic">cronologic</a>
+<li><a href="#raluca">Articole</a> PC Report ale lui <a
+href="http://www.cs.cmu.edu/~ralucav">Raluca Budiu</a>
+<li><a href="#basic">Cartea</a> de BASIC HC-85 
+</ul>
+<hr>
+
+<a name="ghid"></a>
+<h2>Un ghid pentru admiterea la doctorat in SUA</h2>
+
+Acesta nu e un articol pentru Net Report, dar este util pentru multa
+lume: un <a href="ghid-doc/index.html">ghid</a> pentru admiterea la
+doctorat in Statele Unite.  O versiune in <a
+href="ghid-doc/ghid-doc.ps.gz">Postscript comprimat cu gzip</a>.
+
+<hr>
+
+<a name="categorii"></a>
+<h2>Articole din Net Report sortate dupa categoriile principale</h2>
+
+In caz ca va intereseaza numai unele din subiecte, aici sunt
+articolele grupate tematic.  Marea majoritate sunt din <a
+href="http://www.pcreport.ro">Net Report</a> (fost PC Report), dar
+unele au aparut in alte locuri, si unele nu sunt publicate.  Unele
+articole &quot;interdisciplinare&quot; sunt afisate in mai multe
+categorii.
+<P>
+<center>
+<TABLE border=1 cellspacing=5>
+<TR>
+<TH colspan="3">Sisteme software</th>
+</TR>
+<TR>
+<TD><a href="#threads">threads</a></td>
+<TD><a href="#cache">cache</a></td>
+<TD><a href="#usa">backdoor</a></td>
+</TR>
+<TR>
+<TD><a href="#shell">shell</a></td>
+<TD><a href="#linux">apel de sistem</a></td>
+<TD><a href="#tranzactii">tranzactii</a></td>
+</TR>
+<TR>
+<TD><a href="#open">Free software</a></td>
+<TD><a href="#masuri">masuratori</a></td>
+<TD><a href="#mem">malloc</a></td>
+</TR>
+
+<TR>
+<TH colspan="3">Scule software</th>
+</TR>
+<TR>
+<TD><a href="#c-faze">compilator C</a></td>
+<TD><a href="#e-mail">e-mail</a></td>
+<TD><a href="#emacs">emacs</a></td>
+</TR>
+<TR>
+<TD><a href="#shell">shell (implementare)</a></td>
+<TD><a href="#rom-spell">spellcheck</a></td>
+<TD><a href="#kerberos">kerberos</a></td>
+</TR>
+<TR>
+<TD><a href="#ddd">ddd debugger</a></td>
+<TD><a href="#regex">expresii regulate</a></td>
+<TD><a href="#music">muzica</a></td>
+</TR>
+<TR>
+<TD><a href="#latex">latex</a></td>
+<TD><a href="#ballista">robustete</a></td>
+<TD><a href="#shell-2">shell (programare)</a></td>
+</TR>
+<TR>
+<TD><a href="#metacompilare">metacompilare</a></td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</TR>
+
+<TR>
+<TH colspan="3">Programare</th>
+</TR>
+<TR>
+<TD><a href="#programare">programare</a></td>
+<TD><a href="#tipuri">tipuri</a></td>
+<TD><a href="#ddd">ddd debugger</a></td>
+</TR>
+<TR>
+<TD><a href="#regex">expresii regulate</a></td>
+<TD><a href="#shell-2">shell (programare)</a></td>
+<td>&nbsp;</td>
+</TR>
+
+<TR>
+<TH colspan="3">Sisteme de operare si Unix</th>
+</TR>
+<TR>
+<TD><a href="#sistem-f">sistem de fisiere</a></td>
+<TD><a href="#unix-2">istoric</a></td>
+<TD><a href="#nucleu">nucleul</a></td>
+</TR>
+<TR>
+<TD><a href="#micron">micronuclee</a></td>
+<TD><a href="#proiect">watchdogs</a></td>
+<td>&nbsp;</td>
+</TR>
+
+<TR>
+<TH colspan="3">Sisteme de fisiere</th>
+</TR>
+<TR>
+<TD><a href="#sistem-f">structura de date</a></td>
+<TD><a href="#rapid-fs">performanta</a></td>
+<TD><a href="#2fs">implementare</a></td>
+</TR>
+<TR>
+<TD><a href="#3fs">VFS</a></td>
+<TD><a href="#proiect">watchdogs</a></td>
+<td>&nbsp;</td>
+</TR>
+
+<TR>
+<TH colspan="3">Hardware</th>
+</TR>
+<TR>
+<TD><a href="#cache">cache</a></td>
+<TD><a href="#reconf">reconfigurabil</a></td>
+<TD><a href="#smp">SMP</a></td>
+</TR>
+<TR>
+<TD><a href="#pipe">pipelining</a></td>
+<TD><a href="#redenumire">redenumirea registrilor</a></td>
+<TD><a href="#predictie">predictia salturilor</a></td>
+</TR>
+<TR>
+<TD><a href="#micro">viitor</a></td>
+<TD><a href="#mems">mems</a></td>
+<TD><a href="#nano">nanotehnologii</a></td>
+</TR>
+<TR>
+<TD><a href="#spatial">calcul spatial</a></td>
+<TD><a href="#speculativ">speculatie</a></td>
+<td>&nbsp;</td>
+</TR>
+
+<TR>
+<TH colspan="3">Internet si retele</th>
+</TR>
+<TR>
+<TD><a href="#internet">rutare</a></td>
+<TD><a href="#bridge">bridges</a></td>
+<TD><a href="#tunel">tunele IP</a></td>
+</TR>
+<TR>
+<TD><a href="#csfq">QoS</a></td>
+<TD><a href="#tcp">erori tcp</a></td>
+<TD><a href="#nonconserving">non work-conserving</a></td>
+</TR>
+<TR>
+<TD><a href="#akamai">Akamai</a></td>
+<TD><a href="#ddos">atacuri DDoS</a></td>
+<TD><a href="#codered">CodeRed</a></td>
+</TR>
+
+<TR>
+<TH colspan="3">Algoritmi, teorie</th>
+</TR>
+<TR>
+<TD><a href="#algoritmi">directii</a></td>
+<TD><a href="#sat">NP-completitudine</a></td>
+<TD><a href="#complex">complexitate</a></td>
+</TR>
+<TR>
+<TD><a href="#music">muzica</a></td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</TR>
+
+<TR>
+<TH colspan="3">Inteligenta artificiala</th>
+</TR>
+<TR>
+<TD><a href="#vedere">istoric (de Raluca Budiu)</a></td>
+<TD><a href="#vedere">planificare (de Raluca Budiu)</a></td>
+<TD><a href="#cognitiv">congnitie</a></td>
+</TR>
+<TR>
+<TD><a href="#roboti">roboti</a></td>
+<TD><a href="#vedere">computer vision</a></td>
+<td>&nbsp;</td>
+</TR>
+
+<TR>
+<TH colspan="3">Celebritati</th>
+</TR>
+<TR>
+<TD><a href="#kernighan">Kernighan</a></td>
+<TD><a href="#akamai">Bruge Maggs (Akamai)</a></td>
+<td>&nbsp;</td>
+</TR>
+
+<TR>
+<TH colspan="3">Altele</th>
+</TR>
+<TR>
+<TD><a href="#links">web links</a></td>
+<TD><a href="#fiabilitate">fiabilitate</a></td>
+<td>&nbsp;</td>
+</TR>
+</TABLE>
+</center>
+
+<hr>
+
+<a name="cronologic">
+</a>
+<h2>Articolele in ordine cronologica</h2>
+
+Articolele nu arata neaparat exact cum au aparut in reviste.
+Articolele sunt html cu caractere romanesti si postscript
+comprimat cu gzip.
+
+<ol>
+<li><a name="c-faze"></a>Cum functioneaza <a
+href="c-faze/c-faze-html.html">compilatorul</a> de C [<a
+href="c-faze/c-faze.ps.gz">.ps.gz</a>]
+
+<li><a name="sistem-f"></a><a href="sistem-f/sistem-f-html.html">Sistemul de
+fisiere</a> al Unix-ului [<a
+href="sistem-f/sistem-f.ps.gz">.ps.gz</a>]
+
+<li><a name="threads"></a>O implementare a unui pachet de <a
+href="threads/threads-html.html">multithreading</a> in C  <a
+href="threads/threads.h">threads.h</a> si <a href="threads/threads.c">threads.c</a>,
+sursele codului din articol (cu alte citeva facilitati, ca semafoare,
+variabile conditionale, alarme, etc.)  [<a href="threads/threads.ps.gz">.ps.gz</a>]
+
+<li><a name="unix-2"></a>O scurta istorie a sistemului de operare <a
+href="unix-2/unix-2-html.html">Unix</a> [<a
+href="unix-2/unix-2.ps.gz">.ps.gz</a>]
+(Aparut in BYTE in 1996 si revizuit pentru Gazeta Informatica in 1998.)
+
+<li><a name="tipuri"></a><a href="tipuri/tipuri-html.html">Tipuri</a> de date
+Aparut in Gazeta Informatica  [<a
+href="tipuri/tipuri.ps.gz">.ps.gz</a>]
+
+<li><a name="nucleu"></a><a href="nucleu/nucleu-html.html">Nucleul</a> sistemului de
+operare [<a
+href="nucleu/nucleu.ps.gz">.ps.gz</a>]
+
+<li><a name="e-mail"></a>Ce este <a href="e-mail/e-mail-html.html">posta
+electronica</a>  (Publicat in revista Ziggy in 1996, decedata
+prematur.) [<a href="e-mail/e-mail.ps.gz">.ps.gz</a>]
+
+<li><a name="programare"></a>Reguli de <a href="programare/programare-html.html">inginerie
+a programarii</a> [<a
+href="programare/programare.ps.gz">.ps.gz</a>]
+
+<li><a name="cache"></a>Ce este si unde se intilneste un <a
+href="cache/cache-html.html">cache</a>  [<a
+href="cache/cache.ps.gz">.ps.gz</a>]
+
+<li><a name="usa"></a><a href="usa/usa-html.html">"Usa din spate"</a> [<a href="usa/usa.ps.gz">.ps.gz</a>]
+
+<li><a name="emacs"></a>O introducere in folosirea editorului <a
+href="emacs/emacs-html.html">Emacs</a> [<a
+href="emacs/emacs.ps.gz">.ps.gz</a>]
+
+<li><a name="shell"></a><a href="shell/shell-html.html">Shell</a>-ul
+in Unix.  [<a href="shell/shell.ps.gz">.ps.gz</a>] <a
+href="shell/shell-code.txt">Codul</a> celor doua shell-uri din
+articol.  <br>Ionut Ichim, de la Universitatea Tehnica din Iasi, mi-a
+trimis codul celui de-al doilea shell <a
+href="shell/explicat.txt">decodificat</a>.
+
+<li><a name="rom-spell"></a>Arhitectura unui <a
+href="rom-spell/rom-spell-html.html">corector de texte</a> pentru limba romana
+[<a href="rom-spell/rom-spell.ps.gz">.ps.gz</a>]
+
+<li><a name="algoritmi"></a>Noi directii de evolutie in <a
+href="algoritmi/algoritmi-html.html">algoritmi</a> [<a
+href="algoritmi/algoritmi.ps.gz">.ps.gz</a>]
+
+<li><a name="micron"></a>De ce pierd <a
+href="micron/micron-html.html">micronucleele</a> lupta cu sistemele monolitice
+[<a
+href="micron/micron.ps.gz">.ps.gz</a>]
+
+<li><a name="rapid-fs"></a>Cum se poate cistiga eficienta in implementarea
+<a href="rapid-fs/rapid-fs-html.html"> sistemelor de fisiere</a> [<a
+href="rapid-fs/rapid-fs.ps.gz">.ps.gz</a>]
+
+<li><a name="2fs"></a>Cum functioneaza <a href="2fs/2fs-html.html">sistemul de
+fisiere</a> din Unix [<a
+href="2fs/2fs.ps.gz">.ps.gz</a>]
+
+<li><a name="linux"></a>Anatomia unui <a href="linux/linux-html.html">apel de
+sistem</a> in Linux [<a
+href="linux/linux.ps.gz">.ps.gz</a>]
+
+<li><a name="3fs"></a>Sistemul <a href="3fs/3fs-html.html">virtual de fisiere</a>
+[<a href="3fs/3fs.ps.gz">.ps.gz</a>]
+
+<li><a name="proiect"></a>Cu <a
+href="http://www.cs.cmu.edu/~ralucav"><I>Raluca Budiu</I>:</a> un <a
+href="proiect/proiect-html.html">proiect</a> in sisteme de operare
+[<a href="proiect/proiect.ps.gz">.ps.gz</a>] 
+
+<li><a name="tranzactii"></a><a href="tranzactii/tranzactii-html.html">Tranzactii</a>
+   [<a href="tranzactii/tranzactii.ps.gz">.ps.gz</a>]
+
+<li><a name="internet"></a><a
+href="internet/internet-html.html">Rutarea</a> in Internet  [<a
+href="internet/internet.ps.gz">.ps.gz</a>]
+
+<li><a name="open"></a><a href="http://www.opensoftware.org"><I>Open
+Software</I></a> si <a
+href="http://www.gnu.org/philosophy/free-sw.html"><I>Free Software</I></a>:
+noua revolutie in <a href="open/open-html.html">software</a>  [<a href="open/open.ps.gz">.ps.gz</a>]
+
+<li><a name="reconf"></a>Hardware <a
+href="reconf/reconf-html.html">reconfigurabil</a>  [<a
+href="reconf/reconf.ps.gz">.ps.gz</a>]
+
+<li><a name="kerberos"></a>Protocolul de autentificare <a
+href="kerberos/kerberos-html.html">Kerberos</a>  [<a
+href="kerberos/kerberos.ps.gz">.ps.gz</a>]
+
+<li><a name="masuri"></a><a href="masuri/masuri-html.html">Masuratori</a> [<a
+href="masuri/masuri.ps.gz">.ps.gz</a>]
+
+<li><a name="smp"></a><a href="smp/smp-html.html">Coerenta cache-urilor</a> in
+multiprocesoare simetrice [<a
+href="smp/smp.ps.gz">.ps.gz</a>]
+
+<li><a name="pipe"></a>Procesoare <a href="pipe/pipe-html.html">in pipeline</a>
+  [<a href="pipe/pipe.ps.gz">.ps.gz</a>]
+
+<li><a name="mem"></a><a href="mem/mem-html.html">Alocarea</a> memoriei in
+nucleele sistemelor de operare  [<a
+href="mem/mem.ps.gz">.ps.gz</a>]
+
+<li><a name="bridge"></a><a href="bridge/bridge-html.html">Poduri</a> in retele
+(bridges)  [<a
+href="bridge/bridge.ps.gz">.ps.gz</a>]
+
+<li><a name="tunel"></a><a href="tunel/tunel-html.html">Tuneluri</a> [<a
+href="tunel/tunel.ps.gz">.ps.gz</a>] 
+
+<li><a name="csfq"></a>Cu <a href="http://www.cs.cmu.edu/~istoica"><I>Ion
+Stoica</I></a>: <a href="csfq/csfq-html.html">Scalabilitatea in retele de
+comunicatii de date</a> [<a
+href="csfq/csfq.ps.gz">.ps.gz</a>]
+
+<li><a name="ddd"></a><a href="ddd/ddd-html.html">DDD</a>: un debugger vizual
+  [<a
+href="ddd/ddd.ps.gz">.ps.gz</a>]
+
+<li><a name="redenumire"></a><a href="redenumire/redenumire-html.html">Redenumirea
+registrilor</a> [<a
+href="redenumire/redenumire.ps.gz">.ps.gz</a>]
+
+<li><a name="predictie"></a><a href="predictie/predictie-html.html">Predictia
+salturilor</a> [<a
+href="predictie/predictie.ps.gz">.ps.gz</a>]
+
+<li><a name="sat"></a><a href="sat/sat-html.html">Problema
+satisfiabilitatii</a> [<a href="sat/sat.ps.gz">.ps.gz</a>]
+
+<li><a name="complex"></a><a href="complex/complex-html.html">Teoria
+complexitatii</a>: calculabilitate, ierarhia
+polinomiala [<a
+href="complex/complex.ps.gz">.ps.gz</a>]
+
+<li><a name="cognitiv"></a>Cu <a
+href="http://www.cs.cmu.edu/~ralucav"><I>Raluca Budiu</I></a>: <a
+href="cognitiv/cognitiv-html.html">Stiinte cognitive</a>  [<a
+href="cognitiv/cognitiv.ps.gz">.ps.gz</a>]
+
+<li><a name="micro"></a><a href="micro/micro-html.html">Viitorul
+microprocesoarelor</a>  [<a
+href="micro/micro.ps.gz">.ps.gz</a>]
+
+<li><a name="regex"></a><a href="regex/regex-html.html">Expresii regulate</a>
+  [<a href="regex/regex.ps.gz">.ps.gz</a>]
+
+<li><a name="links"></a>Legaturi (semne de carte) spre <a
+href="links/links-html.html">stiri despre calculatoare</a>  (nepublicat) [<a
+href="links/links.ps.gz">.ps.gz</a>]
+
+<li><a name="tcp"></a><a href="tcp/tcp-html.html">Colaborare si concurenta
+in Internet</a> (trei atacuri asupra protocolului TCP)  [<a href="tcp/tcp.ps.gz">.ps.gz</a>]
+
+<li><a name="roboti"></a>Cu <a
+href="http://www.cs.cmu.edu/~cdima"><I>Cristian Dima</I></a>: <a
+href="roboti/roboti-html.html">Cercetarea in robotica</a>  [<a href="roboti/roboti.ps.gz">.ps.gz</a>]
+
+<li><a name="vedere"></a>Cu <a
+href="http://www.cs.cmu.edu/~cdima"><I>Cristian Dima</I></a>: <a
+href="vedere/vedere-html.html">Computer Vision</a>  [<a href="vedere/vedere.ps.gz">.ps.gz</a>]
+
+<li><a name="kernighan"></a><a href="kernighan/kernighan-html.html">Un interviu</a> cu
+<a href="http://cm.bell-labs.com/who/bwk/index.html"><I>Brian
+Kernighan</I></a>  [<a
+href="kernighan/kernighan.ps.gz">.ps.gz</a>] Versiunea in
+<a
+href="http://www.cs.cmu.edu/~mihaib/kernighan-interview/kernighan.html">engleza</a>.
+
+<li><a name="music"></a>Cu <a
+href="http://www.cs.ruftgers.edu/~francu"><I>Cristian Francu</I></a>: De unde
+stiu <a href="music/music-html.html">melodia</a> asta?   [<a
+href="music/music.ps.gz">.ps.gz</a>]
+
+<li><a name="latex"></a><a href="latex/latex-html.html">LaTeX</a>: un program pentru
+tehnoredactat matematica  [<a
+href="latex/latex.ps.gz">.ps.gz</a>]
+
+<li><a name="ballista"></a>Proiectul <a
+href="http://www.ece.cmu.edu/ballista">Ballista</a> pentru testarea <a
+href="ballista/ballista-html.html">robustetii</a> programelor  [<a
+href="ballista/ballista.ps.gz">.ps.gz</a>]
+
+<li><a name="shell-2"></a>Elemente de programare in <a
+href="shell-2/shell-2-html.html">shell-ul Unix</a>  [<a
+href="shell-2/shell-2.ps.gz">.ps.gz</a>]
+
+<li><a name="mems"></a>Dispozitive <a
+href="mems/mems-html.html">Micro-electro-mecanice</a>  [<a
+href="mems/mems.ps.gz">.ps.gz</a>]
+
+<li><a name="nonconserving"></a>Mai <a
+href="non-conserving/non-conserving-html.html">lasa</a> si pe miine din ce poti face azi
+(discipline de planificare care nu conserva lucrul in retele)
+  [<a
+href="non-conserving/non-conserving.ps.gz">.ps.gz</a>]
+
+<li><a name="akamai"></a>Un <a href="akamai/akamai-html.html">interviu</a>
+interviu cu cu <a href="http://www.cs.cmu.edu/~bmm">Bruce Maggs</a>,
+vicepresedinte pentru cercetare/dezvoltare la <a
+href="http://www.akamai.com">Akamai Technologies</a>.   [<a
+href="akamai/akamai.ps.gz">.ps.gz</a>] Versiunea in
+<a
+href="http://www.cs.cmu.edu/~mihaib/articles/akamai/akamai.html">engleza</a>.
+
+<li><a name="nano"></a> <a
+href="nano/nano-html.html">Nanotehnologia</a>: o solutie pentru
+calculatoarele viitorului
+ [<a href="nano/nano.ps.gz">.ps.gz</a>]
+
+<li><a name="spatial"></a> Calculatoare ne-universale: <a
+href="spatial/spatial-html.html">implementarea programelor in hardware</a>  [<a
+href="spatial/spatial.ps.gz">.ps.gz</a>]
+
+<li><a name="ddos"></a><a href="ddos/ddos-html.html">Atacuri
+distribuite</a> in Internet  [<a
+href="ddos/ddos.ps.gz">.ps.gz</a>]
+
+<li><a name="speculativ"></a>Executia <a
+href="speculativ/speculativ-html.html">speculativa</a>  [<a
+href="speculativ/speculativ.ps.gz">.ps.gz</a>]
+
+<li><a name="codered"></a>Viermele <a
+href="codered/codered-html.html">CodeRed</a>  [<a
+href="codered/codered.ps.gz">.ps.gz</a>]
+
+<li><a name="metacompilare"></a><a
+href="metacompilare/metacompilare-html.html">Metacompilare</a>:
+verificarea automata a programelor  [<a
+href="metacompilare/metacompilare.ps.gz">.ps.gz</a>]
+
+<li><a name="fiabilitate"></a><a
+href="fiabilitate/fiabilitate-html.html">Fiabilitatea</a>
+in arhitectura calculatoarelor [<a href="fiabilitate/fiabilitate.ps.gz">.ps.gz</a>]
+</ol>
+
+<hr>
+<a name="raluca">
+</a>
+<h3>Articole de Raluca Budiu</h3>
+
+Aceste articole au fost publicate in PC Report prin 1996.
+
+<ul>
+<li><a name="ai"></a>Un scurt istoric al <a href="ai/ai-html.html">inteligentei
+artificiale</a>   [<a
+href="ai/ai.ps.gz">.ps.gz</a>] 
+
+<li><a name="planif"></a>Cum rezolva inteligenta artificiala problemele de
+<a href="planif/planif-html.html">planificare</a>  [<a href="planif/planif.ps.gz">.ps.gz</a>]
+</ul>
+
+<hr>
+<a name="basic">
+</a>
+<h3>Cartea de BASIC HC</h3>
+
+<P>
+Cind eram elev la liceul de informatica in clasa a zecea, prin 1987,
+tocmai era &quot;fierbinte&quot; calculatorul HC 85, o copie
+romaneasca nu foarte reusita dupa britanicul <a
+href="http://www.void.jump.org/">Sinclair Spectrum ZX</a>.  Pentru ca
+eram fericitul posesor al unei astfel de masini, am avut ocazia sa
+experimentez destul de mult.  Desigur, Fabrica de calculatoare
+electronice, care fabrica HC 85, nu a publicat nici un fel de manual
+de utilizare.  Asa ca m-am apucat eu sa scriu niste notite.
+
+<P>
+Profesorul meu de informatica, dl. Tudor Sorin, m-a incurajat sa
+aranjez notitele intr-o forma mai accesibila; am imprumutat o masina
+de scris si le-am dactilografiat.  Apoi sub forma de copii au fost
+folosite destul de intens pentru citiva ani pentru cursuri de
+informatica prin liceu.
+
+<P>
+Am facut mai multe incercari de a le publica formal; in 1989 am avut
+chiar discutii cu editura revistei &quot;Stiinta si tehnica&quot;
+(Editura Tehnica?).  Nu a iesit insa mare lucru.
+
+<P>
+Imediat dupa revolutie <a href="http://www.teora.ro">editura Teora</a>
+s-a aratat interesata de manuscris, desi calculatorul iesea repede din
+uz, fiind inlocuit de PC-uri.  Cu toate astea, in 1993 am semnat un
+contract cu ei, in care le ofeream nu numai cartea, ci ma si angajam
+sa o tehnoredactez.  Cu ocazia asta am invatat LaTeX si m-am pus la
+treaba.  Rezultatul in <a
+href="http://www.cs.cmu.edu/~mihaib/articles/basic.ps.gz">.ps.gz</a> este
+aici.
+
+<P>
+Intre timp s-a facut 1995, si editura Teora mi-a trimis o scrisoare in
+care rezilia in mod unilateral contractul cu mine, fara sa-mi ofere
+vreo despagubire, sau macar plata pentru munca de tehnoredactare.
+Decizia lor de a nu publica cartea este desigur corecta: calculatorul
+era complet perimat deja.  Insa modul in care au tratat cu mine este
+absolut deplorabil.  Intre timp Teora a devenit o editura foarte
+prospera, dar eu nu voi cumpara niciodata vreo carte de la ei.
+
+<hr>
+
+<P>Back to <a href="../index.html">Mihai's homepage</a>.
+
+<!-- keep these here so that the labels work fine
+ (i.e. they can scroll the page low enough -->
+<BR><BR><BR><BR><BR><BR><BR>
+<BR><BR><BR><BR><BR><BR><BR>
+<BR><BR><BR><BR><BR><BR><BR>
+<BR><BR><BR><BR><BR><BR><BR>
+<BR><BR><BR><BR><BR><BR><BR>
+<BR><BR><BR><BR><BR><BR><BR>
+
+</body> </html>

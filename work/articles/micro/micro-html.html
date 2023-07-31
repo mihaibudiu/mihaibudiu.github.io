@@ -1,0 +1,1317 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Direcţii în evoluţia arhitecturii microprocesoarelor</TITLE>
+<META NAME="description" CONTENT="Direcţii în evoluţia arhitecturii microprocesoarelor">
+<META NAME="keywords" CONTENT="micro-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Direcţii în evoluţia arhitecturii microprocesoarelor</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- <TT>mihaib+@cs.cmu.edu</TT> 
+<BR><TT><A NAME="tex2html2"
+  HREF="http://www.cs.cmu.edu/~mihaib/">http://www.cs.cmu.edu/~mihaib/</A></TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>februarie 2000</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>evoluţia microprocesoarelor: trecut, prezent şi viitor
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>cunoştinţe elementare despre
+arhitectura calculatoarelor
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>microprocesor, SPEC, ILP
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Cuprins</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html51"
+  HREF="micro-html.html">Evoluţia microprocesoarelor</A>
+<UL>
+<LI><A NAME="tex2html52"
+  HREF="#SECTION00021000000000000000">Industria semiconductoarelor: un fenomen economic</A>
+<LI><A NAME="tex2html53"
+  HREF="#SECTION00022000000000000000">Evoluţii cantitative</A>
+<LI><A NAME="tex2html54"
+  HREF="#SECTION00023000000000000000">Tehnologii arhitecturale</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html55"
+  HREF="#SECTION00030000000000000000">Arhitecturile contemporane</A>
+<UL>
+<LI><A NAME="tex2html56"
+  HREF="#SECTION00031000000000000000">Hardware şi software</A>
+<LI><A NAME="tex2html57"
+  HREF="#SECTION00032000000000000000">Crusoe</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html58"
+  HREF="#SECTION00040000000000000000">Constrîngerile fizice</A>
+<LI><A NAME="tex2html59"
+  HREF="#SECTION00050000000000000000">Viitorul</A>
+<UL>
+<LI><A NAME="tex2html60"
+  HREF="#SECTION00051000000000000000">Generaţia următoare</A>
+<LI><A NAME="tex2html61"
+  HREF="#SECTION00052000000000000000">Dincolo de legea lui Moore</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html62"
+  HREF="#SECTION00060000000000000000">Concluzii</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+Am întîlnit de mai multe ori un banc pe Internet, care spunea că,
+dacă maşinile ar fi evoluat în aceeaşi măsură cu calculatoarele,
+acum ar fi mers 120 de kilometri cu benzina dintr-o brichetă, şi ar
+fi costat cît o pîine.  (Un contra-banc, din partea industriei
+automobilistice, ofensate, zicea apoi că, dacă ar fi evoluat la fel,
+maşina ar fi refuzat să mai meargă de cîteva ori pe zi, şi ar fi
+trebuit să o duci înapoi în garaj ca să repornească.)
+
+<P>
+Adevărul este că progresele făcute de tehnologia calculatoarelor
+sunt absolut uluitoare; ajunge să îţi cumperi un calculator nou
+după doi ani ca să fii impresionat de cîştigul de performanţă
+înregistrat.  Cîştigul de performanţă se datorează unor
+procesoare din ce în ce mai sofisticate şi mai rapide, şi unor
+memorii de capacităţi din ce în ce mai mari.
+
+<P>
+Răspunzătoare pentru creşterea exponenţială a performanţei sunt
+însă în cea mai mare măsură microprocesoarele.  În acest articol
+vom arunca o privire asupra evoluţiei microprocesoarelor de la
+origini pînă în prezent.  Vom încerca apoi să caracterizăm
+arhitecturile procesoarelor contemporane, şi să extrapolăm din
+datele la dispoziţie, speculînd despre unele din posibilele
+evoluţii viitoare.
+
+<P>
+Trebuie să atrag de la început atenţia că nu am însuşiri paranormale,
+şi ca atare nu sunt profet.  Domeniul tehnologiilor de calcul este
+extraordinar de volatil, şi se mişcă cu o viteză fantastică; orice
+previziune este cel puţin hazardată.  De altfel în figura&nbsp;<A
+HREF="micro-html.html#sia">1</A> ilustrează acest fapt contrapunînd
+previziunile din urmă cu cîţiva ani ale unei organizaţii extrem de
+prestigioase, Semiconductor Industry Association (SIA, <TT><A
+NAME="tex2html3"
+HREF="http://www.semichips.org/">http://www.semichips.org/</A></TT>),
+cu realitatea.  Deci nu vă aşteptaţi de la mine la mai mult.
+
+<P>
+Am mai publicat în PC Report o serie întreagă de articole despre
+arhitectura procesoarelor moderne, pe care le voie cita ocazional;
+toate acestea sunt disponibile din pagina mea de web.  Articolul de
+faţă va fi însă mai superficial.  Există o cantitate enormă de
+informaţie pe web.  În acest articol am folosit în mod repetat
+informaţii de la <TT><A NAME="tex2html4"
+HREF="http://bwrc.eecs.berkeley.edu/CIC/">http://bwrc.eecs.berkeley.edu/CIC/</A></TT>,
+CPU Info Center.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Evoluţia microprocesoarelor</A>
+</H1>
+
+<P>
+
+<H2><A NAME="SECTION00021000000000000000">
+Industria semiconductoarelor: un fenomen economic</A>
+</H2>
+
+<P>
+Un istoric interesant al diferitelor idei arhitecturale din
+microprocesoare puteţi găsi pe web la
+<TT><A NAME="tex2html5"
+  HREF="http://bwrc.eecs.berkeley.edu/CIC/archive/cpu_history.html">http://bwrc.eecs.berkeley.edu/CIC/archive/cpu_history.html</A></TT>.
+
+<P>
+Primul microprocesor a fost creat de firma Intel în 1971.  Numele
+său era Intel 4004, şi era un procesor pe 4 biţi.  Apariţia
+primului micorprocesor a fost un pas cu uriaşe consecinţe în
+evoluţia ulterioară a sistemelor de calcul.  Diferenţa între
+microprocesor şi metodele îndeobşte folosite era că procesorul
+strînge pe o singură pilulă de siliciu toate unităţile
+funcţionale importante necesare executării programelor; fiind toate
+strîns integrate, comunicaţia între ele este rapidă şi eficace,
+permiţînd dintr-o dată un salt calitativ.
+
+<P>
+Nu mai puţin importantă este reducerea de cost care urmează unei
+astfel de integrări.  Cu siguranţă că principalul motiv al
+evoluţiei explozive a tehnologiei circuitelor integrate nu este de
+natură tehnologică, ci economică: spirala preţurilor din ce în ce
+mai scăzute face echipamentele de calcul din ce în ce mai
+accesibile, cererea creşte, ducînd la venituri mai ridicate pentru
+fabricanţi, care investesc mai mult în cercetare/dezvoltare şi
+linii tehnologice, obţinînd densităţi mai mari, permiţînd
+integrarea mai multor circuite, şi costuri şi mai joase.  Cu toată
+scăderea de preţ, veniturile globale ale industriei
+semiconductoarelor au crescut în mod galopant: numai anul trecut
+vînzările globale au fost de 149 de miliarde de dolari!
+
+<P>
+Esenţial pentru a menţine această spirală este faptul că
+echipamentele de calcul măresc enorm productivitatea muncii, direct
+sau indirect: de aici cererea crescîndă.  Iar experţii afirmă că
+acesta este doar începutul, şi că în viitor fiecare individ va
+depinde de zeci de dispozitive de calcul în fiecare clipă.  Nu
+suntem prea departe de acest punct: chiar în ziua de azi, o maşină
+modernă are în medie 15 microprocesoare, care controlează,
+reglează şi diagnostichează tot felul de parametri, de la injecţie
+pînă la frîne.
+
+<P>
+Nu pot să mă abţin să remarc că Statele Unite ale Americii
+atribuie o treime din creşterea venitului naţional brut în anul
+trecut doar tehnologiilor informaţionale, care însă ocupă doar 8%
+din forţa de muncă.  În foarte mare măsură, tehnologia
+informaţiei este responsabilă pentru fenomenala dezvoltare
+economică pe care Statele Unite o traversează în aceşti ani.
+
+<P>
+
+<H2><A NAME="SECTION00022000000000000000">
+Evoluţii cantitative</A>
+</H2>
+
+<P>
+Să lăsăm acum deoparte economia, şi să aruncăm o privire asupra
+evoluţiei unor parametri ai procesoarelor de-a lungul timpului.
+Tabela&nbsp;<A HREF="#intel">1</A> arată evoluţia generaţiilor succesive ale celei
+mai proeminente familii de procesoare, ale firmei Intel:
+
+<P>
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="217"></A>
+<TABLE>
+<CAPTION><STRONG>Tabela 1:</STRONG>
+ Evoluţia procesoarelor Intel.  Spaţiile albe
+indică lipsa informaţiei.  Merced va fi lansat oficial la cîteva
+zile de la scrierea acestui articol (pe 17 februarie 2000), deci
+datele sunt incerte.  </CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER"><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER" COLSPAN=1><FONT SIZE="-1">
+An</FONT></TD>
+<TD ALIGN="CENTER" COLSPAN=1><FONT SIZE="-1"> Procesor</FONT></TD>
+<TD ALIGN="CENTER"><FONT SIZE="-1"> Ceas</FONT></TD>
+<TD ALIGN="CENTER" COLSPAN=2><FONT SIZE="-1"> Tranzistori</FONT></TD>
+<TD ALIGN="CENTER"><FONT SIZE="-1"> Tehnologie</FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1">  
+        </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">                 </FONT></TD>
+<TD ALIGN="CENTER"><FONT SIZE="-1"> (Mhz)</FONT></TD>
+<TD ALIGN="CENTER" COLSPAN=2><FONT SIZE="-1"> (mii)</FONT></TD>
+<TD ALIGN="CENTER"><FONT SIZE="-1"> (<IMG
+ WIDTH="17" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="img1.png"
+ ALT="$\mu$">m)</FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+1971 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">  4004    </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 0,74 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 2 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">,250  </FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+1972 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">  8008    </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 0,8 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 3 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">,300  </FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+1974 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">  8080    </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 3,1 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 4 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">,500  </FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+1978 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">  8086    </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 10  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 29	 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">2</FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+1979 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">  8088    </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 8   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 29	 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">2</FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+1980 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 80186    </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">     </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">  	 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">1,5</FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+1982 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 80286    </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">  12 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 134	 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">1,5</FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+1985 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 80386    </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">  33 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 275	 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">1</FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+1989 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 80486    </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 100 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 1 600</FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">0,6</FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+1993 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> Pentium  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 266 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 4 500</FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">0,35</FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+1996 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> PPro     </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 200 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 5 500</FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">0,35</FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+1997 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> PII      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 450 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 7 500</FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">0,25</FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+1999 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> PIII     </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 733 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 28 000</FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">0,18</FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+2000 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> Merced   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 800 </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">       </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">0,18</FONT></TD>
+</TR>
+</TABLE></DIV></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+Ultima coloană din tabela&nbsp;<A HREF="#intel">1</A> şi figura&nbsp;<A HREF="micro-html.html#sia">1</A> arată
+care este impactul miniaturizării: această coloană indică
+dimensiunea de bază (feature size), care poate fi văzută ca fiind
+dimensiunea unui tranzistor.  Orice reducere a acestei valori are un
+impact cuadratic, pentru că suprafaţa creşte cu pătratul laturii.
+O reducere de la 2 microni la 1,5 (50%) m'are'ste deci suprafa'ta
+efectivă cu 77% (4/2,25 = 1,77).
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="sia"></A><A NAME="249"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 1:</STRONG>
+Pronosticurile făcute în 1994 şi 1997 de
+Semiconductor Industry Association privind miniaturizarea circuitelor
+integrate digitale.  Estimările din 1994 au fost depăşite de
+realitate, forţînd SIA să re-estimeze evoluţia pentru viitor.</CAPTION>
+<TR><TD><IMG
+ WIDTH="535" HEIGHT="303" BORDER="0"
+ SRC="img2.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{sia.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Din fericire, reducerea dimensiunilor mai are încă o consecinţă
+foarte importantă: traseele pe care trebuie să le parcurgă curentul
+electric între dispozitive devin mai scurte, deci se pot parcurge mai
+rapid.  Proiectanţii pot face deci procesorul să funcţioneze cu un
+ceas mai rapid<A NAME="tex2html8"
+  HREF="#foot218"><SUP>1</SUP></A>.  Evoluţia frecvenţei ceasurilor se vede
+în coloana a treia.  La ora apariţiei acestui articol procesoarele
+pentru PCuri la frecvenţe de 1 gigahertz vor fi o realitate foarte
+apropiată<A NAME="tex2html9"
+  HREF="#foot109"><SUP>2</SUP></A>.
+
+<P>
+Faptul că avem siliciu la dispoziţie pentru a implementa mai mulţi
+tranzistori înseamnă că:
+
+<P>
+
+<OL>
+<LI>Putem muta mai multe circuite auxiliare pe acelaşi cip.
+
+<P>
+Evoluţia procesoarelor cunoaşte cîteva salturi calitative: cînd
+miniaturizarea făcea posibilă integrarea unui nou dispozitiv pe
+acelaşi circuit integrat, se realiza un salt de performanţă.
+Astfel, au fost integrate succesiv: unităţi din ce în ce mai mari de
+procesare (8, 16, 32, acum 64 de biţi), coprocesoare aritmetice,
+unităţi de management al memoriei, cacheuri de nivel 1 şi chiar 2;
+
+<P>
+</LI>
+<LI>Designerii folosesc tranzistorii suplimentari pentru a construi
+circuite mai sofisticate, care pot executa mai repede şi mai eficient
+programele.  Metoda fundamentală folosită este de a face mai multe
+lucruri în paralel.
+</LI>
+</OL>
+
+<P>
+Împreună aceste trei fenomene (viteza ceasului, integrarea pe o
+singură pastilă şi exploatarea paralelismului) contribuie la
+creşterea performanţei totale a procesoarelor.  Aşa cum am povestit
+şi cu alte ocazii, măsurarea performanţei unui calculator se face
+evaluînd sistemul pe mai multe programe (deci performanţa depinde
+foarte mult şi de compilatorul folosit), care de obicei fac parte din
+suite de teste standardizate (<EM>benchmark suites</EM>).  Cele mai
+folosite pentru a evalua procesoare sunt cele din seria SPEC: Standard
+Performance Evaluation Corporation (<TT><A NAME="tex2html10"
+  HREF="http://www.specbench.org">http://www.specbench.org</A></TT>).
+Nu ne vor interesa acum prea tare ce reprezintă numerele acestea;
+cert e că cu cît sunt mai mari, cu atît e mai bine.  Graficul din
+figura&nbsp;<A HREF="micro-html.html#spec">2</A> arată evoluţia performanţei procesoarelor în
+ultimii 10 ani, în termeni SPEC.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="spec"></A><A NAME="255"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 2:</STRONG>
+Evoluţia performanţei procesoarelor pe suita de
+teste SPEC.  SpecINT măsoară performanţa programelor de uz general
+(care folosesc preponderent numere întregi), iar SpecFP pe cea a
+programelor de calcul ştiinţific (care folosesc mai ales numere în
+virgulă flotantă).</CAPTION>
+<TR><TD><IMG
+ WIDTH="358" HEIGHT="291" BORDER="0"
+ SRC="img3.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=8cm\epsffile{spec.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Evoluţia urmăreşte aproximativ o curbă exponenţială: în fiecare
+an performanţa creşte cu 60%.
+
+<P>
+
+<H2><A NAME="SECTION00023000000000000000">
+Tehnologii arhitecturale</A>
+</H2>
+
+<P>
+Aşa cum am ilustrat în seria mea de articole intitulate
+``arhitectura avansată a procesoarelor'', o mulţime de inovaţii
+tehnologice au fost introduse una după alta în arhitecturi; de fapt
+intenţionez să continui această serie şi în viitor, pentru că
+mai sunt de prezentate şi alte mecanisme importante.
+
+<P>
+Îmi permit să expun în continuare viziunea profesorului John
+Hennessy, de la universitatea Stanford, aşa cum a expus-o în
+prelegerea pe care a dat-o ca invitat la Federated Computer Research
+Conferences în mai 1999.
+
+<P>
+Hennessy vede două tehnologii arhitecturale ca fiind esenţiale:
+exploatarea paralelismului la nivel de instrucţiune (Instruction
+Level Parallelism, ILP) şi ierarhii sofisticate de memorie
+(cache-uri).  Să spunem cîteva cuvinte despre fiecare:
+
+<P>
+
+<H3><A NAME="SECTION00023100000000000000">
+ILP</A>
+</H3>
+
+<P>
+<B>Paralelismul la nivel de instrucţiune</B> constă în independenţa
+instrucţiunilor din programe una de alta, ceea ce ne permite să
+executăm mai multe instrucţiuni simultan.  Am vorbit altădată pe
+larg despre paralelismul la nivel de instrucţiune; să observăm că
+toate procesoarele contemporane îl exploatează prin două forme: 
+
+<P>
+
+<UL>
+<LI>Execuţia pe bandă de asamblare (<EM>pipeline</EM>) a
+instrucţiunilor succesive;
+
+<P>
+</LI>
+<LI>Execuţia în paralel a instrucţiunilor independente:
+procesoarele de tip VLIW (very long instruction word) aleg la
+compilare care instrucţiuni merg în paralel, iar procesoarele
+superscalare fac această alegere în timpul execuţiei.
+</LI>
+</UL>
+
+<P>
+Astfel, în 1985 au apărut primele procesoare cu banda de asamblare,
+în 1990 primele procesoare de tip VLIW, iar în 1995 procesoare
+foarte sofisticate superscalare, care pot executa instrucţiunile în
+ordini foarte diferite de cea din program (<EM>out-of-order
+execution</EM>).
+
+<P>
+
+<H3><A NAME="SECTION00023200000000000000">
+Cache-uri</A>
+</H3>
+
+<P>
+Am scris în repetate rînduri despre cache-uri în PC Report (vedeţi de
+pildă <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#cache">articolul</a>
+din PC Report din martie 1997 şi <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#smp">cel
+din</a> noiembrie 1998).  Aici vom arunca doar o privire superficială
+asupra lor; scopul nostru este de a înţelege de ce cache-urile joacă
+un rol fundamental în creşterea performanţei.  Figura&nbsp;<A
+HREF="micro-html.html#gap">3</A> ne oferă cheia: deşi atît
+procesoarele cît şi memoriile cresc constant în viteză, creşterea
+procesoarelor este cu 50% mai rapidă decît a memoriilor.  Ca atare
+există o disparitate crescîndă între nevoile de date (şi instrucţiuni)
+ale procesorului şi ceea ce memoriile pot oferi.  Durata unui acces la
+memorie ajunge la zeci de cicli de ceas pentru procesoarele
+contemporane.  Întîrzierea accesului este şi mai exacerbată în cazul
+sistemelor care au mai multe procesoare, în care caz timpii de acces
+la date pot ajunge la mii de cicli.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="gap"></A><A NAME="261"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 3:</STRONG>
+Creşterea dispariţăţii de viteză între
+memorii şi procesoare.  Ambele valori pleacă de la valoarea
+normalizată 1, dar procesoarele cresc în performanţă cu 35% pe an
+pînă în 1987, şi cu 55% pe an după aceea, în timp ce memoriile
+cresc cu 10% pe an.</CAPTION>
+<TR><TD><IMG
+ WIDTH="450" HEIGHT="265" BORDER="0"
+ SRC="img4.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=10cm\epsffile{gap.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Din această cauză se construiesc cache-uri, care sunt memorii mai
+mici şi mai rapide, care se plasează între procesor şi memoria
+principală, şi în care sunt aduse datele pentru prelucrare.
+Proiectanţii au reuşit să sporească eficacitatea cache-urilor
+folosind două metode:
+
+<P>
+
+<UL>
+<LI>Prin folosirea unor cache-uri din ce în ce mai mari, plasate
+din ce în ce mai aproape de procesor.  Această evoluţie este clar
+vizibilă:
+
+<P>
+
+<OL>
+<LI>primele procesoare nu aveau nici un fel de cache, pentru că
+memoriile erau suficient de rapide pentru a le servi cu date.  
+
+<P>
+</LI>
+<LI>În 1980 au apărut cache-uri (L1) sub forma unor circuite
+speciale, care
+
+<P>
+</LI>
+<LI>în 1984 au fost integrate pe aceeaşi pilulă de siliciu cu
+procesorul central, 
+
+<P>
+</LI>
+<LI>după care (1986) a apărut un al doilea nivel de cache (L2),
+mai mare şi ceva mai lent, care
+
+<P>
+</LI>
+<LI>în procesoarele moderne (1995) este la rîndul lui adesea
+integrat cu circuitul microprocesorului, pentru a permite un acces
+rapid.  
+
+<P>
+</LI>
+<LI>Au apărut nivele terţiare de cache (1999).
+</LI>
+</OL>
+
+<P>
+</LI>
+<LI>Pe de altă parte metodele de management ale cache-urilor sunt
+din ce în ce mai sofisticate: 
+
+<P>
+
+<OL>
+<LI>au apărut cache-uri care servesc procesorul de îndată ce
+primul cuvînt a sosit, chiar dacă restul sunt pe drum (<EM>early
+restart</EM>, 1992),
+
+<P>
+</LI>
+<LI>cache-uri care nu blochează procesorul cînd datele lipsesc, ci
+îi permit să continue execuţia (<EM>non-blocking</EM>, 1994),
+
+<P>
+</LI>
+<LI>şi tot felul de alte tehnologii sofisticate, pe care le-am
+expus în alte părţi (cache-uri victimă, buffere de scriere,
+instrucţiuni speciale de management al cache-ului (prefetching),
+etc.);
+
+<P>
+</LI>
+<LI>Tot aici se cuvine să menţionăm multiprocesoarele simetrice
+şi protocoalele de coerenţă ale cache-urilor pentru astfel de
+sisteme; toate procesoarele moderne sunt construite pentru a fi
+folosite în sisteme multi-procesor, şi includ astfel de dispozitive.
+</LI>
+</OL>
+</LI>
+</UL>
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Arhitecturile contemporane</A>
+</H1>
+
+<P>
+Astfel, urmărind evoluţia arhitecturilor, am ajuns pînă în ziua
+de azi.  Vom încerca să caracterizăm sumar starea arhitecturilor,
+după care vom arunca o privire asupra unora din direcţiile viitoare.
+
+<P>
+
+<H2><A NAME="SECTION00031000000000000000">
+Hardware şi software</A>
+</H2>
+
+<P>
+Istoria modernă a procesoarelor contrapune două paradigme pentru
+creşterea performanţei, bazate pe software şi respectiv pe
+hardware.  Aparent un articol despre arhitectura procesoarelor nu are
+nimic de-a face cu software-ul.  Nimic mai greşit: la ora aceasta
+există o simbioză totală între hardware şi software; procesoarele
+se proiectează odată cu compilatoarele care le folosesc, şi
+relaţia dintre ele este foarte strînsă: compilatorul trebuie să
+genereze cod care să exploateze caracteristicile arhitecturale,
+altfel codul generat va fi foarte ineficace.
+
+<P>
+Metodele de creştere a performanţei cu ajutorul compilatoarelor se
+numesc şi <EM>statice</EM>, pentru că programul este analizat şi
+optimizat o singură dată, înainte de a fi pornit în execuţie.
+Metodele bazate pe hardware se numesc <EM>dinamice</EM>, pentru că sunt
+aplicate în timp ce programul se execută.
+
+<P>
+Istoria arhitecturilor contrapune mereu cele două paradigme: de
+exemplu dezbaterea iniţială RISC/CISC<A NAME="tex2html13"
+  HREF="#foot144"><SUP>3</SUP></A>  era de aceeaşi natură, ca şi dezbaterea între
+superscalar şi VLIW, pe care am menţionat-o deja în acest text.
+
+<P>
+De fapt, aşa cum menţionam şi în alte articole (de <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#ddd">exemplu</a>
+în PC Report din iunie 1999), există lucruri care se pot face numai
+static, şi există lucruri care se pot face numai dinamic.  Aşa că de
+fapt, chiar arhitecturile care pornesc la una din extreme, tind să
+conveargă către folosirea unui amestec de trăsături din ambele
+domenii:
+
+<P>
+
+<UL>
+<LI>la ora actuală distincţia RISC/CISC aproape că s-a estompat:
+
+<P>
+
+<UL>
+<LI>Pentium, un procesor tipic CISC, de fapt traduce în mod automat
+instrucţiunile în instrucţiuni de tip RISC în hardware, după care
+le execută;
+
+<P>
+</LI>
+<LI>toate procesoarele RISC au căpătat extensii la setul de
+instrucţiuni (gen CISC) pentru a le mări eficacitatea; de pildă
+toate procesoarele au extensii speciale pentru multimedia.
+</LI>
+</UL>
+
+<P>
+</LI>
+<LI>De asemenea, graniţele dintre super-scalar şi VLIW tind să se
+estompeze, fiecare împrumutînd din tehnologiile celuilalt.  
+</LI>
+</UL>
+
+<P>
+Cu siguranţă că un model mixt este preferabil, pentru că poate lua
+ce e mai bun din fiecare tehnologie.
+
+<P>
+
+<H2><A NAME="SECTION00032000000000000000">
+Crusoe</A>
+</H2>
+
+<P>
+Se cuvine să atragem atenţia asupra unei recrudescenţe a ``luptei''
+sistemelor pure: anul acesta compania Transmeta a anunţat apariţia
+unui nou procesor, numit Crusoe, care exploatează la maximum
+tehnologiile statice (compilarea).  Compania Transmeta a făcut mare
+vîlvă, nu atît prin procesorul lor, care poate simula alte
+procesoare, inclusiv cele ale firmei Intel, ci prin faptul că
+angajează pe cel mai faimos programator al planetei, Linus Torvalds,
+creatorul sistemului de operare Linux.
+
+<P>
+Transmeta a lansat Crusoe cu mare pompă în luna ianuarie; compania
+predică întoarcerea la simplitate (care a fost sugerată atît de
+curentul RISC, cît şi de modelele VLIW), în care hardware-ul este
+simplu şi rapid, iar compilatorul face greul.  Echipa care a lucrat
+la Transmeta este compusă din mare măsură din ingineri plecaţi de
+la IBM: IBM a lucrat la o versiune de procesor PowerPC care putea face
+exact acelaşi lucru: putea executa în mod nativ cod x86 (adică
+compatibil Intel), dar proiectul lor a fost întrerupt deşi era
+într-o stare foarte avansată, aparent din motive de marketing.
+
+<P>
+Cît de serios este acest nou competitor?
+
+<P>
+Din păcate atuurile lui Crusoe nu sunt prea clare:
+
+<P>
+
+<UL>
+<LI>cipul nu are un ceas mai rapid decît procesoarele Intel
+(versiunile de Crusoe disponibile acum merg doar la 400Mhz, comparativ
+cu Pentium, care ajunge la 800);
+
+<P>
+</LI>
+<LI>cipul într-adevăr consumă mult mai puţină energie, şi are
+nevoie de mult mai puţină răcire.  Transmeta afirmă că asta-l
+face ideal pentru laptop-uri.  Din păcate, principalul consumator de
+energie într-un laptop nu este procesorul, ci ecranul şi discul,
+aşa încît avantajele noului cip vor fi marginale;
+
+<P>
+</LI>
+<LI>Crusoe se bucură de compatibilitate cu setul de instrucţiuni
+x86; dar pentru platformele pe care x86 este dominant (desktop,
+laptop, chiar şi server) am văzut că performanţa lui este
+insuficientă.  Dacă Crusoe vrea să concureze pentru celelalte
+pieţe, de procesoare integrate (embedded computing), atunci are de-a
+face cu alţi competitori formidabili, ca procesoarele de semnal de la
+Motorola, Texas Instruments şi Intel (ARM), asupra cărora nu este
+clar cîte avantaje are.
+</LI>
+</UL>
+
+<P>
+Probabil că pentru a rămîne viabil Crusoe va trebui să se
+metamorfozeze şi să devină mai complicat, folosind şi o serie de
+mecanisme dinamice de creştere a performanţei.
+
+<P>
+În definitiv există o singură resursă aproape gratuită şi care
+este în cantităţi suficiente: numărul de tranzistori.  Datorită
+miniaturizării numărul de tranzistori disponibili pentru design
+creşte enorm; de aceea simplitatea cu orice preţ (aşa cum o
+încarnează Crusoe) nu este neapărat o calitate.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Constrîngerile fizice</A>
+</H1>
+
+<P>
+Proiectanţii de microprocesoare se lovesc în ziua de azi de mai
+multe dificultăţi.  Nici una dintre ele nu e insurmontabilă, dar
+soluţiile sunt din ce în ce mai grele.  Vom arunca o privire asupra
+unora dintre ele; încercarea de a extrapola impactul acestor bariere
+în viitor va sugera apoi soluţii pentru depăşirea lor.
+
+<P>
+
+<H4><A NAME="SECTION00040010000000000000">
+Accesul la memorie.</A>
+</H4>
+După cum am văzut în figura&nbsp;<A HREF="micro-html.html#gap">3</A>,
+în ultimii 10 ani viteza memoriilor a crescut cu 10% pe an, în timp ce
+viteza procesoarelor a crescut cu o rata de 60%.  Toate motivele ne
+îndeamnă să credem că această disparitate va continua să se
+accentueze, şi că preţul relativ al unui acces la memorie (măsurat în
+cicli de ceas) va continua să crească.
+
+<P>
+
+<H4><A NAME="SECTION00040020000000000000">
+Putere.</A>
+</H4> 
+Un alt factor care limitează evoluţia circuitelor integrate este
+consumul de putere; în urmă cu 15 ani un procesor consuma 2 waţi;
+astăzi un procesor ca Alpha 80364 consumă 100W; de aici rezultă
+limitări pentru ceas (puterea consumată creşte cu frecvenţa
+ceasului), şi necesitatea unor dispozitive speciale de răcire.  
+
+<P>
+Din fericire tehnologia lucrează în direcţia favorabilă:
+miniaturizarea duce la scăderea puterii necesare.  Un alt factor care
+duce la scăderea puterii consumate este scăderea tensiunilor de
+alimentare.
+
+<P>
+Interesant este faptul că, deşi dimensiunea tranzistorilor a scăzut
+într-una, dimensiunile circuitelor fabricate au crescut: foamea
+neostoită a designerilor cere suprafeţe din ce în ce mai mari ale
+plăcuţelor de siliciu; de aceea puterea consumată a crescut şi ea.
+
+<P>
+
+<H4><A NAME="SECTION00040030000000000000">
+Complexitate.</A>
+</H4>
+Un factor deloc neglijabil este complexitatea enormă a circuitelor.
+Procesoarele cele mai moderne au peste 25 de milioane de tranzistoare, iar
+în cîţiva ani designerii vor avea la dispoziţie un miliard.
+Astfel de circuite sunt foarte greu de verificat şi testat.  La ora
+actuală o companie ca Intel cheltuieşte 40% din budget pentru
+proiectare şi dezvoltare, şi 60% pentru verificare 'si testare!
+
+<P>
+O altă problemă importantă este legată de liniile tehnologice de
+fabricaţie: o astfel de instalaţie costă la ora actuală două
+miliarde de dolari.  Puţine companii îşi pot permite investiţii de
+asemenea anvergură pentru o tehnologie care se schimbă în 3 ani!
+
+<P>
+
+<H4><A NAME="SECTION00040040000000000000">
+Sîrmele.</A>
+</H4>
+E clar că miniaturizarea nu va putea continua în acelaşi ritm
+exponenţial: peste ceva vreme am ajunge la necesitatea de a face un
+tranzistor mai mic decît un atom, ceea ce e evident imposibil.  Dar
+chiar înainte de a atinge un astfel de prag, vom avea alte probleme
+de înfruntat.
+
+<P>
+O analiză extrem de interesantă a fost făcută de Mark Horowitz,
+profesor la universitatea Stanford, într-un articol intitulat
+``Viitorul sîrmelor''.  Articolul porneşte de la caracteristicile
+electrice ale semiconductorilor, şi analizează o serie de scenarii
+posibile pentru tehnologiile de fabricaţie.  Textul ia în
+considerare tot felul de factori, cum ar fi geometria sîrmelor,
+capacităţi şi rezistenţe, disiparea puterii, etc.  Vom ignora
+toate aceste detalii, însă vom privi una din concluziile la care
+autorul ajunge.
+
+<P>
+Autorul observă că în general sîrmele vor evolua în sensul dorit:
+vor deveni mai scurte, iar viteza de transmisiune a informaţiei nu va
+încetini relativ la dimensiunea circuitului.  Deci dacă am lua un
+microprocesor de astăzi şi l-am reduce la scară, sîrmele nu ar
+constitui un impediment în funcţionarea sa corectă.
+
+<P>
+Problema apare însă din faptul că de fapt suprafaţa circuitelor nu
+scade, din cauză ca designerii adaugă noi module.  O mare problemă
+sunt sîrmele care <EM>traversează mai multe module</EM>.  Lungimea
+acestora rămîne practic constantă, în milimetri.  Ori, cum viteza
+ceasului creşte mereu, asta înseamnă că semnalele electrice <EM>nu mai
+au timp</EM> să parcurgă sîrmele de la un capăt la altul.  La 1Ghz
+lumina în vid străbate 3*10<sup>8</sup> * 10<sup>-9</sup>m = 30cm.
+Dar viteza luminii în solide este mai mică, iar viteza de propagare
+scade dramatic cu numărul numărul de ``consumatori'' ai sîrmei (adică
+o sîrmă conectată la 3 circuite e mult mai lentă decît una cuplată la
+doar două).  De asemenea, liniile lungi de transmisiune vor avea
+nevoie de amplificatoare, care încetinesc substanţial semnalul.
+
+<P>
+Asta înseamnă că circuitele viitorului <EM>nu vor mai putea
+comunica prin semnale globale</EM>: pur şi simplu va fi imposibil pentru
+o sîrmă să unească diferitele părţi ale circuitului.  Aceasta
+este o consecinţă de cea mai mare importanţă pentru arhitecturile
+viitoare!
+
+<P>
+
+<H4><A NAME="SECTION00040050000000000000">
+Zgomotul</A>
+</H4>
+În fine, pe măsură ce tranzistorii sunt mai mici, sîrmele sunt mai
+subţiri şi consumul de putere este mai mare circuitele sunt mai
+sensibile la zgomot, fie el termic, din mediu (ex. radiaţii cosmice)
+sau, în curînd, chiar efecte cuantice!  Fenomenele de transport din
+semiconductori pe care se bazează tranzistorul sunt fenomene
+statistice: ori cînd dimensiunile devin atît de mici încît numai
+cîţiva electroni produc semnalele, statistica nu mai operează, şi
+excepţiile încep să apară.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Viitorul</A>
+</H1>
+
+<P>
+În această ultimă secţiune vom încerca să discernem ce ne oferă
+viitorul.  Marile companii lucrează simultan la mai multe generaţii
+ale unui procesor, cu echipe independente, ca atare ceva din ceea ce
+viitorul ne rezervă poate fi observat în produsele comerciale în
+curs de proiectare, în măsura în care companiile dezvăluie astfel
+de informaţii.
+
+<P>
+
+<H2><A NAME="SECTION00051000000000000000">
+Generaţia următoare</A>
+</H2>
+
+<P>
+Cercetarea în arhitectura procesoarelor este efervescentă, atît în
+industrie cît şi în universităţi; este absolut imposibil de
+urmărit întregul peisaj.  Iată însă unele dintre direcţii:
+
+<P>
+
+<H3><A NAME="SECTION00051100000000000000">
+Evoluţie incrementală</A>
+</H3>
+
+<P>
+Un efort substanţial este în continuare depus în a perfecţiona
+tehnicile care în ultimii 15 ani au servit atît de bine arhitectura,
+pe care le-am descris mai sus: exploatarea paralelismului la nivel de
+instrucţiune şi ierarhiile de memorie.
+
+<P>
+Iată unele dintre tendinţe:
+
+<P>
+
+<UL>
+<LI>Trace cache: este un cache pentru instrucţiuni care, în loc de
+a păstra instrucţiunile în ordinea adreselor lor, le menţine în
+ordinea în care este probabil să fie executate.
+
+<P>
+</LI>
+<LI>Execuţia speculativă şi predicţia valorilor: într-un <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#redenumire">articol</a>
+anterior din PC Report (din iulie 1999) am văzut că principala
+limitare în calea execuţiei paralele a instrucţiunilor sunt
+<EM>dependenţele</EM> între instrucţiuni: una are nevoie de rezultatul
+alteia pentru a se executa.  Ori dacă prima instrucţiune durează mult,
+atunci a doua nu se poate executa nici ea.  Soluţia ades folosită este
+de a <EM>ghici</EM> valoarea rezultată, şi de a executa şi
+instrucţiunea dependentă.  Cînd rezultatul primei instrucţiuni soseşte
+este comparat cu cel ghicit (prezis); dacă predicţia a fost corectă,
+toate sunt bune, altfel instrucţiunea dependentă este re-executată.
+
+<P>
+Există felurite forme de predicţie a valorilor, unele folosite deja de
+multă vreme (cum ar fi predicţia salturilor, pe care am <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#predictie">descris-o</a>
+în PC Report din august 1999), dar este plauzibil ca scheme din ce în
+ce mai sofisticate să-şi facă apariţia.
+
+<P>
+</LI>
+<LI>Execuţia predicată, care este deja folosită de procesoare de
+prelucrare de semnal ca Texas Instruments C6X, şi care va fi una din
+trăsăturile fundamentale ale noii arhitecturi de la Intel, Merced.
+Execuţia predicată evită execuţia instrucţiunilor de salt (care
+au un efect negativ asupra performanţei, aşa cum am arătat în
+articolul mai sus-citat) şi preferă să execute instrucţiuni în
+mod inutil după care să arunce rezultatele la gunoi (de exemplu,
+cînd avem o structură de genul <TT>if-then-else</TT>, o arhitectură
+predicată poate executa ambele ramuri ale condiţiei, dar va permite
+numai uneia dintre ele să-şi facă efectele vizibile).
+</LI>
+</UL>
+
+<P>
+
+<H3><A NAME="SECTION00051200000000000000">
+Multi-procesoare</A>
+</H3>
+
+<P>
+Aşa cum am văzut, proiectanţii tind să înghesuie din ce în ce mai
+multe circuite pe aceeaşi pilulă de siliciu.  O evoluţie naturală este
+de a face saltul de la mai multe procesoare legate printr-o magistrală
+comună (ca în cazul sistemelor cu multiprocesoare simetrice, pe care
+le-am <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#smp">descris</a>
+în PC Report din noiembrie 1998) în procesoare strîns cuplate, pe
+aceeaşi pilulă de siliciu.
+
+<P>
+De fapt astfel de scheme există deja: procesorul pentru mainframes de
+la IBM S/390 are două nuclee identice, care execută sincron acelaşi
+program: în cazul în care rezultatele nu sunt identice se execută o
+excepţie şi programul este reluat.  Acesta este un exemplu în care
+mai multe resurse sunt folosite pentru o fiabilitate sporită, dar IBM
+a anunţat că viitorul lor procesor G5 va conţine două nuclee
+independente pe aceeaşi pilulă, permiţînd realizarea unor sisteme
+multi-procesor cu un singur cip.
+
+<P>
+
+<H3><A NAME="SECTION00051300000000000000">
+Multithreading</A>
+</H3>
+
+<P>
+O evoluţie naturală ar fi la a exploata alte forme de paralelism
+decît cel la nivel de instrucţiune (ILP).  Calculatoarele moderne
+exploatează excelent paralelismul la nivel de proces, dar există
+forme intermediare, şi trebuie să ne aşteptăm să vedem
+arhitecturi din ce în ce mai orientate spre acestea:
+
+<P>
+
+<UL>
+<LI>Paralelism la nivel de buclă: în care iteraţii succesive ale
+unei bucle sunt executate în paralel.
+
+<P>
+</LI>
+<LI>Paralelism la nivel de thread; despre multithreading am scris un
+<a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#threads">articol</a>
+amplu în PC Report din ianuarie 1997.
+</LI>
+</UL>
+
+<P>
+Există o sumă de inovaţii arhitecturale legate de aceste
+tehnologii, încă ne-integrate în produse comerciale.  Să privim
+cîteva dintre ele:
+
+<P>
+
+<UL>
+<LI>Thread-level data speculation: este o metodă de a implementa
+paralelismul la nivel de buclă lansînd cîte un thread pentru
+fiecare iteraţie a buclei.  De exemplu, proiectul STAMPede de la
+Universitatea Carnegie Mellon, condus de profesorul Todd Mowry
+explorează această alternativă
+(<TT><A NAME="tex2html14"
+  HREF="http://www.cs.cmu.edu/~tcm/STAMPede.html">http://www.cs.cmu.edu/~tcm/STAMPede.html</A></TT>).
+
+<P>
+</LI>
+<LI>Simultaneous multi-threading, propus la universitatea din
+Washington Seattle în 1995.  Această tehnologie menţine starea
+fiecărui thread în hardware şi permite comutarea rapidă între
+thread-uri.  Putem distinge două variante, ca în figura&nbsp;<A HREF="micro-html.html#smt">4</A>:
+într-una din variante în fiecare ciclu de ceas putem executa
+instrucţiuni dintr-un alt thread, şi alta, în care în fiecare
+ciclu, instrucţiuni din thread-uri diferite candidează pentru
+unităţi funcţionale diferite.
+</LI>
+</UL>
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="smt"></A><A NAME="268"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 4:</STRONG>
+Multithreading clasic şi multithreading
+simultan.  Fiecare culoare simbolizează o instrucţiune dintr-un
+thread diferit; alb înseamnă ``nici o instrucţiune''.  Schemele
+clasice de multithreading comută între execuţia a două thread-uri
+numai arar.  În multithreading simultan comutarea este ajutată
+substanţial de hardware, şi se poate face chiar la fiecare ciclu de
+ceas (centru), sau chiar instrucţiuni din thread-uri diferite se pot
+executa simultan (dreapta).</CAPTION>
+<TR><TD><IMG
+ WIDTH="541" HEIGHT="247" BORDER="0"
+ SRC="img6.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{smt.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Avantajul unor astfel de scheme este că, dacă un thread execută
+care au nevoie de mult timp (de exemplu accese la memorie), putem alte
+thread-uri care sunt gata de execuţie, folosind mai eficient
+unităţile funcţionale ale procesorului.
+
+<P>
+
+<H2><A NAME="SECTION00052000000000000000">
+Dincolo de legea lui Moore</A>
+</H2>
+
+<P>
+În fine, voi încheia acest articol cu o privire extrem de sumară
+asupra unor proiecte de cercetare ambiţioase, care încearcă să
+privească nu numai în viitorul imediat, ci să anticipeze peisajul
+calculatoarelor peste zece ani şi mai mult.  La acea dată barierele
+impuse de fizică vor fi atinse, aşa că trebuie să ne aşteptăm la
+o încetinire a vertiginoasei creşteri de performanţă.  Dar chiar
+şi aşa, numărul uriaş de resurse puse la dispoziţie trebuie să
+fie folosit cumva; iată unele posibilităţi:
+
+<P>
+
+<H3><A NAME="SECTION00052100000000000000">
+IRAM, Smart Memory</A>
+</H3>
+
+<P>
+Proiectul IRAM (Intelligent RAM) de la Berkeley este condus de David
+Patterson (<TT><A NAME="tex2html16"
+  HREF="http://iram.cs.berkeley.edu/">http://iram.cs.berkeley.edu/</A></TT>), şi îşi propune
+integrarea tehnologiilor de fabricaţie a memoriilor şi procesoarelor
+(la ora actuală liniile de fabricaţie sunt complet diferite).  IRAM
+încearcă să evite disparitatea de acces la memorii împingînd o
+multitudine de procesoare micuţe printre celulele de memorie, unde
+pot lucra independent.
+
+<P>
+Un proiect foarte asemănător este cel de la Stanford, al
+profesorului Mark Horowitz, numit Smart Memories
+(<TT><A NAME="tex2html17"
+  HREF="http://velox.stanford.edu/smart_memories/">http://velox.stanford.edu/smart_memories/</A></TT>).
+
+<P>
+Aceste proiecte încearcă să depăşească problema accesului lent
+la memorie prin distribuirea unităţilor de procesare printre
+memorii, astfel încît accesul să fie paralel şi rapid.  O astfel de
+schemă, în care calculul este distribuit în multe
+unităţi independente, face ca impactul ``sîrmelor lungi'' să fie
+redus.
+
+<P>
+
+<H3><A NAME="SECTION00052200000000000000">
+RAW</A>
+</H3>
+
+<P>
+Proiectul RAW de la MIT (<TT><A NAME="tex2html18"
+  HREF="http://www.cag.lcs.mit.edu/raw/">http://www.cag.lcs.mit.edu/raw/</A></TT>) atacă
+problema dintr-un cu totul alt punct de vedere: maşina RAW constă
+din foarte multe procesoare relativ simple construite pe aceeaşi
+pilulă de siliciu.  Aceste procesoare cooperează pentru a executa o
+singură aplicaţie, care este paralelizată automat de compilator.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="raw"></A><A NAME="274"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 5:</STRONG>
+Schema maşinii RAW de la MIT: foarte multe
+procesoare simple pe aceeaşi pastilă de siliciu, legate printr-o
+reţea de interconectare rapidă comutată, aflată sub controlul
+software-ului.  Comunicaţia este planificată cît mai ades posibil
+de compilator.</CAPTION>
+<TR><TD><IMG
+ WIDTH="535" HEIGHT="330" BORDER="0"
+ SRC="img7.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{raw.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H3><A NAME="SECTION00052300000000000000">
+Imagine</A>
+</H3>
+
+<P>
+Un proiect foarte interesant este Imagine
+(<TT><A NAME="tex2html20"
+  HREF="http://cva.stanford.edu/imagine/cva_imagine.html">http://cva.stanford.edu/imagine/cva_imagine.html</A></TT>), la
+universitatea Stanford este orientat mai curînd pe procesarea de
+semnal; conducătorul este William Dally.  Proiectul acesta propune un
+nou model de programare, orientat spre multimedia, în care
+paralelismul datelor este făcut explicit prin noţiunea de <EM>flux</EM>
+(stream).  De exemplu, pentru a afişa scene complicate pe ecran,
+prelucrarea transformă datele dintr-un flux de obiecte într-un flux
+de poligoane, care devin un flux de triunghiuri, apoi un flux de
+pixeli, etc.
+
+<P>
+
+<H3><A NAME="SECTION00052400000000000000">
+PipeRench şi Brass</A>
+</H3>
+
+<P>
+În fine, menţionez două proiecte care încearcă să îmbine
+hardware-ul reconfigurabil cu procesoarele tradiţionale: proiectul
+Brass de la Berkeley
+(<TT><A NAME="tex2html21"
+  HREF="http://http.cs.berkeley.edu/projects/brass/">http://http.cs.berkeley.edu/projects/brass/</A></TT>), condus de John
+Wawrzynek, şi proiectul PipeRench de la Carnegie Mellon, condus de
+Seth Goldstein şi Herman Schmit
+(<TT><A NAME="tex2html22"
+  HREF="http://www.ece.cmu.edu/research/piperench/">http://www.ece.cmu.edu/research/piperench/</A></TT>).
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="reconfigurabil"></A><A NAME="280"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 6:</STRONG>
+Hardware-ul reconfigurabil constă din
+porţi universale, care pot implementa orice funcţie, care sunt
+legate între ele prin sîrme cuplate prin comutatoare.  Figura din
+dreapta arată un detaliu de implementare despre figura din stînga.</CAPTION>
+<TR><TD><IMG
+ WIDTH="588" HEIGHT="213" BORDER="0"
+ SRC="img8.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=13cm\epsffile{reconfigurabil.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Am vorbit <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#reconf">altă
+dată</a> pe larg despre hardware-ul reconfigurabil (figura&nbsp;<A
+HREF="micro-html.html#reconfigurabil">6</A>) (PC Report din iulie
+1998).  Fiecare poartă universală poate fi programată să execute orice
+funcţie logică, iar comutatoarele pot cupla şi decupla sîrmele.
+Porţile universale se pot implementa din mici celule RAM.  Astfel se
+pot sintetiza unităţi funcţionale extrem de complexe, care pot opera
+uneori mult mai eficient decît un procesor de uz general.
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Concluzii</A>
+</H1>
+
+<P>
+Am văzut în acest articol că performanţa microprocesoarelor s-a
+situat pe o curbă exponenţială în toţi cei treizeci de ani de la
+crearea lor.  Am văzut că miniaturizarea şi tehnici de design
+contribuie în mod egal la aceste spectaculoase creşteri.  De
+asemenea, am văzut că creşterea aceasta se apropie de sfîrşit,
+datorită unor bariere fizice fundamentale.  În fine, am încercat
+să profeţim unele din tehnologiile care-şi vor face apariţia în
+generaţiile următoare de procesoare.
+
+<P>
+<BR><HR><H4>Note</H4>
+<DL>
+<DT><A NAME="foot218">... rapid</A><A NAME="foot218"
+ HREF="micro-html.html#tex2html8"><SUP>1</SUP></A>
+<DD>Majoritatea covîrşitoare a procesoarelor
+contemporane funcţionează în mod <EM>sincron</EM>: întreaga lor
+funcţionare este orchestrată de un tact de ceas, care garantează
+că feluritele părţi sunt sincronizate.  Din ce în ce mai mult
+însă se tinde spre scheme cu multiple semnale de ceas, sau chiar
+scheme asincrone.  Nu ne vom ocupa însă de aceste evoluţii în
+textul acestui articol.
+
+<DT><A NAME="foot109">... a</A><A NAME="foot109"
+ HREF="micro-html.html#tex2html9"><SUP>2</SUP></A>
+<DD>Compaq a anunţat procesoare Alpha 20364 la 1Ghz
+din 1999, iar AMD a demonstrat deja un procesor K7 fără răcire
+specială la 1.1Ghz.
+
+<DT><A NAME="foot144">... RISC/CISC</A><A NAME="foot144"
+ HREF="micro-html.html#tex2html13"><SUP>3</SUP></A>
+<DD>În anii '80 a
+apărut ideea de a face procesoarele mult mai simple pentru a le
+permite să meargă mai repede.  Astfel de arhitecturi au fost numite
+RISC: Reduced Instruction Set Computer, prin contrast cu celelalte,
+Complex ISC.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

@@ -1,0 +1,183 @@
+/*Shell-ul merge astfel: (zic eu)
+initializari: marcheaza niste valori ASCII care intereseaza in mod deosebit
+	      in tabloul m[256] (astfel, in loc de a face cateva comparatii
+	      cand interpreteaza linia de comanda, verifica doar m[*c]:
+	      i.e. if(*c == '<' || *c == '>' || *c == '|' || !*c) se scrie 
+	      if(m[*c]) etc.)
+afiseaza un prompt (e(-8))		  
+cat timp gets nu intoarce NULL, citeste o linie de la stdin, o sparge in 
+    tokenuri si executa comenzile din ea (asta in functia r(t,o) care e apelata
+    la fiecare "reinitializare din for-ul 1 din main", dupa ce dus pe c la 
+    capatul sirului citit)
+functia r(t,o):
+    parametrii:(valabil numai pentru pipe)
+	t - descriptorul pentru iesire (redirectarea iesirii standard)				    
+	o - la fel pentru intrarea standard
+cand intra in r(t,o), linia de spart e in q, iar c pointeaza la sfarsitul ei
+cat timp nu a ajuns la '|' sau la inceputul sirului, parcurge sirul de la coada
+la cap si pune in elementele lui v tokenurile (prin intermediul lui u);
+daca da de vreun '<' sau '>', pune si in i[0],i[2] numele de dupa ele;
+
+dupa ce a iesit din for
+    -daca sirul n-are sens nu face nimic(nu a gasit nimic care
+	sa semene a nume de program)
+    -altfel, daca sirul nu e "cd" (singura comanda interna)
+	-daca e cazu' deschide un pipe
+	-face un fork si in tata proceseaza restul de sir (dinainte de |) si sta
+	 dupa fiu, sau doar asteapta, daca *c=0
+	-in fiu vede daca are de facut ceva redirectari, le face si executa 
+	 ceea ce ar trebui sa fie program cu parametrii dati (presupusi)
+	 primul parametru fiind, natural, numele programului 
+*/
+
+
+char *c,q[512],m[256]/*tablou cu toate valorile posibile pentru un octet, in care unele valori speciale sunt marcate*/
+,*v[99], **u,*i[3];
+int         f[2],p;
+/*v este un tablou de tokenuri din linia de cmd. v[98] este marker de sfarsit,
+intotdeauna null*/
+/* u e un fel de stack pointer*/
+main()
+{
+/*in m se marcheaza urmatoarele valori:
+    60	- <
+    62	- >
+    0	- \0
+    124 - |
+    32	- spatiu
+*/
+    for(m[m[60]=m[62]=32]=m[*m=124[m]=9]=6;e(-8),gets(1+(c=q))||exit(0);r(0,0))
+    
+    for(;*++c;);
+/*face gets(&q[1]) din cauza ca 	(gets(1+(c=q)))
+-intai face c++ si apoi *c != 0 	(for(;*++c;);)
+-are nevoie ca primul element sa fie 0	(for din r(t,o))
+(conditie de stop pentru for din r(t,o) ,i.e. m[*--c] == 0 daca c=| sau
+c=0,i.e. primul element*/
+}
+
+r(t,o)
+/*parametrii sunt: descriptori pentru iesire (t)
+				      intrare (o)
+dar numai in cazul in care am comunicare prin pipe
+adica daca linia citita e ceva de genul "ls | grep Xlib",
+      pentru "ls " se apeleaza r(o,0) unde o e capat de scriere in pipe*/
+{
+    *i=i[2]=0;
+/*in i[0] va fi numele fisier de intrare (dupa o redirectare cu > sau <)
+  in i[2] cel de iesire, i.e.: i[0] are in fata un < (in sirul tastat)
+                               i[2] are in fata un > */    
+    for(u=v+98;m[*--c]^9;
+/*se exec cat timp *c != \0 && *c != |*/
+    m[*c] & 32?
+/*daca da, atunci sigur *u este nume de program
+pentru ca numai inainte de un nume de program apare < sau>,i.e.
+caracterele marcate cu 32*/
+    i[*c&2]=*u,
+/*vezi i[0], i[2]: '<'&2 = 0 iar '>'&2 = 2*/
+    u-v^98&&++u
+/*daca am gasit un > sau <, dupa ce am pus numele fis.
+    de redirectare in i[0|2], il mut pe u mai sus in v:
+    u e ca un pointer de stiva */
+    :3)
+/*in m[*--c] se face o parcurgere in sens invers a sirului citit*/    
+        if(!m[*c])
+	 {
+	     for(*++c=0;!m[*--c];);
+/*
+-pune dupa fiecare token luat in *u (si v[?]) un \0
+-parcurge sirul pana la inceput sau la un spatiu|pipe|redirect
+si preia in u sirul (poate fi nume program sau argument)*/	     
+	     *--u= ++c;
+	 }
+/*dupa for, u este primul token de dupa ultimul | sau este primul token	din sir*/ 
+    u-v^98? /*u ar fi=v[98] numai daca sirul e vid sau cu< >| sau ultimul din sir e |*/
+     (	  !strcmp(*u,"exit")&&exit(0),/*mi-am permis sa adaug o iesire*/
+          strcmp(*u,"cd")? 
+           (/*daca *u!="cd"*/
+    		*c?
+                 (/*daca din for am iesit cu un | deschid un pipe*/
+                  pipe(f),o=f[1] /*o e capat de scriere in pipe*/
+                 ) : 4,   	
+          (p=fork())?/*sunt in tata?*/
+    	    (/*da, tata*/
+                 e(p),/*daca fork() a dat -1, iese e(-1)*/
+	         o?/*o este 0 daca am apelat cu r(,0) si n-am facut pipe(f)*/
+	          (
+	               r(o,0),close(o),close(*f)
+/*procesez sirul care a mai ramas [cel dinainte
+de |]  avand iesirea redirectata in o*/
+	          )
+	         :
+	          1
+	    ),
+	  wait(0) /*astept fiul sa se termine*/
+    	  :/*nu, fiu*/
+    	    (/*in fiu execut programul din *u */
+	       o?/*am intrarea redirectata prin pipe? */
+		(
+	             dup2(*f,0),/*capatul de citire din pipe devine stdin*/
+	             close(*f),/* eliberez pozitia ocupata de *f in tabela descriptorilor*/
+	             close(o)/*la fel cu o*/
+		) 
+	       :
+		(
+	             *i?/*daca nu am intrarea la prog. prin pipe, am cumva prin fisier? */
+	              ( /*	 (redirectare cu <) (altfel i[0] e nul)*/
+	                   5,/*dummy value*/
+	                   close(0),e(open(*i,0))/*redirectare prin <, deci inchid stdin si
+	   			       deschid fisierul de intrare i[0] readonly
+				       (O_RDONLY = 00 in fcntlbits.h)
+				       si in caz de eroare ies cu e(-1)*/
+	              )
+	             :/*nu am nici redirectare de intrare prin <*/
+	                   9/*dummy value*/
+		),
+	       
+	       t?/*am redirectare de iesire prin pipe?*/
+		(
+	             dup2(t,1),close(t)/*da, 1 va fi descriptor pentru acelasi 
+		                     fis. ca t (scriere in pipe)*/
+		)		     
+	       :
+		(/*nu am iesire prin pipe*/
+	             i[2]?/*am redirectare > ?*/
+	              (
+	                   6,/*dummy value*/
+	                   close(1),e(creat(i[2],438))/*da, inchid 1 si creez i[2]
+	            		                        cu drepturi 438 = 666 in octal
+	     					        i.e. RDWR tot poporu'*/
+	              )				
+	             :/*nu am nici redirectare de-asta*/
+	                  5/*dummy value*/
+		      ),
+/*orice-ar fi fost, le-am lamurit pana acum si trec la fapte*/
+	       e(execvp(*u,u))/*execut programu' *u cu argumentele u
+	   		        adica u=argv pentru procesul nou 
+				(normal, argv[0] = u = numele fisierului)*/
+	    		      
+	    
+            )/*se termina fiul*/
+	   )/*de la strcmp cu "cd"*/    
+          :/*da, *u == "cd"*/
+               e(chdir(u[1])*2)/*schimb directorul in cel dat de u[1] = argumentu' lu' "cd"*/
+     )/*de la u-v^98*/
+    :/*da, sirul e vid sau numai cu caractere speciale sau cu ultimu |*/
+	3/*dummy value*/
+    ;
+}
+e(x)
+/*functie care mi-a placut: x (implicit intreg) e un fel de cod de eroare:
+
+    - pt. x > 0 totu e OK (nu face nimic)
+		 _ x = -1 scrie "?\n" si iese
+    - pt. x < 0 |_ -1 > x > -4 scrie "?\n" dar nu iese
+		|_ -8 < x <= -4 scrie "\n$"
+		|_ x = -8 scrie "$ " 
+		|_ x <= -12 se duce in balarii
+apelul lui write e de fapt urmatorul:
+    write(2,buff+(-x/4),2), unde buff e adresa unde e stocat intern "?\n$ "
+*/
+{
+    x<0?write(2,"?\n$ "-x/4,2),x+1||exit(1):5;
+}

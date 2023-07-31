@@ -1,0 +1,91 @@
+/* cv.css -*-text-*- */
+
+/****************************
+ * common style definitions *
+ ****************************/
+
+BODY, P, TH, TD, UL, OL, H1, H2, H3, H4, PRE, SMALL, BLOCKQUOTE, DT, DL, DD {
+   font-family : sans-serif;
+}
+
+DT { 
+        margin-top : 10px;
+}
+
+BODY, P, PRE {
+	margin : 1em;
+}
+   
+TABLE {
+	empty-cells: show;
+}
+
+PRE  {
+	font-family : monospace;
+}
+
+.cv {
+	font-weight: bold;
+	padding-left: 5px;
+	margin: 0px;
+}
+
+H2.cv {
+	margin-left: 5px;
+	padding-left: 5px;
+}
+
+@media screen {
+	/* on screen use inverted colors */
+
+  .evenrow {
+	 background: black;
+  }
+
+  .oddrow {
+	background: #151515;
+  }
+
+   BODY {
+         background : black; 
+	 color : white; 
+   }
+   
+   TH {
+   	 background : darkblue;
+	 color : white; 
+   }
+   
+   A:LINK  {
+           text-decoration : underline;
+           color : cyan;
+   }
+   
+   A:VISITED  {
+           text-decoration : underline;
+           color : silver;
+   }
+   
+   A:HOVER  {
+           text-decoration : underline;
+           color : lime;
+   }
+
+   .cv {
+   	background : darkblue;
+   }
+   
+   H2.cv {
+   	background : darkblue;
+   }
+}
+
+@media print {
+   .cv {
+   	background : lime;
+   }
+   
+   H2.cv {
+   	background : yellow;
+   }
+}

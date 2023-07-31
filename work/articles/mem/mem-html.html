@@ -1,0 +1,1411 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Alocarea memoriei în nucleul sistemului de operare</TITLE>
+<META NAME="description" CONTENT="Alocarea memoriei în nucleul sistemului de operare">
+<META NAME="keywords" CONTENT="mem-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Alocarea memoriei în nucleul sistemului de operare</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- mihaib+ at cs.cmu.edu 
+<BR><TT>http://www.cs.cmu.edu/~mihaib/</TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>17 decembrie 1998</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>alocarea memoriei: feluriţi algoritmi
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>programare în C, structuri de date
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>alocator, memorie, colectare de deşeuri,
+performanţă, nucleu
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html39"
+  HREF="mem-html.html">Alocarea memoriei</A>
+<LI><A NAME="tex2html40"
+  HREF="#SECTION00030000000000000000">Limbaje şi alocarea de memorie</A>
+<UL>
+<LI><A NAME="tex2html41"
+  HREF="#SECTION00031000000000000000">Alocarea în limbajul C</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html42"
+  HREF="#SECTION00040000000000000000">Caracteristici ale alocatoarelor</A>
+<UL>
+<LI><A NAME="tex2html43"
+  HREF="#SECTION00041000000000000000">Timp pe operaţie (cazul cel mai defavorabil)</A>
+<LI><A NAME="tex2html44"
+  HREF="#SECTION00042000000000000000">Timp amortizat</A>
+<LI><A NAME="tex2html45"
+  HREF="#SECTION00043000000000000000">Fragmentare</A>
+<LI><A NAME="tex2html46"
+  HREF="#SECTION00044000000000000000">Grad de utilizare</A>
+<LI><A NAME="tex2html47"
+  HREF="#SECTION00045000000000000000">Simplitate</A>
+<LI><A NAME="tex2html48"
+  HREF="#SECTION00046000000000000000">Concurenţă</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html49"
+  HREF="#SECTION00050000000000000000">Alocarea statică</A>
+<LI><A NAME="tex2html50"
+  HREF="#SECTION00060000000000000000">Consumatori de memorie</A>
+<UL>
+<LI><A NAME="tex2html51"
+  HREF="#SECTION00061000000000000000">Programele utilizatorilor</A>
+<LI><A NAME="tex2html52"
+  HREF="#SECTION00062000000000000000">Nucleul: alocarea de memorie</A>
+<LI><A NAME="tex2html53"
+  HREF="#SECTION00063000000000000000">Nucleul: alocarea de spaţiu pe disc</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html54"
+  HREF="#SECTION00070000000000000000">Un alocator dinamic foarte simplu</A>
+<LI><A NAME="tex2html55"
+  HREF="#SECTION00080000000000000000">Alocatorul cu hartă de resurse</A>
+<LI><A NAME="tex2html56"
+  HREF="#SECTION00090000000000000000">Alocatorul cu puteri ale lui 2</A>
+<LI><A NAME="tex2html57"
+  HREF="#SECTION000100000000000000000">Alocatorul Karels-McKusick</A>
+<LI><A NAME="tex2html58"
+  HREF="#SECTION000110000000000000000">Alocatorul ``slab''</A>
+<LI><A NAME="tex2html59"
+  HREF="#SECTION000120000000000000000">Concluzii</A>
+</UL>
+<!--End of Table of Contents-->
+<BR>
+<BR>
+
+<P>
+``640 de kiloocteţi trebuie să fie îndeajuns pentru oricine''.
+Aceasta este probabil cea mai faimoasă gafă a lui Bill Gates,
+pronunţată cîndva pe la începutul anilor '80.  Enunţul este cu
+atît mai amuzant cu cît compania lui Gates, Microsoft, produce
+nişte programe uriaşe, pentru care resursele calculatoarelor
+contemporane, care au evoluat într-o rată greu de imaginat, nu sunt
+suficiente.
+
+<P>
+Dacă lucrurile ar fi stat aşa, atunci articolul de faţă nu ar mai
+fi fost scris.  Dar rata de creştere a programelor este comparabilă
+cu cea a capacităţilor memoriilor; pe de altă parte <EM>datele</EM>
+prelucrate de programe devin din ce în ce mai mari; audio, video,
+multimedia sunt mari consumatoare de spaţiu.
+
+<P>
+Dacă lucrurile ar fi stat aşa cum prevedea Gates, atunci sistemele
+de operare însele ar fi dispărut, sau ar fi arătat substanţial
+diferit de cele din ziua de azi; aceasta este tot o ironie, pentru că
+Microsoft îşi menţine dominaţia în arena mondială a software-ului
+prin monopolul pe care îl are asupra sistemelor de operare pentru
+calculatoare personale.  De ce spun că sistemele de operare ar fi
+dispărut?  Pentru că rolul principal al unui sistem de operare este
+cel de management al resurselor unui calculator, în particular de
+management al memoriei.  Dacă resursele ar fi prezente din
+abundenţă, atunci necesitatea unui manager ar fi mult mai puţin
+stringentă.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Alocarea memoriei</A>
+</H1>
+
+<P>
+Ce este de fapt alocarea memoriei?  Calculatorul posedă din
+fabricaţie o anumită cantitate de memorie (RAM).  În memorie vor fi
+încărcate mai multe programe şi datele prelucrate de ele: nucleul
+sistemului de operare, datele acestuia, programele utilizatorilor şi
+datele asupra cărora acestea operează, datele citite de la
+dispozitivele periferice, pachetele de date care vin şi merg în
+reţeaua în care calculatorul este conectat, bibliotecile încărcate
+dinamic, etc.  O singură bucată mare de memorie (RAM-ul) trebuie
+împărţită între toate aceste entităţi lacome, în aşa fel
+încît să nu se incomodeze unele pe altele.  Entitatea care
+gestionează memoria, ţine contabilitatea zonelor ocupate şi a celor
+libere, care satisface cererile pentru noi zone şi care
+re-utilizează zonele eliberate este alocatorul de memorie.
+
+<P>
+Alocarea memoriei este de obicei o treabă ierarhică; la baza
+ierarhiei se află sistemul de operare, care are la dispoziţie
+întregul RAM.  Sistemul de operare dă feluritelor programe ale
+utilizatorilor porţiuni de memorie.  La rîndul lor, fiecare din
+programe gestionează bucăţica primită de la nucleu pentru nevoile
+sale interne.
+
+<P>
+În acest text ne vom concentra asupra alocatorului de memorie din
+nucleele sistemelor de operare de tip Unix, dar vom privi superficial
+şi asupra unor alte alocatoare.  Un tratament excelent al subiectului
+puteţi găsi în capitolul 12 din cartea ``Unix Internals'', de Uresh
+Vahalia, publicată în anul 1996 de editura Prentice Hall.  Am
+folosit unele dintre prezentările din acea carte în scrierea acestui
+articol.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Limbaje şi alocarea de memorie</A>
+</H1>
+
+<P>
+O clasificare a limbajelor din punctul de vedere al alocării memoriei
+le împarte în trei categorii:
+
+<P>
+
+<OL>
+<LI>Limbaje care nu pot aloca dinamic memorie.  Din această
+categorie fac parte cele mai ancestrale limbaje: Cobol, Fortran.  În
+aceste limbaje (cel puţin în versiunile lor iniţiale), utilizatorul
+nu poate aloca dinamic memorie de loc în momentul execuţiei
+programului; toată memoria necesară trebuie să fie alocată
+înainte ca programul să pornească în execuţie.
+
+<P>
+</LI>
+<LI>Limbaje cu alocare şi dealocare explicită.  Limbaje ca Pascal,
+C şi C++ îi permit utilizatorului să ceară pe parcursul execuţiei
+noi zone de memorie şi să returneze memoria folosită.  Utilizatorul
+apelează pentru acest scop nişte <EM>funcţii de bibliotecă</EM>.
+Aceste funcţii au fost implementate de cel care a scris compilatorul
+pentru limbajul respectiv.  Aceste funcţii cer de la sistemul de
+operare o bucată mare de memorie pe care apoi o împart după
+necesităţi; atunci cînd toată bucata este consumată cer o alta de
+la nucleu.  În Pascal funcţiile cu pricina sunt <TT>new</TT> şi <TT>free</TT>, în C <TT>malloc</TT> şi <TT>free</TT> iar în C++ <TT>new</TT> şi
+<TT>delete</TT>.  Ca funcţionare sunt extrem de similare; funcţiile din
+Pascal şi C++ folosesc tipul obiectelor alocate pentru a deduce
+cîtă memorie este necesară (de exemplu programatorul zice: ``vreau
+memorie pentru un vector de 10 întregi''); programatorii în C
+trebuie să indice explicit de cîtă memorie au nevoie (ex.: ``dă-mi
+şi mie 40 de octeţi'').
+
+<P>
+</LI>
+<LI>Limbaje cu colectoare de gunoaie (<EM>garbage collection</EM>).
+Lisp şi Java folosesc un mecanism extrem de interesant, prin care
+utilizatorul nu specifică niciodată cînd vrea să elibereze o zonă
+de memorie (adică <TT>free()</TT> nu există); compilatorul şi un
+sistem de funcţii care se execută simultan cu programul (runtime
+system) deduc singure care dintre zone sunt nenecesare şi le
+recuperează.  Lisp-ul aparent este un limbaj în care nu există nici
+măcar alocare dinamică (o funcţie de gen <TT>new</TT>); în realitate
+în Lisp fiecare obiect nou creat este automat alocat într-o zonă de
+memorie nouă, fără ca utilizatorul să trebuiască să specifice
+asta (de exemplu cînd utilizatorul concatenează două liste, atunci
+sistemul alocă automat spaţiu pentru lista rezultat).
+
+<P>
+Din anumite puncte de vedere, tehnica colectării de gunoaie este cea
+mai preferabilă.  Principalul ei avantaj este că scuteşte
+utilizatorul de pericolul de a folosi zone de memorie nealocate,
+prevenind astfel apariţia unor bug-uri extrem de greu de depanat.
+Avantajele ei nu se opresc aici: împreună cu o disciplină de tipuri
+strictă, colectarea deşeurilor face demonstrarea automată a
+corectitudinii programelor o sarcină mult mai simplă: un demonstrator
+de teoreme va fi întotdeauna sigur că o zonă de memorie folosită
+nu este dealocată.
+
+<P>
+Pe de altă parte, colectarea de gunoaie are anumite dezavantaje: este
+impredictibilă ca timp consumat (adică nu e clar în ce moment al
+execuţiei programului se va petrece), şi este <EM>conservativă</EM>.
+Întrebarea dacă o anumită zonă de memorie va mai fi sau nu
+folosită de un program în viitor este în general o chestiune <EM>nedecidabilă</EM>; asta înseamnă că nu se poate scrie nici un algoritm
+care să răspundă la o astfel de întrebare, chiar dacă are
+informaţii complete despre programul analizat şi despre datele lui
+de intrare.  Din cauza aceasta este posibil ca un program cu colectare
+automată să păstreze alocate zone de memorie care sunt în
+realitate inutile, pentru că sistemul nu are cum să demonstreze
+acest lucru.
+</LI>
+</OL>
+
+<P>
+În acest articol vom vorbi mai ales despre sisteme de tipul
+intermediar, cu alocare şi dealocare explicită.  Motivele sunt
+multiple.  În primul rînd majoritatea alocatoarelor din nucleele
+sistemelor de operare comerciale sunt de acest tip<A NAME="tex2html1"
+  HREF="#foot67"><SUP>1</SUP></A>.  În al doilea rînd, chiar implementarea unui alocator
+cu colector va folosi idei de genul celor prezente în alocatoarele
+explicite.  Şi în al treilea rînd, colectarea gunoaielor este un
+subiect ceva mai dificil.
+
+<P>
+
+<H2><A NAME="SECTION00031000000000000000">
+Alocarea în limbajul C</A>
+</H2>
+
+<P>
+Nucleele sistemelor de operare comerciale sunt toate scrise în C,
+inclusiv alocatoarele de memorie din biblioteci; din cauza aceasta vom
+privi mai îndeaproape funcţiile acestui limbaj.
+
+<P>
+Programatorul în C are la dispoziţie funcţiile <TT>malloc</TT> şi
+prietenii ei (<TT>calloc, realloc</TT>) pentru a aloca memorie, şi
+funcţia <TT>free</TT> pentru a o elibera.  <TT>calloc</TT> şi <TT>realloc</TT> pot fi scrise folosind <TT>malloc</TT>, aşa că nu le vom da
+prea mare atenţie.  Prototipurile acestor funcţii se află în
+fişierul header <TT>&lt;stdlib.h&gt;</TT> din biblioteca standard C, prezentă
+pe orice sistem.
+
+<P>
+Funcţia <TT>malloc</TT> are un singur argument: numărul de octeţi care
+trebuie alocaţi.  Rezultatul funcţiei este un pointer generic (<TT>void*</TT>) spre zona alocată.  Dacă <TT>malloc</TT> nu găseşte destulă
+memorie, atunci rezultatul apelului ei este pointerul cu valoarea 0
+(<TT>NULL</TT>).
+
+<P>
+Funcţia <TT>free()</TT> are tot un singur argument, şi nici un
+rezultat.  Argumentul ei este un pointer obţinut de la un <TT>malloc</TT> anterior; efectul executării ei este eliberarea zonei de
+memorie aflată în acel loc.
+
+<P>
+Biblioteca în care sunt implementate <TT>malloc</TT> şi <TT>free</TT>
+menţine o pleiadă de structuri de date indicînd unde se află
+zonele libere şi unde cele ocupate.  Observaţi de pildă că <TT>free</TT> nu primeşte nici un fel de informaţii despre cît de mare este
+zona dealocată; biblioteca trebuie deci să ştie acest lucru.
+
+<P>
+În cazul sistemului de operare Unix aceste funcţii de bibliotecă
+sunt implementate folosind un apel de sistem<A NAME="tex2html2"
+  HREF="#foot85"><SUP>2</SUP></A> numit <TT>sbrk</TT>.  Figura&nbsp;<A HREF="mem-html.html#malloc">1</A>
+ilustrează relaţia dintre aceste funcţii.  Apelul de sistem are la
+ca argument cantitatea cerută de memorie (pozitivă sau negativă);
+efectul executării apelului este adăugarea <EM>la sfîrşitul
+segmentului de date</EM> al programului a unei cantităţi de memorie
+egale cu cea cerută.
+
+<P>
+În mod normal <TT>malloc</TT> execută un <TT>sbrk</TT> la început pentru
+a obţine o cantitate mare de memorie, şi apoi la fiecare apel
+returnează utilizatorului cîte o bucăţică din bucata mare.  Dacă
+după o vreme întreaga bucată mare devine ocupată, atunci <TT>malloc</TT> execută un nou <TT>sbrk</TT>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="malloc"></A><A NAME="228"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 1:</STRONG>
+Funcţiile pentru alocarea memoriei.  <TT>malloc/free</TT> sunt funcţii de bibliotecă folosite de utilizator.  Ele
+obţin memorie de la nucleul sistemului de operare folosind funcţia
+<TT>sbrk</TT>.</CAPTION>
+<TR><TD><IMG
+ WIDTH="179" HEIGHT="160" BORDER="0"
+ SRC="img1.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=4cm\epsffile{malloc.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Caracteristici ale alocatoarelor</A>
+</H1>
+
+<P>
+Există o sumedenie de feluri de alocatoare diferite; în ceea ce
+priveşte colectoarele şi în ziua de azi se desfăşoară cercetări
+care îmbunătăţesc performanţa.  Iată aici cîteva criterii după
+care putem evalua calitatea unui alocator.
+
+<P>
+
+<H2><A NAME="SECTION00041000000000000000">
+Timp pe operaţie (cazul cel mai defavorabil)</A>
+</H2>
+
+<P>
+Prima caracteristică este complexitatea unei operaţii de
+alocare/dealocare.  În mod normal un alocator trebuie să execute un
+număr constant de operaţii pentru fiecare funcţiune.  Dar vom vedea
+mai jos că adesea în cel mai rău caz alocatoarele trebuie să
+execute o sumedenie de instrucţiuni pentru a răspunde la o singură
+cerere.  De exemplu alocatorul cu hartă de resurse, prezentat mai
+jos, ar putea să aibă nevoie să parcurgă întreaga listă de
+blocuri de memorie neocupate pentru a găsi unul de măsura
+potrivită.  Asta înseamnă că, cu cît e mai multă memorie
+disponibilă, cu atît execuţia unui apel de alocare/dealocare poate
+fi mai costisitoare (pentru că lista va fi mai lungă).
+
+<P>
+
+<H2><A NAME="SECTION00042000000000000000">
+Timp amortizat</A>
+</H2>
+
+<P>
+O măsură interesantă a costului unei alocări este <EM>timpul
+amortizat</EM> pentru o operaţie de alocare.  De exemplu dacă cele mai
+multe operaţii de alocare durează 1ms, dar la fiecare 500 de
+operaţii costul execuţiei este de 200ms, atunci costul amortizat
+este de (499*1 + 1*200)/500 = 1.39ms pe operaţie (costul în cazul
+cel mai rău ar fi 200).
+
+<P>
+Sistemele cu colectare de gunoaie au de obicei un timp amortizat mic
+pentru fiecare operaţie, dar din cînd în cînd (atunci cînd
+colectorul porneşte în execuţie), anumite operaţii durează foarte
+mult.  Acesta este cazul sistemelor LISP obişnuite.
+
+<P>
+Pentru că nucleul unui sistem de operare trebuie să facă faţă
+unor cereri extrem de severe, în general alocatoarele din nuclee
+trebuie să aibă cazul cel mai defavorabil relativ mic.  Exista
+alocatoare care primesc nişte indicaţii despre urgenţa operaţiei:
+dacă cel care are nevoie de memorie nu se grăbeşte, algoritmul
+îşi poate permite să petreacă mai mult timp; altfel trebuie să
+răspundă cît se poate de repede.
+
+<P>
+De exemplu nucleul trebuie să primească pachete de date din reţea;
+atunci cînd un pachet îşi face apariţia, nucleul nu poate să
+aştepte prea mult pentru a găsi un loc în care să-l depoziteze,
+pentru că nu are unde să pună pachetul între timp.  Dacă nucleul
+nu reuşeşte să obţină un buffer pentru o stoca pachetul, atunci
+de obicei pachetul este pur şi simplu pierdut (asta se numeşte <EM>buffer overrun</EM>).  Cel care a transmis pachetul iniţial va trebui
+să trimită o copie.
+
+<P>
+
+<H2><A NAME="SECTION00043000000000000000">
+Fragmentare</A>
+</H2>
+
+<P>
+Alocatoarele se mai confruntă cu o problemă neplăcută: aproape
+niciodată nu pot folosi întreaga memorie disponibilă, pentru că
+mici fragmente ``se pierd'' fără a putea fi folosite.
+
+<P>
+Aceste pierderi apar din cauză că consumatorii de memorie doresc
+bucăţi de memorie de mărimi variate, care sunt greu de pus cap la
+cap în memoria disponibilă.  În funcţie de interfaţa
+alocatorului, există două tipuri de pierderi.  Pentru că pierderile
+apar din cauza împărţirii spaţiului disponibil în fragmente,
+această problemă se numeşte <EM>fragmentare</EM>.  Există două
+feluri de fragmentare: internă şi externă.
+
+<P>
+
+<H3><A NAME="SECTION00043100000000000000">
+Fragmentarea externă</A>
+</H3>
+
+<P>
+Tabela&nbsp;<A HREF="#fragmentare">1</A> arată un posibil scenariu de cereri de
+alocare/dealocare şi evoluţia memoriei în timp.
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="220"></A>
+<TABLE>
+<CAPTION><STRONG>Table 1:</STRONG>
+Fragmentarea externă apare datorită
+găurilor apărute între zone de memorie şi care sunt prea mici
+pentru a fi folosite.</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER"><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">
+timp </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">   cerere </FONT></TD>
+<TD ALIGN="CENTER" COLSPAN=5><FONT SIZE="-1"> starea memoriei</FONT></TD>
+<TD></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+     </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">          </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> 0 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> 10 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> 15 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> 25 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> 35 </FONT></TD>
+<TD></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">  
+0    </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1">          </FONT></TD>
+<TD ALIGN="CENTER" COLSPAN=5><FONT SIZE="-1"> liber</FONT></TD>
+<TD></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+1 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> x = aloca(10) </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> XXXXXXXXX </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT></TD>
+<TD></TD>
+<TD></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+2 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> y = aloca(5)  </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> XXXXXXXXX </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> XXXXX </FONT></TD>
+<TD></TD>
+<TD></TD>
+<TD></TD>
+<TD></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+3 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> z = aloca(10) </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> XXXXXXXXX </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> XXXXX </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> XXXXXXXXXX </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT></TD>
+<TD></TD>
+<TD></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+4 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> dealoca(y)    </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> XXXXXXXXX </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> XXXXXXXXXX </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT></TD>
+<TD></TD>
+<TD></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+5 </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> w = aloca(10) </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> XXXXXXXXX </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> XXXXXXXXXX </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> XXXXXXXXX </FONT></TD>
+<TD></TD>
+<TD></TD>
+</TR>
+</TABLE></DIV></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+Fenomenul se petrece la momentul 4: dealocăm un bloc de memorie de 5
+octeţi cuprins între alte două blocuri.  După aceea alocăm unul
+de zece; cei cinci octeţi nu sunt suficienţi, aşa că în acel loc
+rămîne o ``gaură''.  Astfel de găuri apar din ce în ce mai multe,
+şi scad în dimensiune (de exemplu dacă am aloca apoi 3 octeţi în
+gaura de 5 am rămîne cu o gaură de 2 octeţi).  După o vreme
+găurile practic nu mai pot fi folosite, dar consumă în total o
+sumedenie de spaţiu.  Acest gen de fragmentare se numeşte ``extern''
+pentru că risipa apare între blocurile alocate.
+
+<P>
+Se demonstrează că atunci cînd avem de-a face cu alocări de
+blocuri de mărimi diferite, fragmentarea externă este inevitabilă.
+Singurul mod în care putem repara ceva este de a muta blocuri dintr-o
+parte într-alta, <EM>compactînd</EM> spaţiul liber.  Dar aceasta este
+o operaţie extrem de costisitoare ca timp, care în anumite
+condiţii este imposibilă (de exemplu atunci cînd muţi ceva din
+memorie trebuie să corectezi valorile tuturor pointerilor din program
+care punctează la acel obiect; pentru un limbaj ca C acest lucru este
+imposibil).  LISP şi Java folosesc uneori compactarea spaţiului
+ocupat.  
+
+<P>
+Tot compactare fac şi programele care defragmentează discurile
+pentru a creşte performanţa accesului la fişiere.  
+
+<P>
+
+<H3><A NAME="SECTION00043200000000000000">
+Fragmentarea internă</A>
+</H3>
+
+<P>
+Acest tip de alocare este folosit adesea pentru alocarea spaţiului pe
+discurile magnetice, şi pentru alocarea memoriei virtuale pentru
+procese.
+
+<P>
+Singurul mod în care putem evita fragmentarea externă este de a
+aloca toate obiectele de exact aceeaşi mărime.  În acest caz orice
+``gaură'' între două obiecte poate fi folosită pentru un alt
+obiect.  Cînd consumatorul vrea 10 sau 50 de octeţi, tot 100 îi dai
+(de exemplu).  Asta duce la risipă în interiorul fiecărui ``bloc''
+alocat; aceasta este fragmentarea internă.
+
+<P>
+Structurile de date şi algoritmii pentru alocarea blocurilor de
+mărimi egale sunt mult mai simple şi omogene (se pot chiar
+implementa parţial în hardware).  Din cauza asta practic toate
+sistemele de operare moderne alocă memoria virtuală în termeni de
+<EM>pagini</EM>, care au în jur de 4 kiloocteţi fiecare.
+
+<P>
+
+<H2><A NAME="SECTION00044000000000000000">
+Grad de utilizare</A>
+</H2>
+
+<P>
+Pe lîngă faptul că spaţiul se fragmentează, alocatorul însuşi
+menţine propriile structuri de date pentru gestiune.  Aceste
+structuri ocupă loc adiţional, reducînd utilizarea efectivă a
+memoriei.  De pildă, nucleele au o tabelă a paginilor din RAM, în
+care memorează cum este utilizată fiecare pagină.  Pentru fiecare
+pagină din RAM nucleul menţine la Pentium 4 octeţi suplimentari;
+asta înseamnă o risipă de 1 la mie.
+
+<P>
+
+<H2><A NAME="SECTION00045000000000000000">
+Simplitate</A>
+</H2>
+
+<P>
+Interfaţa <TT>malloc/free</TT> este foarte simplă; aproape că nu se
+poate concepe ceva mai simplu.  Alte alocatoare pot avea interacţiuni
+mai complicate: de exemplu ar putea permite dealocarea doar a unui
+fragment dintr-o zonă alocată anterior, ar putea cere ca <TT>free</TT>
+să indice explicit cîtă memorie trebuie dealocată, ar putea avea
+tot felul de argumente suplimentare referitoare la urgenţa alocării,
+etc.
+
+<P>
+
+<H2><A NAME="SECTION00046000000000000000">
+Concurenţă</A>
+</H2>
+
+<P>
+În fine, o ultimă dimensiune după care putem compara alocatoarele
+de memorie este gradul de acces concurent pe care îl permit.  Pe un
+calculator cu mai multe procesoare este imaginabil că două
+procesoare vor simultan să aloce/dealoce memorie.  Pentru a preveni
+haosul, trebuie puse anumite restricţii asupra ordinii de execuţie.
+Zona de cod care alocă/dealocă este de obicei o <EM>regiune
+critică</EM>, în sensul că nu poate fi executată de mai multe
+procesoare simultan<A NAME="tex2html5"
+  HREF="#foot128"><SUP>3</SUP></A>.  Un alocator bine scris va
+permite un grad mai ridicat de concurenţă, pentru a exploata mai
+bine resursele computaţionale.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Alocarea statică</A>
+</H1>
+
+<P>
+Începînd cu această secţiune, voi trece în revistă felurite
+tipuri de alocatoare folosite în practică.  În mijlocul acestei
+discuţii voi insera o secţiune despre constrîngerile puse asupra
+alocatoarelor.  Discuţia este departe de a fi exhaustivă; este mai
+curînd ilustrativă.
+
+<P>
+Să începem cu cel mai simplu tip de alocator, cel care...nu
+există.  În acest caz trebuie să alocăm toate zonele de la
+scrierea programului.  Metoda aceasta era folosită în versiunile
+vechi de Unix, şi este în continuare folosită pentru anumite
+sisteme de fişiere (sistemul de fişiere din Unix, UFS, prealocă
+pentru fiecare fişier cîte un inod pe disc la momentul formatării
+discului; numărul acesta nu se poate apoi schimba).  În Pascal
+matricile pot fi alocate numai static (adică dimensiunile lor trebuie
+să fie cunoscute la compilare).
+
+<P>
+Marele avantaj al metodei este simplitatea.  Există însă două mari
+dezavantaje: 
+
+<P>
+
+<UL>
+<LI>Risipa.  Pentru că nu ştim dinainte cîtă memorie o să
+folosim, trebuie să alocăm în mod conservativ mai multă decît
+orice valoare posibilă.  Asta înseamnă risipă pentru majoritatea
+cazurilor.  
+
+<P>
+</LI>
+<LI>Depăşirea.  Chiar dacă alocăm un milion de obiecte,
+programul care are nevoie de un milion unu o să eşueze.
+</LI>
+</UL>
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Consumatori de memorie</A>
+</H1>
+
+<P>
+Fiecare consumator de memorie are idiosincraziile lui; contextul în
+care memoria este folosită impune anumite constrîngeri asupra
+implementării alocatorului.
+
+<P>
+
+<H2><A NAME="SECTION00061000000000000000">
+Programele utilizatorilor</A>
+</H2>
+
+<P>
+Cel mai comun consumator de memorie sunt programele utilizatorilor.
+Acestea pun şi cele mai puţine restricţii asupra alocatorului; cele
+mai multe programe ale utilizatorilor nu au constrîngeri severe de
+viteză sau spaţiu, şi ca atare pot implementa scheme foarte
+complicate, cu cost mediu mai ridicat dar care au alte trăsături
+dezirabile.
+
+<P>
+
+<H3><A NAME="SECTION00061100000000000000">
+Nişte recomandări</A>
+</H3>
+
+<P>
+Înainte de a trece la celelalte tipuri de alocatoare, permiteţi-mi să
+fac nişte recomandări de stil în ceea ce priveşte alocarea memoriei.
+Recomandările sunt inspirate de indicaţiile proiectului GNU, care
+produce software de foarte bună calitate (despre proiectul GNU am
+scris pe larg într-un <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#open">articol</a>
+din PC Report consacrat fenomenului Free Software).
+
+<P>
+
+<UL>
+<LI>Verificaţi întotdeauna rezultatul întors de funcţiile gen
+<TT>malloc</TT>.  O eroare tipică este de a nu compara rezultatul cu 0.
+Cel mai recomandabil este să folosiţi o funcţie-``înveliş'' (<EM>wrapper</EM>); numele tradiţional al unui wrapper pentru <TT>malloc</TT>
+este <TT>xmalloc</TT>, de la ``checked malloc'':
+
+<P>
+<PRE>
+/* xmalloc este un wrapper pentru malloc care verifica
+   rezultatele si opreste executia programului in caz
+   de terminare a memoriei disponibile */
+
+void * xmalloc(size_t size)
+{
+        void * r = malloc(size);
+        if (!r) {
+                fprintf(stderr, "Memoria virtuala este consumata\n");
+                exit(1);
+        }
+        return r;
+}
+</PRE>
+
+<P>
+</LI>
+<LI>Nu scrieţi niciodată într-un buffer de o anumită mărime
+lucruri care nu încap.  Anumite funcţii de bibliotecă, cum ar fi
+<TT>fgets</TT> citesc de la un periferic un şir de caractere într-un
+buffer.  Ori, nu există nici o limită pentru lungimea şirului
+tastat de utilizator; oricît de mare ar fi buffer-ul, utilizatorul
+poate tasta un şir mai lung.  Majoritatea bug-urilor faimoase din
+Unix sunt de acest tip; celebrul ``Internet Worm'' din 1988, care a
+pus în genunchi cîteva zeci de mii de calculatoare, se baza în
+propagarea sa pe un astfel de bug în programul <TT>finger</TT>, care
+este folosit pentru a identifica utilizatori pe maşini aflate la
+distanţă.  Folosiţi întotdeauna funcţii care limitează numărul
+de caractere citite, cum ar fi <TT>fgets</TT>.
+
+<P>
+</LI>
+<LI>Nu folosiţi niciodată alocarea statică.  Corectitudinea
+programelor este mai importantă decît viteza lor de execuţie.  De
+fiecare dată cînd vreţi să scrieţi ceva într-un buffer
+ne-încăpător, realocaţi buffer-ul făcîndu-l mai mare.
+
+<P>
+Funcţia de bibliotecă <TT>realloc</TT> face chiar acest lucru: are ca
+argument un pointer şi o nouă dimensiune.  Rezultatul este un nou
+buffer, care are dimensiunea indicată, şi care conţine tot vechiul
+conţinut al buffer-ului iniţial.
+
+<P>
+</LI>
+<LI>Dacă folosiţi <TT>realloc</TT> pentru a creşte în mod repetat
+un buffer, trebuie să aveţi grijă să nu plătiţi un cost
+amortizat prea mare pentru asta.  Costul unui <TT>realloc</TT> este
+proporţional cu mărimea buffer-ului realocat, pentru că fiecare
+octet trebuie copiat.  Din cauza asta se recomandă ca, de fiecare
+dată cînd realocaţi un buffer, să-i dublaţi lungimea, cum arată
+şi exemplul următor<A NAME="tex2html6"
+  HREF="#foot221"><SUP>4</SUP></A>
+<P>
+<PRE>
+/* Folosirea lui `realloc' pentru a mari un buffer pe masura
+   datelor pe care trebuie sa le contina */
+
+#include &lt;stdlib.h&gt;
+
+#define DUBLEAZA 1
+
+char *buf = 0;  /* bufferul */
+int marime = 0; /* marimea curenta */
+int ramas = 0;  /* spatiu liber ramas in buffer */
+FILE *f = blabla; /* un fisier oarecare */
+
+while (1) {
+        int c = fgetc(f);   /* citim date dintr-un fisier intr-un buffer */
+        if (c == EOF) break;
+        if (!ramas) {       /* buffer-ul e plin: trebuie realocat */
+
+                /* avem doua variante de realocare */
+#if DUBLEAZA
+                int marimenoua = marime ? (marime * 2) : 1;
+#else
+                int marimenoua = marime + 1;
+#endif
+
+                buf = realloc(buf, marimenoua);
+                if (!buf) exit(1);   /* eroare fatala */
+                ramas = marimenoua - marime;
+                marime = marimenoua;
+        }
+        buf[marime - ramas] = c;
+        ramas--;
+}
+</PRE>
+
+<P>
+O simplă analiză arată că dacă dublăm lungimea buffer-ului,
+costul plătit pentru a stoca k caractere este 1 + 2 + 4 + ...+
+2<sup>lk</sup>, unde <!-- MATH
+ $lk = \lfloor \log_2 k \rfloor$
+ -->
+<IMG
+ WIDTH="102" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img4.png"
+ ALT="$lk = \lfloor \log_2 k \rfloor$">.  (Plătim un cost de 1
+pentru realloc(2), 2 pentru realloc(4), etc.).  Asta este o serie
+geometrică, a cărei sumă este &lt; 2k.
+
+<P>
+Pe de altă parte, dacă mărim buffer-ul cu o unitate la fiecare pas,
+plătim 1+2+3+...+(k-1) = k<sup>2</sup>.
+
+<P>
+</LI>
+</UL>
+
+<P>
+
+<H2><A NAME="SECTION00062000000000000000">
+Nucleul: alocarea de memorie</A>
+</H2>
+
+<P>
+Un alt alocator se află în nucleul sistemului de operare.  Aşa cum
+am spus deja, acest alocator gestionează atît spaţiul folosit în
+structurile de date interne nucleului, cît şi spaţiu necesar
+proceselor care se execută.  Interacţiunea dintre variatele
+alocatoare este înfăţişată în figura&nbsp;<A HREF="mem-html.html#interactiune">2</A>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="interactiune"></A><A NAME="222"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 2:</STRONG>
+Interacţiunea dintre feluritele
+alocatoare de memorie din nucleu.  Alocatorul de pagini gestionează
+întreaga memorie fizică a maşinii.  El generează spaţiu atît
+pentru procese (unitatea de bază fiind pagina), cît şi memorie
+pentru alocatorul intern al nucleului.  Săgeţile indică schimb de
+spaţiu de memorie între componente.</CAPTION>
+<TR><TD><IMG
+ WIDTH="576" HEIGHT="404" BORDER="0"
+ SRC="img7.png"
+ ALT="\begin{figure}\begin{verbatim}Memoria RAM
+^
+\vert
+___v_____________
+\ver...
+...uffere pentru retea, inoduri, tabela de procese, etc.)\end{verbatim}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Subiectul acestui articol este cutiuţa etichetată ``alocatorul
+intern al nucleului'', deşi multe din principiile indicate se aplică
+şi celorlalte entităţi.  Aceste alocatoare sunt mult mai
+constrînse decît alocatoarele din spaţiul utilizatorului; în
+particular trebuie să aibă timpi de răspuns foarte mici, pentru că
+pot fi chemate de părţi critice din nucleu.
+
+<P>
+Cele trei alocatoare interacţionează permanent: cînd nucleul nu mai
+are destule zone pentru propriile lui date cere noi pagini de la
+alocatorul de pagini.  Cînd procesele utilizatorilor mor, paginile
+lor sunt preluate de alocatorul de pagini.  Cînd alocatorul de pagini
+are puţine resurse disponibile, el poate cere alocatorului intern să
+returneze din memoria pe care nu o foloseşte în acel moment, etc..
+
+<P>
+
+<H2><A NAME="SECTION00063000000000000000">
+Nucleul: alocarea de spaţiu pe disc</A>
+</H2>
+
+<P>
+Un ultim mare subsistem al nucleului care se ocupă de alocarea
+spaţiului este sistemul care alocă spaţiu pe disc, atît pentru
+fişiere, cît şi pentru memoria virtuală (memoria proceselor care
+sunt oprite din execuţie este uneori salvată pe disc pentru a
+permite executarea altora; această tehnologie se numeşte ``memorie
+virtuală'').
+
+<P>
+Alocatoarele de spaţiu pe disc au alte atribute foarte specifice; de
+pildă alocatoarele care trebuie să parcurgă o listă întreagă
+pentru a găsi spaţiul necesar sunt complet nepractice, pentru că
+accesele la disc durează extrem de mult (milisecunde, ceea ce
+înseamnă milioane de cicli de procesor).  Despre funcţionarea
+acestor alocatoare am vorbit pe scurt în alte articole din PC Report,
+consacrate sistemelor de fişiere.
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Un alocator dinamic foarte simplu</A>
+</H1>
+
+<P>
+Voi ilustra aici în scop pur didactic implementarea unui alocator
+extrem de ineficient şi risipitor, dar totodată complet.  Aceasta
+este schema de bază de funcţionare a tuturor alocatoarelor din
+nucleu; variaţiunile constau în îmbunătăţiri.  Acest alocator
+implementează funcţia <TT>free()</TT> fără a face nimic!  Memoria
+eliberată este pur şi simplu pierdută.  Alocatorul extrage zonele
+de memorie dintr-o memorie mare alocată static iniţial, care are 16
+megaocteţi.  Puteţi folosi acest alocator în programele
+dumneavoastră! 
+
+<P>
+<PRE>
+/* implementarea unui alocator dinamic foarte simplu; functia
+   free() nu face absolut nimic. */
+
+typedef unsigned int size_t;
+
+#define MARIME_MEMORIE 16 * 1024 * 1024
+char memorie[MARIME_MEMORIE];
+
+int memorie_consumata = 0;
+
+void * malloc(size_t marime)
+{
+        if (MARIME_MEMORIE &lt; marime + memorie_consumata)
+                return 0;
+        memorie_consumata += marime;
+        return (void*) &amp;memorie[memorie_consumata - marime];
+}
+
+void free(void *)
+{}
+</PRE>
+
+<P>
+Acest alocator este extrem de rapid; probabil că nici nu poate fi
+scris un alocator mai rapid.  Preţul plătit este o enormă risipă
+de memorie: tot ce este dealocat se pierde complet.
+
+<P>
+Oricum, aceste funcţii ilustrează cărămizile de bază cu care un
+alocator din nucleu trebuie să opereze.  Alocatorul de pagini
+manipulează memoria fizică a maşinii ca un vector enorm de octeţi,
+din care extrage porţiuni aşa cum facem noi cu vectorul numit <TT>memorie</TT>.
+
+<P>
+
+<H1><A NAME="SECTION00080000000000000000">
+Alocatorul cu hartă de resurse</A>
+</H1>
+
+<P>
+Acesta este probabil cel mai simplu tip de alocator care
+implementează şi funcţia <TT>free</TT>.  Acest alocator menţine un
+vector de structuri care descriu fiecare bloc liber.
+Figura&nbsp;<A HREF="mem-html.html#harta">3</A> arată o posibilă reprezentare a situaţiei la un
+moment dat:
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="harta"></A><A NAME="236"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 3:</STRONG>
+Alocatorul cu hartă de resurse are o
+``hartă'' care indică fiecare regiune liberă şi ocupată.</CAPTION>
+<TR><TD><IMG
+ WIDTH="384" HEIGHT="158" BORDER="0"
+ SRC="img8.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=8.5cm\epsffile{harta.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Avem o mică problemă, pentru că alocatorul are nevoie el însuşi
+de spaţiu pentru a reprezenta tabela cu resurse.  Putem face însă
+nişte mici trucuri pentru a compacta reprezentarea:
+
+<P>
+
+<UL>
+<LI>Cînd <TT>malloc</TT> găseşte un bloc, foloseşte primii&nbsp;4
+octeţi<A NAME="tex2html9"
+  HREF="#foot175"><SUP>5</SUP></A> pentru a memora
+lungimea sa şi returnează adresa următorului octet.  Această
+lungime este folosită de <TT>free</TT> pentru a şti cît de mult
+trebuie dealocat.
+
+<P>
+<PRE>
+        Forma unui bloc de memorie ocupat: fiecare bloc este
+        precedat de 4 octe'ti care con'tin lungimea blocului.
+
+        --------------------------------------------
+        |  lungimea  |                             |
+        --------------------------------------------
+                      ^ 
+                      \ adresa returnat'a de malloc
+</PRE>
+
+<P>
+</LI>
+<LI>Putem memora informaţia despre blocurile libere în chiar
+spaţiul ocupat de blocurile libere!  Astfel, putem ţine blocurile
+libere într-o listă înlănţuită, ca în figura&nbsp;<A HREF="mem-html.html#lista">4</A>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="lista"></A><A NAME="242"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 4:</STRONG>
+Putem implementa alocatorul cu hartă de memorie
+menţinînd în fiecare bloc liber informaţie despre lungimea proprie
+(L) şi adresa următorului bloc liber (N).</CAPTION>
+<TR><TD><IMG
+ WIDTH="361" HEIGHT="140" BORDER="0"
+ SRC="img9.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=8cm\epsffile{lista.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Cînd alocatorul vrea să găsească un bloc liber pleacă de la
+adresa primului bloc liber şi parcurge lista de blocuri libere pînă
+găseşte unul de dimensiune corespunzătoare.
+
+<P>
+</LI>
+</UL>
+
+<P>
+Acest alocator este relativ simplu, dar foarte ineficient.  Din cauza
+fragmentării complexitatea operaţiilor este mare (după o vreme
+lista de blocuri libere devine populată cu o sumedenie de blocuri
+mici, a căror traversare este costisitoare şi inutilă).  Schema
+este de asemenea uşor risipitoare: 4 octeţi sunt memoraţi în plus
+pentru fiecare bloc ocupat, iar faptul că un bloc liber trebuie să
+conţină două valori impune o lungime minimă de 8 octeţi pentru un
+bloc.
+
+<P>
+Eliberarea unui bloc îl inserează la începutul listei de blocuri
+libere.  Dacă vrem să reducem fragmentarea, la eliberare putem să
+comasăm un bloc cu vecinul următor, în caz că acesta este liber
+şi el.  Dacă vrem să putem comasa şi cu vecinul anterior, atunci
+în fiecare bloc memorăm şi în ultimii 4 octeţi lungimea sa; în
+acest fel, atunci cînd eliberăm un bloc, putem şti exact unde
+începe cel de dinainte.  În orice caz, eliberarea cere un număr
+constant de instrucţiuni (care nu depinde de numărul de zone deja
+alocate).
+
+<P>
+
+<H1><A NAME="SECTION00090000000000000000">
+Alocatorul cu puteri ale lui 2</A>
+</H1>
+
+<P>
+Problema alocatorului de mai sus constă în faptul că trebuie să
+<EM>caute</EM> un bloc de dimensiune potrivită.  Pentru a remedia acest
+lucru putem folosi o altă reprezentare: păstrăm o serie de liste de
+blocuri, toate blocurile de pe fiecare listă avînd o anumită
+dimensiune.  Atunci cînd vrem un anumit bloc, returnăm un bloc de
+dimensiunea imediat superioară.  Cele mai folosite dimensiuni sunt
+puteri ale lui 2, ca în figura&nbsp;<A HREF="mem-html.html#put2">5</A>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="put2"></A><A NAME="248"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 5:</STRONG>
+Structurile de date ale alocatorului cu puteri
+ale lui 2: cîte o listă de blocuri libere pentru fiecare dimensiune
+de bloc.  Fiecare bloc ocupat are informaţii despre propria sa
+lungime.</CAPTION>
+<TR><TD><IMG
+ WIDTH="429" HEIGHT="135" BORDER="0"
+ SRC="img10.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=9.5cm\epsffile{put2.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Acest alocator suferă de fragmentare internă, pentru că alocă
+întotdeauna mai mult decît i se cere.
+
+<P>
+Alocarea şi dealocarea cer timp constant pe operaţiune (calculul
+listei plus extragerea primului bloc din listă).  Putem reprezenta
+listele de blocuri libere exact ca în schema cu harta de resurse;
+comasarea este practic imposibil a (am putea comasa numai vecini de
+dimensiuni egale, ca să obţinem rezultate de mărime tot puteri ale
+lui doi).  Pentru toate blocurile mai mici de o anumită limită şi
+mai mari de o alta, putem avea nişte liste separate, în care facem
+căutare exhaustivă.  Dacă vrem să avem liste cu toate dimensiunile
+posibile de blocuri sunt suficiente 32 de liste, ceea ce e o valoare
+rezonabilă.
+
+<P>
+În momentul în care o listă dorită este complet depopulată, putem
+scoate un bloc mai mare de pe lista imediat superioară, pe care îl
+putem sparge în două bucăţi mai mici.
+
+<P>
+În interiorul nucleului există multe structuri de date care au ca
+dimensiuni exact puteri ale lui 2; pentru astfel de cereri se
+iroseşte o cantitate enormă de memorie, pentru că fiecare bloc
+alocat trebuie să conţină şi cei 4 octeţi suplimentari.  Astfel,
+dacă vrem să alocam 256 de octeţi, trebuie de fapt 260, care
+înseamnă ca folosim un bloc de 512; risipa este de aproape 100%!
+
+<P>
+Alte dezavantaje ale metodei: în general blocurile mici nu se pot
+grupa laolaltă pentru a forma blocuri mari, şi sistemul de paginare
+nu poate obţine pagini nefolosite înapoi în caz de nevoie.
+
+<P>
+
+<H1><A NAME="SECTION000100000000000000000">
+Alocatorul Karels-McKusick</A>
+</H1>
+
+<P>
+În 1988 Kirk McKusick şi Michael Karels au construit o variantă
+îmbunătăţită a alocatorului cu puteri ale lui 2, cere este
+folosită acum în 4.4BSD Unix şi Digital Unix.  Metoda lor elimină
+risipa pentru cazul blocurilor care au dimensiuni exact puteri ale
+lui&nbsp;2.
+
+<P>
+Listele de blocuri libere sunt înlănţuite exact ca în alocatorul
+cu puteri ale lui 2.  Diferenţa principală constă în modul în
+care blocurile ocupate îşi reprezintă lungimea; trucul folosit este
+foarte ingenios: alocatorul menţine un vector mare de numere, cîte
+unul pentru fiecare pagină.  Elementul 5 din vector reprezintă
+mărimea blocurilor din pagina 5.  Figura&nbsp;<A HREF="mem-html.html#karels">6</A> arată un
+exemplu de structuri de date ale alocatorului.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="karels"></A><A NAME="254"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 6:</STRONG>
+Vectorul care reprezintă mărimea blocurilor
+pentru fiecare pagină în alocatorul Karels-McKusick.  Pagina 0 este
+divizată în blocuri de cîte 32 de octeţi, pagina 1 în blocuri de
+cîte 512, etc.  Paginile încă nefolosite sunt înlănţuite într-o
+lista.</CAPTION>
+<TR><TD><IMG
+ WIDTH="316" HEIGHT="149" BORDER="0"
+ SRC="img11.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=7cm\epsffile{karels.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+O altă optimizare făcută de alocatorul acesta este modul în care
+se calculează rotunjirea în sus a unei valori la cea mai mică
+putere a lui 2; calculul este făcut cu un macro care conţine o
+expresie de genul:
+
+<P>
+<PRE>
+#define LISTA(marime) \
+ (marime) &gt; 128 \
+        ? (marime) &gt; 256 ? 4 : 3 \
+        : (marime) &gt; 64 \
+                ? 2 \
+                : (marime) &gt; 32 ? 1 : 0
+</PRE>
+
+<P>
+Avantajul unei astfel de expresii în locul unei bucle este că,
+atunci cînd mărimea este cunoscută la compilare, întreaga expresie
+devine o constantă care poate fi calculată de compilator, deci codul
+executat devine mult mai rapid.
+
+<P>
+Acest alocator este mai eficient decît cel cu puteri ale lui 2, şi
+risipeşte mult mai puţină memorie, pentru că toate cererile egale
+cu o putere a lui doi sunt satisfăcute cu un buffer de mărime
+potrivită.  Celelalte dezavantaje rămîn însă prezente.
+
+<P>
+
+<H1><A NAME="SECTION000110000000000000000">
+Alocatorul ``slab''</A>
+</H1>
+
+<P>
+O schemă mult mai sofisticată de alocare, inspirată din limbajele
+orientate pe obiecte a fost introdusă de Sun în sistemul de operare
+Solaris 2.4 şi este acum implementată şi în Linux.  ``Slab''
+înseamnă în engleză ``lespede''; acest alocator are zone de
+memorie diferite pentru obiecte diferite, pe care le putem vedea ca
+nişte mozaicuri de forme diferite; de aici şi numele.  Acest
+alocator tratează cu multă atenţie o serie de aspecte importante
+pentru performanţă care sunt complet ignorate de alte alocatoare:
+
+<P>
+
+<UL>
+<LI>Alocatorul încearcă atunci cînd caută noi zone să nu
+atingă prea multe locaţii de memorie, pentru a nu polua cache-ul
+microprocesorului cu date care nu sunt utile; se spune că alocatorul
+are o ``urmă'' mică (<EM>small footprint</EM>);
+
+<P>
+</LI>
+<LI>Alocatorul încearcă să aloce obiectele în memorie în aşa
+fel încît două obiecte diferite să nu pice în aceeaşi linie din
+cache-ul de date; asta maximizează utilizarea cache-ului cînd
+obiectele sunt folosite simultan.  De exemplu obiectul care
+reprezintă în nucleu un fişier are cîteva cîmpuri care sunt
+foarte des folosite, aflate să zicem la începutul structurii, şi
+alte cîteva cîmpuri care sunt extrem de rar folosite.  Să
+presupunem că obiectul ``fişier'' are 256 de octeţi; în acest caz
+toate cîmpurile des folosite din toate fişierele se vor afla la
+adrese multiplu de 256.  Din cauza asta ele se vor lupta pentru un set
+restrîns de linii din cache, în vreme ce celelalte linii vor fi
+prost utilizate.  Alocatorul slab va încerca să aloce fiecare
+obiect la o adresă care nu e multiplu de aceeaşi valoare.
+
+<P>
+</LI>
+<LI>Alocatorul încearcă să reducă numărul de operaţii de
+iniţializare asupra noilor obiecte alocate.  De exemplu multe obiecte
+din nucleu care pot fi folosite de mai multe procese au un cîmp care
+indică numărul de utilizatori (de pildă un fişier memorează
+numărul de procese care au deschis fişierul).  Cînd acest număr
+ajunge 0, înseamnă că obiectul nu mai este utilizat, şi el poate
+fi dealocat.  Asta înseamnă că avem certitudinea că orice fişier
+dealocat va avea valoarea 0 în acel cîmp.  Atunci cînd alocăm un
+nou fişier, dacă folosim vechea zonă de memorie, ştim deci că nu
+mai trebuie să iniţializăm acest cîmp, pentru că are deja
+valoarea corectă!  Practic nucleul menţine un cache cu obiecte de
+curînd dealocate, pe care le foloseşte atunci cînd i se cer noi
+alocări.
+</LI>
+</UL>
+
+<P>
+Alocatorul slab constă de fapt într-o rutină centrală (numită
+<TT>kmem_cache_create</TT>) care crează alocatoare pentru fiecare
+obiect.  Rutina asta primeşte ca parametri numele obiectului,
+mărimea unui obiect, constrîngerile de aliniere (de ex. toate
+obiectele trebuie să fie la o adresă multiplu de 16) şi pointeri
+spre o funcţie constructor şi o funcţie destructor.
+
+<P>
+Iată un exemplu de utilizare:
+
+<P>
+<PRE>
+alocator_de_fisiere = kmem_cache_create("fisier", sizeof(struct fisier),
+                                        8, constructor_fisier,
+                                        destructor_fisier);
+
+alocator_de_inoduri = kmem_cache_create("inod", sizeof(struct inod),
+                                        4, constructor_inod,
+                                        destructor_inod);
+
+struct fisier * fs = kmem_cache_alloc(alocator_de_fisiere, FLAGS);
+struct inod * in = kmem_cache_alloc(alocator_de_inoduri, FLAGS);
+</PRE>
+
+<P>
+Funcţia <TT>kmem_cache_create</TT> crează deci alocatoare pentru
+felurite obiecte.  Fiecare alocator este apoi folosit pentru a
+construi obiecte de acel tip.
+
+<P>
+Fiecare alocator are propria lui zonă de memorie, în care menţine
+numai obiecte de acel tip; va exista astfel o zonă de pagini în care
+se alocă numai fişiere, o zonă în care se alocă numai inoduri,
+etc.  În acest fel toate obiectele dintr-o zonă au aceeaşi
+dimensiune!
+
+<P>
+Fiecare alocator menţine de asemenea o listă cu obiectele care au
+fost de curînd dealocate, şi le refoloseşte atunci cînd i se cer
+noi obiecte.  Pentru că obiectele au fost dealocate, ele nu mai
+trebuie sa fie iniţializate din nou.
+
+<P>
+Atunci cînd un alocator epuizează toată memoria pe care o are la
+dispoziţie, el cere de la alocatorul de pagini o nouă pagină pe care
+o umple cu obiecte noi.  Pentru că aceste obiecte nu au fost
+niciodată iniţializate, alocatorul cheamă funcţia constructor care
+a fost indicată pentru fiecare nou obiect.  Observaţi că acest
+constructor este chemat numai prima oară cînd pagina este
+obţinută; după ce un obiect a fost dealocat constructorul nu mai
+este chemat din nou.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="slab"></A><A NAME="260"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 7:</STRONG>
+Alocatorul ``slab''.  Fiecare obiect are propriul
+lui alocator, care menţine în pagini obiectele alocate şi libere.
+În fiecare pagină primul obiect alocat începe la altă adresă,
+pentru a încărca uniform liniile din cache-ul microprocesorului.
+Fiecare pagină mai posedă anumite structuri de date folosite la
+întreţinere (cum ar fi o listă dublu înlănţuită a tuturor
+paginilor pentru un anumit obiect).</CAPTION>
+<TR><TD><IMG
+ WIDTH="497" HEIGHT="318" BORDER="0"
+ SRC="img12.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=11cm\epsffile{slab.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Fiecare alocator foloseşte propriile lui pagini într-un mod similar
+cu alocatorul cu puteri ale lui doi.  La sfîrşitul fiecărei pagini
+alocatorul rezervă o zonă pentru o structură de date care descrie
+ocupaţia acelei pagini.  Primul obiect în pagină este plasat la o
+distanţă aleatoare de marginea pagini; acest plasament are efectul
+de a pune obiecte din pagini diferite la adrese diferite în cache,
+exact cum am indicat mai sus.
+
+<P>
+Alocatorul slab poate returna sistemului de paginare paginile în care
+toate obiectele sunt nefolosite.  Alocatorul are o ``urmă'' mică,
+pentru că majoritatea cererilor accesează o singură pagină.  Acest
+tip de alocator risipeşte ceva resurse datorită modului de plasare
+în pagină şi pentru că are o zonă diferită pentru fiecare tip de
+obiect.  Performanţa lui este însă excelentă, şi rămîne unul
+din cele mai puternice alocatoare implementate.
+
+<P>
+
+<H1><A NAME="SECTION000120000000000000000">
+Concluzii</A>
+</H1>
+
+<P>
+Alocarea memoriei este un subiect foarte generos, care suscită în
+continuare interes cercetătorilor.  Gestiunea memoriei este un din
+funcţiile principale ale unui sistem de operare.  Nucleul unui sistem
+de operare gestionează întreaga memorie fizică a unui calculator;
+el oferă memorie atît sieşi (nucleului), pentru funcţionarea sa,
+cît şi proceselor executate de utilizatori.  Procesele
+utilizatorilor gestionează la rîndul lor bucăţelele primite de la
+nucleu.
+
+<P>
+Dacă subiectul vă interesează mai aveţi multe de aflat în
+domeniu.  Dacă nu, sper să-i alocaţi măcar 2-3 neuroni în memoria
+dumneavoastră.  Alegeţi un algoritm în acest scop.
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot67">... tip</A><A NAME="foot67"
+ HREF="mem-html.html#tex2html1"><SUP>1</SUP></A>
+<DD>Cu toate
+acestea, sistemele Mach şi Digital Unix (fost OSF/1), care este bazat
+pe Mach, au o formă primitivă de colector chiar în interiorul
+nucleului.
+
+<DT><A NAME="foot85">... sistem</A><A NAME="foot85"
+ HREF="mem-html.html#tex2html2"><SUP>2</SUP></A>
+<DD>Apelurile de
+sistem sunt funcţii puse la dispoziţia programelor de către nucleul
+sistemului de operare.
+
+<DT><A NAME="foot128">... simultan</A><A NAME="foot128"
+HREF="mem-html.html#tex2html5"><SUP>3</SUP></A> <DD>Explicaţii mai
+ample despre conceptul de regiune critică am dat într-o serie de
+articole (<a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#nucleu">(1)</a>,
+<a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#linux">(2)</a>,
+mai vechi din PC Report despre sistemele de operare; copiile
+articolelor sunt disponibile din pagina mea de web.
+
+<DT><A NAME="foot221">... ator</A><A NAME="foot221"
+ HREF="mem-html.html#tex2html6"><SUP>4</SUP></A>
+<DD>Anumite implementări mai vechi de C nu
+vor executa corect acest program, pentru că ştiu ce să facă atunci
+cînd funcţia <TT>realloc</TT> primeşte un argument 0, prima oară
+cînd e chemată.  Conform standardului C însă, acest program este
+corect.
+
+<DT><A NAME="foot175">... ti</A><A NAME="foot175"
+ HREF="mem-html.html#tex2html9"><SUP>5</SUP></A>
+<DD>Valoarea 4 este plauzibilă pentru maşini pe 32 de
+biţi; lungimea ar putea avea nevoie de mai mulţi biţi pe maşini
+care suportă mai mult de 4Go de spaţiu de adrese.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

@@ -1,0 +1,1462 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Anatomia unui apel de sistem în Linux</TITLE>
+<META NAME="description" CONTENT="Anatomia unui apel de sistem în Linux">
+<META NAME="keywords" CONTENT="linux-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Anatomia unui apel de sistem în Linux</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- <TT>mihaib+@cs.cmu.edu</TT> 
+<BR><TT>http://www.cs.cmu.edu/~mihaib</TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>15 decembrie 1997</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>Execuţia unui apel de sistem urmărită pas cu pas
+în sistemul de operare Linux;
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>Noţiuni elementare despre sisteme de
+operare, limbajul C foarte bine, noţiuni despre setul de
+instrucţiuni al microprocesoarelor Intel 80x86;
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>apel de sistem, trap, monitor, cod re-entrant,
+nucleu.
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html25"
+  HREF="linux-html.html">Nucleul sistemului de operare</A>
+<UL>
+<LI><A NAME="tex2html26"
+  HREF="#SECTION00021000000000000000">Reentranţa</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html27"
+  HREF="#SECTION00030000000000000000">Linux</A>
+<UL>
+<LI><A NAME="tex2html28"
+  HREF="#SECTION00031000000000000000">Arborele de directoare al sursei</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html29"
+  HREF="#SECTION00040000000000000000">Un apel de sistem: <TT>getpid(2)</TT></A>
+<UL>
+<LI><A NAME="tex2html30"
+  HREF="#SECTION00041000000000000000">Apelul funcţiei de bibliotecă</A>
+<LI><A NAME="tex2html31"
+  HREF="#SECTION00042000000000000000">Întreruperea</A>
+<LI><A NAME="tex2html32"
+  HREF="#SECTION00043000000000000000">Poarta de intrare în nucleu</A>
+<LI><A NAME="tex2html33"
+  HREF="#SECTION00044000000000000000">Tabela de dispecerizare</A>
+<LI><A NAME="tex2html34"
+  HREF="#SECTION00045000000000000000">Funcţia <TT>sys_getpid()</TT></A>
+<LI><A NAME="tex2html35"
+  HREF="#SECTION00046000000000000000">Întoarcerea</A>
+<LI><A NAME="tex2html36"
+  HREF="#SECTION00047000000000000000">Livrarea semnalelor</A>
+<LI><A NAME="tex2html37"
+  HREF="#SECTION00048000000000000000">Sfîrşitul întreruperii</A>
+<LI><A NAME="tex2html38"
+  HREF="#SECTION00049000000000000000">Terminarea funcţiei de bibliotecă</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html39"
+  HREF="#SECTION00050000000000000000">Rezumat</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+Acest articol este un ``studiu de caz'' (case study) în sisteme de
+operare.  Vom urmări (aproape) pas cu pas operaţiile executate de
+microprocesor pentru execuţia unui foarte simplu apel de sistem;
+cobaiul experimentului nostru (înafară de cititor) este sistemul de
+operare Linux.  Citirea codului unui sistem de operare ``adevărat'' 
+este una dintre cele mai bune metode de a înţelege cum
+funcţionează măruntaiele acestuia.  În definitiv ce poate fi mai
+concret de atîta?
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Nucleul sistemului de operare</A>
+</H1>
+
+<P>
+În această secţiune voi revizui pe scurt noţiunea de ``nucleu al unui
+sistem de operare'' (kernel); un tratament mai amplu al chestiunii
+poate fi găsit într-un <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#nucleu">articol</a>
+din PC Report din septembrie-octombrie 1996, a cărui copie este
+disponibilă şi din pagina de web a autorului (ca şi toate celelalte
+articole ale sale la care face referinţă).
+
+<P>
+Ce este un sistem de operare?  Un set de programe care tratează multe
+din funcţiile cel mai des utilizate de programele utilizatorilor
+(cum ar fi accesul la disc) şi permite simultan executarea pe un acelaşi 
+calculator a unor programe independente.  Cea mai importantă
+parte a unui sistem de operare este <I>nucleul</I> lui.  Acesta este
+practic o colecţie de funcţii (numite ``apeluri de sistem'' --
+system calls) care pot fi executate de programele utilizatorilor şi
+care îndeplinesc funcţiuni utile.  Nucleul unui sistem de operare se
+bucură de oarecare privilegii relativ la programele scrise de
+utilizatorii obişnuiţi, în sensul că anumite operaţii sunt
+permise numai nucleului, dar nu şi programelor care beneficiază de
+serviciile sale.  De pildă utilizatorii nu pot accesa discul în nici
+un fel; ei au la dispoziţie însă un set de funcţii ale nucleului
+care fac (teoretic) tot ce utilizatorul ar avea nevoie într-un mod
+organizat: crează şi distrug fişiere, permit scrierea datelor şi
+citirea lor în fişiere, precum şi accesul controlat la aceste
+resurse.
+
+<P>
+Motivaţia pentru care accesul utilizatorului este interzis la disc
+este în principal legată de <I>integritatea</I> discului: dacă
+programe diferite ar vrea să folosească fiecare pentru sine discul
+într-un alt fel, ar putea să interfereze între ele.  Nucleul oferă un
+acces limitat la disc, încercînd să garanteze anumite proprietăţi
+de consistenţă a datelor: de pildă dacă datele scrise în fişiere
+diferite nu au nici o legătura unele cu altele, pentru că creşterea
+ambelor fişiere este supervizată atent de nucleu<A NAME="tex2html1"
+  HREF="#foot54"><SUP>1</SUP></A>.
+
+<P>
+Funcţiile nucleului mai sunt ciudate pentru că (pe lîngă faptul
+că pot folosi anumite operaţii privilegiate), ele sunt comune
+tuturor programelor care se execută pe acel calculator, fie că
+programele se execută unul după altul sau simultan.  De fapt una din
+misiunile esenţiale ale nucleului este lansarea programelor în
+execuţie (şi atunci ele capătă denumirea de ``procese'') şi
+controlarea execuţiei lor.  Toate nucleele moderne suportă execuţia
+``simultană'' a mai multor procese (ceea ce se numeşte
+``multiprogramare'').  Multiprogramarea poate fi ``reală'', în cazul
+în care calculatorul are mai multe procesoare, sau simulată prin
+ceea ce se numeşte ``time-sharing'' (punerea în comun a timpului):
+oprirea unor programe din execuţie temporar pentru a executa altele.
+Comutarea de la un proces la altul are numele englezesc de ``context
+switch'': comutarea contextului.  Raţiunea principală pentru
+time-sharing este una economică: nu toate părţile unui calculator
+funcţionează cu aceeaşi viteză, deci dacă două dintre ele
+comunică cea mai rapidă trebuie să aştepte după cea mai lentă
+(discul de pildă este de cam un milion de ori mai lent decît
+procesorul).  Cînd sunt mai multe lucruri de făcut putem executa
+unele dintre ele în timp ce altele aşteaptă după operaţiile
+lente.
+
+<P>
+
+<H2><A NAME="SECTION00021000000000000000">
+Reentranţa</A>
+</H2>
+
+<P>
+Nucleul este deci o colecţie de funcţii şi de structuri de date
+care oferă utilizatorului o sumedenie de operaţii utile.  Vom vedea
+că nucleul are o singură colecţie de structuri de date pentru
+<I>toate</I> procesele care se execută.
+
+<P>
+Aceste două atribute (multiprogramarea şi unicitatea structurilor de
+date) puse cap la cap ridică o problemă foarte dificilă: să
+presupunem că un proces A execută un apel de sistem pentru un acces
+la disc.  O astfel de operaţie este foarte costisitoare (în timp),
+aşa că nucleul roagă discul să-i trimită datele, şi pentru că
+are la dispoziţie timp pentru un milion de instrucţiuni suspendă
+procesul A şi porneşte procesul B.  Ce facem însă dacă B face el
+însuşi un apel de sistem pentru operaţii pe fişiere în timp ce
+apelul lui A nu s-a terminat?  Poate B şterge fişierul pe care A
+tocmai îl modifică sau altceva de genul ăsta.
+
+<P>
+Un astfel de cod, care se poate executa <I>simultan</I> în contextul
+mai multor procese se numeşte <I>cod re-entrant</I> (se poate intra
+din nou într-o funcţie în timp ce se execută).  Codul re-entrant
+trebuie proiectat cu foarte multă grijă dintru început şi trebuie
+scris cu mare atenţie.  Nucleele tuturor sistemelor de operare
+moderne sunt re-entrante.
+
+<P>
+Subiectul este extrem de interesant şi de subtil; toate cursurile
+universitare despre sisteme de operare îi consacră o parte relativ
+importantă.  Noi nu ne vom izbi în acest articol explicit de
+re-entranţă, deşi ea este de fapt ``ascunsă'' undeva, şi o
+grămadă de funcţii (despre care <I>nu</I> vom discuta) colaborează
+la a ascunde natura re-entrantă a nucleului.  Principala tehnică
+folosită pentru a scrie cod re-entrant este <I>regiunea critică</I>;
+aceasta este o regiune de cod care nu poate fi executată de mai multe
+procese simultan.  O soluţie la problema de mai sus a proceselor A
+şi B ar fi de a nu permite nici unui proces să facă operaţii pe
+fişiere pînă A nu şi-a terminat-o pe a lui (atunci practic toate
+operaţiile pe fişiere ar fi constituit o regiune critică).  În
+realitate nucleele încearcă să permită cît mai multă activitate
+concurentă, pentru că de obicei procesele au nevoie de resurse
+distincte.  De pildă ar fi păcat să nu-l lăsăm pe B să şteargă
+alt fişier decît cel cu care operează A doar pentru că A nu şi-a
+terminat treaba.
+
+<P>
+Dar ştiu că sunteţi anxioşi să vedeţi cod, aşa că voi
+întrerupe aici discuţia despre secţiuni critice.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Linux</A>
+</H1>
+
+<P>
+Voi baza discuţia mea pe sistemul de operare Linux.  Linux este un
+sistem de operare de tip Unix<A NAME="tex2html2"
+  HREF="#foot62"><SUP>2</SUP></A>, scrisă iniţial în 1991 de un student
+Finlandez pe nume Linus Torvalds.  El este în continuare principalul
+``scriitor'' al nucleului Linux, dar nu cantitativ, pentru că la cele
+peste 800 000 linii ale codului au contribuit deja mii de voluntari din
+întreaga lume.  Trebuie spus că sistemul este de o calitate foarte
+bună, rivalizînd cu succes cu produse ale marilor firme care costă
+bani grei.  Diferenţa este că Linux este disponibil în surse oricui
+îl doreşte; poate fi obţinut contra cost sau gratuit de pe
+Internet.  Linux evoluează foarte rapid; noi versiuni ale nucleului
+apar la fiecare cîteva zile.  Voi baza discuţia mea pe versiunea
+2.0.30.  Aceasta este ultima versiune mare stabilă a nucleului.
+
+<P>
+<FONT SIZE="-1">Dezvoltarea nucleului se face pe două linii: cele cu un număr par
+după' primul punct sunt versiuni stabile, care sunt recomandate
+celor care folosesc Linux pentru nevoile lor, iar versiunile cu un
+număr impar (2.1.x) conţin cod experimental, care nu a fost încă
+îndeajuns testat pentru a fi recomandabil celor care au nevoie de
+fiabilitate.  Versiunile impare sunt folosite de cei care dezvoltă
+sistemul, sau care au neapărată nevoie de anumite lucruri
+neimplementate încă în celelalte versiuni.
+</FONT>
+<P>
+Linux este suficient de bine scris încît poate rula pe
+calculatoare extrem de diferite; la ora aceasta el merge pe procesoare
+80x86/Pentium (de la Intel), Sparc (SUN), Power PC (IBM), Alpha
+(Digital, cumpărat de curînd de Compaq), MIPS (acum la Silicon
+Graphics), M68K (Motorola).  Noi ne vom referi la versiunea pentru
+procesoare Intel, pentru că este cea mai răspîndită.  Principiile
+care emerg sunt însă valabile pentru toate celelalte procesoare.
+
+<P>
+
+<H2><A NAME="SECTION00031000000000000000">
+Arborele de directoare al sursei</A>
+</H2>
+
+<P>
+Este instructiv să aruncăm o scurtă privire asupra arborelui de
+directoare care constituie sursele nucleului.  De obicei acesta este
+instalat în directorul <TT>/usr/src/linux</TT> pe maşinile Linux.
+În acest articol voi referi toate cărările de directoare relativ 
+la acest punct.
+
+<P>
+Subdirectoarele principale sunt:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">Director</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=283>Conţine</TD>
+<TD ALIGN="RIGHT">Linii de cod</TD>
+</TR>
+<TR><TD ALIGN="LEFT">fs</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=283>sisteme de fişiere (File System)</TD>
+<TD ALIGN="RIGHT">68 000</TD>
+</TR>
+<TR><TD ALIGN="LEFT">mm</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=283>memorie (Memory Management)</TD>
+<TD ALIGN="RIGHT">17 000</TD>
+</TR>
+<TR><TD ALIGN="LEFT">init</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=283>procesul init (nr 1, care porneşte maşina)</TD>
+<TD ALIGN="RIGHT">4000</TD>
+</TR>
+<TR><TD ALIGN="LEFT">kernel</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=283>funcţii esenţiale ale nucleului</TD>
+<TD ALIGN="RIGHT">7200</TD>
+</TR>
+<TR><TD ALIGN="LEFT">lib</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=283>utilitare diverse</TD>
+<TD ALIGN="RIGHT">1800</TD>
+</TR>
+<TR><TD ALIGN="LEFT">include</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=283>fişiere header cu declaraţii pentru compilarea
+           nucleului şi programelor utilizatorilor</TD>
+<TD ALIGN="RIGHT">78 000</TD>
+</TR>
+<TR><TD ALIGN="LEFT">net</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=283>protocoalele reţelelor de calculatoare</TD>
+<TD ALIGN="RIGHT">56 000</TD>
+</TR>
+<TR><TD ALIGN="LEFT">ipc</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=283>mecanisme de comunicare între procese (Inter Process
+           Communication)</TD>
+<TD ALIGN="RIGHT">2500</TD>
+</TR>
+<TR><TD ALIGN="LEFT">drivers</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=283>programe care mînuiesc perifericele</TD>
+<TD ALIGN="RIGHT">412 000</TD>
+</TR>
+<TR><TD ALIGN="LEFT">modules</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=283>nu conţine surse</TD>
+<TD ALIGN="RIGHT">0</TD>
+</TR>
+<TR><TD ALIGN="LEFT">arch</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=283>cod dependent de procesor</TD>
+<TD ALIGN="RIGHT">150 000<A NAME="footfnm3"
+ HREF="#fnm3"><SUP>3</SUP></A></TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+După cum vedeţi mai mult de jumătate de cod este în drivere.
+Codul driverelor este însă pentru toate plăcile posibile; un anumit
+sistem va avea compilate numai driverele pentru hardware-ul instalat.
+Mulţimea aceasta de drivere se datoreşte popularităţii enorme a
+hardware-ului de PC, pentru care tot omul fabrică cîte o nouă
+placă.
+
+<P>
+Două cuvinte şi despre unele din subdirectoarele acestor directoare:
+
+<P>
+<DL>
+<DT><STRONG>fs/*</STRONG></DT> <DD>Linux suportă o mulţime de sisteme
+de fişiere (organizări ale fişierelor pe disc).  Lista lor este
+include sistemul de fişiere din MS-DOS, din Amiga şi din OS/2,
+sistemul de fişiere de reţea (NFS, Network File System) de la Sun,
+sistemul vfat al lui Windows NT, sistemele de fişiere din Unix-ul
+original, System V (sysv) şi sistemul de fişiere din Berkeley Unix,
+UFS (numit şi Fast File System, FFS, în literatură), şi altele!.
+Intenţionez să consacru un <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#vfs">articol</a>
+special arhitecturii sistemelor de fişiere în nucleele Unix (două
+articole <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#sistem-f">(1)</a>
+<a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#2fs">(2)</a>
+înrudite despre această temă au apărut deja în PC Report), aşa că nu
+voi divaga în continuare.
+
+<P>
+</DD>
+<DT><STRONG>include/*</STRONG></DT>
+<DD>conţine headere cu declaraţiile structurilor de 
+date şi prototipurile funcţiilor publice din nucleu;
+
+<P>
+</DD>
+<DT><STRONG>/drivers/net/*</STRONG></DT>
+<DD>felurite plăci de reţea;
+
+<P>
+</DD>
+<DT><STRONG>drivers/block/*</STRONG></DT>
+<DD>toate perifericele tratate de Unix drept colecţii
+de blocuri: discuri în special;
+
+<P>
+</DD>
+<DT><STRONG>drivers/char/*</STRONG></DT>
+<DD>majoritatea tuturor celorlalte periferice;
+
+<P>
+</DD>
+<DT><STRONG>drivers/*</STRONG></DT>
+<DD>alte periferice.
+</DD>
+</DL>
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Un apel de sistem: <TT>getpid(2)</TT></A>
+</H1>
+
+<P>
+Am ales pentru vivisecţia noastră un apel
+de sistem foarte simplu; poate cel mai simplu.  Cu toate acestea
+periplul nostru pînă la el va fi destul de lung, sî, sperăm,
+instructiv.  Vom discuta despre funcţia <TT>getpid</TT>, ``GET
+Process IDentifier''.  Nucleul Unix asignează fiecărui proces în
+curs de execuţie un număr unic între 0 şi 30000 care poate fi
+folosit pentru comunicarea între procese (semnalele se trimit
+indicînd acest pid).  Pagina de manual Unix care descrie apelul de
+sistem este în secţiunea 2 a manualului (unde sunt toate celelalte
+apeluri de sistem); am indicat acest lucru în modul standard, punînd
+secţiunea între paranteze.  Manualul poate fi citit tastînd comanda
+<TT>man 2 getpid</TT>.  Pagina de manual ne spune ca <TT>getpid</TT>
+nu are argumente şi întoarce ca rezultat PID-ul procesului care face
+apelul.  Iată mai jos şi un exemplu de folosire:
+
+<P>
+<PRE>
+#include &lt;unistd.h&gt;
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+        int p = getpid();
+        printf("Pid = %d\n", p);
+}
+</PRE>
+
+<P>
+Restul acestui articol va explora un singur lucru, şi anume, cum se
+execută prima linie a programului de mai sus.
+
+<P>
+
+<H2><A NAME="SECTION00041000000000000000">
+Apelul funcţiei de bibliotecă</A>
+</H2>
+
+<P>
+În primul rînd trebuie să răspundem la întrebarea: unde este
+codul funcţiei <TT>getpid</TT>?  Cînd l-a scris şi de unde-l ia
+programul de mai sus.
+
+<P>
+Răspunsul este: codul este în biblioteca de funcţii a limbajului C
+care vine împreună cu compilatorul de C şi nucleul sistemului.
+Fiecare apel de sistem are o astfel de funcţie asociată în
+bibliotecă.  Declaraţia funcţiei este în fişierul header
+<TT>/usr/include/unistd.h</TT>.  Funcţia a fost compilată de cei
+care au scris compilatorul şi legată în biblioteca de funcţii C
+<TT>/lib/libc.a</TT>.  Corpul funcţiei a fost generat anterior din
+următoarea sursă C:
+
+<P>
+<PRE>
+#include &lt;linux/unistd.h&gt;
+
+_syscall0(int, getpid)
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION00041100000000000000">
+Un macro ciudat</A>
+</H3>
+
+<P>
+Fişierul <TT>include/linux/unistd.h</TT> conţine definiţia
+macro-ului <TT>syscall0</TT>, care este folosit pentru a genera
+funcţiile C care cheamă apeluri de sistem cu 0 argumente.  În
+acelaşi fişier există şi codul macrourilor <TT>syscall1</TT>, etc,
+care generează corpul apelurilor de system cu mai multe argumente.
+
+<P>
+Iată cum arată cel care ne interesează:
+
+<P>
+<PRE>
+#define _syscall0(type,name) \
+type name(void) \
+{ \
+long __res; \
+__asm__ volatile ("int $0x80" \
+        : "=a" (__res) \
+        : "0" (__NR_##name)); \
+if (__res &gt;= 0) \
+        return (type) __res; \
+errno = -__res; \
+return -1; \
+}
+</PRE>
+
+<P>
+Trebuie să recunoaşteţi ca nu vedeţi prea des astfel de cod C, nu?
+Codul foloseşte mai multe trăsături mai puţin cunoscute (dar
+absolut standard) ale preprocesorului de C, plus că amestecă
+asamblare cu C (ceea ce în standardul C nu există, dar Linux se
+compilează numai cu compilatorul gcc, aşa că nu contează prea tare
+ce zice standardul).
+
+<P>
+Ce e ciudat cu acest macro?
+
+<P>
+
+<UL>
+<LI>Este un macro pe mai multe linii, scris folosind caracterul
+<IMG
+ WIDTH="15" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img1.png"
+ ALT="$\backslash$"> inainte de sfîrşitul liniei pentru a indica o
+continuare pe cea următoare;
+</LI>
+<LI>Acest macro nu generează o <I>expresie</I> cînd este expandat,
+ci corpul unei funcţii!
+</LI>
+<LI>Unul din argumente (<TT>type</TT>) apare în corpul macro-ului
+într-o poziţie în care trebuie să apară un tip;
+</LI>
+<LI>Alt argument (<TT>name</TT>) apare în poziţia unde trebuie să
+apară un nume de funcţie;
+</LI>
+<LI>Se foloseşte operatorul <TT>##</TT>, care concatenează
+simbolurile de la stînga şi de la dreapta sa.
+</LI>
+</UL>
+
+<P>
+Să vedem ce iese după pre-procesare din programul de o linie de mai
+sus:
+
+<P>
+<PRE>
+#include &lt;linux/unistd.h&gt;
+
+_syscall0(int, getpid)
+</PRE>
+
+<P>
+dă naştere la (ţinînd contul că in acel header avem
+definiţia: <TT>#define __NR_getpid 20</TT>, ceea ce înseamnă
+că numărul apelului de sistem <TT>getpid</TT> este 20):
+
+<P>
+<PRE>
+int getpid(void)
+{
+        long __res;
+        __asm__ volatile ("int $0x80"
+                : "=a" (__res)
+                : "0" (20));
+        if (__res &gt;= 0)
+                return (int) __res;
+        errno = -__res;
+        return -1;
+}
+</PRE>
+
+<P>
+Asta se traduce cam aşa:
+
+<P>
+<BLOCKQUOTE>
+Definesc funcţia <TT>getpid</TT> fără argumente care dă ca
+rezultat un întreg.  Funcţia va executa întîi instrucţiunea
+<TT>int 0x80</TT>, care generează o întrerupere, avînd în
+registrul 0 numărul <TT>__NR_getpid</TT>, adică 20, iar la
+sfîrşitul executării lui <TT>int 0x80</TT> rezultatul din registrul
+A trebuie pus în variabila <TT>__res</TT> (aşa se traduce linia
+care începe cu <TT>__asm__</TT>, care este scrisă într-un idiom
+special al compilatorului gcc).
+</BLOCKQUOTE>
+<P>
+<BLOCKQUOTE>După aceea, dacă <TT>__res</TT> este pozitiv, acesta este
+rezultatul funcţiei; altfel rezultatul este -1, iar valoarea lui
+<TT>__res</TT> este pusă în variabila globală a procesului,
+<TT>errno</TT>.
+
+</BLOCKQUOTE>
+
+<P>
+Deja am învăţat un lucru interesant despre apelurile de sistem
+(dacă inspectaţi macrourile celelalte, pentru apeluri de sistem cu
+mai multe argumente, veţi observa aceeaşi comportare): nucleul va
+întoarce întotdeauna un număr pozitiv ca răspuns la un apel de
+sistem.  O valoare negativă reprezintă codul unei erori.  Funcţia
+de bibliotecă ia codul erorii şi îl pune într-o variabilă
+globală a procesului, <TT>errno</TT>.  Răspunsul unui apel de sistem
+în caz de eroare este -1.  Valorile pe care le poate lua
+<TT>errno</TT> sunt în fişierul header standard <TT>errno.h</TT>;
+studiaţi-l, căci este interesant.  Variabila aceasta mai este
+folosită de funcţii ca <TT>perror(3)</TT> sau <TT>strerror(3)</TT>
+pentru a tipări mesaje de eroare.
+
+<P>
+
+<H2><A NAME="SECTION00042000000000000000">
+Întreruperea</A>
+</H2>
+
+<P>
+Am văzut deci că pentru a invoca serviciile nucleului programele pun
+un număr care descrie serviciul cerut (<TT>getpid()</TT> în cazul
+nostru) în registrul 0 (la 386 este registrul EAX), după care
+execută o întrerupere software, cea cu numărul 80 în hexazecimal
+(128).
+
+<P>
+Ce mai e şi cu întreruperea asta?
+
+<P>
+Dacă vă reamintiţi, am spus că programele utilizatorului nu au
+dreptul să execute orice operaţii, pe cînd nucleul da.  Această
+segregare este realizată de microprocesor printr-un bit intern de
+stare, care indică dacă programul curent se execută <I>în mod
+nucleu (kernel mode)</I> (şi atunci este privilegiat), sau în <I>mod
+utilizator (user mode)</I><A NAME="tex2html3"
+  HREF="#foot123"><SUP>4</SUP></A>.
+Microprocesorul trece automat în mod nucleu atunci cînd se
+întîmplă un eveniment excepţional, cum ar fi:
+
+<P>
+
+<UL>
+<LI>Un periferic generează o întrerupere;
+</LI>
+<LI>Un program execută o instrucţiune ilegală;
+</LI>
+<LI>Un program accesează zone de memorie interzise;
+</LI>
+<LI>Un program execută o întrerupere software;
+</LI>
+<LI>O eroare gravă este detectată (ex: a căzut curentul);
+</LI>
+<LI>etc.
+</LI>
+</UL>
+
+<P>
+Trecerea în mod nucleu înseamnă nu doar o schimbare a valorii
+bitului care indică modul, ci şi <I>un salt</I> la o adresă
+dinainte stabilită.  Raţionamentul este următorul: cel care scrie
+sistemul de operare scrie pentru fiecare din cazurile de mai sus un
+program (handler) care ia acţiunile corespunzătoare pentru a remedia
+evenimentul excepţional.  Aceste programe sunt instalate apoi în
+memorie la început (în procesul de boot-are al calculatorului), iar
+apoi avem garanţia că utilizatorul nu poate face nici o stricăciune
+(intenţionată sau nu), pentru că orice acţiune excepţională va
+transfera controlul la unul dintre aceste programe scrise dinainte şi
+în care avem mare încredere.
+
+<P>
+Pentru a fi şi mai precişi: fiecare eveniment excepţional are la
+nivelul microprocesorului un număr asociat.  Instalarea handler-elor
+pentru excepţii constă în construirea unui vector de adrese de
+proceduri, care indică pentru fiecare excepţie ce procedură trebuie
+s-o trateze, cam aşa<A NAME="tex2html4"
+  HREF="#foot127"><SUP>5</SUP></A>:
+
+<P>
+<PRE>
+codul exceptiei
+  |
+  |
+  |      ---------
+  |     0|       |-------&gt;procedura pentru tratarea impartirii la 0
+  |      ---------
+  \----&gt;1|       |-------&gt;procedura pentru depanare
+         ---------
+         .........
+         ---------
+      128|       |-------&gt;procedura pentru tratarea unui apel de sistem
+         ---------
+
+         vector de
+         exceptii
+</PRE>
+
+<P>
+Vectorul de excepţii este construit imediat după pornirea
+sistemului; funcţia răspunzătoare de acest lucru este în fişierul
+<TT>arch/i386/kernel/traps.c</TT>, şi este numită
+<TT>trap_init()</TT>.  Codul esenţial arată cam aşa:
+
+<P>
+<PRE>
+void trap_init(void)
+{
+	.....
+        set_trap_gate(0,&amp;divide_error);
+        set_trap_gate(1,&amp;debug);
+        set_trap_gate(2,&amp;nmi);
+        set_system_gate(3,&amp;int3);       /* int3-5 can be called from all */
+        set_system_gate(4,&amp;overflow);
+        set_system_gate(5,&amp;bounds);
+        set_trap_gate(6,&amp;invalid_op);
+        set_trap_gate(7,&amp;device_not_available);
+        set_trap_gate(8,&amp;double_fault);
+        set_trap_gate(9,&amp;coprocessor_segment_overrun);
+        set_trap_gate(10,&amp;invalid_TSS);
+        set_trap_gate(11,&amp;segment_not_present);
+        set_trap_gate(12,&amp;stack_segment);
+        set_trap_gate(13,&amp;general_protection);
+        set_trap_gate(14,&amp;page_fault);
+        set_trap_gate(15,&amp;spurious_interrupt_bug);
+        set_trap_gate(16,&amp;coprocessor_error);
+        set_trap_gate(17,&amp;alignment_check);
+        for (i=18;i&lt;48;i++)
+                set_trap_gate(i,&amp;reserved);
+        set_system_gate(0x80,&amp;system_call);
+	.....
+}
+</PRE>
+
+<P>
+Asta e relativ simplu de ghicit ce înseamnă: excepţia nr 0, care se
+declanşează cînd se împarte la 0, va fi tratată de funcţia
+<TT>divide_error</TT>, care este undeva prin nucleu, excepţia 1 de
+funcţia <TT>debug</TT>, etc.
+
+<P>
+Cît despre codul macro-ului <TT>set_trap_gate()</TT>, îl puteţi
+găsi în fişierul <TT>include/asm-i386/system.h</TT>.  Codul este
+încîlcit pentru că procesoarele x86 nu conţin în căsuţa din
+vectorul de excepţii doar adresa unei proceduri, ci şi o mulţime de
+alte informaţii, legate de privilegiile pe care le are un program în
+timp ce execută excepţia, de tipul excepţiei (excepţie,
+întrerupere), etc.  Studiul detaliat al tabelei ne-ar îndepărta de
+la scopul nostru, şi anume de a vedea cum se execută un apel de
+sistem.  Important este de reţinut:
+
+<P>
+
+<OL>
+<LI>După executarea întreruperii software execuţia sare la o
+procedură specificată de vectorul de excepţii
+(<TT>system_call</TT> pentru exemplu nostru concret);
+</LI>
+<LI>Microprocesorul intră în mod nucleu;
+</LI>
+<LI>Microprocesorul schimbă stiva curentă la cea indicată de noul
+privilegiu.
+</LI>
+</OL>
+
+<P>
+
+<H3><A NAME="SECTION00042100000000000000">
+Stiva</A>
+</H3>
+
+<P>
+Acest ultim punct merită o clarificare.
+
+<P>
+Cum se execută procedurile?  Folosind o stivă pentru a-şi păstra
+variabilele locale; cînd o procedură o cheamă pe alta se contruieşte
+un nou <I>cadru de stivă</I> (stack frame) pentru procedura nouă, în
+care aceasta-şi ţine variabilele personale, argumentele şi alte
+lucruşoare.  (Pe îndelete despre rolul stivei am scris în PC Report
+din ianuarie 1997, în articolul ``<a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#threads">Multithreading</a>''.)
+
+<P>
+Nucleul însuşi este practic o colecţie de proceduri, care deci au
+nevoie de o stivă pentru a se putea executa.  Dar de unde s-o ia pe
+aceasta?  Nucleul nu poate folosi stiva pe care o foloseşte procesul
+în mod obişnuit, pentru că nu poate avea încredere în proces.
+Diferenţa este că dacă procesul manipulează stiva într-un mod
+eronat, nu poate face rău decît sieşi, datorită faptului că
+mecanismele de memorie virtuală împiedică un proces să acceseze
+memoria alocată altor procese.  Cu nucleul lucrurile nu mai stau
+aşa: privilegiile lui ridicate i-ar putea permite să scrie oriunde,
+ştergînd orice.
+
+<P>
+Din cauza aceasta, la procesoarele x86, o schimbare de privilegiu a
+procesorului implică <I>automat</I> o schimbare de stivă.  Cum se
+face asta?  Fiecare proces are o tabelă cu pointeri către stive,
+cîte una pentru fiecare nivel de privilegiu.  Acest lucru poate fi
+văzut în fişierul <TT>include/asm-i386/processor.h</TT>, unde cele
+4 stive, corespunzînd celor 4 nivele de privilegiu ale familiei x86,
+sunt indicate în structura numită TSS (Task Segment Selector,
+terminologie Intel):
+
+<P>
+<PRE>
+struct thread_struct {
+        unsigned short  back_link,__blh;
+        unsigned long   esp0;                 \
+        unsigned short  ss0,__ss0h;           |
+        unsigned long   esp1;                 | 3 stive
+        unsigned short  ss1,__ss1h;           |
+        unsigned long   esp2;                 |
+        unsigned short  ss2,__ss2h;           /
+        unsigned long   cr3;
+        unsigned long   eip;
+        unsigned long   eflags;
+        unsigned long   eax,ecx,edx,ebx;
+        unsigned long   esp;                  | virful stivei curente
+        unsigned long   ebp;
+        unsigned long   esi;
+        unsigned long   edi;
+        unsigned short  es, __esh;            | segmentul stivei curente
+        unsigned short  cs, __csh;
+        unsigned short  ss, __ssh;
+        unsigned short  ds, __dsh;
+        unsigned short  fs, __fsh;
+        unsigned short  gs, __gsh;
+        unsigned short  ldt, __ldth;
+        unsigned short  trace, bitmap;
+        unsigned long   io_bitmap[IO_BITMAP_SIZE+1];
+        unsigned long   tr;
+        unsigned long   cr2, trap_no, error_code;
+/* floating point info */
+        union i387_union i387;
+/* virtual 86 mode info */
+        struct vm86_struct * vm86_info;
+        unsigned long screen_bitmap;
+        unsigned long v86flags, v86mask, v86mode;
+}
+</PRE>
+
+<P>
+Cînd nucleul crează un proces îi alocă două stive: una pentru
+modul utilizator şi una pentru modul nucleu.  (Celelalte două stive
+nu sunt niciodată folosite de Linux).  Cînd microprocesorul îşi
+schimbă privilegiul îşi schimbă automat şi stiva curentă.
+
+<P>
+Stiva nucleului în general este mică (4K), pentru că nucleul este o
+bucată fixă de cod, care nu conţine apeluri recursive de funcţii,
+deci consumă relativ puţină stivă.
+
+<P>
+Deci funcţia <TT>sys_call</TT>, chemată indirect prin întrerupere,
+şi toate funcţiile chemate de ea, se vor executa pe stiva procesului
+curent care corespunde modului nucleu.
+
+<P>
+
+<H2><A NAME="SECTION00043000000000000000">
+Poarta de intrare în nucleu</A>
+</H2>
+
+<P>
+Să vedem ce se întîmplă mai departe.  Codul funcţiei
+<TT>system_call</TT> este (din păcate) scris în asamblare.  Se
+găseşte în fişierul <TT>arch/i386/kernel/entry.S</TT>, şi
+foloseşte din plin macro-uri foarte simple definite în alte părţi
+(cele mai interesante în <TT>include/asm-i386/linkage.h</TT>), (cum
+ar fi <TT>ENTRY</TT>, <TT>SYMBOL_NAME</TT>, <TT>SAVE_ALL</TT>,
+etc.).  Zic ``din păcate'', pentru că dialectul de asamblare al
+compilatorului gcc nu este acelaşi sintactic cu cel al firmei Intel,
+aşa că acelaşi program se scrie în feluri diferite folosind cele
+două limbaje.  Mă rog, nu o să ne împiedicăm noi de atîta lucru;
+să încercăm să ne facem o idee despre ce se întîmpla în codul
+următor:
+
+<P>
+<PRE>
+ENTRY(system_call)
+        pushl %eax                      # save orig_eax
+        SAVE_ALL
+#ifdef __SMP__
+        ENTER_KERNEL
+#endif
+        movl $-ENOSYS,EAX(%esp)
+        cmpl $(NR_syscalls),%eax
+        jae ret_from_sys_call
+        movl SYMBOL_NAME(sys_call_table)(,%eax,4),%eax
+        testl %eax,%eax
+        je ret_from_sys_call
+#ifdef __SMP__
+        GET_PROCESSOR_OFFSET(%edx)
+        movl SYMBOL_NAME(current_set)(,%edx),%ebx
+#else
+        movl SYMBOL_NAME(current_set),%ebx
+#endif
+        andl $~CF_MASK,EFLAGS(%esp)     # clear carry - assume no errors
+        movl %db6,%edx
+        movl %edx,dbgreg6(%ebx)  # save current hardware debugging status
+        testb $0x20,flags(%ebx)         # PF_TRACESYS
+        jne 1f
+        call *%eax
+        movl %eax,EAX(%esp)             # save the return value
+        jmp ret_from_sys_call
+</PRE>
+
+<P>
+Paşii mari sunt următorii:
+
+<P>
+
+<UL>
+<LI>Se salvează registrul AX, care conţine codul apelului de
+sistem;
+</LI>
+<LI>Se salvează toţi regiştrii (care au valorile pe care le aveau
+cînd s-a executat întreruperea 0x80);
+</LI>
+<LI>Dacă calculatorul este un calculator cu mai multe procesoare se
+execută un cod special pentru sincronizarea nucleelor de pe
+diferitele procesoare<A NAME="tex2html5"
+  HREF="#foot158"><SUP>6</SUP></A>.
+</LI>
+<LI>Numărul apelului de sistem este comparat cu numărul total de
+apeluri existente (<TT>NR_syscalls</TT>, un macro definit în
+<TT>include/asm-i386/unistd.h</TT>).
+</LI>
+<LI>Dacă numărul este înafara limitelor atunci nucleul se
+întoarce imediat la utilizator (prin salt la
+<TT>ret_from_sys_call</TT>) cu eroarea <TT>ENOSYS</TT> (``nu avem
+un astfel de apel de sistem'');
+</LI>
+<LI>Nucleul indexează cu codul apelului într-o tabelă care
+conţine adresele tuturor funcţiilor care tratează apeluri de sistem
+(tabela numită <TT>sys_call_table</TT> este discutată în
+secţiunea următoare); adresa funcţiei de tratare este pusă în
+registrul EAX;
+</LI>
+<LI>Dacă o înregistrarea din tabelă este 0, funcţia respectivă
+nu există, deci din nou ne întoarcem la utilizator cu eroare;
+</LI>
+<LI>Se fac felurite procesări legate de multiprocesoare şi
+eventuala depanare a procesului curent; le ignorăm;
+</LI>
+<LI>Instrucţiunea principală este <TT>call *%eax</TT>, adic'a
+salt la adresa din registrul EAX.  Această instrucţiune execută
+funcţia corespunzătoare apelului de sistem; rezultatul acestei
+funcţii este întors prin convenţie tot în registrul EAX.
+</LI>
+<LI>Rezultatul din registrul EAX este pus pe stivă;
+</LI>
+<LI>Se sare la eticheta <TT>ret_from_sys_call</TT>, discutată
+mai jos.
+</LI>
+</UL>
+
+<P>
+
+<H2><A NAME="SECTION00044000000000000000">
+Tabela de dispecerizare</A>
+</H2>
+
+<P>
+Am văzut că funcţia de bibliotecă a pus în registrul EAX un cod
+de apel de sistem, că întreruperea a comutat privilegiul şi stiva,
+iar apoi că în nucleu s-a indexat într-o tabelă mare cu codul din
+EAX.  Această tabelă este construită tot în fişierul
+<TT>arch/i386/kernel/entry.S</TT>, şi arată cam aşa:
+
+<P>
+<PRE>
+.data
+ENTRY(sys_call_table)
+        .long SYMBOL_NAME(sys_setup)            /* 0 */
+        .long SYMBOL_NAME(sys_exit)
+        .long SYMBOL_NAME(sys_fork)
+        .long SYMBOL_NAME(sys_read)
+        .long SYMBOL_NAME(sys_write)
+        .long SYMBOL_NAME(sys_open)             /* 5 */
+        .........................
+        .long SYMBOL_NAME(sys_getpid)           /* 20 */
+        .........................
+        .space (NR_syscalls-165)*4              /* neimplementate */
+</PRE>
+
+<P>
+După cum vedeţi în căsuţa 20 a tabelei se găseşte adresa unei
+funcţii, numită <TT>sys_getpid</TT>.  Această funcţie va fi deci
+executată atunci cînd codul apelului de sistem este 20.
+
+<P>
+
+<H2><A NAME="SECTION00045000000000000000">
+Funcţia <TT>sys_getpid()</TT></A>
+</H2>
+
+<P>
+Am ajuns în fine la funcţia din nucleu care face procesarea
+corespunzătoare.  Codul ei este în fişierul
+<TT>kernel/sched.c</TT>, şi este banal; îl reproducem în
+întregime:
+
+<P>
+<PRE>
+asmlinkage int sys_getpid(void)
+{
+        return current-&gt;pid;
+}
+</PRE>
+
+<P>
+Prin convenţie compilatorul gcc pune rezultatul unei funcţii C în
+registrul EAX; din această cauză valoarea întoarsă de această
+funcţie poate fi consumată de codul de mai sus.
+
+<P>
+Dar cine este <TT>current</TT>?  Este nimeni altul decît ``procesul''
+curent.  Cum vine asta?
+
+<P>
+
+<H3><A NAME="SECTION00045100000000000000">
+Structura Task</A>
+</H3>
+
+<P>
+Pentru a răspunde la această întrebare trebuie să aflăm ce este
+un proces pentru nucleu.  Ei bine, pentru nucleu un proces este nimic
+altceva decît o structură de date.  Putem vedea această structură
+de date în fişierul <TT>include/linux/sched.h</TT>; unul dintre
+cîmpurile ei este structura TSS de care am vorbit mai sus.  Ea arată
+cam aşa:
+
+<P>
+<PRE>
+struct task_struct {
+/* these are hardcoded - don't touch */
+        volatile long state;    /* -1 unrunnable, 0 runnable, &gt;0 stopped */
+        long counter;
+        long priority;
+        unsigned long signal;
+        unsigned long blocked;  /* bitmap of masked signals */
+        unsigned long flags;    /* per process flags, defined below */
+        int errno;
+        long debugreg[8];  /* Hardware debugging registers */
+        struct exec_domain *exec_domain;
+/* various fields */
+        struct linux_binfmt *binfmt;
+        struct task_struct *next_task, *prev_task;
+        struct task_struct *next_run,  *prev_run;
+        unsigned long saved_kernel_stack;
+        unsigned long kernel_stack_page;
+        int exit_code, exit_signal;
+        /* ??? */
+        unsigned long personality;
+        int dumpable:1;
+        int did_exec:1;
+        /* shouldn't this be pid_t? */
+        int pid;
+        int pgrp;
+        int tty_old_pgrp;
+        int session;
+        /* boolean value for session group leader */
+        int leader;
+        int     groups[NGROUPS];
+        /* 
+         * pointers to (original) parent process, youngest child, younger sibling,
+         * older sibling, respectively.  (p-&gt;father can be replaced with 
+         * p-&gt;p_pptr-&gt;pid)
+         */
+        struct task_struct *p_opptr, *p_pptr, *p_cptr, *p_ysptr, *p_osptr;
+        struct wait_queue *wait_chldexit;       /* for wait4() */
+        unsigned short uid,euid,suid,fsuid;
+        unsigned short gid,egid,sgid,fsgid;
+        unsigned long timeout, policy, rt_priority;
+        unsigned long it_real_value, it_prof_value, it_virt_value;
+        unsigned long it_real_incr, it_prof_incr, it_virt_incr;
+        struct timer_list real_timer;
+        long utime, stime, cutime, cstime, start_time;
+/* mm fault and swap info: this can arguably be seen as either
+	mm-specific or thread-specific */ 
+        unsigned long min_flt, maj_flt, nswap, cmin_flt, cmaj_flt, cnswap;
+        int swappable:1;
+        unsigned long swap_address;
+        unsigned long old_maj_flt;      /* old value of maj_flt */
+        unsigned long dec_flt;          /* page fault count of the last time */
+        unsigned long swap_cnt;         /* number of pages to swap on next pass */
+/* limits */
+        struct rlimit rlim[RLIM_NLIMITS];
+        unsigned short used_math;
+        char comm[16];
+/* file system info */
+        int link_count;
+        struct tty_struct *tty; /* NULL if no tty */
+/* ipc stuff */
+        struct sem_undo *semundo;
+        struct sem_queue *semsleeping;
+/* ldt for this task - used by Wine.  If NULL, default_ldt is used */
+        struct desc_struct *ldt;
+/* tss for this task */
+        struct thread_struct tss;
+/* filesystem information */
+        struct fs_struct *fs;
+/* open file information */
+        struct files_struct *files;
+/* memory management info */
+        struct mm_struct *mm;
+/* signal handlers */
+        struct signal_struct *sig;
+#ifdef __SMP__
+        int processor;
+        int last_processor;
+        int lock_depth;         /* Lock depth. We can context switch
+			in and out of holding a syscall kernel lock... */  
+}
+#endif
+</PRE>
+
+<P>
+Nucleul manipulează în principiu două mari clase de structuri de
+date:
+
+<P>
+
+<UL>
+<LI>Structuri de date private care aparţin unui singur proces; de
+exemplu pid-ul, prioritatea, pointeri spre fişierele deschise, etc.
+</LI>
+<LI>Structuri de date <I>globale</I> întregului sistem: fişiere,
+memorie, procesoare, etc.
+</LI>
+</UL>
+
+<P>
+Practic tot ce este per-proces este ţinut într-un array mare de
+structuri de tipul <TT>struct task_struct</TT>.  Un array de pointeri
+spre aceste structuri este declarat în fişierul
+<TT>kernel/sched.c</TT>:
+
+<P>
+<PRE>
+struct task_struct * task[NR_TASKS] = {&amp;init_task, };
+</PRE>
+
+<P>
+<TT>current</TT> este un macro definit în
+<TT>include/linux/sched.h</TT> spre un <TT>task_struct</TT>, care
+punctează spre procesul care tocmai se execută pe procesorul curent.
+Planificatorul (scheduler) are grijă ca de fiecare dată cînd
+comută de la procesul curent la un altul să schimbe valoarea acestui
+pointer.
+
+<P>
+
+<H2><A NAME="SECTION00046000000000000000">
+Întoarcerea</A>
+</H2>
+
+<P>
+Gata, am ajuns pînă în ``centrul nucleului''.  Acum trebuie să
+ieşim la suprafaţă, cu valoarea calculată.  Credeţi că nu poate
+fi decît mai simplu?  Ehe, vă înşelaţi.
+
+<P>
+Reluăm periplul din fişierul <TT>arch/i386/kernel/entry.S</TT>; acum
+trebuie să vedem cum se execută funcţia
+<TT>ret_from_sys_call</TT>, a cărei misiune este să părăsească
+modul privilegiat.  Codul este mai complicat decît ne aşteptăm
+pentru că această funcţie nu este chemată numai la sfîrşitul
+unui apel de sistem, ci şi la sfîrşitul unei întreruperi hardware.
+Problema este că întreruperile hardware pot surveni oricînd, chiar
+şi atunci cînd se execută deja un apel de sistem sau o altă
+întrerupere hardware.  Din cauza asta nucleul trebuie întîi să
+verifice dacă trebuie să se întoarcă la modul utilizator sau
+trebuie să rămînă în mod nucleu; acţiunile sunt diferite în
+cele două cazuri.
+
+<P>
+<PRE>
+        ALIGN
+        .globl ret_from_sys_call
+ret_from_sys_call:
+        cmpl $0,SYMBOL_NAME(intr_count)
+        jne 2f
+9:      movl SYMBOL_NAME(bh_mask),%eax
+        andl SYMBOL_NAME(bh_active),%eax
+        jne handle_bottom_half
+        movl EFLAGS(%esp),%eax          # check VM86 flag: CS/SS are
+        testl $(VM_MASK),%eax           # different then
+        jne 1f
+        cmpw $(KERNEL_CS),CS(%esp)      # was old code segment supervisor ?
+        je 2f
+1:      sti
+        orl $(IF_MASK),%eax             # these just try to make sure
+        andl $~NT_MASK,%eax             # the program doesn't do anything
+        movl %eax,EFLAGS(%esp)          # stupid
+        cmpl $0,SYMBOL_NAME(need_resched)
+        jne reschedule
+#ifdef __SMP__
+        GET_PROCESSOR_OFFSET(%eax)
+        movl SYMBOL_NAME(current_set)(,%eax), %eax
+#else
+        movl SYMBOL_NAME(current_set),%eax
+#endif
+        cmpl SYMBOL_NAME(task),%eax     # task[0] cannot have signals
+        je 2f
+        movl blocked(%eax),%ecx
+        movl %ecx,%ebx                  # save blocked in %ebx for signal handling
+        notl %ecx
+        andl signal(%eax),%ecx
+        jne signal_return
+2:      RESTORE_ALL
+</PRE>
+
+<P>
+Pînă la eticheta ``1:'' în programul de mai sus asta se petrece:
+bazîndu-se pe felurite numere, cum ar fi numărul de întreruperi în
+curs de tratare sau numărul de drivere active în ``partea de jos''
+(bh: bottom half), sau în funcţie de poziţia segmentului de stivă
+al apelantului se poate deduce din ce loc a fost chemat codul curent.
+Deşi este deosebit de instructiv de urmat calea în fiecare din
+aceste cazuri, noi o să pretindem încăpăţînaţi că tocmai de
+întoarcem în spaţiul utilizator.
+
+<P>
+Variabila <TT>need_reschedule</TT> este nenulă în cazul în care
+în timpul execuţiei procesului curent în nucleu s-au petrecut
+evenimente care cer întreruperea procesului curent şi comutarea la
+un altul.  Hai să zicem că nu s-a întîmplat nimic de acest gen, ca
+să vedem cum ne întoarcem în spaţiul utilizator.
+
+<P>
+Dar înainte de acest pas se petrece un alt lucru foarte important: se
+verifică dacă procesul curent are semnale de primit.
+
+<P>
+
+<H2><A NAME="SECTION00047000000000000000">
+Livrarea semnalelor</A>
+</H2>
+
+<P>
+Semnalele sunt o metodă simplistă de comunicaţie inter-proces în
+Unix.  Un semnal este un eveniment identificat printr-un nume şi
+printr-un număr asociat.  Un proces poate trimite semnale altui
+proces folosind apelul de sistem <TT>kill(2)</TT>, cu care indică
+PID-ul şi numărul semnalului.  Semnalele pot fi trimise spontan de
+nucleu în anumite circumstanţe.
+
+<P>
+Un proces poate reacţiona la un semnal în mai multe feluri, şi
+poate controla într-o oarecare măsură livrarea semnalelor folosind
+o serie de funcţii de bibliotecă şi apeluri de sistem
+(<TT>signal, sigsuspend, sigpending, sigaction</TT>, etc.).  Am văzut
+nu demult în PC Report un articol amplu consacrat semnalelor, aşa ca
+nu voi discuta despre ce fac.
+
+<P>
+Ce înseamnă că nucleul ``transmite un semnal''?  Fiecare proces are
+un array de biţi, cîte unul pentru fiecare semnal.  Cînd un proces
+primeşte un semnal nucleul nu face altceva decît să pună bitul
+corespunzător pe 1 şi să continue.  Adevărata livrare a semnalului
+se va face mai tîrziu, cînd procesul destinatar se execută.
+
+<P>
+Din timp în timp un proces verifică dacă nu i-au fost trimise
+semnale.  De obicei face asta înainte de a se bloca în aşteptarea
+unei activităţi care durează mult timp, şi întotdeauna verifică
+dacă nu are semnale în momentul cînd termină executarea unui apel
+de sistem.
+
+<P>
+Aici am ajuns şi noi cu explicaţiile; codul cu pricina este în
+fişierul <TT>arch/i386/kernel/entry.S</TT>:
+
+<P>
+<PRE>
+signal_return:
+        movl %esp,%ecx
+        pushl %ecx
+        testl $(VM_MASK),EFLAGS(%ecx)
+        jne v86_signal_return
+        pushl %ebx
+        call SYMBOL_NAME(do_signal)
+        popl %ebx
+        popl %ebx
+        RESTORE_ALL
+</PRE>
+
+<P>
+Aici nu se întîmplă mare lucru; se cheamă doar funcţia
+<TT>do_signal</TT> cu felurite argumente pe stivă.  Această
+funcţie se ocupă de tot ce trebuie, livrînd unul cîte unul toate
+semnalele acumulate între timp.  Aceste semnale ar putea avea drept
+efect omorîrea procesului curent, şi atunci funcţia
+<TT>do_signal</TT> nu se mai întoarce niciodată.
+
+<P>
+
+<H2><A NAME="SECTION00048000000000000000">
+Sfîrşitul întreruperii</A>
+</H2>
+
+<P>
+Presupunînd că <TT>do_signal()</TT> se întoarce, execuţia în mod
+nucleu se termină cu codul lui <TT>RESTORE_ALL</TT>, care extrage
+regiştrii salvaţi pe stivă atunci cînd s-a început execuţia în
+mod nucleu.  Codul este tot în fişierul
+<TT>arch/i386/kernel/entry.S</TT>.
+
+<P>
+<PRE>
+#define RESTORE_ALL \
+        cmpw $(KERNEL_CS),CS(%esp); \
+        je 1f;   \
+        GET_PROCESSOR_OFFSET(%edx) \
+        movl SYMBOL_NAME(current_set)(,%edx), %eax ; ; \
+        movl dbgreg7(%eax),%ebx; \
+        movl %ebx,%db7; \
+1:      LEAVE_KERNEL \
+        popl %ebx; \
+        popl %ecx; \
+        popl %edx; \
+        popl %esi; \
+        popl %edi; \
+        popl %ebp; \
+        popl %eax; \
+        pop %ds; \
+        pop %es; \
+        pop %fs; \
+        pop %gs; \
+        addl $4,%esp; \
+        iret
+</PRE>
+
+<P>
+Cea mai importantă instrucţiune aici este ultima, <TT>iret</TT>.
+Asta înseamnă ``Interrupt RETurn'', adică ``întoarcere din
+întrerupere''.
+
+<P>
+Această instrucţiune face exact opusul unei înteruperi, şi anume
+descreşte privilegiul, comută stivele şi se întoarce la programul
+întrerupt.
+
+<P>
+
+<H2><A NAME="SECTION00049000000000000000">
+Terminarea funcţiei de bibliotecă</A>
+</H2>
+
+<P>
+Iată cum periplul nostru prin nucleu s-a terminat.  Ne-am întors
+înapoi în corpul funcţiei de bibliotecă <TT>getpid()</TT>, avînd
+în registrul EAX valoarea PID-ului pentru procesul curent.  Funcţia
+aceasta vede dacă valoarea este negativă (nu ar avea nici un motiv
+să fie în cazul nostru), setează <TT>errno</TT> după cum am
+descris mai sus şi se întoarce la programul apelant.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Rezumat</A>
+</H1>
+
+<P>
+Am încălecat pe program counter şi am străbătut împreună un
+periplu în grotele mai superficiale ale nucleului (alte apeluri de
+sistem au coduri infinit mai complexe, cu multe regiuni critice şi cu
+probleme grele de re-entranţă).
+
+<P>
+Să revedem etapele străbătute:
+
+<P>
+
+<OL>
+<LI>Utilizatorul cheamă o funcţie de bibliotecă
+(<TT>getpid(2)</TT>);
+</LI>
+<LI>Funcţia de bibliotecă împachetează numărul apelului (20)
+într-un registru şi eventualele argumente în alţi regiştri;
+</LI>
+<LI>Funcţia de bibliotecă generează o întrerupere software
+(0x80);
+</LI>
+<LI>Automat întreruperea comută în mod nucleu, schimbă stivele
+şi sare la o procedură de intercepţie (handler);
+</LI>
+<LI>Procedura de intercepţie extrage numărul apelului şi
+indexează într-o tabelă de apeluri de sistem;
+</LI>
+<LI>Se sare la funcţia care execută cu adevărat apelul
+(<TT>sys_getpid()</TT>); folosind structurile de date ale nucleului
+funcţia calculează răspunsul;
+</LI>
+<LI>Codul de întoarcere verifică dacă sunt semnale de livrat
+procesului curent; dacă da, acestea sunt procesate înainte de
+întoarcerea în mod utilizator;
+</LI>
+<LI>Se execută o instrucţiune RETI care termină o întrerupere,
+restaurează privilegiile scăzute şi comută stivele înapoi;
+</LI>
+<LI>Funcţia de bibliotecă despachetează răspunsul şi dacă este
+necesar setează variabila <TT>errno</TT> la eroarea survenită;
+</LI>
+<LI>Funcţia de bibliotecă întoarce rezultatul primit de la
+nucleu.  Execuţia apelului de sistem s-a terminat.
+</LI>
+</OL>
+
+<P>
+Cum vi s-a părut?
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot54">... nucleu</A><A NAME="foot54"
+ HREF="linux-html.html#tex2html1"><SUP>1</SUP></A>
+<DD>Ideea
+aceasta este binecunoscută în ingineria programării sub numele de
+``tipuri de date abstracte''.  Lăsăm cititorului sarcina explorării
+similitudinii.
+
+<DT><A NAME="foot62">... Unix</A><A NAME="foot62"
+ HREF="linux-html.html#tex2html2"><SUP>2</SUP></A>
+<DD>O scurtă istorie a evoluţiei
+Unix-ului, publicată mai demult în BYTE România, puteţi obţine din
+pagina de web a autorului.
+
+<DT><A NAME="footfnm3">... 000<SUP>3</SUP></A>
+<DD>
+
+<DT><A NAME="foot123">... mode)</A><A NAME="foot123"
+ HREF="linux-html.html#tex2html3"><SUP>4</SUP></A>
+<DD>De fapt familia x86 are nu 2 ci 4
+moduri de privilegiu, dar Linux foloseşte numai 2 dintre ele.
+
+<DT><A NAME="foot127">... sa</A><A NAME="foot127"
+ HREF="linux-html.html#tex2html4"><SUP>5</SUP></A>
+<DD>Procesoarele Intel disting mai multe
+tipuri de evenimente excepţionale, clasificînd separat
+întreruperile generate de hardware, erorile de execuţie, etc.
+Diferitele tipuri funcţionează însă la fel, doar că fiecare tip
+are alt vector de excepţii.
+
+<DT><A NAME="foot158">... procesoare</A><A NAME="foot158"
+ HREF="linux-html.html#tex2html5"><SUP>6</SUP></A>
+<DD>SMP înseamnă Symmetric Multi
+Processing, şi este o tehnică în care pe un calculator cu mai multe
+procesoare fiecare procesor execută cod atît de proces utilizator
+cît şi de nucleu.  Scrierea de cod pentru multiprocesoare simetrice
+este mult mai grea decît scrierea de cod re-entrant, din motive pe
+care nu avem timp să le explorăm acum, dar asupra cărora sperăm
+să revenim altădată.  Oricum, Linux aici ``trişează'' un pic,
+nepremiţînd unui procesor să execute cod nucleu dacă un alt
+procesor execută deja cod nucleu pentru un alt proces.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

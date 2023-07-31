@@ -1,0 +1,1451 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Tipuri de date</TITLE>
+<META NAME="description" CONTENT="Tipuri de date">
+<META NAME="keywords" CONTENT="tipuri-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<H1 ALIGN="CENTER">Tipuri de date</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu</STRONG></P>
+<P ALIGN="CENTER"><STRONG>mai 1995</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>Tipurile de date în  în Pascal
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>tip de date, operatori, funcţii, puternic
+			tipizat, polimorfism, supraîncărcare
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>Pascal, teoria elementară a mulţimilor
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html30"
+  HREF="tipuri-html.html">Introducere</A>
+<LI><A NAME="tex2html31"
+  HREF="#SECTION00030000000000000000">Ce este un tip de date</A>
+<LI><A NAME="tex2html32"
+  HREF="#SECTION00040000000000000000">Tipuri enumerate</A>
+<LI><A NAME="tex2html33"
+  HREF="#SECTION00050000000000000000">Tipuri fundamentale</A>
+<LI><A NAME="tex2html34"
+  HREF="#SECTION00060000000000000000">Derivarea tipurilor</A>
+<UL>
+<LI><A NAME="tex2html35"
+  HREF="#SECTION00061000000000000000">Subdomeniu</A>
+<LI><A NAME="tex2html36"
+  HREF="#SECTION00062000000000000000">Articol (record)</A>
+<LI><A NAME="tex2html37"
+  HREF="#SECTION00063000000000000000">Vector (matrice)</A>
+<LI><A NAME="tex2html38"
+  HREF="#SECTION00064000000000000000">Mulţime</A>
+<LI><A NAME="tex2html39"
+  HREF="#SECTION00065000000000000000">Fişier</A>
+<LI><A NAME="tex2html40"
+  HREF="#SECTION00066000000000000000">Record cu case</A>
+<LI><A NAME="tex2html41"
+  HREF="#SECTION00067000000000000000">Pointer</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html42"
+  HREF="#SECTION00070000000000000000">Numele tipurilor</A>
+<LI><A NAME="tex2html43"
+  HREF="#SECTION00080000000000000000">Operatori</A>
+<UL>
+<LI><A NAME="tex2html44"
+  HREF="#SECTION00081000000000000000"><TT>boolean</TT></A>
+<LI><A NAME="tex2html45"
+  HREF="#SECTION00082000000000000000"><TT>integer</TT></A>
+<LI><A NAME="tex2html46"
+  HREF="#SECTION00083000000000000000"><TT>char</TT></A>
+<LI><A NAME="tex2html47"
+  HREF="#SECTION00084000000000000000"><TT>real</TT></A>
+<LI><A NAME="tex2html48"
+  HREF="#SECTION00085000000000000000">pentru orice tip enumerare T</A>
+<LI><A NAME="tex2html49"
+  HREF="#SECTION00086000000000000000">pentru orice tip subrange T</A>
+<LI><A NAME="tex2html50"
+  HREF="#SECTION00087000000000000000">pentru orice tip <TT>T = array[S] of B</TT></A>
+<LI><A NAME="tex2html51"
+  HREF="#SECTION00088000000000000000">pentru orice tip mulţime <TT>T = set of S</TT></A>
+<LI><A NAME="tex2html52"
+  HREF="#SECTION00089000000000000000">pentru orice tip <TT>record R = record e1:T1; ... en:Tn; end</TT></A>
+<LI><A NAME="tex2html53"
+  HREF="#SECTION000810000000000000000">pentru orice tip pointer PA = <IMG
+ WIDTH="15" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img44.png"
+ ALT="$\uparrow$">A</A>
+<LI><A NAME="tex2html54"
+  HREF="#SECTION000811000000000000000">pentru tipul fişier <TT>F = file of T</TT></A>
+</UL>
+<BR>
+<LI><A NAME="tex2html55"
+  HREF="#SECTION00090000000000000000">Polimorfism şi supraîncărcare</A>
+<LI><A NAME="tex2html56"
+  HREF="#SECTION000100000000000000000">Glosar cu traduceri în engleză</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Introducere</A>
+</H1>
+
+<P>
+Avantajele folosirii unui limbaj <EM>puternic tipizat</EM> sunt
+apreciate de orice programator experimentat.  Printre ele sunt:
+
+<P>
+
+<UL>
+<LI>uşurează înţelegerea programului de către om;
+</LI>
+<LI>încurajează o gîndire şi formulare disciplinată a problemei;
+</LI>
+<LI>uşurează munca de optimizare a compilatorului;
+</LI>
+<LI>permit depistarea erorilor într-o fază timpurie.
+</LI>
+</UL>
+
+<P>
+Un limbaj se numeşte ``puternic tipizat'' dacă în faza de
+execuţie a unui program nu pot apărea erori cauzate de tipuri incorecte
+ale expresiilor.  Acest articol îşi propune să explice într-un
+cadru cît se poate de riguros o colecţie foarte simplă de
+fapte care descrie semnificaţia noţiunii de ``tip de date''.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Ce este un tip de date</A>
+</H1>
+
+<P>
+Există mai multe definiţii posibile pentru tipurile de date,
+din mai multe perspective.  O privire globală defineşte simultan
+atît tipurile de date cît şi operaţiile care se pot face cu ele,
+pentru că acestea sunt de fapt cele două faţete ale unei aceleiaşi
+monezi: nu pot exista una fără cealaltă.  Noi vom trata cele două 
+subiecte pe rînd şi în mod inegal,
+acordînd o oarecare prioritate tipurilor de date.
+
+<P>
+Astfel, în cea mai simplă accepţiune posibilă,
+un tip de date nu este altceva decît <EM>o mulţime de valori</EM>.
+
+<P>
+Ce este o valoare?  Nu are nici o importanţă!  Este un
+nume special dat elementelor care aparţin unui tip.  Termenul
+``aparţin'' este justificat, pentru că, reţineţi, tipul este
+<EM>o mulţime</EM>, în cel mai precis sens matematic.
+
+<P>
+Exemple?  în Pascal tipul <TT>boolean</TT> este o mulţime cu
+două elemente.  Aceste două elemente se notează în Pascal cu <TT>false</TT> şi <TT>true</TT>. <TT>False</TT> şi <TT>true</TT> se numesc de aceea
+<EM>valori booleene</EM>.  Tipul <TT>integer</TT> este tot o mulţime care
+include, printre altele, nişte elemente (valori) care în Pascal se
+notează cu <TT>-2, -1, 0, 1, 2, 3</TT> etc.  Tipul <TT>integer</TT> este
+un tip interesant, pentru că îşi propune să mimeze mulţimea
+matematica <B>Z</B> a numerelor întregi, dar nu reuşeşte prea bine,
+pentru că mulţimea <TT>integer</TT> este finită, iar <B>Z</B> nu!  Care
+sunt limitele mulţimii <TT>integer</TT> nu se specifică.  În dialectul
+Turbo Pascal (cel mai răspîndit pe PC-uri) <TT>integer</TT> are 65536
+de elemente, de la cel notat <TT>-32768</TT> la cel notat <TT>32767</TT>.
+Elementele tipului <TT>integer</TT> sunt numite valori întregi (sau mai
+precis <EM>integer values</EM>).
+
+<P>
+Dacă aţi citit textul de mai sus cu atenţie aţi
+observat că ne-am ferit să spunem ca <TT>false</TT> este un element
+(valoare) boolean.  Am spus <TT>false</TT> este o notaţie (o
+reprezentare) a unui element boolean!  De aici încolo nu vom mai
+fi atît de scrupuloşi; dealtfel cele două noţiuni
+(element şi reprezentare) se pot adesea interschimba fără
+ambiguitate.
+
+<P>
+Vom zice de aceea: <BR><P></P>
+<DIV ALIGN="CENTER">
+boolean = { false, true }
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+unde
+acoladele sunt notaţia uzuală pentru mulţime. 
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Tipuri enumerate</A>
+</H1>
+
+<P>
+Pascal pune la dispoziţie programatorului mai multe mecanisme
+prin care el să-şi construiască noi tipuri.  Cel mai simplu dintre
+acestea este <EM>enumerarea</EM>.  Enumerarea construieşte un nou tip cu un
+număr finit de elemente descriind între paranteze reprezentarea
+canonică a fiecărui element.
+
+<P>
+Exemplu (tipic) :
+
+<P>
+<PRE>
+ (rosu, verde, albastru, galben, mov, negru, alb)
+</PRE>
+
+<P>
+este descrierea unui nou tip care are 7 elemente cu
+reprezentările <TT>rosu</TT>, <TT>verde</TT>, etc.  Putem da acestui tip
+un nume folosind directiva <TT>type</TT> din Pascal.
+
+<P>
+<PRE>
+ type culoare = (rosu, verde, albastru, galben, mov, negru, alb);
+</PRE>
+
+<P>
+Din punct de vedere matematic am putea scrie
+<BR><P></P>
+<DIV ALIGN="CENTER">
+culoare = { rosu, verde, albastru, galben, mov, negru, alb }
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+Tipul boolean din Pascal ar putea fi definit el însuşi
+astfel:
+
+<P>
+<PRE>
+ type boolean = (false, true);
+</PRE>
+
+<P>
+De ce ne este oferit însă de-a gata vom afla din următoarea
+secţiune şi din cele consacrate operatorilor.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Tipuri fundamentale</A>
+</H1>
+
+<P>
+Limbajul Pascal (standard) conţine patru tipuri gata
+construite.  Pe acestea le numim <EM>tipuri fundamentale</EM>.  Ele sunt:
+
+<P>
+<PRE>
+real, integer, char, boolean
+</PRE>
+
+<P>
+Pentru <TT>boolean</TT> am văzut <BR><P></P>
+boolean = { false, true }
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+
+<P>
+Pentru <TT>integer</TT> am putea scrie ceva de genul <BR><P></P>
+<DIV ALIGN="CENTER">
+<!-- MATH
+ \begin{displaymath}
+integer =
+\{ n \epsilon {\bf Z} \; | \; limita_{jos} \leq n < limita_{sus} \}
+\end{displaymath}
+ -->
+
+<IMG
+ WIDTH="335" HEIGHT="35" BORDER="0"
+ SRC="img3.png"
+ ALT="\begin{displaymath}integer =
+\{ n \epsilon {\bf Z} \; \vert \; limita_{jos} \leq n &lt; limita_{sus} \} \end{displaymath}">
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+limita<sub>jos</sub> şi limita<sub>sus</sub> depind de dialectul de Pascal
+folosit.  Pentru Turbo ele sunt (după cum am zis) <TT>-32768</TT>,
+respectiv <TT>32768</TT>.
+
+<P>
+Pentru <TT>char</TT> lucrurile sunt grele pentru că există
+unele caractere care <EM>nu</EM> au o reprezentare evidentă!
+Tot ce putem spune este că această mulţime include mulţimea
+
+<P>
+<TT>{'a', 'b', ...'A', 'B', ..., '0', ..., '!', ...} </TT>
+
+<P>
+a caracterelor care pot fi tipărite.
+
+<P>
+Iar pentru <TT>real</TT> lucrurile sunt şi mai încîlcite, pentru că,
+deşi <TT>real</TT> se doreşte o imagine a mulţimii
+<B>R</B> a numerelor reale, în realitate <TT>real</TT> este finită
+şi are elementele distribuite într-un mod foarte ciudat pe axa
+reală (nici măcar două elemente ale ei nu sunt echidistante)!
+Aceasta mulţime este subiectul <EM>analizei
+numerice</EM>, care studiază cum putem face calcule cînd putem
+manipula numai aproximări ale valorilor.
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Derivarea tipurilor</A>
+</H1>
+
+<P>
+Pascal (şi nu numai el) pune la dispoziţie nişte puternice
+mecanisme prin care putem construi noi tipuri plecînd de la cele
+existente.  (Prin enumerare putem construi tipuri plecînd de la
+nimic.)  Derivarea dă naştere unei noi mulţimi de elemente
+combinînd elementele unor tipuri deja existente.
+
+<P>
+Există o interesantă clasă de tipuri numite <EM>tipuri scalare</EM>.  
+Tipurile <TT>boolean, char, integer</TT> şi toate tipurile construite prin
+enumerare sunt scalare.  Aceste tipuri au întotdeauna un număr finit
+de elemente şi după cum vom vedea mai tîrziu, există (datorită
+operatorilor de comparaţie) o relaţie de ordine totală pe ele
+(adică dintre două elemente unul e mai mare şi celălalt mai mic)<A NAME="tex2html1"
+  HREF="#foot360"><SUP>1</SUP></A>.
+
+<P>
+
+<H2><A NAME="SECTION00061000000000000000">
+Subdomeniu</A>
+</H2>
+
+<P>
+Există o operaţie prin care dintr-un tip <EM>scalar</EM>
+putem extrage o submulţime formată din elemente
+consecutive.  Ea devine un nou tip care se va numi un <EM>subdomeniu</EM>
+(``subrange'' în engleză) al celui iniţial.  Pentru că pe
+tipurile scalare există o ordine, submulţimea se indică prin
+capetele ei.  Exemplu:
+
+<P>
+<PRE>
+ 1 .. 100
+</PRE>
+
+<P>
+este un tip subdomeniu al <TT>integer</TT>, avînd 100 de elemente.
+
+<P>
+Iată un tip subdomeniu al tipului culoare definit mai sus,
+căruia îi dăm şi un nume:
+
+<P>
+<PRE>
+ type CulPrimara = rosu .. albastru;
+</PRE>
+
+<P>
+Tipul numit CulPrimara are 3 elemente: <BR><P></P>
+<DIV ALIGN="CENTER">
+CulPrimara = {rosu, verde, albastru }.
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+
+<P>
+Tipurile subdomeniu sunt toate scalare.
+
+<P>
+
+<H2><A NAME="SECTION00062000000000000000">
+Articol (record)</A>
+</H2>
+
+<P>
+Dacă avem la dispoziţie tipurile T<sub>1</sub>, T<sub>2</sub>, ... T<sub>n</sub>
+putem forma un nou tip cu construcţia:
+
+<P>
+<PRE>
+record 
+  c1 : T1;
+  c2 : T2;
+  ....
+  cn : Tn;
+end
+</PRE>
+
+<P>
+Ce mulţime reprezintă noul tip?  O valoare de tip record
+subsumează n valori, fiecare din tipul T<sub>i</sub> respectiv.  Cu
+alte cuvinte putem asimila un record cu un tuplu (o mulţime ordonată)
+cu n elemente (v<sub>1</sub>, v<sub>2</sub>,... , v<sub>n</sub>), unde <!-- MATH
+ $v_i \epsilon T_i\,|\, i \epsilon
+\{1 \ldots n\}.$
+ -->
+<IMG
+ WIDTH="134" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img10.png"
+ ALT="$ v_i \epsilon T_i\,\vert\, i \epsilon
+\{1 \ldots n\}.$">
+
+<P>
+Să dăm un nume tipului de mai sus:
+
+<P>
+<PRE>
+type R = record 
+   c1 : T1; 
+   c2 : T2; 
+   ... 
+   cn : Tn
+end;
+</PRE>
+
+<P>
+atunci
+<BR><P></P>
+<DIV ALIGN="CENTER">
+<!-- MATH
+ \begin{displaymath}
+R = \{ (v_1, v_2, \ldots, v_n) \; | \; v_i \epsilon T_i, \; i = 1\ldots n \}.
+\end{displaymath}
+ -->
+
+<IMG
+ WIDTH="305" HEIGHT="34" BORDER="0"
+ SRC="img11.png"
+ ALT="\begin{displaymath}R = \{ (v_1, v_2, \ldots, v_n) \; \vert \; v_i \epsilon T_i, \; i = 1\ldots n \}.\end{displaymath}">
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+sau altfel scris
+<BR><P></P>
+<DIV ALIGN="CENTER">
+<!-- MATH
+ \begin{displaymath}
+R = T_1 \times T_2 \times \dots  \times T_n = \prod_{i=1}^n T_i
+\end{displaymath}
+ -->
+
+<IMG
+ WIDTH="237" HEIGHT="58" BORDER="0"
+ SRC="img12.png"
+ ALT="\begin{displaymath}R = T_1 \times T_2 \times \dots \times T_n = \prod_{i=1}^n T_i \end{displaymath}">
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+unde <IMG
+ WIDTH="19" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="img13.png"
+ ALT="$ \times $"> denotă operaţia de produs cartezian.
+
+<P>
+Un tip construit cu <TT>record</TT> nu este scalar.
+
+<P>
+<B>Notă</B>: pentru deplina rigoare ar trebui să includem în
+mulţimea R şi numele cîmpurilor c<sub>1</sub>, c<sub>2</sub>, ...,
+c<sub>n</sub>.  O definiţie completă ar fi: produsul cartezian al
+tipurilor componente, avînd fiecare componentă etichetată cu numele 
+corespunzător.  Etichetarea se poate defini şi ea perfect
+riguros, dar o lăsăm pe seama cititorului.
+
+<P>
+
+<H2><A NAME="SECTION00063000000000000000">
+Vector (matrice)</A>
+</H2>
+
+<P>
+Dacă avem un tip oarecare B şi un tip scalar S (cu
+excepţia lui <TT>integer</TT>) putem forma din ele un nou tip cu
+operaţia (dînd şi nume tipului):
+
+<P>
+<PRE>
+ type A = array [S] of B;
+</PRE>
+
+<P>
+Nu este prea complicat de văzut că asta înseamnă <BR><P></P>
+A = B x B x ... x B = B<sup>|S|</sup>
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+unde produsul este luat
+de cardinal din S (numărul de elemente al lui S) ori.  Aceasta
+pentru că un <TT>array[S] of B</TT> este o colecţie de atîtea
+valori de tipul B cîte valori conţine tipul S.
+
+<P>
+Un tip construit cu <TT>array</TT> nu este scalar.
+
+<P>
+Notă: Ca mai sus, fiecare componentă a unui element din
+produsul B<sup>n</sup> este etichetată cu o valoare corespunzătoare
+din S.
+
+<P>
+
+<H2><A NAME="SECTION00064000000000000000">
+Mulţime</A>
+</H2>
+
+<P>
+Dacă avem un tip scalar S putem forma tipul (dacă S nu are
+prea multe elemente):
+
+<P>
+<PRE>
+set of S
+</PRE>
+
+<P>
+Ce valori are acest nou tip?  Un element al tipului <TT>set
+of S</TT> este o mulţime formată cu elemente din S.  Deci dacă
+avem declaraţia:
+
+<P>
+<PRE>
+type R = set of S;
+</PRE>
+
+<P>
+atunci <BR><P></P>
+<DIV ALIGN="CENTER">
+<!-- MATH
+ \begin{displaymath}
+R = \{ M \; | \; M \subset S \} = {\cal P} (S)
+\end{displaymath}
+ -->
+
+<IMG
+ WIDTH="201" HEIGHT="34" BORDER="0"
+ SRC="img19.png"
+ ALT="\begin{displaymath}R = \{ M \; \vert \; M \subset S \} = {\cal P} (S) \end{displaymath}">
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+adică mulţimea părţilor lui S.
+
+<P>
+Un tip construit cu <TT>set</TT> nu este scalar.
+
+<P>
+
+<H2><A NAME="SECTION00065000000000000000">
+Fişier</A>
+</H2>
+
+<P>
+Fişierul este un tip interesant.  Este prima metodă de a
+construi un tip care -- teoretic vorbind -- este infinit!  (Toate
+tipurile de pînă acum sunt finite pentru că sunt construite prin
+combinaţii finite ale unor mulţimi finite).  Bine-nţeles că
+practic şi acest tip este finit, dar cu o dimensiune maximă
+neprecizată.
+
+<P>
+Fiind dat un tip T (care nu e fişier la rîndul său) ce face
+operaţia:
+
+<P>
+<PRE>
+file of T
+</PRE>
+
+<P>
+?
+
+<P>
+Un fişier este asemănator unui <TT>array</TT>, dar are o lungime
+neprecizată.  El conţine la un moment dat 0 sau 1 sau 2, ...
+valori de tipul T.  Deci dacă F e definit
+
+<P>
+<PRE>
+type F = file of T;
+</PRE>
+
+<P>
+atunci ca mulţime <BR><P></P>
+<DIV ALIGN="CENTER">
+<!-- MATH
+ \begin{displaymath}
+F = \bigcup_n \{ T^n \; | \; n
+\epsilon {\bf N} \} = T^*
+\end{displaymath}
+ -->
+
+<IMG
+ WIDTH="183" HEIGHT="49" BORDER="0"
+ SRC="img22.png"
+ ALT="\begin{displaymath}F = \bigcup_n \{ T^n \; \vert \; n
+\epsilon {\bf N} \} = T^* \end{displaymath}">
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+unde <B>N</B> este mulţimea numerelor
+naturale.
+
+<P>
+(O astfel de operaţie aplicată lui T (reuniunea tuturor
+puterilor) se numeşte operaţia lui Kleene, şi se notează
+cu T<sup>*</sup>).
+
+<P>
+
+<H2><A NAME="SECTION00066000000000000000">
+Record cu case</A>
+</H2>
+
+<P>
+Ajungem la o operaţie mai puţin omogenă de combinare a
+tipurilor.  Să considerăm directiva Pascal:
+
+<P>
+<PRE>
+type RC = record
+   c1 : T1;
+   case c2 : T2 of
+     v1 : ( c3 : T3 );
+     v2 : ( c4 : T4 );
+end
+</PRE>
+
+<P>
+Un model aproximativ este dat de <BR><P></P>
+<DIV ALIGN="CENTER">
+<!-- MATH
+ \begin{displaymath}
+RC \subset T1 \times T2
+\times (T3 \cup T4)
+\end{displaymath}
+ -->
+
+<IMG
+ WIDTH="209" HEIGHT="34" BORDER="0"
+ SRC="img24.png"
+ ALT="\begin{displaymath}RC \subset T1 \times T2
+\times (T3 \cup T4) \end{displaymath}">
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+pentru că o valoare de tip RC are primele
+două cîmpuri de tipurile T1, respectiv T2, şi un alt cîmp
+dintr-unul din tipurile T3 sau T4.
+
+<P>
+In realitate RC nu este atît de vastă, pentru că nu orice
+combinaţie din mulţimea indicată este în RC.  Cînd cîmpul al
+doilea are valoarea v1, cîmpul al treilea nu poate fi de tipul T4!
+Deci corect este: <BR><P></P>
+<DIV ALIGN="CENTER">
+<!-- MATH
+ \begin{displaymath}
+RC = T1 \times ( \{v1\} \times T3 \cup \{v2\}
+\times T4)
+\end{displaymath}
+ -->
+
+<IMG
+ WIDTH="279" HEIGHT="34" BORDER="0"
+ SRC="img25.png"
+ ALT="\begin{displaymath}RC = T1 \times ( \{v1\} \times T3 \cup \{v2\}
+\times T4) \end{displaymath}">
+</DIV>
+<BR CLEAR="ALL">
+<P></P> {v1} este mulţimea formată din elementul v1
+aparţinînd lui T2.
+
+<P>
+Un astfel de tip nu este scalar.
+
+<P>
+
+<H2><A NAME="SECTION00067000000000000000">
+Pointer</A>
+</H2>
+
+<P>
+Ultimul mod de derivare a tipurilor în Pascal este prin
+luarea referinţei la ele.  Un tip
+
+<P>
+<PRE>
+type PT = ^T;
+</PRE>
+
+<P>
+are printre valorile sale o valoare specială <TT>nil</TT>, şi apoi
+valori care <EM>arată</EM> spre valori din tipul T.  Tipul PT este
+deci izomorf (corespondent unu la unu) cu tipul T la care se adaugă
+un nou element: <BR><P></P>
+<DIV ALIGN="CENTER">
+<!-- MATH
+ \begin{displaymath}
+PT = T \cup \{ {\bf nil} \}.
+\end{displaymath}
+ -->
+
+<IMG
+ WIDTH="124" HEIGHT="34" BORDER="0"
+ SRC="img26.png"
+ ALT="\begin{displaymath}PT = T \cup \{ {\bf nil} \}.\end{displaymath}">
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+
+<P>
+Tipul pointer din Pascal este singurul tip care poate să
+includă în definiţia sa pe sine însuşi, ca în:
+
+<P>
+<PRE>
+type 
+  PA = ^A;
+  A = record
+    i : I;
+    n : PA;
+  end;
+</PRE>
+
+<P>
+Asta dă o interesantă ``ecuaţie'' pentru mulţimea
+PA: <BR><P></P>
+<DIV ALIGN="CENTER">
+<!-- MATH
+ \begin{displaymath}
+PA = \{ nil \} \cup A = \{ nil \} \cup ( I \times PA ).
+\end{displaymath}
+ -->
+
+<IMG
+ WIDTH="277" HEIGHT="34" BORDER="0"
+ SRC="img27.png"
+ ALT="\begin{displaymath}PA = \{ nil \} \cup A = \{ nil \} \cup ( I \times PA ).\end{displaymath}">
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+
+<P>
+Nu este nimic contradictoriu în această formulă!
+Cele două mulţimi sunt într-adevăr egale, în sensul
+că fiecare element care se află în PA este fie <B>nil</B> fie se
+poate scrie sub forma (i, pa) unde <IMG
+ WIDTH="28" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="img30.png"
+ ALT="$i \epsilon I$"> şi <!-- MATH
+ $pa \epsilon
+PA$
+ -->
+<IMG
+ WIDTH="58" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img31.png"
+ ALT="$pa \epsilon
+PA$">.
+
+<P>
+De fapt aceasta este definiţia (recursivă) a unei liste
+(aţi recunoscut probabil tipul PA ca fiind tipul celulei de bază
+care compune o listă simplu înlănţuită):
+
+<P>
+O listă (de tipul I) este sau
+
+<UL>
+<LI>lista vidă, sau
+
+<P>
+</LI>
+<LI>o valoare de tipul I împreună cu o listă ``mai mică'' de
+acelaşi tip.
+
+<P>
+</LI>
+</UL>
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Numele tipurilor</A>
+</H1>
+
+<P>
+Am folosit adesea în exemplele anterioare nume asociate
+tipurilor cu ajutorul directivei <TT>type</TT>.  în construcţia:
+
+<P>
+<PRE>
+ type 
+  t = record
+    a : array[1..10] of integer;
+    c : char;
+  end;
+</PRE>
+
+<P>
+avem două parţi:
+
+<P>
+
+<OL>
+<LI>una care construieşte un nou tip
+
+<P>
+<PRE>
+ record
+   a: array[1..10] of integer;
+   c: char;
+ end
+</PRE>
+
+<P>
+</LI>
+<LI>una care îi dă un nume acestei construcţii:
+
+<P>
+<PRE>
+ type t = constructie;
+</PRE>
+</LI>
+</OL>
+
+<P>
+Acestea sunt două operaţii distincte.  Mai mult, în Pascal tipurile
+<TT>t</TT> şi <TT>record a:array[1..10] of integer; c:char; end</TT> sunt
+în realitate distincte deşi au aceeaşi structură (sunt formate
+prin produsele aceloraşi mulţimi: integer<sup>10</sup> x char
+<P>
+Asta putem vedea dacă scriem:
+
+<P>
+<PRE>
+ var x, z: t;
+     y: record array[1..10] of integer; c: char; end;
+</PRE>
+
+<P>
+Acum <TT>x</TT> şi <TT>y</TT> au tipuri diferite.  O operaţie
+de felul <TT>x := y</TT> nu este permisă!  Putem face însă
+<TT>x := z</TT>.
+
+<P>
+Deci: două tipuri nu sunt <EM>compatibile</EM> chiar dacă
+au aceeaşi structură.  Ele trebuie să aibă acelaşi <EM>nume</EM>, şi atunci de fapt sunt o aceeaşi mulţime.
+
+<P>
+
+<H1><A NAME="SECTION00080000000000000000">
+Operatori</A>
+</H1>
+
+<P>
+În realitate orice definiţie a unui tip ca mulţime trebuie
+să includă şi o mulţime de
+operaţii pe valorile sale, care iau naştere automat odată cu
+crearea sa.  Ce este o operaţie?  Aparent banală întrebarea nu are
+un răspuns evident.  <TT>div</TT> este o operaţie între doi întregi.
+Ce înseamnă asta?  Ea combină cele două valori întregi cărora li
+se aplică pentru a genera una nouă.  Este deci o <EM>funcţie</EM>
+definită astfel: <BR><P></P>
+<DIV ALIGN="CENTER">
+<!-- MATH
+ \begin{displaymath}
+div : integer \times integer \rightarrow integer
+\end{displaymath}
+ -->
+
+<IMG
+ WIDTH="255" HEIGHT="33" BORDER="0"
+ SRC="img34.png"
+ ALT="\begin{displaymath}div : integer \times integer \rightarrow integer
+\end{displaymath}">
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+
+<P>
+Ea asociază perechii (a,b) de numere întregi numărul
+``cîtul împărţirii lui a la b''.
+
+<P>
+<TT>div</TT> este o funcţie care nu se poate calcula pentru
+toate perechile de întregi.  Dacă al doilea este 0 atunci
+operaţia nu are sens.  Deci funcţia este <EM>parţială</EM>,
+adică nu este definită pentru toate valorile posibile ale
+argumentelor.
+
+<P>
+De fapt asta sunt toţi operatorii -- funcţii din tipuri
+(sau produse carteziene de tipuri) în tipuri.
+
+<P>
+De ce sunt tipurile atît de legate de operatori?  Pentru
+că crearea unui nou tip prin oricare din operaţiile de mai sus
+dă naştere în mod automat unor operatori care lucrează
+cu valori din acel tip.  De exemplu definirea unui tip enumerare ca
+cel <TT>culoare</TT> de mai sus dă naştere următorilor
+operatori:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">operatori</TD>
+<TD ALIGN="LEFT">domeniu de definiţie</TD>
+<TD ALIGN="LEFT">domeniu de valori</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><code>&lt; &gt; &lt;= &gt;= &lt;&gt; =</code></TD>
+<TD ALIGN="LEFT">culoare x culoare</TD>
+<TD ALIGN="LEFT"><code>boolean</code></TD>
+</TR>
+<TR><TD ALIGN="CENTER"><code>succ pred</code></TD>
+<TD ALIGN="LEFT">culoare</TD>
+<TD ALIGN="LEFT">culoare</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><code>ord</code></TD>
+<TD ALIGN="LEFT">culoare</TD>
+<TD ALIGN="LEFT"><code>integer</code></TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Iată mai jos pentru fiecare tip ce operatori are (dacă
+este fundamental) şi căror operatori le dă naştere:
+
+<P>
+
+<H2><A NAME="SECTION00081000000000000000">
+<TT>boolean</TT></A>
+</H2>
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">operatori</TD>
+<TD ALIGN="LEFT">domeniu de definiţie</TD>
+<TD ALIGN="LEFT">domeniu de valori</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>= &lt;&gt; &lt; &gt; &lt;= &gt;=</TT></TD>
+<TD ALIGN="LEFT"><TT>boolean</TT> x <TT>boolean</TT></TD>
+<TD ALIGN="LEFT"><TT>boolean</TT></TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>and or</TT></TD>
+<TD ALIGN="LEFT"><TT>boolean</TT> x <TT>boolean</TT></TD>
+<TD ALIGN="LEFT"><TT>boolean</TT></TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>not</TT></TD>
+<TD ALIGN="LEFT"><TT>boolean</TT></TD>
+<TD ALIGN="LEFT"><TT>boolean</TT></TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>succ pred</TT></TD>
+<TD ALIGN="LEFT"><TT>boolean</TT></TD>
+<TD ALIGN="LEFT"><TT>boolean</TT></TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>ord</TT></TD>
+<TD ALIGN="LEFT"><TT>boolean</TT></TD>
+<TD ALIGN="LEFT"><TT>integer</TT></TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+
+<H2><A NAME="SECTION00082000000000000000">
+<TT>integer</TT></A>
+</H2>
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">operatori</TD>
+<TD ALIGN="LEFT">domeniu de definiţie</TD>
+<TD ALIGN="LEFT">domeniu de valori</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>= &lt;&gt; &lt; &gt; &lt;= &gt;=</TT></TD>
+<TD ALIGN="LEFT"><TT>integer</TT> x <TT>integer</TT></TD>
+<TD ALIGN="LEFT"><TT>boolean</TT></TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>succ pred</TT></TD>
+<TD ALIGN="LEFT"><TT>integer</TT></TD>
+<TD ALIGN="LEFT"><TT>integer</TT></TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>ord</TT></TD>
+<TD ALIGN="LEFT"><TT>integer</TT></TD>
+<TD ALIGN="LEFT"><TT>integer</TT></TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>+ - * div mod</TT></TD>
+<TD ALIGN="LEFT"><TT>integer</TT> x <TT>integer</TT></TD>
+<TD ALIGN="LEFT"><TT>integer</TT></TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>odd</TT></TD>
+<TD ALIGN="LEFT"><TT>integer</TT></TD>
+<TD ALIGN="LEFT"><TT>boolean</TT></TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+
+<H2><A NAME="SECTION00083000000000000000">
+<TT>char</TT></A>
+</H2>
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">operatori</TD>
+<TD ALIGN="LEFT">domeniu de definiţie</TD>
+<TD ALIGN="LEFT">domeniu de valori</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>= &lt;&gt; &lt; &gt; &lt;= &gt;=</TT></TD>
+<TD ALIGN="LEFT"><TT>char</TT> x <TT>char</TT></TD>
+<TD ALIGN="LEFT"><TT>boolean</TT></TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>succ pred</TT></TD>
+<TD ALIGN="LEFT"><TT>char</TT></TD>
+<TD ALIGN="LEFT"><TT>char</TT></TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>ord</TT></TD>
+<TD ALIGN="LEFT"><TT>char</TT></TD>
+<TD ALIGN="LEFT"><TT>integer</TT></TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>chr</TT></TD>
+<TD ALIGN="LEFT"><TT>integer</TT></TD>
+<TD ALIGN="LEFT"><TT>char</TT></TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+
+<H2><A NAME="SECTION00084000000000000000">
+<TT>real</TT></A>
+</H2>
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">operatori</TD>
+<TD ALIGN="LEFT">domeniu de definiţie</TD>
+<TD ALIGN="LEFT">domeniu de valori</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>+ - / *</TT></TD>
+<TD ALIGN="LEFT"><TT>real</TT> x <TT>real</TT></TD>
+<TD ALIGN="LEFT"><TT>real</TT></TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>= &lt;&gt; &lt; &gt; &lt;= &gt;=</TT></TD>
+<TD ALIGN="LEFT"><TT>real</TT> x <TT>real</TT></TD>
+<TD ALIGN="LEFT"><TT>boolean</TT></TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+
+<H2><A NAME="SECTION00085000000000000000">
+pentru orice tip enumerare T</A>
+</H2>
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">operatori</TD>
+<TD ALIGN="LEFT">domeniu de definiţie</TD>
+<TD ALIGN="LEFT">domeniu de valori</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>pred succ</TT></TD>
+<TD ALIGN="LEFT">T</TD>
+<TD ALIGN="LEFT">T</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>= &lt;&gt; &lt; &gt; &lt;= &gt;=</TT></TD>
+<TD ALIGN="LEFT">T x T</TD>
+<TD ALIGN="LEFT"><TT>boolean</TT></TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>ord</TT></TD>
+<TD ALIGN="LEFT">T</TD>
+<TD ALIGN="LEFT"><TT>integer</TT></TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+
+<H2><A NAME="SECTION00086000000000000000">
+pentru orice tip subrange T</A>
+</H2>
+moşteneşte toate operaţiile tipului din care este derivat
+
+<P>
+
+<H2><A NAME="SECTION00087000000000000000">
+pentru orice tip <TT>T = array[S] of B</TT></A>
+</H2>
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">operatori</TD>
+<TD ALIGN="LEFT">domeniu de definiţie</TD>
+<TD ALIGN="LEFT">domeniu de valori</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>[]</TT></TD>
+<TD ALIGN="LEFT">T x S</TD>
+<TD ALIGN="LEFT">B</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+(operaţia de indexare aplicată astfel <TT>t[s]</TT> unde <IMG
+ WIDTH="46" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img38.png"
+ ALT="$t \in
+T$"> şi <IMG
+ WIDTH="47" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img39.png"
+ ALT="$s \in S$">).
+
+<P>
+
+<H2><A NAME="SECTION00088000000000000000">
+pentru orice tip mulţime <TT>T = set of S</TT></A>
+</H2>
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">operatori</TD>
+<TD ALIGN="LEFT">domeniu de definiţie</TD>
+<TD ALIGN="LEFT">domeniu de valori</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>= &lt;&gt; &lt;= &gt;=</TT></TD>
+<TD ALIGN="LEFT">T x T</TD>
+<TD ALIGN="LEFT"><TT>boolean</TT></TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>in</TT></TD>
+<TD ALIGN="LEFT">S x T</TD>
+<TD ALIGN="LEFT"><TT>boolean</TT></TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>+ - *</TT></TD>
+<TD ALIGN="LEFT">T x T</TD>
+<TD ALIGN="LEFT">T</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>[]</TT> (discutabil)</TD>
+<TD ALIGN="LEFT">S</TD>
+<TD ALIGN="LEFT">T</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+(ultimul este constructorul de mulţime aplicat astfel: 
+<TT>[s, s1, s2..s3]</TT> unde <!-- MATH
+ $s1, s2, s3, s4 \in S$
+ -->
+<IMG
+ WIDTH="130" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img40.png"
+ ALT="$s1, s2, s3, s4 \in S$">).
+
+<P>
+
+<H2><A NAME="SECTION00089000000000000000">
+pentru orice tip <TT>record R = record e1:T1; ... en:Tn; end</TT></A>
+</H2>
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">operatori</TD>
+<TD ALIGN="LEFT">domeniu de definiţie</TD>
+<TD ALIGN="LEFT">domeniu de valori</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><TT>.</TT></TD>
+<TD ALIGN="LEFT">R x mulţimea etichetelor</TD>
+<TD ALIGN="LEFT"><IMG
+ WIDTH="43" HEIGHT="36" ALIGN="MIDDLE" BORDER="0"
+ SRC="img41.png"
+ ALT="$ \bigcup_i T_i $"></TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+(ultima este operaţia de selecţie, care se aplică astfel 
+<TT>r.e</TT> unde <IMG
+ WIDTH="49" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img42.png"
+ ALT="$r \in R$"> şi e este una din etichete.)
+
+<P>
+
+<H2><A NAME="SECTION000810000000000000000">
+pentru orice tip pointer PA = <IMG
+ WIDTH="15" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img44.png"
+ ALT="$\uparrow$">A</A>
+</H2>
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">operatori</TD>
+<TD ALIGN="LEFT">domeniu de definiţie</TD>
+<TD ALIGN="LEFT">domeniu de valori</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><IMG
+ WIDTH="15" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img44.png"
+ ALT="$\uparrow$"></TD>
+<TD ALIGN="LEFT">PA</TD>
+<TD ALIGN="LEFT">A</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+(Operaţia de dereferenţiere, aplicată astfel: pa <IMG
+ WIDTH="15" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img44.png"
+ ALT="$\uparrow$">
+unde <IMG
+ WIDTH="72" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img45.png"
+ ALT="$pa \in PA$">.)
+
+<P>
+
+<H2><A NAME="SECTION000811000000000000000">
+pentru tipul fişier <TT>F = file of T</TT></A>
+</H2>
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">operatori</TD>
+<TD ALIGN="LEFT">domeniu de definiţie</TD>
+<TD ALIGN="LEFT">domeniu de valori</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><IMG
+ WIDTH="15" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img44.png"
+ ALT="$\uparrow$"></TD>
+<TD ALIGN="LEFT">F</TD>
+<TD ALIGN="LEFT">I</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+(Operaţia de scriere/citire din buffer aplicată astfel:
+f<IMG
+ WIDTH="15" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img44.png"
+ ALT="$\uparrow$"> unde <IMG
+ WIDTH="51" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img46.png"
+ ALT="$f \in F$">.)
+
+<P>
+În plus pe lîngă operaţiile descrise anterior o valoare
+din orice tip poate fi atribuită (<TT>:=</TT>) unei variabile de acelaşi tip (cu
+excepţia fişierelor).
+
+<P>
+
+<H1><A NAME="SECTION00090000000000000000">
+Polimorfism şi supraîncărcare</A>
+</H1>
+
+<P>
+După cum vedeţi anumiţi operatori sunt definiţi
+pentru mai multe tipuri.  De exemplu <TT>succ</TT> merge pe orice tip
+scalar, dînd un rezultat de acelaşi tip.  în realitate <!-- MATH
+ $succ : integer \rightarrow integer$
+ -->
+<IMG
+ WIDTH="193" HEIGHT="34" ALIGN="MIDDLE" BORDER="0"
+ SRC="img47.png"
+ ALT="$
+succ : integer \rightarrow integer $"> şi <!-- MATH
+ $succ : char \rightarrow
+char$
+ -->
+<IMG
+ WIDTH="151" HEIGHT="20" ALIGN="BOTTOM" BORDER="0"
+ SRC="img48.png"
+ ALT="$ succ : char \rightarrow
+char $"> sunt doi operatori diferiţi dar care au acelaşi nume.  Un
+astfel de operator, care funcţionează pe mai multe tipuri de
+date simultan şi a cărui comportare depinde de tipul la care se
+aplică se numeşte <EM>supraîncărcat</EM>.
+	Adesea astfel de operatori sunt bineveniţi, adesea însă pot să dea naştere la probleme.  De exemplu teoretic există patru
+operatori + astfel:
+
+<P>
+<P></P>
+<DIV ALIGN="CENTER">
++ : integer x integer --&gt; integer <br>
++ : real x real --&gt; real <br>
++ : integer x real --&gt; real <br>
++ : real x integer --&gt; real 
+<BR CLEAR="ALL"></DIV><P></P>
+<BR CLEAR="ALL"><P></P>
+<BR CLEAR="ALL"><P></P>
+
+<P>
+Toţi aceştia sunt supraîncărcări ale lui +. (Ca să nu
+vorbim de folosirea lui + ca reuniune de mulţimi).  Putem să
+aplicăm unul şi să ne gîndim la altul, cum ar fi în următorul
+exemplu:
+
+<P>
+<PRE>
+ var
+  i,j : integer;
+  r : real;
+
+  i := j + r;
+</PRE>
+
+<P>
+Ori asta nu se poate, pentru că aici + este presupus a fi
+<BR><P></P>
+<DIV ALIGN="CENTER">
++ : integer x real --&gt; integer
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+care nu există!
+
+<P>
+Există un gen special de operatori care seamănă cu cei
+supraîncărcaţi dar care nu sunt supraîncărcaţi ci <EM>polimorfici</EM>.  Distincţia între ei nu este cîteodată foarte
+precisă.  În Pascal la acest titlu aspiră de pildă operatorii
+``<TT>.</TT>'' (pentru selecţie), ``<TT>[]</TT>'' (pentru indexare), etc.
+
+<P>
+De ce?  Pentru că operatorul <TT>[]</TT> este definit pentru
+orice tipuri <TT>R, S, B</TT>:
+
+<P>
+<PRE>
+R = array [S] of B 
+[] : R x S -&gt; B
+</PRE>
+
+<P>
+şi operează la fel independent de natura tipurilor <TT>S</TT>
+(scalar) şi <TT>B</TT>, extrăgînd din valoarea de tipul <TT>R</TT> (un
+array) pe cea etichetată cu valoarea dată de tipul <TT>S</TT>.  Putem
+spune că <TT>[]</TT> este un <EM>singur</EM> operator, oricare ar fi tipul
+<TT>R</TT> format ca mai sus.  <TT>[]</TT> este atunci un operator
+polimorfic -- pentru că lucrează cu mai multe tipuri dar în exact
+acelaşi mod.
+
+<P>
+(Să observăm că mai există un operator notat tot cu <TT>[]</TT> 
+pentru construit mulţimi, care este tot polimorfic!  Cei doi operatori 
+sunt distinşi după modul în care se scriu în expresie.  Acesta este tot o
+supraîncărcare!)
+
+<P>
+
+<H1><A NAME="SECTION000100000000000000000">
+Glosar cu traduceri în engleză</A>
+</H1>
+
+<P>
+<DL>
+<DT><STRONG>Tip de date (data type)</STRONG></DT>
+<DD>o mulţime de valori căreia adesea i
+se adaugă un set de operatori şi un set de reguli de folosire a
+operatorilor.
+
+<P>
+</DD>
+<DT><STRONG>Puternic tipizat (strongly typed) (despre un limbaj)</STRONG></DT>
+<DD>care nu
+poate genera erori cauzate de tipuri eronate în timpul execuţiei.
+
+<P>
+</DD>
+<DT><STRONG>Operator (operator)</STRONG></DT>
+<DD>o operaţie între mai multe valori dînd
+ca rezultat o altă valoare; strict vorbind o funcţie (parţială)
+definită pe un produs cartezian de tipuri cu valori într-un tip.
+
+<P>
+</DD>
+<DT><STRONG>Polimorfic (polymorphic)</STRONG></DT>
+<DD>un operator care operează la fel
+asupra mai multor tipuri de date structurate asemănator.
+
+<P>
+</DD>
+<DT><STRONG>Supraîncărcat (overloaded)</STRONG></DT>
+<DD>(despre un operator) în realitate
+mai mulţi operatori cu acelaşi nume, dar care sunt distinşi după
+contextul în care se aplică (tipurile argumentelor şi al
+rezultatului).
+
+<P>
+</DD>
+<DT><STRONG>Tip scalar (scalar type)</STRONG></DT>
+<DD>un tip cu un număr finit de elemente
+asupra cărora este fixată o relaţie de ordine totală (cu ajutorul
+unor operatori).
+
+<P>
+</DD>
+</DL>
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot360">... mic)</A><A NAME="foot360"
+ HREF="tipuri-html.html#tex2html1"><SUP>1</SUP></A>
+<DD>
+Raportul Pascal marchează şi tipul <TT>real</TT> ca fiind scalar, dar din 
+motive de omogenitate noi nu îl vom considera astfel, pentru că el nu 
+se comportă în nici o privinţa ca un tip scalar
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

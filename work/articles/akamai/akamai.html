@@ -1,0 +1,756 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <TITLE>An Interview with Bruce Maggs</TITLE>
+</HEAD>
+<BODY bgcolor=white text=black link=green vlink=orange>
+
+<H1>An Interview with <A HREF="http://www.cs.cmu.edu/~bmm">Bruce
+Maggs</a>, vice-president for R&amp;D at <a
+href="http://www.akamai.com">Akamai Tech</a></H1>
+
+<P>
+by Mihai Budiu<br> <a
+href="http://www.cs.cmu.edu/~mihaib/maggs-interview">http://www.cs.cmu.edu/~mihaib/maggs-interview</A><br>
+March 2001
+
+<P>This interview was <a
+href="http://www.pcreport.ro/pcrep102/001.shtml">published</a> in the
+March issue of the Romanian computer magazine <a
+href="http://www.pcreport.ro">Netreport</a>.
+
+<P>
+<I><B>Q: </B>
+Can you tell us a little about yourself?
+</I>
+
+<P>A:
+Sure.  I am a computer scientist.  I am a professor at Carnegie
+Mellon (CMU).
+
+I grew up in Illinois, in the center of the US, but in my childhood I
+spent many months living in Eastern Europe: Bulgaria, Yugoslavia, and
+I even spent the summer of 1969 in Romania.
+
+I went to university at MIT, in Boston; I received my undergraduate
+degree and my Ph.D. there; after that I served as a postdoc at MIT and
+then I went to NEC labs, a big research institute, established by the
+Japanese company with the same name.  After spending three and a half
+years there I came to CMU.  I have been here for seven years, although
+I took three semesters off to a company called Akamai that started.
+While at Akamai I was the vice-president for research and development
+and I was in charge of managing all engineering efforts.
+
+Apart from Computer Science I like to play ice hockey and I play
+softball, which is a version of American baseball.  I also like to run
+and ride bicycles.
+<P>
+
+<P>
+<TABLE>
+<CAPTION ALIGN="BOTTOM">Bruce Maggs.</CAPTION>
+<TR><TD><IMG
+ WIDTH="450" HEIGHT="339" BORDER="0"
+ SRC="img1.png" ALT="Bruce Maggs"></TD></TR>
+</TABLE>
+
+<I><B>Q: </B>
+You've anticipated a question about hobbies...
+
+I'll have a lot of questions about Akamai later.  Can you first tell
+us about  your research interests?
+</I>
+
+<P>A:
+I worked in the general area of parallel computing.  In particular, i
+studied the problem of ``what should the general structure of a
+parallel computer be?'' You have many independent processors connected
+with some sort of communication network: how should the network look
+like, and how should the processors make use of it?
+
+More recently, though, I've become interested in networking.  After my
+stay at Akamai I've shifted my focus.  I was mostly a theoretician
+before, but now I am working on problems that are somewhat more
+immediate.  In the end I think that most of the work I will do will
+have some sort of theoretical justification.
+<P>
+
+<I><B>Q: </B>
+This is great, because I have many questions about the relationship
+between theory and practice, and how they blend.
+
+Let me ask exactly that: how do you view the relationship between
+systems research and theory?  They seem to be rather disjoint; the two
+communities don't talk to each other that often.  What do you think?
+</I>
+
+<P>A:
+I think that there are a few misconceptions, and in fact there is a
+fair amount of interaction between the two.  But finding common
+ground, where work done from one point of view is immediately
+beneficial to the other is a challenge.  The theoretician can apply
+their most powerful tools when there's a nice, clean, abstract model
+and the system builders can take advantage of theoretical ideas when
+the implementation details are manageable and not horrendously
+complicated.  It's true, though, that people tend to view themselves
+as being in one camp or the other.  Therefore some real effort has to
+go into making connections with the other side.  And there is only a
+small number of people who are well-known in both communities.
+
+Other common misconceptions are that theoreticians are impractical and
+systems builders are incapable of theoretically sound designs; I think
+that both of these are wrong.  I think that theoreticians, when
+they've been properly ``educated'' with the real systems issues in a
+particular domain, can develop the right models and apply the right
+tools to improve on the best designs that could be constructed without
+having a theoretical basis.  I also think that the people in systems
+can appreciate and even derive good theoretical designs.
+
+I have seen, at least at Akamai, that theoreticians were able to
+rapidly and eagerly become integrated into big systems building
+projects.  Details of say, how Linux implements some networking
+protocol cannot be easily learned by a theoretician in a short time,
+but by being in the trenches and working with the system builders you
+get to know these details, and have a feel for why things are the way
+they are.  It's possible for theoreticians to have a big impact on the
+design of really big systems.  Especially when what is cast into
+software will have to scale to magnitudes of thousands of machines,
+billions of hits per day and terabytes of data collected.
+<P>
+
+<I><B>Q: </B>
+You're pushing me to ask you about Akamai... what can you tell us
+about Akamai?
+</I>
+
+<P>A:
+Akamai is the leader in Internet content delivery.  What that means is
+that Akamai serves, for example, the images that appear on the most
+popular web sites in the world.  Akamai has maybe 1400 customers.
+
+The customers use Akamai for the actual delivery of the bits that make
+up the images or the video streams rendered on the end-user
+workstation.  Akamai has a lot of high-profile customers, such as
+Yahoo, Microsoft, Apple, CNN, and these customers have outsourced the
+problem of quickly delivering the data to the end-users to Akamai.
+
+Akamai has established servers all over the world; over 8000 servers
+in more than 50 countries at around 500 locations.  When an end-user
+goes to visit say Yahoo, [using a web browser], the pictures will be
+sent to the user not from the central location, where Yahoo has its
+master web servers, but from one of Akamai's locations, which is
+usually much closer to the end-user than the central location.
+<P>
+
+<I><B>Q: </B>
+How do you know which one is closer to the client?  The Internet
+doesn't provide any infrastructure to determine where the clients are?
+</I>
+
+<P>A:
+That's a good question.  
+
+First of all, it is not true that the Internet doesn't provide <EM>
+any</EM> infrastructure.  There's some information in just knowing the
+client IP address.  The Internet is not a completely flat or
+disorganized network: it's an interconnection of independent networks,
+and from the client's IP address you know the network the client is on
+and that tells you something about where the client is located.
+
+Furthermore, Akamai now has a very widely distributed presence.  With
+servers at over 500 locations we're able to survey the Internet and
+build in real time a very comprehensive model of what's going on: in
+particular which network is connected to which network, and where
+the performance bottlenecks are located.  This is one of Akamai's core
+competencies.  Knowing when an end-user makes a request not only where
+the end-user is located, but also where that end-user would be best
+served from.
+<P>
+
+<I><B>Q: </B>
+Is this whole process transparent for the client?
+</I>
+
+<P>A:
+Yes, completely transparent.
+
+You've seen at some web sites where you want, say, to download some
+software, that you've been offered a choice to select from a site in
+one country or another.  That model requires the client to participate
+in making the decision.  The problem with that model is that broad
+geographical classifications don't necessarily lead to good network
+predictive power.  It's not the case that the site that's closest to
+you in number of kilometers is the one that can offer the best
+performance.  This [kind of choice] is a burden on the end-user.
+
+The Akamai system is completely transparent.  In essence, when an
+end-user makes a Domain Name System (DNS) request about an Akamai name
+for an image that is going to appear in the browser, the Akamai DNS
+system is examining who is making the request and decides where that
+client should be served from, based on the client location.
+<P>
+
+<I><B>Q: </B>
+So the images in the web pages [at Yahoo] have URLs at Akamai?
+</I>
+
+<P>A:
+That's right.  The DNS request has to go to Akamai so that Akamai can
+direct the client to the optimal Akamai location.  
+
+You may have noticed that when you visit certain web sites, at the
+bottom of your browser the word <TT>akamai</TT> flashes briefly; this
+is an indication that the web browser is contacting Akamai to resolve
+URLs that contain the name <TT>akamai</TT> and then fetching the
+corresponding images from Akamai.
+
+There are a number of ways that a content provider can use Akamai's
+service without actually labelling their web page with <TT>akamai</TT>
+[URLs], and more and more of Akamai's content providers are using DNS
+mechanisms that mask the fact that Akamai is involved.
+
+Not only is the browser automatically contacting Akamai, but there's
+no indication on the screen that the content is served by Akamai.
+<P>
+
+<P>
+<TABLE>
+<CAPTION ALIGN="BOTTOM">The Akamai DNS System.<br>
+(0) <tt>cnn.com</tt> distributes the images to the Akamai servers.<br>
+(1) An end-user points the browser to <tt>cnn.com</tt><br>
+(2) <tt>cnn.com</tt> replies; the page contains images included with
+<tt>img src</tt>, stored at <tt>a73.g.akamai.net</tt><br>
+(3) The end-user asks the root DNS server about the location of
+<tt>akamai.net</tt><br>
+(4) The root DNS server replies with the IP address of the high-level
+Akamai DNS server, <tt>akamai.net</tt><br>
+(5) The end-user contacts this name server asking about the address of
+<tt>g.akamai.net</tt><br>
+(6) The high-level server returns that IP address<br>
+(7) The end-user asks the low-level Akamai DNS server
+<tt>g.akamai.net</tt> about the location of <tt>a73.g.akamai.net</tt><br>
+(8) The low-level server computes from the client location the
+position of the closest Akamai web server and returns its IP address<br>
+(9) The end-user asks the Akamai web server for the image data<br>
+(10) The Akamai server returns the image from the web page.
+</CAPTION>
+<TR><TD><IMG
+ WIDTH="851" HEIGHT="619" BORDER="0"
+ SRC="dns-engl.png" ALT="DNS look-up"></TD></TR>
+</TABLE>
+
+<I><B>Q: </B>
+You said that you use information about the structure of the Internet.
+Do you use only publically available information, like routing tables,
+or do you actively measure the Internet?
+</I>
+
+<P>A:
+I think it is misleading to say that routing tables are publically
+available: there's no way that you could at any time retrieve the
+routing tables of all the routers of a particular Internet Service
+Provider (ISP), let's say UUNET.  These are not generally available.
+<P>
+
+<I><B>Q: </B>
+I meant inter-domain routing tables.
+</I>
+
+<P>A:
+Even the inter-domain routing tables are only available if some
+network has agreed to share them with you; more correctly,
+technically, peer with you as a router.
+
+The answer though is ``Yes'' to both questions.
+
+Akamai has access to a very large number of routing tables in real
+time, so it has a complete picture of the connectivity of the Internet
+at any given time.
+
+There's more to performance than connectivity.  So Akamai performs a
+variety of different measurements.  Some are based on the performance
+clients are seeing and others are more active.
+<P>
+
+<I><B>Q: </B>
+Do you require special support from the ISPs you work with or are you
+just using the bare network infrastructure?
+</I>
+
+<P>A:
+I cannot comment on that.
+<P>
+
+<I><B>Q: </B>
+You mentioned that Akamai is also providing video.  Are you moving
+into the streaming media business?
+</I>
+
+<P>A:
+Streaming media is very important to Akamai.  We support all the
+popular streaming media formats, including Windows Media, Real Audio
+and Video and streaming Quicktime.  We see this as a more and more
+popular media form, and one that is going to consume more and more
+network bandwidth.
+
+This kind of data requires more bandwidth, and, more importantly, 
+is very sensitive to losses and delays; the longer the path from the
+server to the end-user, the more likely that something will go wrong
+and that the problem will be visible to the client.  If the server is
+as close as possible to the client, it can get a qualitatively
+different streaming experience.
+
+Over the next few years, the bottleneck of the ``last mile'', which is
+often a slow modem, will go away, as people switch to broadband
+connections to the home, and then the advantage of having a server
+very close to the user will be even larger than it is today.
+<P>
+
+<I><B>Q: </B>
+For media which is archived, I can see how the model you described for
+images will work.  But if you stream a live event, will you do
+something different?  Then there is only one source [which cannot be
+replicated ahead of time].
+</I>
+
+<P>A:
+Right.  With streaming you have to make this distinction between
+video-on-demand, which is an event that is not live, that has been
+stored, and a live event.  For the latter, there's an additional
+problem to be solved: that is reliably distributing the signal from
+the point of creation to all the servers that deliver it to the
+end-user.
+
+For this Akamai has a separate infrastructure, that is not required
+for static contents.  One of the unique things about the Akamai system
+is that distribution of live content uses a highly redundant
+mechanism, so that, even in the presence of multiple network failures,
+the probability that the quality of the stream (as viewed by any
+particular end-user) is impacted is very small.
+<P>
+
+<I><B>Q: </B>
+There are many companies that seem to be doing something similar to
+Akamai, like web caching.  Akamai, though, was a big hit from the
+beginning, because it had some very important clients right from the
+start, like CNN and Yahoo.  Was this because of technical superiority,
+personal connections, strong investor backup or other reasons?
+</I>
+
+<P>A:
+It's a complex set of reasons.  The two most important are that:
+
+<ol>
+<li> The problem that Akamai is addressing is important to these
+customers and there was no solution;
+
+<li> Very early on we made a tremendous effort to understand what the
+potential clients wanted out of a solution.  Our design was driven by
+the needs of this list of customers.
+</ol>
+
+This is advice for any start-up: the chance of succeeding with a new
+product or service will be greatly enhanced if potential customers are
+involved in the design of the product as early as possible.  Akamai's
+product was not designed in a vacuum.  A lot of footwork went into
+understanding what problems the content providers are facing exactly
+and what kinds of solutions would be acceptable and easiest to
+incorporate into the original infrastructure.
+<P>
+
+<I><B>Q: </B>
+Wasn't the original work done in an academic setting and later
+expanded into a company?
+</I>
+
+<P>A:
+Yes, the original work was done at MIT; this was before I joined
+Akamai, in 1995.  This was spun-off into a company in 1998.
+<P>
+
+<I><B>Q: </B>
+Akamai is a very interesting start-up in that it employs a lot of
+Ph.D.s, and many with a strong theoretical inclination.  Did this bear
+fruit in the business of the company?  Did they help solve important
+problems?
+</I>
+
+<P>A:
+That's a good question.
+
+It's true: Akamai has a relatively high number of Ph.D.s: there are
+approximately 55 Ph.D.s and many of them hold or once held tenured
+academic positions in Computer Science or Mathematics Departments.
+It's not the case that they're all theoreticians; there's a number of
+very prominent systems people who are today at Akamai.  However, it is
+true that a large number has very strong reputations in the
+theoretical Computer Science community.
+
+One of the misconceptions I addressed earlier was that ``theoreticians
+are not practical.''  I think that the Akamai experience shows that
+good systems design can be done with collaboration between large
+numbers of theoreticians and systems researchers.  
+
+Akamai is solving problems on a scale so large that solutions that
+can't be analyzed or can't be proven to scale will fail to succeed.
+Today Akamai is such an important part of content delivery on the
+Internet that there's no room for error.  The solutions have to scale
+immediately to very large size and they have to be able to address the
+huge load, that grows from month to month.  There's a large number of
+components in the system whose design is directly motivated by a
+theoretical analysis and which sometimes do things that are
+counter-intuitive, because that's theory says that's the way to solve
+the problem.
+<P>
+
+<I><B>Q: </B>
+I heard once [1986 Turing Prize winner] Robert Tarjan say that if you want
+to have a direct impact on the world, especially as a theoretician,
+the best place to go is a start-up.  Can you verify this assertion?
+</I>
+
+<P>A:
+I am not sure whether this is specific to theoreticians, except that a
+theoretician thrown into the mix of a start-up will not be afforded
+the luxury of carefully modelling and developing a large body of
+theorems.  The demands of a start-up are more immediate, and the
+theoreticians get sucked into doing whatever is necessary for the
+company, even in the short run.
+
+But for anybody that wants to have an immediate impact, the start-up
+is attractive.  This was one of the most rewarding parts of working at
+Akamai: work done one month could lead to impact just a few months
+down the road.  It gave the opportunity to a computer scientist to
+develop a component of a system and within three months see his
+mother using it, even if she didn't know it.  That, I think, is very
+rewarding to anybody.
+<P>
+
+<I><B>Q: </B>
+Did you bring from your work at Akamai some interesting problems to
+work on during your ``new'' academic life?
+</I>
+
+<P>A:
+I did.  In a start-up, or in any rapidly growing company, there's
+often little time to ponder a problem in the thorough fashion that
+we're used to in academia.  You really appreciate this luxury once
+you're back in academia.  During the course of the design of the
+Akamai system many technical problems arose for which there was an
+immediate solution that could be put into place and we had great
+confidence in, and yet intriguing problems were left unsolved because
+they did not have immediate priority.  I brought back with me a number
+of problems motivated by phenomena that we saw in the design of the
+Akamai system, but that didn't warrant immediate development at the
+time.  Although I was unable to perform my usual research duties at
+Akamai, I wouldn't view it as an interruption in my research.  Today I
+have much better context into which to think about networking
+problems, and a lot more experience to draw on to understand both what
+problems are important and what kinds of solutions would have some
+feasibility.
+<P>
+
+<I><B>Q: </B>
+Has the transition academia --- start-up and back been smooth?
+Were there substantial ``cultural'' differences?
+</I>
+
+<P>A:
+I would say that there are very large differences; larger than I had
+expected.  I think that the time spent at Akamai was the most
+enjoyable and rewarding year and a half of my entire career.  It's
+also the least healthy: I saw more sunrises than I had seen in my
+entire life, I ate more ice-cream and pizza and did little exercise.
+
+What appeared to be big sacrifices were at that time fairly easy,
+because the work was so compelling and the adrenaline was so high that
+it was easy to loose track of everything else.  One thing I've missed
+since returning is the adrenaline, the knowledge that a mistake, even
+a minor one, could have a very large real impact on a company, all the
+employees, the customers and the investors.  The stakes, at least the
+potential for a real loss was much higher than in academia, where you
+have time to really check your work, and where there's a process that
+is designed to ensure that the mistakes are corrected as soon as
+possible; things here move much more slowly.  The first thing I
+noticed when I came back is that I have so much more freedom to spend
+time on my research; the pace of life much easier.
+
+One other [different] thing is a much stronger sense of teamwork
+within the company than within the university.  I think that the
+reason for that is that in the university faculty and even graduate
+students are evaluated largely as individuals.  Even though they they
+``pull'' together for the sake of the department or university, in the
+end it is very important that each individual has very defined
+contributions.  Within Akamai those individual contributions were not
+as critical.  It was much more important that as a team we create a
+good product and that we satisfy our customers.  It was especially
+pleasant that I was able to do that with team members whom for many
+years I had known as individuals and I collaborated with, but only in
+the standard academic style, where we had each our own research
+program.  That was no longer an issue.  There was no jockeying that we
+were working on something that's a little bit different than our
+colleagues at another university.  Instead, we threw our effort into
+the project and there was no concern on who would get credit for what.
+<P>
+
+<I><B>Q: </B>
+Is that a result of the contract regarding Intellectual Property?  You
+cannot attribute an innovation to an individual anyway, since it
+belongs to the company.
+</I>
+
+<P>A:
+I don't think it's a result of that.  It's true that what's done
+belongs to the company, but I don't think that people think in this
+way.  I think that there's a genuine understanding that the reason we
+are at Akamai and we've taken a break from our academic careers, or
+we've changed our career paths was because we're trying to build a
+company based on a service; to make the company succeed we had to
+provide the best service to satisfy the customers.  Once everybody
+understands their role, the teamwork comes naturally.  It's true that
+sharing of information is much more restricted at a company, and
+especially at a start-up, where it is critical to maintain a
+competitive advantage.  The publication rate out of Akamai is
+extremely low: you may be able to say that you never had that many top
+professors publish so few papers.  But I think this is motivated by
+the same reasons that made us work together as a team.
+<P>
+
+<I><B>Q: </B>
+A graduate student friend of mine would like to do an internship at
+Akamai.  I am not trying here to pull strings, but I would like to ask
+about the Non-Disclosure Agreement (NDA): will my friend be able to
+bring interesting research problems from a stage at Akamai?  Is the
+NDA very strict?
+</I>
+
+<P>A:
+I think that Akamai has a fairly standard NDA; it is not primarily
+targeted at preventing researchers from conducting research.  It is
+more like a standard industry NDA, so that when there are
+collaborations between members of different companies, or between
+Akamai and consultants, everybody understands what Intellectual
+Property (IP) must remain confidential.
+
+I think that in general Akamai is supportive of academic research: our
+roots come from the academia.  We do our best, especially when
+students are involved, to limit the impact that we would have on their
+future careers. 
+
+It would really depend on the specifics of the case: it wouldn't be
+possible for a student to write a thesis that described Akamai's
+entire working infrastructure and then explained new research ideas
+that could be used to improve specific pieces.  There will obviously
+have to be some limits.  By signing the NDA the student agrees not to
+disclose critical IP that belongs to Akamai.
+<P>
+
+<I><B>Q: </B>
+The late [Turing &amp; Nobel Prize winner] Herbert Simon said somewhere
+that he longs for the times when groups of professors were focused on
+an important research goal, and they were led by a senior faculty
+member.  He said that nowadays most faculty seem to pursue more
+individual research objectives.
+
+This seems to match what you said about teamwork.  Do you think
+something could be borrowed from the company model to use in the
+academia?  Maybe to, say, waste less time on ``marginal'' research
+problems?
+</I>
+
+<P>A:
+I think, if I understood the quote, the biggest concern is not whether
+the faculty are working independently, but whether there's someone
+that's leading the faculty and sending them in a certain direction.
+
+I believe it is very healthy for individual faculty members to choose
+the problems that they think are important and to work on them, and
+not to be constrained by the opinions of a more senior faculty member
+who sets the research direction.
+
+At the same time, it is definitely the case that it's possible to
+conduct research much more efficiently as a team, and that the
+academia, at least in the US, really rewards individual
+accomplishments, especially early in the faculty member's career.  To
+gain tenure at a research university a faculty member has to establish
+an independent reputation.  If the faculty were to participate only in
+large collaborative efforts that would work against the current
+reward system and against the long-term faculty member's career
+aspirations.  This aspect of our academic system discourages teamwork.
+
+I don't think there's an easy solution.  When giving senior faculty
+the authority to lead other, you must know that the right individual
+has been empowered.
+<P>
+
+<I><B>Q: </B>
+Let me go to a few more technical questions about Akamai.
+
+The word is that you use Linux a lot.  Is is true?  Why Linux?
+</I>
+
+<P>A:
+It is true that most of Akamai's servers are Linux servers.  However
+we also run a large number of Windows 2000 servers, in particular the
+servers delivering Windows Media format.
+
+Akamai began with Linux servers, and there are a variety of reasons:
+
+<ul>
+<li> First, on the hardware side, the price/performance ratio is best
+using Intel-compatible solutions.
+
+<li> On the software side, we found that there are great advantages
+to having complete access to all of the source code running on our
+servers.  It has allowed us to make modifications to optimize the
+servers for particular types of tasks, as opposed to general-purpose
+servers.
+
+<li> There are other open-source operating systems besides Linux that could
+have been chosen.  The choice for Linux was in some way guided by the
+expertise of the initial group of developers who knew Linux better
+than any open-source system.  
+
+<li> Linux was chosen in part because it is extremely stable.  It is
+very heavily used so the likelihood of catastrophic failures or
+security problems was viewed as being smallest.  The user community is
+so large, and also very dedicated to immediately disclosing problems
+and solutions when they are discovered.
+</ul>
+<P>
+
+<I><B>Q: </B>
+How do you administer, maintain and debug so many machines in 50
+countries?
+</I>
+
+<P>A:
+That's an interesting question.
+
+First of all, we don't man any locations where our servers are
+located.  All of the servers are administered over the network.  This
+is a really challenging task: when you have 8000 servers on any given
+day you are bound to have hardware problems.  Some will be located in
+places that lose connectivity to the rest of the Internet.  The
+software that runs on them has to be designed with the understanding
+that there are periods of time when it is not possible to access the
+servers and there are periods when servers have difficulty
+communicating with other parts of the system.
+
+This is really an open-ended question.  Basically most of Akamai's
+core IP addresses this issue: how to build and maintain a really large
+distributed system.
+
+There are some interesting rules of software development which arise
+when building such a system.  For example, any new software must be
+backwards compatible with software out in the field.  The reason is
+that, even though we do upgrade the software simultaneously on all the
+servers, the process may take a long time depending on the network
+connectivity.  Parts will have been upgraded while parts haven't, and
+yet the system must be able to operate during this transition.
+
+The system also has to be completely de-centralized.  There can be no
+one location on which the effectiveness of the entire system depends.
+
+Since it is so large, it is really important to minimize the number of
+<EM>manual</EM> operations that have to be performed in order to
+administer a system.  If human intervention was needed to keep the
+system working, as more and more and more servers are added, it would
+require more and more human power.
+
+We have a really sophisticated monitoring system, which gives us a
+total view of our system.  The design methodology was to build a
+system that was always self-organized and de-centralized.
+
+<P>
+<TABLE>
+<CAPTION ALIGN="BOTTOM">The Akamai monitoring system.</CAPTION>
+<TR><TD><IMG
+ WIDTH="543" HEIGHT="407" BORDER="0"
+ SRC="img3.png" ALT="Monitoring center">
+</TD></TR>
+</TABLE>
+
+At the same time we do have control over every server, and they all
+run approximately the same software and hardware.  It is not a
+heterogeneous system (not very).  We take advantage of that wherever
+possible.  If two servers are talking, provided they have been
+successfully authenticated, each will know the other is running a
+current or previous version of the Akamai software.
+<P>
+
+<I><B>Q: </B>
+Let's say that tomorrow we can go to the Internet Engineering Task
+Force (IETF) and submit a proposal on what service the network should
+provide.  What would you wish the network to provide to ease your job?
+</I>
+
+<P>A:
+That's a good question.  
+
+I think that the biggest thing would be that the inter-domain routing
+protocols to incorporate some notion of performance when making route
+selections.  Today this is based primarily on the number of hops to
+get from one autonomous system to another.  That is only very roughly
+correlated with performance.  What we see throughout the Internet on
+any given day is that some connections may become congested, although
+this is not advertised in any routes propagated using the Border
+Gateway Protocol (BGP).  Because of this, traffic may go through the
+congested links, and this causes big complications, because Akamai
+promises its content providers it will do a good job.  Because the
+information is not incorporated into routing decisions we have to
+perform measurements to work around the default routes.
+<P>
+
+<I><B>Q: </B>
+I will wrap-up with some more personal questions.  Say I am an
+undergraduate looking towards a research careers in grad school.  What
+research area would you advise me to follow?
+</I>
+
+<P>A:
+I don't want to pick a research area for anybody.  I think you should
+work on something that you believe is important and interesting.
+Unless you're compelled to do the research because you find it
+interesting, your career can be very burdensome.  You must have some
+strong motivation from the beginning.
+
+Choosing an university can be sometimes easy, sometimes hard.  You may
+choose a university because there's a particular faculty member that
+you want to work with.  That's risky, because often there's no
+guarantee that the faculty member will be able to take you on as a
+supervisor.
+
+As a general rule, it would be best to choose an university with a
+reputation for high-quality research results.  This can be measured,
+well, by your opinion of different research papers.  If you look at
+some papers, and you find some that you think are good, look where
+those authors are from.  This may be difficult for a student who has
+yet to begin a research career: then the advice of faculty members at
+your undergraduate institution can help.
+
+I think it is generally a good idea, although I didn't follow this
+advice, to study for a graduate degree at a different school than your
+undergraduate institution, because you'll get a different point of
+view from the faculty, as you will meet many new potential
+collaborators.
+
+In choosing a graduate school the most important thing is that you
+understand what it is that you want to study.
+<P>
+
+<I><B>Q: </B>
+Is there a great CS book which is overlooked by too many?
+</I>
+
+<P>A:
+I haven't written any book, so the answer doesn't come to mind
+immediately [laughs].
+<P>
+
+<I><B>Q: </B>
+Thank you very much!
+</I>
+</BODY>

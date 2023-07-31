@@ -1,0 +1,1112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Colaborare şi concurenţă în Internet</TITLE>
+<META NAME="description" CONTENT="Colaborare şi concurenţă în Internet">
+<META NAME="keywords" CONTENT="tcp-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Colaborare şi concurenţă în Internet</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- <TT>mihaib+@cs.cmu.edu</TT> 
+<BR><TT><A NAME="tex2html2"
+  HREF="http://www.cs.cmu.edu/~mihaib/">http://www.cs.cmu.edu/~mihaib/</A></TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>aprilie 2000</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>slăbiciuni exploatabile ale protocolului TCP
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>cunoştinţe elementare despre reţele
+de calculatoare şi TCP/IP
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>fereastră, congestie, confirmare
+(acknowledgement)
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Cuprins</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html48"
+  HREF="tcp-html.html">Arhitectura Internetului</A>
+<LI><A NAME="tex2html49"
+  HREF="#SECTION00030000000000000000">Protocolul TCP</A>
+<UL>
+<LI><A NAME="tex2html50"
+  HREF="#SECTION00031000000000000000">Specificaţia TCP</A>
+<LI><A NAME="tex2html51"
+  HREF="#SECTION00032000000000000000">Date şi confirmări</A>
+<LI><A NAME="tex2html52"
+  HREF="#SECTION00033000000000000000">Ferestre glisante</A>
+<LI><A NAME="tex2html53"
+  HREF="#SECTION00034000000000000000">Controlul congestiei</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html54"
+  HREF="#SECTION00040000000000000000">Colaborare şi concurenţă în Internet</A>
+<UL>
+<LI><A NAME="tex2html55"
+  HREF="#SECTION00041000000000000000">Spectrul participanţilor</A>
+<LI><A NAME="tex2html56"
+  HREF="#SECTION00042000000000000000">Competiţie şi fair-play</A>
+<LI><A NAME="tex2html57"
+  HREF="#SECTION00043000000000000000">Oportunitate şi motiv</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html58"
+  HREF="#SECTION00050000000000000000">Trei atacuri asupra TCP</A>
+<UL>
+<LI><A NAME="tex2html59"
+  HREF="#SECTION00051000000000000000">Diviziunea confirmărilor</A>
+<LI><A NAME="tex2html60"
+  HREF="#SECTION00052000000000000000">Confirmări duplicate</A>
+<LI><A NAME="tex2html61"
+  HREF="#SECTION00053000000000000000">Confirmări anticipate</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html62"
+  HREF="#SECTION00060000000000000000">Soluţii</A>
+<LI><A NAME="tex2html63"
+  HREF="#SECTION00070000000000000000">Alte surse de informaţie</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+Poate cel mai mare succes al ingineriei contemporane este Internetul.
+Acesta este cu siguranţă cel mai mare sistem creat vreodată de
+umanitate, care leagă sute de milioane de utilizatori de pe toate
+continentele.  Admirabilă este proiectarea sa, care a permis
+sistemului să crească şi să funcţioneze excelent la o scară
+nemaiîntîlnită.
+
+<P>
+Unele dintre calităţile sale derivă cu certitudine din faptul că a
+fost proiectat iniţial ca o reţea militară, care este capabilă să
+supravieţuiască chiar unui atac nuclear, continuînd să
+funcţioneze chiar în prezenţa distrugerii unei porţiuni
+substanţiale din infrastructură.  Dar deşi Internetul a fost
+proiectat pentru a rezista unor atacuri <EM>dinafara</EM>, nimeni nu a
+anticipat in design-ul original că multe probleme vor apărea <EM>dinauntru</EM>. 
+
+<P>
+În acest articol voi prezenta trei astfel de slăbiciuni de
+concepţie, care permit unor calculatoare lipsite de scrupule să
+interfere în mod dramatic cu comportarea reţelei.  Vom vedea apoi
+şi unele soluţii propuse pentru a contra-ataca astfel de acţiuni.
+
+<P>
+Acest text este bazat pe un articol al lui Stephan Savage, un excelent
+cercetător în domeniul reţelelor de calculatoare, care în curînd
+îşi va obţine doctoratul de la prestigioasa universitate Washington
+din Seattle.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Arhitectura Internetului</A>
+</H1>
+
+<P>
+În PC Report au apărut o mulţime de articole despre arhitectura
+Internetului.  Aceasta este conceptual simplă, dar destul de
+complicată pentru a umple o carte întreagă.  De aceea, în această
+secţiune vom revizui doar unele dintre trăsăturile arhitecturale
+esenţiale care ne vor permite să înţelegem de ce apar unele
+probleme.
+
+<P>
+Pietrele de temelie ale Internetului sunt două protocoale<A
+NAME="tex2html3" HREF="#foot57"><SUP>1</SUP></A> numite IP (Internet
+Protocol) şi TCP (Transport Control Protocol).  IP este un protocol
+foarte simplu, care rulează pe toate calculatoarele care compun
+Internetul; IP primeşte pachete de date de la un calculator cu
+rugămintea de a fi livrate la o anumită destinaţie, şi încearcă să
+trimită pachetul acolo.  Am vorbit despre IP cu mai multe ocazii (de
+pildă <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#internet">unul</a>
+în PC Report din mai 1998, 'si <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#tunel">unul</a>
+in aprilie şi mai 1999; puteţi citi aceste articole din pagina mea de
+web).
+
+<P>
+În textul de faţă vom vorbi însă despre TCP.  IP nu oferă nici
+un fel de garanţii asupra datelor trimise; TCP se foloseşte de IP
+pentru a trimite date în mod ne-fiabil, dar repară lipsurile lui IP:
+TCP oferă o transmisiune complet fiabilă a tuturor datelor transmise
+de la un capăt la altul.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Protocolul TCP</A>
+</H1>
+
+<P>
+De fapt protocolul TCP rezolvă nu mai puţin de <EM>trei</EM> probleme
+diferite simultan:
+
+<P>
+<DL>
+<DT><STRONG>Conexiuni:</STRONG></DT>
+<DD>TCP construieşte <EM>conexiuni virtuale</EM> între
+doi participanţi la comunicaţie.  Aceste conexiuni definesc durata
+comunicaţiei: pachete trimise între aceleaşi două calculatoare în
+conexiuni diferite nu sunt confundate între ele.  De asemenea,
+conexiunile rezervă resurse pe calculatoarele care participă la
+comunicaţie, pentru a face procesarea datelor eficientă (cam în
+acelaşi fel în care majoritatea limbajelor de programare oferă
+funcţii speciale pentru a ``deschide'' fişiere şi apoi pentru a
+accesa conţinutul fişierelor).  Managementul conexiunilor se face
+folosind nişte mesaje speciale şi un protocol simplu dar interesant
+numit ``strîngerea de mînă triplă'' (three-way handshake).  În
+acest articol însă nu vom mai menţiona stabilirea şi desfacerea
+conexiunilor.
+
+<P>
+</DD>
+<DT><STRONG>Fiabilitate:</STRONG></DT>
+<DD>TCP transformă comunicaţia ne-fiabilă oferită
+de IP într-o comunicaţie a unor fluxuri de date (streams) 100% <EM>fiabilă</EM>.  Metoda folosită este absolut clasică: detecţia
+pierderilor prin confirmări de la receptor (acknowledgements), şi
+retransmiterea datelor pierdute pe parcurs.  Vom vedea mai multe
+exemple despre folosirea (corectă şi greşită) a aceste scheme.
+
+<P>
+</DD>
+<DT><STRONG>Congestie:</STRONG></DT>
+<DD>în fine, TCP are o funcţie foarte foarte
+importantă, anume <EM>controlul congestiei</EM>.  Dacă sute de
+calculatoare încearcă să folosească un segment de reţea cu
+capacitate mică, TCP le permite să împartă în mod echitabil
+această resursă limitată.
+
+<P>
+În lipsa acestei funcţiuni a lui TCP, reţeaua ar intra rapid în
+ceea ce se numeşte <EM>colaps de congestie</EM>: calculatoarele ar
+trimite pachete mai repede decît reţeaua ar putea transporta, aceste
+pachete ar trebui să se piardă, ceea ce ar cauza re-transmiterea
+pachetelor pierdute, etc.  Rezultatul ar fi întreruperea aproape
+completă a oricărei comunicaţii utile.
+</DD>
+</DL>
+
+<P>
+
+<H2><A NAME="SECTION00031000000000000000">
+Specificaţia TCP</A>
+</H2>
+
+<P>
+Protocoalele de funcţionare a Internetului sunt publicate într-o
+formă extrem de bizară: sub forma unor documente numite ``Request
+For Comments'', sau RFC.  Exista mai mult de 2000 de astfel de
+documente, dar nu toate sunt la fel de importante.  Multe astfel de
+documente sunt de fapt vide (nu au fost niciodată publicate), unele
+sunt nişte glume sau poezioare, iar unele sunt documente foarte
+serioase.  Toate sunt disponibile în formă electronică într-o
+mulţime de locuri de pe Internet (normal, nu?).
+
+<P>
+Aceasta metodă de formalizare a arhitecturii stă într-un contrast
+dramatic faţă de metoda folosită de comitetele de standardizare
+internaţionale, care publică documente extrem de groase, revizuite
+pentru multă vreme, si extrem de ``serioase''.
+
+<P>
+RFC-urile ilustrează evoluţia extrem de rapidă şi ``impulsivă''
+(prin comparaţie) a Internetului; multe RFC-uri sunt revizuite în
+mod repetat.
+
+<P>
+Specificaţia TCP/IP se întinde pe mai multe RFC-uri.  Definiţia
+oficială a fost dată în 1981 în RFC 793.  Corecţii şi lămuriri
+apar în RFC 1122.  Din păcate alte detalii ale funcţionării sale
+se întind efectiv pe zeci de RFC-uri.
+
+<P>
+
+<H2><A NAME="SECTION00032000000000000000">
+Date şi confirmări</A>
+</H2>
+
+<P>
+TCP este un protocol simetric (full-duplex), în care ambele capete
+pot transmite date.  E mai simplu însă să studiem problema ca şi
+cum unul dintre participanţi doar trimite date, iar celălalt doar le
+receptează.
+
+<P>
+Pentru a descrie comunicaţia vom folosi desene ca în
+figura&nbsp;<A HREF="tcp-html.html#comunicatii">1</A>.  
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="comunicatii"></A><A NAME="199"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 1:</STRONG>
+O diagramă care indică schimbul de
+mesaje între emiţător şi receptor.  Timpul este simbolizat de
+săgeţile orizontale şi curge spre dreapta.  Săgeţile oblice
+indică ``traiectoria'' pachetelor între emisie şi recepţie.  Acest
+desen indică o conversaţie tipică, în care un pachet de date este
+trimis de emiţător şi o confirmare soseşte apoi de la receptor.
+Vom prescurta pachetele de confirmare cu abrevierea standard, ACK
+(acknowledgement).</CAPTION>
+<TR><TD><IMG
+ WIDTH="360" HEIGHT="97" BORDER="0"
+ SRC="img1.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=8cm\epsffile{comunicatii.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+TCP funcţionează cam ca scrisorile cu confirmare de primire de la
+poşta: poşta este un mecanism ne-fiabil de transmisiune, care pierde
+scrisori.  De aceea trimiţătorul poate să ceară în mod explicit
+ca cealaltă parte să confirme primirea plicului.  Cînd poştaşul
+livrează un plic, receptorul trebuie să semneze de primire.  Apoi
+confirmarea de primire este trimisă înapoi tot prin poştă.
+
+<P>
+Pentru a obţine fiabilitate, emiţătorul aşteaptă ce aşteaptă,
+iar dacă nu primeşte nici o confirmare, mai trimite încă o dată
+scrisoarea.  În clipa cînd a primit o confirmare, ştie că
+scrisoarea a ajuns la celălalt capăt.
+
+<P>
+Observaţi că lipsa recepţiei unei confirmări poate indica două
+lucruri: 
+
+<P>
+
+<UL>
+<LI>Ca în figura&nbsp;<A HREF="tcp-html.html#pierdut-date">2</A>, datele se pot pierde.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="pierdut-date"></A><A NAME="205"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 2:</STRONG>
+Dacă datele sunt pierdute de protocolul
+IP, procotolul TCP re-transmite după un anumit timp pachetul care nu
+a fost confirmat.  În clipa în care primeşte confirmarea, ştie că
+pachetul a ajuns la destinaţie.</CAPTION>
+<TR><TD><IMG
+ WIDTH="360" HEIGHT="111" BORDER="0"
+ SRC="img2.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=8cm\epsffile{pierdut-date.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+</LI>
+<LI>Ca în figura&nbsp;<A HREF="tcp-html.html#pierdut-ack">3</A>, confirmarea se poate pierde.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="pierdut-ack"></A><A NAME="211"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 3:</STRONG>
+Dacă confirmarea este pierdută de
+protocolul IP, procotolul TCP re-transmite după un anumit timp
+pachetul care nu a fost confirmat.  Retransmiţînd datele nu facem
+decît o oarecare risipă; dar pentru că emiţătorul nu poate
+distinge nicicum între pierderea datelor şi a confirmării, nu are
+nici o altă alternativă.</CAPTION>
+<TR><TD><IMG
+ WIDTH="360" HEIGHT="111" BORDER="0"
+ SRC="img3.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=8cm\epsffile{pierdut-ack.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+</LI>
+</UL>
+
+<P>
+
+<H2><A NAME="SECTION00033000000000000000">
+Ferestre glisante</A>
+</H2>
+
+<P>
+Schema cu confirmare este foarte eficace pentru a combate pierderea de
+pachete, dar este ineficace dacă pachetele călătoresc mult timp
+pînă la destinaţie<A NAME="tex2html7"
+  HREF="#foot191"><SUP>2</SUP></A>.  Pentru că pînă la întoarcerea primei
+confirmări emiţăţorul stă degeaba, o grămadă de resurse sunt
+irosite.
+
+<P>
+Din cauza asta, TCP încearcă sa trimită mai multe pachete la rînd,
+înainte de a primi confirmarea pentru fiecare din ele.  Astfel,
+emiţătorul menţine o <EM>fereastră</EM>, care este lista pachetelor
+trimise dar încă ne-confirmate.  De îndată ce primeşte
+confirmările, TCP avansează fereastra şi trimite pachete noi.
+
+<P>
+Modul în care se încrucişează pachetele de date şi confirmările
+este ilustrat de figura&nbsp;<A HREF="tcp-html.html#fereastra">4</A>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="fereastra"></A><A NAME="217"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 4:</STRONG>
+Pentru a nu irosi resursele reţelei, TCP de
+obicei trimite mai multe pachete înainte de a primi confirmarea
+primului.  Această figură ilustrează o fereastră de emisie de
+dimensiune 3: TCP trimite trei pachete, şi trimite apoi pachete noi
+doar dacă primeşte confirmări pentru cele trimise.</CAPTION>
+<TR><TD><IMG
+ WIDTH="357" HEIGHT="104" BORDER="0"
+ SRC="img4.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=8cm\epsffile{fereastra.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H2><A NAME="SECTION00034000000000000000">
+Controlul congestiei</A>
+</H2>
+
+<P>
+În fine, discutăm aici pe scurt despre modul în care TCP face
+faţă congestiei din reţea.  Această secţiune este foarte
+importantă, pentru că toate cele trei atacuri pe care le discutăm
+în acest text manipulează slăbiciuni în specificarea şi
+implementarea acestei scheme.
+
+<P>
+Asumpţia de bază a lui TCP este că reţeaua de transmisiune este
+inerent fiabilă.  TCP presupune că singura cauză de pierderi în
+reţea este congestia<A NAME="tex2html9"
+  HREF="#foot94"><SUP>3</SUP></A>.
+
+<P>
+Ce este congestia?  Să ne imaginăm un ruter<A NAME="tex2html10"
+  HREF="#foot95"><SUP>4</SUP></A> în reţea, care are trei
+interfeţe de 1 megabit/secundă.  Să ne imaginăm că pe două
+dintre interfeţe se află nişte trimiţători care emit cu 800 kbps,
+iar pe a treia se află receptorul datelor.  Ei bine, suma celor două
+fluxuri de 800 kbps depăşeşte capacitatea legăturii spre receptor.
+Ca atare, pachetele care intră în ruter nu pot ieşi toate în timp
+util.  Ruterul va trebui să stocheze pachetele în exces în memoria
+internă.  Dar dacă această situaţie durează destul de mult,
+ruterul trebuie să consume cîte 600 kbps de memorie pentru a stoca
+aceste pachete în exces.  După 30 de secunde de trafic neîntrerupt,
+e nevoie de peste 2M de RAM.  Atunci cînd memoria ruterului este
+complet utilizată, ruterul nu mai are nimic de făcut decît să
+renunţe la a mai trimite pachetele spre ieşire (pur şi simplu sunt
+şterse din memorie).  Aceasta este congestia, şi rezultatul ei,
+pierderea de pachete.
+
+<P>
+Deci TCP îşi imaginează că atunci cînd un pachet nu este
+confirmat în timp util, s-a pierdut fie pachetul fie confirmarea,
+deci reţeaua este congestionată.  Ca atare, trimiţătorul imediat
+reduce rata de transmisiune, pentru a reduce numărul de pachete din
+reţea.
+
+<P>
+Dacă toţi transmiţătorii care detectează congestie reduc rata
+simultan, efectul este că ruterele din reţea primesc mai puţine
+date la intrare, şi au timp să golească pachetele stocate în
+memorie trimiţindu-le la destinaţie.  Pentru că marea majoritate a
+calculatoarelor din reţea folosesc protocolul TCP, acest comportament
+duce la dispariţia congestiei.
+
+<P>
+Cum reduce emiţătorul TCP rata de transmisiune?  Într-un mod foarte
+simplu: reduce automat dimensiunea ferestrei, şi măreşte
+dimensiunea duratei de timeout.  În felul acesta va face ca mai
+puţine pachete să se afle simultan în reţea.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Colaborare şi concurenţă în Internet</A>
+</H1>
+
+<P>
+Am văzut pînă acum care sunt mecanismele prin care TCP îşi
+îndeplineşte misiunile (unele dintre ele).  Pentru a înţelege de
+ce aceste mecanisme nu sunt suficiente pentru orice scenariu, trebuie
+să aruncăm o privire asupra participanţilor la trafic din Internet
+şi asupra intereselor lor contradictorii.
+
+<P>
+
+<H2><A NAME="SECTION00041000000000000000">
+Spectrul participanţilor</A>
+</H2>
+
+<P>
+Într-o excelentă expunere despre arhitectura Internetului, Stefan
+Savage a prezentat gradaţia din figura&nbsp;<A HREF="tcp-html.html#spectru">5</A>.  
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="spectru"></A><A NAME="223"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 5:</STRONG>
+Intenţiile participanţilor la comunicaţie
+în Internet variază între dorinţa de colaborare reciprocă pînă
+la intenţii distructive.  Proiectanţii Internet-ului original au
+crezut că utilizatorii se vor plasa doar în regiunea
+``cooperării''; situaţia de astăzi este însă net diferită.</CAPTION>
+<TR><TD><IMG
+ WIDTH="537" HEIGHT="51" BORDER="0"
+ SRC="img5.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{spectru.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+<DL>
+<DT><STRONG>Cooperare:</STRONG></DT>
+<DD>în continuare multe calculatoarelor din Internet
+cooperează pentru buna funcţionare a reţelei.  De exemplu, toate
+ruterele comunică între ele informaţii despre structura reţelei,
+ceea ce permite datelor să circule între oricare două puncte, chiar
+dacă ele aparţin unor domenii administrative distincte.
+
+<P>
+</DD>
+<DT><STRONG>Indiferenţă:</STRONG></DT>
+<DD>probabil relaţia cea mai frecventă între
+două puncte terminale din Internet este cea de indiferenţă.  De
+exemplu calculatorul de la <TT><A NAME="tex2html12"
+  HREF="www.agora.ro">www.agora.ro</A></TT> este indiferent la
+acţiunile mele, mai puţin dacă eu vreau sa obţin exact ceea ce el
+serveşte (pagini de web).  
+
+<P>
+Între cooperare şi indiferenţă este o distincţie: de exemplu eu
+aş putea să doresc să măsor nişte parametri ai reţelei între
+mine şi calculatorul de la Agora, ca să ştiu de pildă unde se
+pierd pachete.  Serverul de web <TT><A NAME="tex2html13"
+  HREF="www.agora.ro">www.agora.ro</A></TT> nu îmi va oferi
+însă nici un suport; nu are nici un avantaj din faptul că eu pot
+să măsor parametrii reţelei.
+
+<P>
+</DD>
+<DT><STRONG>Concurenţă:</STRONG></DT>
+<DD>pe de altă parte între mine şi oricare alt
+calculator care accesează acelaşi server de web este o relaţie de
+concurenţă: dacă serverul de web mi-ar consacra mie toate
+resursele, atunci aş primi un răspuns mult mai rapid şi mai
+prompt.  (Nu e vorba de concurenţă în sens economic, ci de
+competiţie pentru resurse limitate ale reţelei.)
+
+<P>
+</DD>
+<DT><STRONG>Duşmănie:</STRONG></DT>
+<DD>în fine, după cum stau mărturie capetele de
+afiş din lunile trecute, Internetul permite atacuri pe scară largă
+împotriva calculatoarelor conectate, de la intruziuni, furt de
+informaţie (care ţin mai puţin de natura reţelei cît de
+implementarea sau administrarea defectuoasă a programelor), pînă la
+atacuri DOS (Denial of Service), care pot interzice accesul la anumite
+servicii (vedeţi de pildă PC Report din martie 2000).
+</DD>
+</DL>
+
+<P>
+
+<H2><A NAME="SECTION00042000000000000000">
+Competiţie şi fair-play</A>
+</H2>
+
+<P>
+În acest articol ne vom focaliza doar asupra uneia dintre aceste
+relaţii competitive: relaţia de concurenţă.  În orice context în
+care mai multe entităţi concurează asupra unui număr redus de
+resurse, vom avea de a face cu competiţie.  Pentru că în Internet
+avem de a face cu un număr uriaş de clienţi potenţiali, este
+virtual imposibil să avem resurse suficiente la dispoziţie pentru a
+satisface pe deplin pe oricine.  Aşa că prezenţa competiţiei este
+absolut naturală.  Atunci care e problema?
+
+<P>
+Problema este dacă nu cumva accesul la resurse nu este
+``democratic''.  În mod ideal fiecare client ar trebui să obţină
+la fel de multe resurse cît ceilalţi clienţi<A NAME="tex2html14"
+  HREF="#foot108"><SUP>5</SUP></A>.
+
+<P>
+Trebuie să fim deci pregătiţi pentru competiţie între feluriţii
+participanţi la trafic.  Întrebarea este: asigură protocoalele din
+reţea o competiţie ``onestă'' între participanţi?  Altfel spus,
+<EM>impun</EM> aceste protocoale un comportament echitabil?  În mod
+normal ar trebui să fie imposibil să ``păcălim'' protocoalele în
+vreun fel.  Un nod de comunicaţie în Internet nu are voie să aibă
+încredere în nimeni, nici măcar în cel cu care comunică în mod
+direct; de ce ar avea un site de web încredere în clienţii care îi
+cer date?  (Serviciul preponderent ca importanţă -- în termeni de
+trafic sau importanţă comercială -- în Internet este serviciul de
+web, aşa că asupra lui ne vom concentra.)
+
+<P>
+Într-un <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#csfq">articol</a>
+scris de Ion Stoica în colaborare cu autorul celui de faţă, din PC
+Report din mai 1999, am arătat cum un transmiţător care nu respectă
+semnalele de congestie (în acel caz un transmiţător care folosea
+protocolul UDP, despre care nu am vorbit în acest text), poate căpăta
+avantaje în detrimentul tuturor celorlalţi.  Să zicem că un server
+refuză să asculte semnalele de congestie, şi transmite tot timpul la
+maxim.  Celelalte servere, cinstite, vor reduce traficul, şi toată
+capacitatea reţelei va fi disponibilă pentru ticălos.
+
+<P>
+Atîta vreme cît traficul ``ticăloşilor'' nu cauzează congestie
+(adică capacitatea reţelei este suficientă pentru a transporta
+acest trafic), ticăloşii vor putea transmite la capacitate maximă,
+iar participanţii oneşti nu vor transmite decît pe capacitatea
+rămasă.  Dacă însă nu e sugicientă capacitate pentru cei
+incorecţi, reţeaua ajunge imediat în colaps de congestie, şi
+nimeni nu mai poate transmite nimic.
+
+<P>
+Şi totuşi reţeaua funcţionează rezonabil.  De ce oare?  Ce
+împiedică comportamente anti-sociale pe scară largă?
+
+<P>
+
+<H2><A NAME="SECTION00043000000000000000">
+Oportunitate şi motiv</A>
+</H2>
+
+<P>
+Aparent am putea fi tentaţi să spunem: deşi protocoalele nu pot
+împiedica comportamente necinstite, totuşi în practică nu le putem
+folosi în mod ilegal, din cauza separaţiei între părţi.  Iată
+argumentul:
+
+<P>
+Pentru a putea comite o faptă anti-socială trebuie să avem două
+elemente deodată: <EM>motivul</EM> şi <EM>ocazia</EM>.  Să le analizăm
+pe fiecare în parte.
+
+<P>
+<DL>
+<DT><STRONG>Motiv</STRONG></DT>
+<DD> 
+<DL>
+<DT><STRONG>Client</STRONG></DT>
+<DD>clienţii sunt în directă competiţie cu ceilalţi
+clienţi; un client are deci toate motivele să obţină cît mai
+mult trafic de la un server, în pofida celorlalţi.
+</DD>
+<DT><STRONG>Server</STRONG></DT>
+<DD>putem spune acelaşi lucru despre servere: un server are
+toate intenţiile să transmită cît mai multe date cît mai rapid,
+pentru a-şi face proprii clienţi cît mai satisfăcuţi (în
+detrimentul clienţilor celorlalte servere de la concurenţă).
+</DD>
+</DL>
+</DD>
+<DT><STRONG>Oportunitate</STRONG></DT>
+<DD> 
+<DL>
+<DT><STRONG>Client</STRONG></DT>
+<DD>În traficul de web majoritatea datelor se merg de la
+server la client: clientul trimite o cerere de date, scurtă, iar
+serverul răspunde cu o cantitate mare de date.  Clientul este un
+simplu ``receptor''.  Aparent nu clientul nu poate face nimic pentru a
+căpăta mai multe date.
+</DD>
+<DT><STRONG>Server</STRONG></DT>
+<DD>Serverul are toate intenţiile să trimită cît mai
+multe date posibil, în detrimentul celorlalte calculatoare care
+folosesc reţeaua: profitul pentru server este maxim cînd mai mulţi
+clienţi pot accesa informaţia.  Aparent deci serverul poate ignora
+semnalele de reducere a congestiei din reţea, bazîndu-se pe faptul
+că celelalte servere vor micşora traficul, ceea ce îi va permite
+să transmită mai rapid.
+
+<P>
+În realitate lucrurile nu stau aşa: studiile arată că în cazul
+serverelor mari de web ``gîtuitura'' în Internet este de fapt foarte
+aproape de server.  Resursa critică deci nu e partea din reţea
+comună cu alte servere, ci chiar ``ieşirea'' serverului la
+Internet.  Mărind congestia deci serverul îşi dă singur cu
+ciocanul peste degete.
+</DD>
+</DL>
+</DD>
+</DL>
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="131"></A>
+<TABLE>
+<CAPTION><STRONG>Tabela 1:</STRONG>
+Oportunitate şi motivaţie pentru a ``înşela'' ceilalţi
+participanţi la trafic.  Căsuţa marcată cu asterisk este de fapt
+incorect etichetată.</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1" ALIGN="CENTER">
+<TR><TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="CENTER"><B>Motiv</B></TD>
+<TD ALIGN="CENTER"><B>Oportunitate</B></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><B>Client</B></TD>
+<TD ALIGN="CENTER">Da</TD>
+<TD ALIGN="CENTER">Nu<IMG
+ WIDTH="13" HEIGHT="20" ALIGN="BOTTOM" BORDER="0"
+ SRC="img6.png"
+ ALT="$^*$"></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><B>Server</B></TD>
+<TD ALIGN="CENTER">Da</TD>
+<TD ALIGN="CENTER">Nu</TD>
+</TR>
+</TABLE>
+</DIV>
+</TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Trei atacuri asupra TCP</A>
+</H1>
+
+<P>
+Iată deci că aparent cei care ar putea face rău (cei care trimit
+multe date, serverele) nu pot fi necinstiţi, pentru că-şi fac rău
+lor înşile, iar clienţii nu pot face rău, pentru că ei nu
+transmit multe date, ci doar recepţionează.
+
+<P>
+În realitate clienţii au la dispoziţie o unealtă foarte puternică
+cu care pot controla comportarea serverului, fără voia acestuia:
+confirmările.
+
+<P>
+Stefan Savage împreună cu colegii din grupul lui de cercetare au
+demonstrat acest lucru ``pe viu'': au luat un client linux şi au
+făcut modificări minore în implementarea protocolului TCP (sub 100
+de linii pentru toate atacurile prezentate la un loc).  Apoi au
+demonstrat cum acest client, folosit pentru a extrage date de la mai
+multe site-uri de web foarte importante (deci care nu pot fi
+suspectate de colaborare), poate monopoliza reţeaua în detrimentul
+celorlalţi clienţi.
+
+<P>
+În cele ce urmează voi ilustra pe scurt trei modificări diferite
+şi impactul fiecăreia dintre ele.  Datele experimentale sunt
+din articolul citat.
+
+<P>
+
+<H2><A NAME="SECTION00051000000000000000">
+Diviziunea confirmărilor</A>
+</H2>
+
+<P>
+În TCP datele transmise formează un flux (stream).  Fiecare pachet
+trimite o parte din date, şi indică poziţionarea lor în flux.  De
+pildă, primul pachet ar putea trimite datele de la 0 la 1000, al
+doilea de la 1001 la 2000, etc.  Confirmările pe de altă parte sunt
+<EM>cumulative</EM>: o confirmare care spune ``3001'' înseamnă: ``am
+primit toate datele între 0 şi 3000; aştept date începînd de la
+3001 în continuare''.  În felul acesta, dacă o confirmare pentru un
+pachet se pierde (de exemplu cea pentru pachetul 1001-2000),
+confirmările ulterioare o pot subsuma, reducînd traficul necesar.
+
+<P>
+Primul atac e surprinzător de simplu: cînd receptorul primeşte un
+pachet, să zicem cu datele 0-1000, el va trimite în loc de o
+confirmare, trei: una pentru 333, una pentru 667, una pentru 1000.
+Atacul este ilustrat de figura&nbsp;<A HREF="tcp-html.html#diviziune">6</A>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="diviziune"></A><A NAME="229"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 6:</STRONG>
+Atacul prin diviziunea confirmărilor.
+Receptorul primeşte un singur pachet, dar confirmă mai multe
+bucăţele.</CAPTION>
+<TR><TD><IMG
+ WIDTH="357" HEIGHT="107" BORDER="0"
+ SRC="img7.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=8cm\epsffile{diviziune.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+E clar că în felul acesta protocolul rămîne corect.  Care e
+problema?
+
+<P>
+Problema este în modul în care emiţătorul trebuie să reacţioneze
+la astfel de mesaje: dacă citim în RFC 2581 vom vedea un paragraf
+care spune următoarele:
+
+<P>
+<BLOCKQUOTE>
+...cînd un pachet de confirmare este primit, trimiţătorul
+măreşte fereastra cu SMSS (Sender Maximum Segment Size)<A NAME="tex2html17"
+  HREF="#foot142"><SUP>6</SUP></A>.
+
+</BLOCKQUOTE>
+
+<P>
+Nu ne interesează prea tare cît e valoarea lui SMSS (această
+valoare este stabilită între cele două părţi cînd se stabileşte
+conexiunea); important e că, trimiţînd mai multe confirmări,
+receptorul poate mări fereastra emiţătorului aproape în mod
+arbitrar!  Dacă alege să confirme fiecare octet, poate mări
+fereastra de mii de ori după un singur pachet primit!
+Figura&nbsp;<A HREF="tcp-html.html#diviziune-rezultat">7</A> arată ce se întîmplă după aceea.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="diviziune-rezultat"></A><A NAME="235"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 7:</STRONG>
+Rezultatul atacului prin diviziunea
+confirmării.  Emiţătorul creşte fereastra cu o cantitate mare
+(SMSS) pentru fiecare confirmare primită, trimiţînd o rafală de
+date imediat după primirea confirmărilor.</CAPTION>
+<TR><TD><IMG
+ WIDTH="352" HEIGHT="155" BORDER="0"
+ SRC="img8.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=8cm\epsffile{diviziune-rezultat.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Asta înseamnă că emiţătorul (serverul) va trimite apoi o rafală
+de pachete de date.  Observaţi că pachetele sunt trimise unul după
+altul, înainte de a da o şansă reţelei să trimită semnale de
+congestie.  În mod normal fereastra emiţătorului creşte treptat
+pînă atinge o valoare de echilibru, care nu produce congestie
+(această creştere se numeşte ``slow start'').  Graficul din
+figura&nbsp;<A HREF="tcp-html.html#diviziune-grafic">8</A> arată că receptorul poate ``suge'' de
+la sursă documente uriaşe aproape instantaneu.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="diviziune-grafic"></A><A NAME="241"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 8:</STRONG>
+Rata de transfer măsurată la client
+în Internet pentru două scheme: TCP normal şi TCP modificat cu
+diviziunea confirmării.  TCP-ul care trişează obţine o rată de
+transfer uriaşă, în detrimentul celorlalte calculatoare din
+reţea.</CAPTION>
+<TR><TD><IMG
+ WIDTH="540" HEIGHT="365" BORDER="0"
+ SRC="img9.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{diviziune-grafic.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H2><A NAME="SECTION00052000000000000000">
+Confirmări duplicate</A>
+</H2>
+
+<P>
+A doua schemă este şi mai simplă şi se bazează pe aceeaşi
+slăbiciune din specificaţia TCP.  În loc să trimită mai multe
+pachete de confirmare diferite, receptorul trimite în mod repetat un
+singur pachet de confirmare.  Receptorul poate folosi chiar pachetul
+de confirmare pentru octetul 1 (ca şi cum n-ar fi primit încă
+nimic).
+
+<P>
+Figurila&nbsp;<A HREF="tcp-html.html#duplicate-rezultat">9</A> arată cum se comportă
+emiţătorul.  Performanţa măsurată în Internet (şi nu într-o
+reţea de laborator!) este aceeaşi ca pentru schema cu diviziune.
+
+<P>
+Această schemă este şi mai perfidă decît cea precedentă; dacă
+pentru cea precedentă serverul ar putea să devină suspicios, pentru
+că sunt confirmate doar fragmente de pachet<A NAME="tex2html20"
+  HREF="#foot156"><SUP>7</SUP></A>.  Din punct de vedere al
+serverului un scenariu în care vin mai multe confirmări identice
+este perfect plauzibil (protocolul IP nu promite că nu duplică
+pachete).
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="duplicate-rezultat"></A><A NAME="247"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 9:</STRONG>
+Rezultatul atacului prin duplicarea
+confirmărilor.  Receptorul trimite mai multe confirmări identice;
+fiecare măreşte mult fereastra emiţătorului, care emite o apoi
+multe date.</CAPTION>
+<TR><TD><IMG
+ WIDTH="352" HEIGHT="155" BORDER="0"
+ SRC="img10.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=8cm\epsffile{duplicate-rezultat.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H2><A NAME="SECTION00053000000000000000">
+Confirmări anticipate</A>
+</H2>
+
+<P>
+În fine, ultimul atac este mai riscant, pentru că confirmă date
+care încă nu au fost primite.  Ideea este că confirmările şi
+datele se încrucişează pe parcurs, şi serverul are impresia că
+datele au ajuns mult mai repede.  Figura&nbsp;<A HREF="tcp-html.html#anticipate-rezultat">10</A>
+arată cum funcţionează acest atac.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="anticipate-rezultat"></A><A NAME="253"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 10:</STRONG>
+Rezultatul atacului prin
+anticiparea confirmărilor.  Receptorul trimite confirmări chiar
+pentru pachetele care nu au fost primite; aceste pachete rapid primite
+dau impresia că receptorul este foarte ``aproape'', şi ca atare
+cauzează creşterea rapidă a ferestrei.</CAPTION>
+<TR><TD><IMG
+ WIDTH="353" HEIGHT="163" BORDER="0"
+ SRC="img11.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=8cm\epsffile{anticipate-rezultat.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Desigur, în cazul unei pierderi reale de date, receptorul are
+probleme, pentru că emiţătorul nu va re-trimite datele deja
+confirmate.  Dar, aşa cum arată cercetătorii de la U Washington,
+protocolul HTTP, prin care clientul comunică cu serverul de
+web<A NAME="tex2html23"
+  HREF="#foot192"><SUP>8</SUP></A> permite clientului să
+re-ceară date de la server în mod selectiv.  Deci pierderile la
+nivel TCP pot fi compensate de un client modificat prin nivele
+superioare de corecţie a erorilor.
+
+<P>
+Performanţele schemei cu anticipare de confirmări sunt mai puţin
+spectaculoase, dar oricum, mult superioare celei a unui client normal
+(figura&nbsp;<A HREF="tcp-html.html#anticipate-grafic">11</A>).
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="anticipate-grafic"></A><A NAME="259"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 11:</STRONG>
+Performanţă comparată măsurată
+în Internet a unui client normal şi a unui client care foloseşte
+schema cu confirmări anticipate.</CAPTION>
+<TR><TD><IMG
+ WIDTH="539" HEIGHT="368" BORDER="0"
+ SRC="img12.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{anticipate-grafic.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Soluţii</A>
+</H1>
+
+<P>
+Partea cea mai neplăcută din toată povestea asta este că la ora
+actuală <EM>nu există nici un fel de soluţii practice pentru a
+împiedica astfel de comportamente</EM>.  Lucrările lui Savage şi a
+echipei sale propun mai multe soluţii, dar toate necesită schimbări
+în infrastructura Internetului, care schimbări sunt foarte greu de
+făcut şi mai ales implementat pe scară largă.
+
+<P>
+Voi menţiona doar pe scurt natura propusă a soluţiei; pentru
+detalii cei interesaţi pot vedea articolul original.  Ideea ar fi ca
+emiţătorul să poată ``verifica'' fiecare confirmare venită de la
+receptor, garantînd că acesta nu încalcă regulile.  Pentru
+aceasta, emiţătorul va pune în fiecare pachet un număr aleator
+diferit.  Receptorul va trebui să includă în confirmare numărul cu
+pricina.  Aceasta va preveni atacuri cu confirmări anticipate.
+
+<P>
+De asemenea, emiţătorul va ţine minte confirmările primite, şi nu
+va creşte fereastra pentru confirmări duplicate sau divizate.
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Alte surse de informaţie</A>
+</H1>
+
+<P>
+O listă a tuturor RFC-urilor cu opţiuni de căutare este prezentă
+la 
+<BR><TT><A NAME="tex2html25"
+  HREF="http://www.cis.ohio-state.edu/hypertext/information/rfc.html">http://www.cis.ohio-state.edu/hypertext/information/rfc.html</A></TT>.
+
+<P>
+RFC-ul de bază care descrie funcţionarea TCP pentru prevenirea
+congestiei este RFC 2581
+<TT><A NAME="tex2html26"
+  HREF="http://www.cis.ohio-state.edu/htbin/rfc/rfc2581.html">http://www.cis.ohio-state.edu/htbin/rfc/rfc2581.html</A></TT>.
+
+<P>
+Pagina de web a lui Stefan Savage este la
+<TT><A NAME="tex2html27"
+  HREF="http://www.cs.washington.edu/homes/savage">http://www.cs.washington.edu/homes/savage</A></TT>.  
+
+<P>
+Articolul lui Savage care a inspirat acest text este ``TCP Congestion
+Control with a Misbehaving Receiver'', <EM>Stefan Savage, Neal
+Cardwell, David Wetherall and Tom Anderson</EM>, ACM Computer
+Communications Review, pp. 71-78, v 29, no 5, October, 1999,
+
+<BR><TT><A NAME="tex2html28"
+  HREF="http://www.cs.washington.edu/homes/savage/papers/CCR99.ps">http://www.cs.washington.edu/homes/savage/papers/CCR99.ps</A></TT>.
+
+<P>
+Despre comportarea necinstită în Internet, efectele ei, şi soluţii,
+vedeţi articolul ``Scalabilitatea în reţele de comunicaţii de date'',
+Ion Stoica şi Mihai Budiu, din PC Report mai 1999, de asemenea la
+<TT><A NAME="tex2html29"
+HREF="http://www.cs.cmu.edu/~mihaib/articles/csfq.ps.gz">http://www.cs.cmu.edu/~mihaib/articles/csfq.ps.gz</A></TT>.
+
+<P>
+Pentru o descriere amplă şi plăcută a funcţionării Internetului
+vedeţi de pildă cartea ``Internetworking with TCP/IP, volume I,
+Principles, Protocols and Architecture'', <EM>Douglas Comer</EM>,
+Prentice Hall 1995.
+
+<P>
+Un ghid interesant despre RFC-uri este la
+
+<BR><TT><A NAME="tex2html30"
+  HREF="http://www.netbook.cs.purdue.edu/othrpags/page24.htm">http://www.netbook.cs.purdue.edu/othrpags/page24.htm</A></TT>.  Acesta
+este de fapt o anexă a cărţii mai sus-citate, care însă din
+păcate este uşor învechită (de exemplu RFC 2581 despre congestie
+nu este menţionat de loc).
+
+<P>
+<BR><HR><H4>Note</H4>
+<DL>
+<DT><A NAME="foot57">... protocoale</A><A NAME="foot57"
+ HREF="tcp-html.html#tex2html3"><SUP>1</SUP></A>
+<DD>Un
+protocol este un set de reguli care descrie cum participanţii la o
+discuţie (calculatoarele) conversează între ei pentru a se
+înţelege.
+
+<DT><A NAME="foot191">... tie</A><A NAME="foot191"
+ HREF="tcp-html.html#tex2html7"><SUP>2</SUP></A>
+<DD>De fapt problema este indicată de
+mărimea care se numeşte <EM>capacitatea reţelei</EM>, care este
+produsul dintre lărgimea de bandă şi durata propagării unui
+pachet; cu cît această valoare este mai mare, cu atît ineficienţa
+unei scheme care aşteaptă o confirmare înainte de a trimite un
+pachet este mai mare.  Dar acest subiect depăşeşte interesul
+acestui articol.
+
+<DT><A NAME="foot94">... congestia</A><A NAME="foot94"
+ HREF="tcp-html.html#tex2html9"><SUP>3</SUP></A>
+<DD>Acest lucru nu este adevărat în
+anumite tipuri de reţele, cum ar fi cele radio; de aceea TCP nu
+funcţionează prea eficient cu aceste reţele.
+
+<DT><A NAME="foot95">... ruter</A><A NAME="foot95"
+ HREF="tcp-html.html#tex2html10"><SUP>4</SUP></A>
+<DD>Un ruter este
+un calculator intermediar în reţea, care serveşte drept una dintre
+legăturile dintre sursă şi destinaţie.
+
+<DT><A NAME="foot108">... ti</A><A NAME="foot108"
+ HREF="tcp-html.html#tex2html14"><SUP>5</SUP></A>
+<DD>De fapt, mai
+cinstit ar fi ca fiecare să obţină după cum plăteşte, dar
+infrastructura Internetului contemporan nu permite o astfel de
+diferenţiere; majoritatea cercetării din reţele de calculatoare se
+desfăşoară în această direcţie: cum putem oferi servicii cu
+calitate diferită pentru clienţi diferiţi (Quality of Service,
+QoS).
+
+<DT><A NAME="foot142">... Size)</A><A NAME="foot142"
+ HREF="tcp-html.html#tex2html17"><SUP>6</SUP></A>
+<DD>De
+fapt comportamentul protocolului este uşor diferit în timpul
+iniţierii şi după detectarea congestiei, dar calitativ rezultatul
+este acelaşi.
+
+<DT><A NAME="foot156">... pachet</A><A NAME="foot156"
+ HREF="tcp-html.html#tex2html20"><SUP>7</SUP></A>
+<DD>Reţeaua are
+dreptul să fragmenteze pachetele în bucăţi, dar acest lucru se
+întîmplă foarte rar, pentru că adesea părţile ale o mărime de
+pachet suficient de mică pentru a nu fi nevoie să fie vreodată
+fragmentată, din motive de performanţă.
+
+<DT><A NAME="foot192">...
+web</A><A NAME="foot192"
+ HREF="tcp-html.html#tex2html23"><SUP>8</SUP></A>
+<DD>HTTP foloseşte TCP pentru a transmite date, HTTP indică
+<EM>cum</EM> arată cererile şi răspunsurile.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

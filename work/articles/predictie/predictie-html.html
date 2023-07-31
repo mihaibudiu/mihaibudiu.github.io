@@ -1,0 +1,1249 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Predicţia salturilor</TITLE>
+<META NAME="description" CONTENT="Predicţia salturilor">
+<META NAME="keywords" CONTENT="predictie-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Predicţia salturilor</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- <TT>mihaib+@cs.cmu.edu</TT> 
+<BR><TT><A NAME="tex2html2"
+  HREF="http://www.cs.cmu.edu/~mihaib/">http://www.cs.cmu.edu/~mihaib/</A></TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>16 iulie 1999</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>arhitectura modernă a calculatoarelor: predicţia salturilor
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>cunoştinţe de arhitectura
+procesoarelor moderne
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>salt, dependenţă, predicţie
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Cuprins</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html33"
+  HREF="predictie-html.html">Maşini pipeline, superscalare şi dependenţe</A>
+<LI><A NAME="tex2html34"
+  HREF="#SECTION00030000000000000000">Măsurătorile SPEC (benchmarks)</A>
+<LI><A NAME="tex2html35"
+  HREF="#SECTION00040000000000000000">Costul unui salt</A>
+<LI><A NAME="tex2html36"
+  HREF="#SECTION00050000000000000000">Dependenţe ale controlului</A>
+<UL>
+<LI><A NAME="tex2html37"
+  HREF="#SECTION00051000000000000000">Dependenţe ale controlului într-un pipeline</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html38"
+  HREF="#SECTION00060000000000000000">Soluţia blocantă</A>
+<LI><A NAME="tex2html39"
+  HREF="#SECTION00070000000000000000">Execuţia speculativă</A>
+<LI><A NAME="tex2html40"
+  HREF="#SECTION00080000000000000000">Diferite scheme statice de predicţie</A>
+<UL>
+<LI><A NAME="tex2html41"
+  HREF="#SECTION00081000000000000000">Salt niciodată luat</A>
+<LI><A NAME="tex2html42"
+  HREF="#SECTION00082000000000000000">Salt mereu luat</A>
+<LI><A NAME="tex2html43"
+  HREF="#SECTION00083000000000000000">Salt înapoi luat</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html44"
+  HREF="#SECTION00090000000000000000">Predicţie dinamică cu cache-ul de instrucţiuni</A>
+<LI><A NAME="tex2html45"
+  HREF="#SECTION000100000000000000000">Predicţie dinamică cu predictori locali</A>
+<UL>
+<LI><A NAME="tex2html46"
+  HREF="#SECTION000101000000000000000">Predictorul cu un bit</A>
+<LI><A NAME="tex2html47"
+  HREF="#SECTION000102000000000000000">Predictori cu contoare saturate</A>
+<LI><A NAME="tex2html48"
+  HREF="#SECTION000103000000000000000">Performanţă şi limitări</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html49"
+  HREF="#SECTION000110000000000000000">Predicţie dinamică cu predictori globali</A>
+<LI><A NAME="tex2html50"
+  HREF="#SECTION000120000000000000000">Predictori micşti</A>
+<LI><A NAME="tex2html51"
+  HREF="#SECTION000130000000000000000">O clasă generală de predictori: ``value prediction''</A>
+<LI><A NAME="tex2html52"
+  HREF="#SECTION000140000000000000000">Soluţii ale compilatorului</A>
+<LI><A NAME="tex2html53"
+  HREF="#SECTION000150000000000000000">Concluzii</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+Textul de faţă se constituie într-un al patrulea articol din seria
+``Arhitectura modernă a calculatoarelor''.  Deşi fac tot ce îmi stă în
+putinţă în a face fiecare articol independent de celelalte, ar fi o
+risipă dacă nu aş refolosi unele dintre informaţii; din cauza asta
+trimit cititorul doritor de a lămuri mai multe aspecte la articole
+precedente; cel mai folositor este cel intitulat ``<a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#pipe">Despre
+conducte</a>'', publicat în PC Report din decembrie 1998.  Pentru cei
+care nu au revista, dar au acces la Internet, textul este disponibil
+din pagina mea de web.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Maşini pipeline, superscalare şi dependenţe</A>
+</H1>
+
+<P>
+Procesoarele moderne sporesc performanţa printr-o multitudine de
+mijloace; de căpetenie este exploatarea <EM>paralelismului</EM> din
+programe.  Spunem că un program posedă paralelism dacă părţi
+diferite din program pot fi executate simultan fără a schimba
+rezultatele finale.
+
+<P>
+Am ilustrat în texte anterioare cum procesoarele moderne exploatează
+paralelismul prezent între instrucţiuni consecutive dintr-un program,
+paralelism numit ``la nivel de instrucţiune'' (Instruction Level
+Parallelism, ILP).  Două sunt mijloacele de căpetenie folosite
+pentru acest scop: tehnologia de pipeline, şi tehnologia
+superscalară.  Voi reaminti pe scurt în ce constau acestea, şi care
+sunt piedicile care stau în calea exploatării lor.
+
+<P>
+Restul articolului va arăta cum piedicile mai sus-numite includ o
+piedică foarte importantă cantitativ: chiar instrucţiunile de salt
+dintr-un program.  Restul articolului va arăta care sunt metodele
+tehnologice folosite pentru a reduce impactul negativ al salturilor.
+
+<P>
+Paralelismul superscalar este relativ uşor de înţeles: dacă un
+procesor obişnuit are cîte o bucată din fiecare unitate
+funcţională, un procesor superscalar are mai multe astfel de copii.
+Astfel, un procesor superscalar poate efectua simultan două adunări,
+pentru ca posedă două unităţi aritmetice.  De asemenea, el poate
+de obicei lansa în execuţie mai multe instrucţiuni, pentru că are
+mai multe unităţi care decodifică instrucţiunile, etc.
+Paralelismul superscalar este întîlnit peste tot: atunci cînd o
+pompă de benzină angajează mai mulţi lucrători pentru a manipula
+pompele, exploatează paralelismul în acelaşi fel ca un procesor
+superscalar.
+
+<P>
+Pe de altă parte, paralelismul pipeline este inspirat după banda de
+asamblare de la fabricile de maşini (şi nu numai): un lucrător face
+şasiul, altul pune uşile, un al treilea parbrizul; toţi aceşti
+lucrători manipulează simultan maşini diferite; o maşină trece
+succesiv pe la fiecare din ei, şi în timp ce prima maşină, cu
+uşile deja puse, are parbrizul în curs de montare, o a doua tocmai
+îşi primeşte portierele.
+
+<P>
+Toate procesoarele moderne de performanţă folosesc ambele tehnici
+simultan.
+
+<P>
+Din păcate, în lumea calculatoarelor, lucrurile nu sunt aşa de
+simple ca într-o fabrică.  Asta se întîmplă pentru că
+paralelismul se poate aplica numai dacă obiectele asupra cărora se
+operează sunt independente.  Dar instrucţiunile unui program depind
+adesea una de alta; în definitiv un program nu este decît un şir de
+prelucrări asupra aceloraşi date.  De exemplu, dacă avem două
+instrucţiuni consecutive: <TT>a=b+c; d=d-a</TT>, a doua evident nu poate
+fi executată pînă cînd prima nu s-a terminat, pentru că are
+nevoie de valoarea lui <TT>a</TT> calculată de prima.  Spunem că între
+aceste instrucţiuni avem o <EM>dependenţă</EM>.
+
+<P>
+Cînd un procesor întîlneşte cod ca cel de mai sus, nu are mare
+lucru de făcut: va trebui ca unii dintre lucrători să stea
+nefolosiţi o vreme, pentru că nu au nimic de făcut.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Măsurătorile SPEC (benchmarks)</A>
+</H1>
+
+<P>
+Trebuie să realizăm că, decizia dacă astfel de situaţii sunt sau
+nu importante, depinde enorm de <EM>frecvenţa</EM> lor.  Dacă astfel de
+cazuri apar extrem de rar, atunci optimizările făcute pentru a le
+preveni nu vor avea un impact prea mare, pentru ca nu e mare lucru de
+cîştigat.  Dimpotrivă, dacă astfel dependenţele sunt dese,
+impactul lor asupra performanţei este major.
+
+<P>
+Bine, dar dese unde?  În care program?  Nici măcar în interiorul
+aceluiaşi program nu avem întotdeauna o densitate constantă de
+dependenţe.  Ce trebuie să măsurăm?  Atunci cînd un proiectant
+construieşte un nou procesor, trebuie să aibă oarecare metode
+pentru a-l evalua.
+
+<P>
+Ei bine, experţi din industrie au pus la punct nişte suite de
+măsurători (<EM>benchmarks</EM>) pentru a evalua performanţa
+sistemelor de calcul.  Cele mai faimoase, şi probabil şi cele mai
+criticate, sunt cele numite SPEC, de la Standard Performance
+Evaluation Corporation.  Puteţi găsi amănunte despre acestea la
+<TT><A NAME="tex2html3"
+  HREF="http://www.specbench.org/">http://www.specbench.org/</A></TT>.  Scopul acestui articol este însă
+altul, aşa că nu voi divaga prea mult despre acest interesant
+subiect.  Important este de reţinut că afirmaţiile cu caracter
+cantitativ din acest articol, care nu este clar cui se aplică, sunt
+făcute în contextul acestor suite de măsurători.
+
+<P>
+De exemplu, principalul personaj al acestui articol, salturile, apar
+în medie la fiecare şapte instrucţiuni într-un program din suita
+SPEC.  Dacă numărul era 1 la 100, situaţia era complet diferită.
+Proporţia este însă mai mult decît semnificativă, şi de aceea
+articolul de faţă există (are un subiect).
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Costul unui salt</A>
+</H1>
+
+<P>
+Înainte de a vedea de ce sunt salturile o problemă, vom nota că
+problema se manifestă în faptul că execuţia unei instrucţiuni de
+salt durează mai mult decît a unei instrucţiuni obişnuite, cel
+puţin în cazul în care nu aplicăm nici una dintre tehnologiile
+descrise mai jos.  Un exemplu tipic este ca o instrucţiune
+aritmetică să se execute într-un ciclu de ceas, iar un salt să
+dureze 3.  Cît de importantă este contribuţia salturilor în
+performanţa programului?  Cu alte cuvinte, cu cît mai încet merge
+programul decît în cazul în care fiecare salt ar dura şi el exact
+un ciclu?
+
+<P>
+Un pic de aritmetică răspunde la această întrebare: raportul este
+7/(6 + 1*3), din cauză că 7 instrucţiuni ne costa 6+3 cicli în
+loc de 7; asta înseamnă 7/9, sau o performanţă de 77%.  Am
+pierdut deci un sfert din performanţă.  
+
+<P>
+Am mai menţionat şi cu alte ocazii că arhitecţii calculatoarelor
+din ziua de azi sunt gata de orice pentru o creştere de 10% a
+performanţei, iar multe articole publicate se mulţumesc cu chiar mai
+puţin de atît.  În acest context 23 de procente este o cantitate
+uriaşă, care categoric merită diminuată.
+
+<P>
+Chiar dacă ne-am mulţumi cu aceste pierderi, nu am fi liniştiţi
+pentru multă vreme: pe măsură ce conductele procesoarelor devin din
+ce în ce mai lungi, şi superscalarele pun la bătaie din ce în ce
+mai multe unităţi funcţionale, penalizarea unui salt creşte din ce
+în ce mai mult.  Asta nu pentru că durata unui salt creşte
+neapărat, ci pentru că mai mulţi lucrători stau degeaba; un
+superscalar cu două unităţi funcţionale, în mod ideal ar putea
+termina <EM>două</EM> instrucţiuni în fiecare ceas.  Atunci prezentă
+salturilor ar duce la o performanţă de 3.5/(3+1*3) = 3.5/6 (3 cicli
+pentru şase instrucţiuni şi 3 pentru salt, în loc de 3.5 în
+total), sau 58%.  Ori procesoarele moderne au uneori chiar mai multe
+resurse paralele decît atît; nu e păcat ca jumătate din timp să
+fie irosit?
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Dependenţe ale controlului</A>
+</H1>
+
+<P>
+De ce sunt salturile scumpe?  Nu e prea greu de înţeles:
+instrucţiunile unui program se execută în mod normal în ordine
+crescătoare a adreselor: 0, 1, 2, 3, etc.  Salturile însă perturbă
+această ordine, indicînd noi adrese de unde programul trebuie
+executat.  
+
+<P>
+Dar cum funcţionează un procesor care exploatează paralelismul?
+Extrage mai multe instrucţiuni consecutive şi încearcă să le
+execute în paralel, în cazul că nu au dependenţe.  Ori saltul
+indică faptul că acele instrucţiuni nici nu trebuie executate!
+
+<P>
+Salturile sunt categorisite drept tot dependenţe de un tip special:
+<EM>dependenţe ale controlului</EM> (control dependencies).  Se numesc
+astfel pentru că în terminologia limbajelor de programare tot ce nu
+calculează se numeşte control; instrucţiunile care indică
+direcţia de execuţie sunt instrucţiuni de control.
+
+<P>
+
+<H2><A NAME="SECTION00051000000000000000">
+Dependenţe ale controlului într-un pipeline</A>
+</H2>
+
+<P>
+Voi ilustra importanţa dependenţelor controlului pentru un procesor
+pipeline; pentru o explicaţie mai amplă despre cum se poate citi o
+schemă ca cea de mai jos vedeţi articolul recomandat în
+introducere.
+
+<P>
+Voi presupune ca procesorul nostru are o conductă formată din
+următoarele stagii: un stagiu de citire a instrucţiunii, care o
+aduce din cache, unul de decodificare, care determină ce face
+instrucţiunea şi aduce operanzii de care are nevoie, stagiul
+principal, de execuţie, în care operaţia indicată este efectuată
+asupra datelor, urmat de stagiul de scriere, în care datele calculate
+sunt puse la locul dorit.  Ţeava poate conţine şi alte stagii, dar
+deocamdată doar acestea ne interesează.
+
+<P>
+Problema saltului (figura&nbsp;<A HREF="predictie-html.html#salt">1</A>) este următoarea: adresa unde se
+face saltul şi condiţia de care saltul depinde sunt calculate doar
+în stagiul de execuţie, şi pot fi folosite doar în stagiul de
+scriere.  Dar în momentul cînd instrucţiunea de salt a ajuns în
+acest stagiu, în mod normal instrucţiunile de după ea au intrat
+deja în ţeavă.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="salt"></A><A NAME="179"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 1:</STRONG>
+Evoluţia instrucţiunilor într-un pipeline în
+cazul apariţiei unui salt.  Abia cînd saltul a ajuns în stagiul de
+execuţie (la momentul 2 de timp) ştim care ar trebui să fie
+instrucţiunea următoare.  Dacă saltul trebuie luat, atunci
+instrucţiunile din stagiile celelalte nu trebuiau să fie executate
+(marcate haşurat).</CAPTION>
+<TR><TD><IMG
+ WIDTH="534" HEIGHT="316" BORDER="0"
+ SRC="img2.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{salt.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Problema este că salturile condiţionale pot avea două destinaţii
+posibile; oricum am ghici în absenţa rezultatului final, în orice
+parte am lua-o, putem greşi.  Ori nu vrem în nici un caz ca
+procesorul să execute instrucţiuni pe care programul nu le indică!
+
+<P>
+Procesoarele oferă de obicei două tipuri de salturi: condiţionale
+şi necondiţionale.  Marea majoritate a salturilor sunt
+condiţionale.  Putem apoi categorisi salturile în salturi la adrese
+fixă (dominante ca număr), salturi la o adresă calculată (relativ
+puţine, sintetizate pentru instrucţiunile de tip <TT>switch-case</TT>
+din C/Pascal) şi instrucţiunile de întoarcere de la un apel de
+subrutină.  Fiecare dintre aceste tipuri de instrucţiune de salt
+necesită alte tehnici pentru a fi optimizată; în acest text vom
+insista asupra instrucţiunilor de salt condiţionat.
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Soluţia blocantă</A>
+</H1>
+
+<P>
+Cum facem pentru a trata instrucţiunile de după un salt?  Cea mai
+simplă şi mai costisitoare soluţie constă în a detecta
+instrucţiunile de salt cît se poate de devreme (în stagiul de
+citire, dacă se poate) şi de a bloca restul ţevii din execuţie
+pînă cînd adresa şi condiţia saltului sunt cunoscute.
+Terminologia tehnică pentru blocare este <EM>stall</EM>.  Cel mai simplu
+mod de a face stall este de a injecta în mod artificial în ţeavă o
+instrucţiune care nu face nimic, numită ``noop'' (``no operation'')
+şi de a continua execuţia cu aceasta.  Această instrucţiune
+fictivă se mai numeşte şi ``bulă'' (bubble).  Figura&nbsp;<A HREF="predictie-html.html#bula">2</A>
+ilustrează acest procedeu.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="bula"></A><A NAME="186"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 2:</STRONG>
+Metoda cea mai simplă este de a nu încărca
+nimic în ţeavă pînă cînd nu ştim exact care este instrucţiunea
+următoare; ţeava o să prelucreze atunci numai ``bule''.</CAPTION>
+<TR><TD><IMG
+ WIDTH="540" HEIGHT="279" BORDER="0"
+ SRC="img3.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{bula.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Din păcate această soluţie asigură doar corectitudinea
+programului, şi nu şi eficienţa sa.  Dacă procedăm astfel plătim
+toate costurile descrise mai sus.  Ar fi grozav dacă am avea o
+soluţie mai eficientă.  Aparent nu avem nimic de făcut, dacă nu
+facem o simplă observaţie.
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Execuţia speculativă</A>
+</H1>
+
+<P>
+Observaţia de care avem nevoie este că o instrucţiune, pentru a
+avea efecte permanente şi vizibile, trebuie neapărat să-şi scrie
+rezultatele undeva: fie într-un registru, fie în memorie.  Asta
+înseamnă că atîta timp cît instrucţiunea nu a ajuns în stagiul
+de scriere ea nu este nicidecum vizibilă dinafară.  Perfect: atunci
+putem face următorul lucru: putem încărca în ţeavă şi alte
+instrucţiuni de după cea de salt şi le lăsăm să se execute.
+Cînd ajungem cu saltul în stagiul de execuţie ştim deja dacă
+celelalte instrucţiuni trebuiau sau nu să fie executate; dacă
+observăm că am ales bine, suntem oameni făcuţi, pentru că saltul
+nu ne costă decît un ciclu, succesorii lui fiind deja gata de
+execuţie.  Altfel recurgem la o soluţie asemănătoare cu cea de mai
+sus: ştergem conţinutul din începutul ţevii, introducînd mai
+multe bule.  
+
+<P>
+Acest tip de execuţie în care mizăm pe anumite instrucţiuni de a
+fi utile, şi în care dacă ne dăm seama că am greşit renunţăm
+la ele, se numeşte <EM>execuţie speculativă</EM> (speculation).
+Această tehnică este din ce în ce mai folosită în procesoarele
+moderne.
+
+<P>
+Observaţi că în acest caz nu avem nimic de pierdut: performanţa
+poate doar creşte, pentru că instrucţiunile pentru care am ghicit
+bine vor fi mai scurte, iar celelalte vor dura tot atît.
+
+<P>
+Un procesor superscalar poate face şi mai multă speculaţie: poate
+porni în execuţie ambele destinaţii ale ramurii (presupunînd că
+adresa destinaţie poate fi calculată rapid, înainte de a ajunge în
+stagiul de execuţie), după care poate alege să păstreze numai
+destinaţia reală.
+
+<P>
+
+<H1><A NAME="SECTION00080000000000000000">
+Diferite scheme statice de predicţie</A>
+</H1>
+
+<P>
+Întrebarea la care nu am răspuns este: ``cum ghicim dacă saltul
+este luat sau nu?''  Ei bine, există o sumedenie de scheme pentru a
+face acest lucru, din ce în ce mai complicate, dintre care unele le
+vom explora în continuarea acestui text.  Să începem însă cu cele
+mai evidente, care iau mereu aceeaşi decizie (şi de aceea le voi
+numi ``statice'').
+
+<P>
+
+<H2><A NAME="SECTION00081000000000000000">
+Salt niciodată luat</A>
+</H2>
+
+<P>
+Cea mai simplă schemă este să presupunem că saltul nu este
+niciodată luat, şi să continuăm să executăm instrucţiunile în
+continuare.  Schema aceasta are meritul de a fi extrem de simplu de
+implementat.  Performanţa ei este de cam 40% (adic'a pentru 40% din
+salturi presupunerea se dovedeşte corectă).  (Exerciţiu: calculaţi
+care este performanţa procesorului în acest caz; presupuneţi că
+toate instrucţiunile înafară de salt durează un ciclu, 40% din
+salturi durează tot un ciclu, iar restul salturilor durează 3.)
+
+<P>
+Un scurt raţionament ne va şi explica de ce schema aceasta nu are
+nici un fel de şanse să fie mai eficace de atît.  Cea mai mare
+parte a timpului unui program se petrece în cicluri (dacă un program
+nu ar avea cicluri, execuţia lui s-ar termina imediat, pentru că
+viteza procesorului este de ordinul a sute de milioane de
+instrucţiuni pe secundă).  Ori un ciclu <EM>trebuie</EM> să conţină
+cel puţin o instrucţiune de salt care este luat în mod frecvent.
+Pentru acest salt, metoda de mai sus va ghici mereu eronat.
+
+<P>
+
+<H2><A NAME="SECTION00082000000000000000">
+Salt mereu luat</A>
+</H2>
+
+<P>
+Cînd designerii au realizat acest lucru, s-au gîndit să schimbe
+ghicitul în sens exact opus: vor prezice că instrucţiunile de salt
+sunt toate luate.  Calculul adresei destinaţie în general nu este o
+problemă, pentru că, aşa cum am văzut mai sus, majoritatea
+salturilor se efectuează la adrese constante, care fac parte din
+chiar codul instrucţiunii.  În mod natural, corectitudinea unei
+astfel de scheme este de cam 60%.
+
+<P>
+
+<H2><A NAME="SECTION00083000000000000000">
+Salt înapoi luat</A>
+</H2>
+
+<P>
+Un alt rafinament al schemei este a observa că orice buclă trebuie
+să aibă cel puţin un salt înapoi care este luat.  Măsurători pe
+SPEC au arătat că o schemă care prezice că orice salt înainte nu
+e luat şi orice salt înapoi este are performanţe mai bune decît
+schema precedentă.
+
+<P>
+Figura&nbsp;<A HREF="predictie-html.html#performanta">6</A> arată acurateţea ghicirii pentru diferite
+scheme de salt.  Deocamdată puteţi citi primele trei coloane; despre
+următoarele vom discuta în continuare.
+
+<P>
+Trebuie să observăm că, orice schemă de predicţie vom implementa,
+ea trebuie să fie foarte simplă şi rapidă.  Nu ne putem permite
+să executăm un algoritm complicat de zeci de instrucţiuni pentru a
+economisi doi cicli de ceas!  Mai mult, soluţiile trebuie să fie
+toate implementabile în hardware, ceea ce este o constrîngere destul
+de severă.  Vom vedea însă că imaginaţia cercetătorilor
+depăşeşte toate aceste obstacole, creind scheme foarte ingenioase.
+
+<P>
+
+<H1><A NAME="SECTION00090000000000000000">
+Predicţie dinamică cu cache-ul de instrucţiuni</A>
+</H1>
+
+<P>
+O metodă foarte interesantă de a face predicţia este de a memora
+în cache-ul de instrucţiuni vechea comportare a unui salt: atît
+condiţia sa cît şi adresa de destinaţie.  S-a observat, tot prin
+măsurători, că foarte adesea salturile tind să se facă în
+aceeaşi direcţie şi în acelaşi loc de mai multe ori consecutiv.
+Această schemă este folosită de microprocesorul PPC604.
+
+<P>
+Rafinamente ale acestei scheme au dus la crearea unui mijloc modern de
+anticipare a destinaţiei, numit ``trace cache'' (cache-urmă).
+Aceasta este o invenţie relativ recentă (la ora actuală nu ştiu de
+nici un procesor care să o folosească, dar este sigur că în
+curînd va fi o prezenţă comună în fiecare calculator), care
+practic rescrie programul în mod dinamic în cache, punînd
+instrucţiunile care tind să fie executate în succesiune una după
+alta.  De pildă, dacă un salt este mereu luat, trace-cache-ul va
+pune instrucţiunile de dinaintea saltului şi cele de după una după
+alta, şi va schimba apoi condiţia saltului în cea opusă; schema
+aceasta permite de asemenea procesoarelor un acces mult mai eficace la
+cache.  Sper să revin cu mai multe amănunte asupra acestei
+interesante tehnologii în alte articole.
+
+<P>
+
+<H1><A NAME="SECTION000100000000000000000">
+Predicţie dinamică cu predictori locali</A>
+</H1>
+
+<P>
+Soluţia cu cache-ul (nu cache-ul urmă, ci cea care menţine
+informaţiile despre salt) este destul de ingenioasă, dar este cam
+costisitoare şi destul de complicată din punct de vedere hardware;
+cere extragerea mai multor date din cache decît normal şi aparatură
+mai complicată de decodificare.
+
+<P>
+Putem simplifica schema menţinînd o tabelă separată în interiorul
+procesorului, şi nu în cache.
+
+<P>
+
+<H2><A NAME="SECTION000101000000000000000">
+Predictorul cu un bit</A>
+</H2>
+
+<P>
+Schema aceasta este extrem de interesantă, pentru că aparent face un
+compromis destul de mare: amestecă laolaltă informaţia despre toate
+salturile din program într-o tabelă unică.  Algoritmul este următorul:
+
+<P>
+
+<OL>
+<LI>Cînd întîlnim o instrucţiune de salt notăm adresa sa proprie;
+
+<P>
+</LI>
+<LI>Apoi aplicăm asupra acestei adrese o funcţie de hash simplă
+care transformă adresa într-un domeniu limitat (de exemplu între
+0 şi 1023).  Un exemplu foarte simplu de funcţie de hash este de a
+păstra numai ultimii biţi din adresă (de pildă ultimii
+10)<A NAME="tex2html6"
+  HREF="#foot93"><SUP>1</SUP></A>.
+
+<P>
+</LI>
+<LI>Cu aceşti biţi indexăm într-o tabelă de 1024 de linii.  La
+linia respectivă găsim un bit.  Folosim acest bit pentru a prezice
+condiţia saltului.  Speculăm executînd instrucţiunile de la
+destinaţia aparentă.
+
+<P>
+</LI>
+<LI>După ce condiţia reală este cunoscută, marcăm în tabelă
+informaţia despre valoarea reală a condiţiei.
+</LI>
+</OL>
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="1bit"></A><A NAME="192"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 3:</STRONG>
+Predictorul cu un bit conţine o tabelă de
+predictori cu contoare saturate în care se indexează cu o valoare
+care depinde de adresa instrucţiunii de salt.</CAPTION>
+<TR><TD><IMG
+ WIDTH="537" HEIGHT="294" BORDER="0"
+ SRC="img4.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{1bit.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Metoda este extrem de ieftină de implementat şi foarte rapidă.
+Figura&nbsp;<A HREF="predictie-html.html#1bit">3</A> arată cum este construită în hardware.  Ne poate
+face însă să ne simţim nesiguri: funcţia de hash poate amesteca
+salturi independente.  Este adevărat, pentru exemplul de mai sus,
+dacă avem două salturi în program ale căror adrese se termină în
+aceiaşi 10 biţi, atunci informaţia despre condiţia ambelor va fi
+stocată în acelaşi loc în tabel.
+
+<P>
+Şi atunci cum putem avea încredere?  Ei bine, dacă puneţi această
+întrebare înseamnă că aţi uitat de fapt că tot ceea ce facem
+este doar o ghiceală; nimic nu este sigur aici.  Execuţia
+speculativă ne asigură că nu putem strica nimic ghicind greşit.
+Singura care poate avea de suferit este performanţa.  Dar
+performanţa depinde de procentul de erori.  Ori avem două fenomene
+care ne vin în ajutor pentru a face schema de mai sus foarte
+rezonabilă:
+
+<P>
+
+<UL>
+<LI>Probabilitatea ca două salturi care se execută frecvent şi
+întreţesut să aibă adresele în acest fel este minimă;
+
+<P>
+</LI>
+<LI>În general programele manifestă ``localitate spaţială'';
+asta înseamnă că la momente de timp apropiate se vor executa
+instrucţiuni de la adrese apropiate (aceasta este observaţia
+crucială care permite procesoarelor să folosească cu atît de
+mult succes cache-uri).  Ei bine, asta înseamnă că este foarte
+puţin probabil ca două salturi aflate la distanţă atît de mare
+unul de altul să se execute succesiv.
+</LI>
+</UL>
+
+<P>
+
+<H2><A NAME="SECTION000102000000000000000">
+Predictori cu contoare saturate</A>
+</H2>
+
+<P>
+Predicţia cu 1 bit de ``istorie'' este bunicică, dar suferă de un
+simptom: este prea sensibilă la mici perturbaţii.  Să presupunem
+că avem un salt care este mai întotdeauna luat, şi numai în mod
+excepţional nu este.  Ei bine, iată cum se va comporta predictorul:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">Salt</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">N</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">N</TD>
+<TD ALIGN="LEFT">D</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Predicţie</TD>
+<TD ALIGN="LEFT">-</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">N</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">N</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Corect</TD>
+<TD ALIGN="LEFT">-</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">N</TD>
+<TD ALIGN="LEFT">N</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">D</TD>
+<TD ALIGN="LEFT">N</TD>
+<TD ALIGN="LEFT">N</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Aţi văzut slăbiciunea?  Ei bine, la fiecare ``Nu'' predictorul va
+ghici prost, după care va schimba pe ``Nu'', deci va ghici din nou
+prost şi data viitoare.  La fiecare schimbare facem două erori.  În
+plus, pentru un salt care alternează la fiecare execuţie
+luat/ne-luat, acest predictor va greşi tot timpul (mai rău chiar
+decît schemele de predicţie statică).  Aparent acest gen de salturi
+este relativ frecvent, aşa că merită să facem un efort să
+îmbunătăţim cumva metoda.
+
+<P>
+Soluţia este din nou la îndemînă: în loc de un bit vom folosi mai
+mulţi!  Vom implementa pentru fiecare rînd din tabelă un mic
+automat finit, care va avea patru stări, ca în figura&nbsp;<A HREF="predictie-html.html#finit">4</A>.
+Stările sunt: ``Sigur Nu'', ``Poate Nu'', ``Poate Da'', ``Sigur Da''.
+Automatul va face tranziţii spre dreapta la fiecare salt luat, şi
+spre stînga la fiecare salt ne-luat.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="finit"></A><A NAME="198"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 4:</STRONG>
+Automatul finit cu 4 stări pentru predicţia
+salturilor.  Cele două stări din stînga vor prezice ``Luat'', iar
+cele două din dreapta ``Ne-luat''.  Fiecare arc este etichetat cu
+acţiunea curenta; de exemplu, dacă automatul este în starea ``Poate
+Da'' şi acţiunea programului este de a nu sări (N), automatul
+tranziţionează în starea ``Poate Nu''.</CAPTION>
+<TR><TD><IMG
+ WIDTH="450" HEIGHT="100" BORDER="0"
+ SRC="img5.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=10cm\epsffile{finit.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Este un exerciţiu simplu de a vedea că acest automat se va comporta
+mult mai bine pentru exemplul de mai sus (va face, desigur, erori, dar
+mult mai puţine).  Implementarea în hardware este de asemenea
+banală: foloseşte ceea ce se numeşte un <EM>contor saturat</EM>
+(saturated counter).  Acest contor este ca unul obişnuit, care
+numără în sus la fiecare salt luat şi în jos la fiecare ne-luat,
+dar care nu trece niciodată mai jos de 0 sau mai sus de 3.
+``Ghiceala'' va corespunde celui mai semnificativ bit: dacă e 0,
+atunci nu sărim, dacă e 1 sărim.
+
+<P>
+Nu e deloc clar că putem creşte calitatea predictorului folosind mai
+mulţi biţi pentru contoarele saturate, pentru că atunci predictorii
+atunci vor fi prea insensibili la schimbări.
+
+<P>
+
+<H2><A NAME="SECTION000103000000000000000">
+Performanţă şi limitări</A>
+</H2>
+
+<P>
+Sigur, nici schema asta nu e impecabilă: există pentru fiecare
+schemă o succesiune de salturi care o poate facă să greşească la
+fiecare pas.  Cu toate acestea, majoritatea procesoarelor din
+generaţiile 1997-1998 foloseau această schemă.
+
+<P>
+Este un exerciţiu interesant de a face ceea ce se numeşte ``reverse
+engineering'': putem scrie un program simplu care să testeze
+comportarea predictorilor la salturi.  Iată un exemplu prezentat la
+cursul doctoral de arhitectura calculatoarelor, ţinut de domnul
+profesor Randal Bryant în toamna trecută:
+
+<P>
+<PRE>
+#define MARIME 1024
+#define ABS(x) (((x) &lt; 0) ? (-x) : (x))
+
+int vector[MARIME];
+int raspuns;
+
+static void 
+bucla() 
+{
+        int i;
+        unsigned suma = 0;
+        int prod = 1;
+        for (i=0; i &lt; MARIME; i++) {
+                x = vector[i];
+                unsigned ax = (unsigned)(ABS(x));
+                suma += ax;
+                prod *= x;
+        }
+        raspuns = suma + prod;
+}
+</PRE>
+
+<P>
+Instrucţiunea <TT>ABS</TT> se va traduce în ceva de genul:
+
+<P>
+<PRE>
+  ax = x;
+  if (x &gt; 0) goto corect;
+  ax = -x;
+corect:
+</PRE>
+
+<P>
+care conţine un salt.
+
+<P>
+Pentru a studia comportarea fiecărui predictor iniţializaţi
+vectorul <TT>vector</TT> cu valori potrivite (pozitive sau negative,
+după cum doriţi să fie executat sau nu saltul), după care
+executaţi în mod repetat bucla şi măsuraţi timpul de execuţie.
+Am scris în trecut un articol lung în două episoade despre cum se
+pot face astfel de măsurători, care include şi codul necesar; îl
+puteţi obţine din pagina mea de web.
+
+<P>
+Vă recomand să iniţializaţi vectorul cu trei feluri de valori:
+pozitive (pentru salt ne-luat), negative (pentru salt luat) şi
+aleatoare, în care valorile sunt generate la întîmplare.
+Încercaţi tot felul de formule: toate pozitive, alternant + - +
+- etc.), alternant dupa o secvenţă de iniţializare + + + + - + - +
+etc.), aleator, etc.
+
+<P>
+
+<H1><A NAME="SECTION000110000000000000000">
+Predicţie dinamică cu predictori globali</A>
+</H1>
+
+<P>
+Schemele de mai sus sunt simpatice, dar suferă de o boală comună:
+fiecare foloseşte numai informaţie <EM>locală</EM>, despre un singur
+salt.  Dar adesea salturile din program sunt corelate între ele:
+dacă unul se execută, atunci şi un altul se execută, etc.
+
+<P>
+O schemă deosebit de ingenioasă şi eficace a fost propusă în 1993
+de Yeh şi Yale Patt (Yale Patt, profesor la Universitatea din
+Michigan, este şi unul dintre inventatorii cache-ului cu urmă
+menţionat mai sus, şi este una dintre figurile cele mai proeminente
+din cercetarea contemporană în arhitectura procesoarelor).
+
+<P>
+Schema aceasta ţine minte rezultatele ultimelor X salturi (de exemplu
+X=6) şi în funcţie de acestea prezice rezultatul următorului.
+Schema este imediat implementabilă în hardware: ne trebuie doar un
+``shift register'' în care introducem cîte un bit la fiecare nou
+salt, şi o tabelă de 2<sup>X</sup> înregistrări în care ţinem minte
+rezultatul saltului următor, sau un contor saturat
+(figura&nbsp;<A HREF="predictie-html.html#global">5</A>).  Arhitectural este destul de asemănătoare cu
+un predictor local; consumă cam aceeaşi cantitate de resurse hardware.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="global"></A><A NAME="206"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 5:</STRONG>
+Predictorul global are un ``shift-register''
+care menţine istoricul ultimelor salturi, şi o tabelă de contoare
+saturate care este indexată cu valoarea registrului.  Performanţa
+acestui predictor este excelentă pentru orice model determinist de
+salturi, pentru că învaţă corelaţiile între salturi vecine.</CAPTION>
+<TR><TD><IMG
+ WIDTH="536" HEIGHT="318" BORDER="0"
+ SRC="img9.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{global.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Schema aceasta pare complet paradoxală, pentru că nici măcar nu se
+uită <EM>care</EM> salturi sunt cele X, ci doar la rezultatele lor.  Ca
+orice schemă de acest gen, valabilitatea ei poate fi doar verificată
+empiric; măsurători pe testele SPEC arată că schema are o
+comportare excelentă.
+
+<P>
+
+<H1><A NAME="SECTION000120000000000000000">
+Predictori micşti</A>
+</H1>
+
+<P>
+În fine, cel mai complicat predictor implementat în procesoarele
+contemporane este cel din procesorul Alpha 20264 al firmei Compaq
+(fost al lui Digital, acum achiziţionată de Compaq).  Acest
+predictor este de fapt o combinaţie a trei predictori:
+
+<P>
+
+<UL>
+<LI>Un predictor local pe 3 biţi ceva mai complicat decît cel
+descris aici;
+
+<P>
+</LI>
+<LI>Un predictor global cu 12 biţi de istoric;
+
+<P>
+</LI>
+<LI>Un al treilea predictor, care alege unul dintre ceilalţi doi
+predictori (din păcate nu există prea multă informaţie
+publicată despre cum acest al treilea predictor este implementat;
+am avut ocazia să aflu cu ocazia unui seminar ţinut de un
+cercetător din grupul de hardware de la Digital, dar nu mi-am notat;
+din cîte îmi amintesc acest al treilea predictor măsura
+performanţa celorlalte două pentru fiecare salt şi-l alegea pe
+cel mai bun).
+</LI>
+</UL>
+
+<P>
+Performanţele tuturor predictorilor prezentaţi sunt condensate în
+figura&nbsp;<A HREF="predictie-html.html#performanta">6</A>.  După cum vedeţi, predictorul mixt este
+excelent.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="performanta"></A><A NAME="212"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 6:</STRONG>
+Performanţe ale feluritelor scheme de
+predicţie.  Pe axa y este procentajul de ghiciri corecte.  Valorile
+sunt măsurate pentru SPECint92.  Etichetele sunt feluritele
+procesoare.  Aceste date sunt extrase parţial din revista
+Microprocessor Report, 17 Martie 1995.</CAPTION>
+<TR><TD><IMG
+ WIDTH="541" HEIGHT="327" BORDER="0"
+ SRC="img10.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{performanta.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H1><A NAME="SECTION000130000000000000000">
+O clasă generală de predictori: ``value prediction''</A>
+</H1>
+
+<P>
+Am văzut că execuţia speculativă deschide poarta unei serii
+întregi de metode empirice de predicţie, unele foarte neverosimile.
+Cercetătorii contemporani însă împing şi mai departe aceste
+tehnici, pentru aplicarea lor şi înafara domeniului salturilor.  De
+exemplu, la ultima conferinţa internaţională de arhitectura
+calculatoarelor ISCA (International Symposium on Computer
+Architecture) nu mai puţin de 5 articole din 26 discutau forme
+felurite de predicţie a valorii (<EM>value prediction</EM>).
+
+<P>
+Predicţia valorii este o generalizare a predicţiei salturilor.  Ea
+poate de pildă fi aplicată şi pentru cazul instrucţiunilor de
+întoarcere de la apelul unei proceduri, a căror adresă de
+întoarcere este extrasă de pe stiva din memorie.
+
+<P>
+În general, predicţia valorii se face de fiecare dată cînd ceva ia
+mult timp pentru a fi obţinut: de pildă accesul la memorie durează
+foarte mult (în cazul în care datele nu sunt cache), sau execuţia
+anumitor operaţii aritmetice este foarte costisitoare, sau calculul
+destinaţiei unui salt, etc.  Pentru astfel de cazuri este mai bine ca
+procesorul să ghicească rezultatul final decît să stea degeaba
+să-l aştepte pe cel corect; dacă a greşit nu-i bai: calculele pot
+fi reluate de la punctul de unde a început speculaţia.
+
+<P>
+Măsurătorile experimentale au arătat că şi scheme banale de
+predicţie (de pildă: ``ultima valoare a acestui obiect'',
+menţinută într-un cache) oferă îmbunătăţiri substanţiale.
+
+<P>
+Sper să pot dedica un articol separat tehnicii de predicţie a
+valorii, deşi strict vorbind, predicţia salturilor este doar un caz
+special.  În procesoarele disponibile la momentul de faţă pe
+piaţă însă, putem găsi din plin implementate metode de predicţie
+a salturilor, dar nu prea multe de predicţia valorilor.  Deci
+subiectul acestui articol merita o oarecare atenţie individuală.
+
+<P>
+
+<H1><A NAME="SECTION000140000000000000000">
+Soluţii ale compilatorului</A>
+</H1>
+
+<P>
+Toate metodele prezentate se bazează pe soluţii hardware: procesorul
+menţine informaţii suplimentare şi are circuite în plus pe care le
+foloseşte pentru a anticipa rezultatele unor acţiuni din viitor.  
+
+<P>
+Compilatorul, ca întotdeauna în epoca modernă a sistemelor de
+calcul (cu precădere în ultimii 20 de ani) are însă un cuvînt
+important de spus pentru a ajuta procesorul să-şi sporească
+performanţa.  Vom indica pe scurt cîteva lucruri pe care
+compilatorul, cîteodată în conjuncţie cu un suport specializat din
+partea procesorului însuşi, le poate face pentru a scădea impactul
+costului salturilor:
+
+<P>
+
+<UL>
+<LI>Compilatorul poate rearanja codul în aşa fel încît salturile
+să fie mai uşor şi mai precis de prezis de către hardware;
+compilatorul poate oricînd schimba două blocuri de cod între ele
+şi comuta sensul testului din instrucţiunea de salt;
+
+<P>
+</LI>
+<LI>Compilatorul poate desfăşura buclele (<EM>unroll loops</EM>).
+Astfel frecvenţa salturilor se reduce.  De exemplu bucla:
+
+<P>
+<PRE>
+for (i=0; i &lt;10; i++) 
+   a[i] = b[i] * c[i];
+</PRE>
+
+<P>
+poate fi transformată în:
+
+<P>
+<PRE>
+for (i=0; i &lt; 10; i+=2) {
+   a[i] = b[i] * c[i];
+   a[i+1] = b[i+1] * c[i+1];
+}
+</PRE>
+
+<P>
+Avantajul acesteia este că face de două ori mai puţine comparaţii
+cu 10, deci execută mai puţine salturi (metoda se poate generaliza
+şi pentru limite necunoscute sau impare);
+
+<P>
+</LI>
+<LI>În anumite arhitecturi (ex. PPC 603) compilatorul poate insera
+biţi în instrucţiuni prin care îi indică procesorului cum ar
+trebui să se aştepte ca un anumit salt să fie executat;
+
+<P>
+</LI>
+<LI>Arhitecturile moderne (de exemplu PowerPC604) oferă
+instrucţiuni de <EM>încărcare condiţională</EM>, care pot fi
+folosite pentru a elimina anumite salturi.  De exemplu, secvenţa de
+cod care calculează minimumul dintre două numere:
+
+<P>
+<PRE>
+c = (a &lt; b) ? a : b
+</PRE>
+
+<P>
+era implementată în procesoarele convenţionale în acest fel 
+(dau echivalentul în C al codului din limbajul maşină):
+
+<P>
+<PRE>
+  d = a - b;
+  c = a;
+  if (d &gt; 0) goto corect;
+  c = b;
+corect:
+</PRE>
+
+<P>
+Instrucţiunea de încărcare condiţională zice ceva de genul
+``încarcă o anumită valoare numai dacă o condiţie este
+adevărată''.  Atunci traducerea ar arăta cam aşa:
+
+<P>
+<PRE>
+  d = a - b;
+  c = a;
+  c = (d &gt; 0) ? b : c;   /* incarcare conditionala */
+</PRE>
+
+<P>
+Observaţi cum saltul a dispărut cu totul.
+
+<P>
+</LI>
+<LI>Noua arhitectură anunţată de Intel, numită IA64,
+proiectată împreună cu Hewlett-Packard, şi îmbrăţişată de
+toţi marii fabricanţi de staţii de lucru (în afară de Sun), al
+cărei prim reprezentant, Merced, este deja cu doi ani în
+întîrziere, va conţine o generalizare a instrucţiunilor de
+încărcare condiţională.  Aceste instrucţiuni se vor numi
+``instrucţiuni cu execuţie predicată'' (<EM>predicated
+execution</EM>).
+
+<P>
+Aceste instrucţiuni vor avea asociat un registru de un bit.  Dacă
+bitul este 0 instrucţiunile sunt executate.  Dacă bitul este 1,
+atunci instrucţiunile vor fi pur şi simplu ignorate.  Tehnica
+seamănă cu execuţia speculativă, numai că controlul este dat de
+compilator, iar nu de procesor.
+
+<P>
+Aparent e o mare risipă: de ce să execuţi instrucţiuni care nu le
+vrei, nu ar fi mai ieftin să sari peste bucata asta de cod?  Aşa cum
+am văzut, cu cît procesorul este mai paralel (are mai multe stagii
+în ţeavă sau mai multe unităţi funcţionale), cu atît costul
+unui salt (sau a oricărei instrucţiuni care se lasă aşteptată de
+cele care depind de ea) este mai mare.  Dacă un salt te costă cît
+20 de instrucţiuni, atunci e clar mai bine să execuţi 10
+instrucţiuni inutile decît să sari peste ele.  De exemplu, dacă notăm cu 
+
+<P>
+<PRE>
+c# instructiune
+</PRE>
+
+<P>
+pentru a indica faptul că <TT>instructiune</TT> este predicată cu bitul
+<TT>c</TT> (adică se execută numai dacă bitul respectiv este 1),
+atunci următorul fragment de cod:
+
+<P>
+<PRE>
+if (ceva) {
+   bla;
+   bla;
+   bla;
+} else {
+   tranca;
+   tranca;
+   tranca;
+}
+</PRE>
+
+<P>
+se va traduce ca:
+
+<P>
+<PRE>
+   c = (ceva == 0);
+   d = !c;
+c# bla
+c# bla
+c# bla
+d# tranca
+d# tranca
+d# tranca
+</PRE>
+</LI>
+</UL>
+
+<P>
+
+<H1><A NAME="SECTION000150000000000000000">
+Concluzii</A>
+</H1>
+
+<P>
+Ştim din articole anterioare că designerii sporesc performanţa
+microprocesoarelor exploatînd paralelismul instrucţiunilor.  Dar mai
+ştim şi că unele instrucţiuni nu se pot executa în paralel,
+pentru că sunt dependente una de alta.  Am văzut în acest articol
+că instrucţiunile de salt implică astfel de dependenţe, pentru că
+ele indică de fapt <EM>care</EM> este instrucţiunea următoare de
+executat.  
+
+<P>
+Faptul că instrucţiunile de salt sunt extrem de frecvente pe
+arhitecturile contemporane (un rezultat al operaţiilor primitive
+oferite de procesoare şi al modului în care compilatoarele
+generează cod) este extrem de neplăcut, pentru că împiedică
+exploatarea tuturor resurselor de calcul.  
+
+<P>
+Arhitecţii au găsit o multitudine de soluţii: unele dintre ele
+schimbă setul de instrucîuni al procesorului, permiţînd scrierea
+de cod cu mai puţine salturi.  Altele se bazează pe soluţii
+exclusiv hardware, în care procesorul încearcă să anticipeze
+direcţia şi destinaţia salturilor, şi să execute în mod
+speculativ de acolo programul, în speranţa că, dacă a ghicit
+corect, va cîştiga ceva timp.
+
+<P>
+Am văzut tot felul de scheme de predicţie, unele foarte stranii şi
+neintuitive, dar am mai văzut că ultimul cuvînt în estimarea
+calităţii unei scheme îl are performanţa ei pe programe reale (de
+obicei însă acestea sunt substituite cu teste speciale gen SPEC).
+
+<P>
+Înainte de a încheia trebuie să vă spun că de fapt bogăţia de
+scheme de predicţie este mult mai mare, şi acest text nu se ocupă
+decît de cele mai tradiţionale.  Dacă subiectul vă interesează,
+faceţi un salt spre web şi căutaţi mai multă informaţie.  Eu
+deja pot să prezic unde veţi ``ateriza'': la altavista sau o altă
+maşină de căutare înrudită.  Se vede că am învăţat ceva de la
+hardware...
+
+<P>
+<BR><HR><H4>Note</H4>
+<DL>
+<DT><A NAME="foot93">...
+10)</A><A NAME="foot93"
+ HREF="predictie-html.html#tex2html6"><SUP>1</SUP></A>
+<DD>În procesoarele moderne cu instrucţiuni de 32 de biţi
+toate adresele la care se poate sări se termină în ``00'' în baza
+doi, deci ar fi mai înţelept să păstrăm biţii 2-11 în loc de
+0-10.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

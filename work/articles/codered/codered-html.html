@@ -1,0 +1,592 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Viermele ``CodeRed''</TITLE>
+<META NAME="description" CONTENT="Viermele ``CodeRed''">
+<META NAME="keywords" CONTENT="codered-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+<body>
+
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Viermele ``CodeRed''</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- <TT>mihaib+@cs.cmu.edu</TT> 
+<BR><TT><A NAME="tex2html2"
+  HREF="http://www.cs.cmu.edu/~mihaib/">http://www.cs.cmu.edu/~mihaib/</A></TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>august 2001</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>cel mai eficace vierme electronic care a infectat Internetul
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>cunoştinţe elementare despre
+funcţionarea calculatoarelor
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>infecţie, vierme, virus, Microsoft IIS
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Cuprins</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html19"
+  HREF="codered-html.html">Cu 13 ani în urmă</A>
+<LI><A NAME="tex2html20"
+  HREF="#SECTION00030000000000000000">O problema în serverul de web de la Microsoft</A>
+<LI><A NAME="tex2html21"
+  HREF="#SECTION00040000000000000000">Legea logistică</A>
+<LI><A NAME="tex2html28"
+  HREF="#SECTION00041000000000000000">Calculatoare vulnerabile</A>
+<LI><A NAME="tex2html22"
+  HREF="#SECTION00050000000000000000">Concluzii</A>
+<LI><A NAME="tex2html23"
+  HREF="#SECTION00060000000000000000">Alte surse de informaţie</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Cu 13 ani în urmă</A>
+</H1>
+
+<P>
+Pe 2 noiembrie 1988 unele din calculatoarele cuplate la reţeaua
+numită Internet, care lega o parte dintre marile universităţi şi
+centre de cercetare americane, au început să exhibe simptome
+ciudate.  Calculatoarele executau tot felul de programe, compilau
+surse şi comunicau cu alte calculatoare din reţea, fără ca cineva
+să fi iniţiat aceste activităţi.  Prima alarmă a fost pornită la
+universitatea Stanford, la ora 9 seara (ora coastei de est a Statelor
+Unite), care afirma că majoritatea maşinilor Unix din campus (în
+număr de vreo 2500) erau infectate de un virus care pornise de la
+MIT.  La ora 10 seara programatorii de la MIT au descoperit şi ei o
+activitate suspicioasă şi au încercat să reboot-eze
+calculatoarele, crezînd că e vorba de un program care a luat-o
+razna.  Cînd au observat însă că, nu mult timp după repornire,
+calculatoarele re-începeau acelaşi lanţ de activităţi bizare, au
+realizat că ceva mai serios se află la mijloc.
+
+<P>
+În curînd mesaje de e-mail schimbate cu colegi de la alte
+universităţi le-au revelat că atacul era universal: calculatoare
+din toată America sufereau de aceleaşi simptome.  Au urmat apoi
+două nopţi albe şi muncă în foc continuu în care hacker-ii
+încercau să înţeleagă în ce fel funcţionează noul virus care
+le ataca calculatoarele.  La fel ca şi cei biologici, viruşii de
+obicei călătoresc în spinarea altor programe, care forţează
+celulele organismului gazdă să-i multiplice.  Programul cel nou era
+însă autonom; ca atare a fost botezat ``vierme'': era un organism de
+sine-stătător, capabil să se multiplice şi să atace de la sine
+alte calculatoare.
+
+<P>
+Cercetătorii au atacat viermele prin mai multe metode:
+
+<P>
+
+<UL>
+<LI>au început să-l dezasambleze şi să descifreze instrucţiunile
+din care era compus;
+</LI>
+<LI>au creat maşini-capcană pe care să le infecteze, care
+înregistrau o mulţime de detalii despre ceea ce se petrecea cu ele
+însele (creau ``log-uri'');
+</LI>
+<LI>au creat maşini-mutant pe care le paralizau parţial, pentru a
+descoperi care sunt serviciile de care viermele are nevoie pentru a se
+putea multiplica;
+</LI>
+</UL>
+
+<P>
+Viermele acesta era deosebit de virulent şi complicat, atacînd
+staţii de lucru Sun şi VAX care rulau sistemul de operare Unix de la
+Berkeley.  Viermele folosea mai multe metode de propagare, exploatînd
+mai multe slăbiciuni în configurarea calculatoarelor şi
+implementarea programelor:
+
+<P>
+
+<UL>
+<LI>Întîi încerca să se transfere între calculatoare pe care
+acelaşi utilizator avea conturi diferite şi între care utilizatorul
+îşi configurase acces fără parole (folosind fişierele
+<TT>.rhosts</TT>);
+</LI>
+<LI>Dacă nu reuşea folosind acest mecanism, încerca să
+folosească o slăbiciune din programul <TT>sendmail</TT>, care şi la
+ora actuală este cel mai folosind program pentru procesarea poştei
+electronice.  Pe multe calculatoare <TT>sendmail</TT> era instalat
+compilat cu o configuraţie de depanare, care permitea executarea unor
+comenzi de la distanţă;
+</LI>
+<LI>În fine, viermele exploata un bug din implementarea programului
+<TT>finger</TT>, care este folosit în mod normal pentru a vedea cine
+lucrează pe un calculator la distanţă.  Viermele exploata pentru
+prima oară un tip de bug care este la ora actuală extrem de folosit
+de alte animale de acelaşi gen: buffer overflow.  Viermele trimitea
+programului <TT>fingerd</TT>, care primeşte întrebări despre
+utilizatori prin reţea, un nume de utilizator foarte lung, care
+depăşea memoria alocată pentru recepţia mesajului.  Numele era
+atît de lung încît scria gunoi peste stiva programului şi modifica
+valoarea salvată a registrului PC.  Aceasta cauza un salt la o
+adresă dinainte stabilită, aflată în numele foarte lung, unde
+viermele conţinea cod care prelua controlul.
+</LI>
+<LI>Odată instalat pe un calculator, viermele încerca să
+decripteze unele din parolele utilizatorilor folosind un dicţionar de
+parole obişnuite, pentru a pune mîna pe noi conturi din care să
+re-atace folosind prima metodă.
+</LI>
+<LI>Viermele se propaga în două etape pe un nou calculator pe
+care-l infecta: întîi trimitea un scurt program scris în C, care
+era compilat pe maşina locală, care apoi aducea şi restul
+viermelui, care consta în module pre-compilate pentru Sun şi VAX.
+</LI>
+<LI>În plus, în interiorul viermelui toate şirurile de caractere
+(inclusiv comenzile pe care viermele le lansează în execuţie şi
+dicţionarul de parole inclus) erau ``ascunse'' (fiecare caracter este
+suprapus cu un sau exclusiv cu valoarea 81).
+</LI>
+</UL>
+
+<P>
+Viermele nu efectua acţiuni distructive, cum ar fi ştergerea de
+fişiere sau instalarea de conturi ascunse: singurul efect negativ
+provenea din faptul că maşinile erau infectate în mod repetat, şi
+repede nu făceau altceva decît să execute copii ale viermelui.
+
+<P>
+Cercetări ulterioare au relevat faptul că viermele fusese creat şi
+lansat de un student la doctorat al universităţii Cornell, pe nume
+Robert Tappan Morris.  În mod oarecum ironic, Morris este fiul unui
+alt Robert Morris, care era pe vremea aceea  cercetător la National
+Security Agency,  o organizaţie guvernamentală americană
+însărcinată cu criptologia.
+
+<P>
+Robert Morris a fost condamnat la trei ani de închisoare cu suspendare
+pentru fapta sa, 10000 de dolari amendă şi 400 de ore de muncă în
+serviciul comunităţii.  După terminarea sentinţei Robert Morris a
+terminat doctoratul la universitatea Harvard şi începînd din 1999 este
+profesor la universitatea MIT, lucrînd în domeniul reţelelor de
+calculatoare.  Să nu faceţi cumva greşeala să credeţi că Morris a avut
+aceste succese ulterioare datorită păţaniei cu viermele: el a reuşit
+să-şi ``repare'' cariera <EM>în pofida</EM> istoriei cu viermele,
+pentru că este un ins foarte capabil şi inteligent.  În prezent refuză
+să vorbească despre vierme sau să facă cercetare în securitatea
+calculatoarelor.
+
+<P>
+O mulţime de rapoarte au descris aceste evenimente în detaliu şi au
+discutat problema securităţii în Internet imediat după aceste
+evenimente.  Cu toate acestea, nimic nu s-a schimbat...
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+O problema în serverul de web de la Microsoft</A>
+</H1>
+
+<P>
+Pe data de 18 iunie 2001 compania Eeye Digital Systems a publicat
+descoperirea unei probleme de securitate în serverul de web al
+companiei Microsoft, numit IIS.  Bug-ul este de exact aceeaşi natură
+ca şi în urmă cu 13 ani: buffer overflow.  Microsoft a emis o
+corecţie pentru această problemă la scurt timp după aceea.
+
+<P>
+Cu toate acestea, la ora actuală se estimează că există
+aproximativ două milioane de calculatoare care rulează acest
+program, care vine instalat automat cu Windows NT şi Windows 2000.
+Multe persoane probabil că execută acest program fără a şti
+măcar.
+
+<P>
+Pe data de 12 iulie a fost semnalată pentru prima oară prezenţa unui
+vierme care exploata această slăbiciune.  Această prima variantă a
+viermelui a fost denumită CodeRed versiunea 1; numele provine de la
+sucul ``Code Red'' care conţine un procent ridicat de cafeină, şi
+care i-a ţinut treji pe cercetătorii care atacau viermele cu
+aceleaşi arme ca în urmă cu 13 ani.
+
+<P>
+Viermele funcţionează în două etape:
+
+<P>
+
+<UL>
+<LI>Pînă pe data de 19 a lunii, viermele e în faza de infecţie,
+şi atacă noi calculatoare pentru a se multiplica;
+</LI>
+<LI>Pe data de 20 a fiecărei luni, viermele lansează de pe toate
+maşinile infectate un atac de tip DoS (Denial of Service) asupra unui
+calculator de la Casa Albă, cu adresa <TT>www1.whitehouse.gov</TT>.  
+</LI>
+<LI>În plus, viermele schimba paginile de web ale serverului atacat
+adăugînd mesajul ``Hăcuit de chinezi'', dar doar dacă serverul
+servea pagini în limba engleză.  Nu există nici o indicaţie însă
+că viermele ar fi fost creat în China.
+</LI>
+</UL>
+
+<P>
+Versiunea 1 a viermelui s-a răspîndit foarte lent, din cauză că un
+vierme nou infectat folosea aceleaşi adrese generate aleator (pornea
+de la aceeaşi ``sămînţă'' (seed) în generarea numerelor
+aleatoare), şi ca atare încerca să infecteze mereu şi mereu
+aceleaşi calculatoare.
+
+<P>
+Pe data de 19 iulie, în jurul orei 10 dimineaţă a apărut o
+variantă mutant a viermelui, care folosea o sămînţă generată
+aleator.  Această mică schimbare a avut un impact colosal: pînă la
+sfîrşitul zilei acesteia viermele a infectat peste 400000 (patru
+sute de mii) de maşini!  Probabil că ar fi infectat şi mai multe
+dacă nu ar fi intrat în faza a doua, care începea pe data de 20 a
+lunii.
+
+<P>
+Din fericire viermele verifică existenţa adresei atacate; pentru a
+preveni diluviul, administratorii de la Casa Albă au dezafectat
+serverul care era ţinta atacului distribuit.  Dacă 400000 de
+calculatoare din toată lumea lansează un atac simultan în Internet,
+aceasta poate avea efecte dramatice asupra traficului.
+
+<P>
+Între timp mass-media a făcut o publicitate enormă virusului;
+astfel mulţi administratori de sistem au aflat de existentă lui şi
+au aplicat corecţiile de la Microsoft.  Cu toate acesta, există în
+continuare un mare număr de calculatoare vulnerabile.
+
+<P>
+Pe 4 august a apărut un nou vierme, complet diferit, dar care
+conţine textul ``CodeRed2''.  Acest vierme exploatează aceeaşi
+slăbiciune, dar odată instalat face ravagii pe calculatorul infectat,
+instalînd conturi ascunse pentru administratori care pot fi apoi
+folosite de la distanţă.  În plus, acest vierme are un algoritm
+special prin care adesea selectează şi atacă în mod special
+calculatoarele din aceeaşi reţea cu victima.
+
+<P>
+La ora la care scriu acest articol (pe 27 august) a fost anunţată o
+a treia mutaţie a viermelui.  Ţinînd cont de numărul uriaş de
+victime şi de probabilitatea practic nulă ca toate să fie peticite,
+e foarte probabil că acest vierme va continua să existe în Internet
+încă foarte multă vreme.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Legea logistică</A>
+</H1>
+
+<P>
+Figura&nbsp;<A HREF="codered-html.html#replicare">1</A> arată numărul
+de calculatoare infectate ca funcţie de timp.  Axa orizontală este ora
+iar axa verticală indică numărul estimat de calculatoare infectate.
+Am descris metoda prin care se poate estima numărul de calculatoare
+infectate în articolul meu din NET Report din luna iulie.  Acest număr
+se poate estima numărînd atacurile care vin într-o anumită porţiune
+din reţea de la serverele infectate (această tehnică a fost numită în
+articolul meu anterior ``împrăştiere''; fenomenul în acest caz este
+puţin diferit, dar mijloacele folosite pentru estimare sunt aceleaşi).
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="replicare"></A><A NAME="121"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 1:</STRONG>
+<I>Multiplicarea viermelui codeRed versiunea a
+doua pe data de 19 iulie 2001.  Ora este cea a meridianului Greenwich.
+Această figură este extrasă din pagina de web de la CAIDA,
+<A NAME="tex2html3"
+HREF="http://www.caida.org/analysis/security/code-red/gifs/cumulative-ts.gif">www.caida.org/analysis/security/code-red/gifs/cumulative-ts.gif</A>.</I></CAPTION>
+<TR><TD><IMG
+ WIDTH="526" HEIGHT="382" BORDER="0"
+ SRC="img1.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{replicare.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Curba din figura&nbsp;<A HREF="codered-html.html#replicare">1</A> are o formă numită ``sigmoidă'',
+avînd două zone distincte: 
+
+<P>
+<DL COMPACT>
+<DT>(a)</DT>
+<DD>O zonă în care infecţia urmează o curbă exponenţială;
+începutul este lent, rata de infecţie fiind scăzută, dar după ce
+un număr suficient de mare de calculatoare este infectat, viteza cu
+care infecţia se răspîndeşte este uluitoare.
+
+<P>
+</DD>
+<DT>(b)</DT>
+<DD>O zonă în care infecţia se plafonează la o valoare
+limită.  În cazul acestui vierme, platoul a fost atins pentru că
+viermele era pre-programat să-şi oprească multiplicarea la ora 24.
+</DD>
+</DL>
+
+<P>
+Chiar dacă viermele nu este pre-programat să se oprească, trebuie
+să ne aşteptăm ca viteza de infecţie să urmărească o astfel de
+curbă.  De fapt, similitudinea cu un organism biologic este din nou
+frapantă: zoologii care studiază evoluţia unei populaţii animale
+au descoperit această lege de înmulţire cu mult timp în urmă, şi
+i-au dat şi un nume, ``legea logistică''.
+
+<P>
+Legea logistică poate fi descrisă printr-o formulă aparent
+complicată, dar care la o analiză atentă este foarte naturală:
+<BR><P></P>
+<DIV ALIGN="CENTER">
+
+<IMG
+ WIDTH="165" HEIGHT="48" BORDER="0"
+ SRC="img2.png"
+ ALT="dN/dt = rN ((K-N)/K)">
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+
+<P>
+Valorile din această formulă sunt:
+
+<P>
+
+<UL>
+<LI><I>N</I> este numărul de noduri infectate, o funcţie de timp
+<I>t</I>;
+</LI>
+<LI><I>r</I> este ``rata infecţiei'': numărul de calculatoare pe care
+un ins infectat le infectează la rîndul lui într-o unitate de timp;
+</LI>
+<LI><I>K</I> este o valoare numită de zoologi ``capacitatea mediului'':
+numărul de indivizi care pot fi suportaţi de resursele ecologice.
+În cazul nostru, <I>K</I> este populaţia totală de calculatoare care
+rulează programul defect.
+</LI>
+</UL>
+
+<P>
+Putem recunoaşte în legea logistică cele două părţi ale
+sigmoidei:
+
+<P>
+<DL COMPACT>
+<DT>(a)</DT>
+<DD>Zona iniţială, în care <I>N</I> este mic comparat cu <I>K</I>.
+În această zonă fracţia dintre paranteze este aproape 1, şi legea
+devine <I>dN/dt = rN</I>, ceea ce prin integrare în raport cu timpul
+devine <I>N(t) = r<sup>t</sup></I>, deci o curbă exponenţială.  Explicaţia este
+naturală: în prima generaţie avem un calculator, în a doua el va
+infecta <I>r</I> calculatoare, în a treia fiecare va infecta alte <I>r</I>,
+deci vom avea <I>r<sup>2</sup></I>, apoi <I>r<sup>3</sup></I>etc.
+</DD>
+<DT>(b)</DT>
+<DD>Cînd numărul de calculatoare infectate <I>N</I> devine
+comparabil cu populaţia <I>K</I>, tentativele de infecţie nu vor mai fi
+la fel de eficace: mai multe calculatoare diferite vor infecta
+aceeaşi victimă, deci generaţia va creşte mai puţin de <I>r</I> ori.
+La limită, cînd toate calculatoarele sunt infectate <I>K=N</I>),
+fracţia devine <I>(K-N)/K = 0</I>, deci <I>dN/dt = 0</I>, deci populaţia nu
+mai creşte.  [Notă: probabilitatea ca un mesaj să infecteze un
+calculator &quot;curat&quot; este raportul dintre numărul de
+calculatoare neinfectate <I>K-N</I> şi numărul total de calculatoare <I>K</I>.]
+</DD>
+</DL>
+
+<P>
+Ceea ce este înspăimîntător este viteza cu care infecţia s-a
+propagat: în doar 24 de ore infecţia a acoperit aproape jumătate de
+milion de calculatoare!
+
+<P>
+
+<H2><A NAME="SECTION00041000000000000000">
+Calculatoare vulnerabile</A>
+</H2>
+
+<P>
+Viermele CodeRed s-a bucurat de o publicitate enormă în presă:
+aproape că nu există ziar sau canal de televiziune care să nu fi
+menţionat viermele.  Ca atare informaţia despre atac s-a propagat
+destul de bine şi a atins multă lume prin multe canale.  Ne
+aşteptăm deci ca foarte mulţi dintre administratorii de sistem să
+fi luat măsuri aplicînd ``peticele'' de la Microsoft care
+corectează problemele din IIS.
+
+<P>
+CAIDA monitorizează şi numărul de calculatoare peticite, folosind o
+eşantionare statistică: dintre calculatoarele infectate iniţial, CAIDA
+alege la întîmplare cîteva şi trimite nişte cereri prin care poate
+afla dacă peticele au fost aplicate.  Multe din calculatoarele
+infectate iniţial nu răspund la aceste pachete de test, probabil
+pentru că unele dintre ele nu au adrese IP fixe.  Dintre
+calculatoarele testate însă, graficul din figura&nbsp;<A
+HREF="codered-html.html#petice">2</A> arată cîte au fost peticite.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="petice"></A><A NAME="141"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 2:</STRONG>
+<I>Procentul estimat de calculatoare infectate
+care au aplicat peticele (patches) de la Microsoft în urma
+propagării viermelui.  Acest grafic poate fi obţinut în timp real
+de la <A NAME="tex2html6"
+  HREF="http://worm-security-survey.caida.org/patching.gif">http://worm-security-survey.caida.org/patching.gif</A>.</I></CAPTION>
+<TR><TD><IMG
+ WIDTH="538" HEIGHT="399" BORDER="0"
+ SRC="img14.png"
+ ALT="petice.eps"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Concluzii</A>
+</H1>
+
+<P>
+Din acest text putem extrage două concluzii îngrijorătoare:
+
+<P>
+
+<UL>
+<LI>Posibilitatea unui atac distructiv pe Internet la scală
+planetară nu mai este discutabilă, ci este o certitudine.  În
+viitorul apropiat vom avea de a face cu atacuri mult mai periculoase,
+la o scară nemaiîntîlnită.  În ce măsură Internetul va rezista
+acestora rămîne de văzut.
+
+<P>
+</LI>
+<LI>Comunitatea programatorilor nu a învăţat mare lucru în
+ultimii 13 ani în privinţa securităţii informatice: aceleaşi
+tehnici funcţionează la fel de bine.  Deşi aceste probleme sunt
+foarte bine înţelese, şi există o mulţime de soluţii parţiale
+propuse, ele nu sunt implementate în practică.
+</LI>
+</UL>
+
+<P>
+Fiţi cu ochii pe reţea, cît timp mai există!
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Alte surse de informaţie</A>
+</H1>
+
+<P>
+
+<UL>
+<LI>Un site de web dedicat primului vierme din Internet, lansat de
+Robert Morris de la universitatea Cornell în noiembrie 1988:
+<TT><A NAME="tex2html6"
+  HREF="http://www.worm.net">http://www.worm.net</A></TT>.  Acest site conţine codul sursă complet
+al viermelui.
+
+<P>
+</LI>
+<LI>Un articol despre ``disecţia'' viermelui Morris făcută în
+timp real de o echipă de la MIT: ``Cu Microscop şi Pensetă'':
+<TT><A NAME="tex2html7"
+  HREF="http://www.worm.net/worm-chronology.html">http://www.worm.net/worm-chronology.html</A></TT>.
+
+<P>
+</LI>
+<LI>Pagina de web a autorul primului vierme Internet, Robert Morris,
+acum profesor la universitatea MIT:
+<TT><A NAME="tex2html8"
+  HREF="http://www.pdos.lcs.mit.edu/~rtm">http://www.pdos.lcs.mit.edu/~rtm</A></TT>.
+
+<P>
+</LI>
+<LI>Site-ul de web al companiei Eeye Digital Systems, care a
+publicat prima slăbiciunile pe care este bazat CodeRed, şi care a
+lucrat la înţelegerea mecanismelor prin care CodeRed funcţionează:
+<TT><A NAME="tex2html9"
+  HREF="http://www.eeye.com">http://www.eeye.com</A></TT>.
+
+<P>
+</LI>
+<LI>Analiza şi vizualizarea viermelui CodeRed făcute de
+organizaţia CAIDA (Cooperative Association for Internet Data
+Analysis), asociată cu centrul de supercalculatoare al
+universităţii din California, San Diego:
+<TT><A NAME="tex2html10"
+  HREF="http://www.caida.org/analysis/security/code-red">http://www.caida.org/analysis/security/code-red</A></TT>.  Acest site
+continuă să monitorizeze infecţia şi numărul de calculatoare care
+au fost peticite împotriva atacului.
+
+<P>
+</LI>
+<LI>Articolul meu din NET Report despre atacuri de tip ``Denial of
+Service'' din iulie 2001:
+<TT><A NAME="tex2html11"
+  HREF="http://www.cs.cmu.edu/~mihaib/articles/articles.html#ddos">http://www.cs.cmu.edu/~mihaib/articles/articles.html#ddos</A></TT>.
+
+<P>
+</LI>
+<LI>Cît de rapidă poate fi răspîndirea unui vierme?  Un articol
+despre un vierme ipotetic numit Warhol, care poate acoperi întreaga
+planetă în 15 minute (poate infecta 99% din toate calculatoarele
+posibile): <TT><A NAME="tex2html12"
+  HREF="http://www.cs.berkeley.edu/~nweaver/warhol.html">http://www.cs.berkeley.edu/~nweaver/warhol.html</A></TT>
+<P>
+</LI>
+<LI>Peticele de la Microsoft pentru IIS: 
+<BR><FONT SIZE="-1"><TT><A NAME="tex2html16"
+  HREF="http://www.microsoft.com/technet/treeview/default.asp?url=/technet/itsolutions/security/topics/codealrt.asp.">http://www.microsoft.com/technet/treeview/default.asp?url=/technet/itsolutions/security/topics/codealrt.asp.</A></TT></FONT>
+
+<P>
+</LI>
+<LI>O sculă de la Microsoft care dezinfectează calculatoarele
+infectate cu CodeRedII: 
+<BR><TT><A NAME="tex2html17"
+  HREF="http://www.microsoft.com/Downloads/Release.asp?ReleaseID=31878.">http://www.microsoft.com/Downloads/Release.asp?ReleaseID=31878.</A></TT>.
+
+</UL>
+
+<P>
+<BR><HR>
+
+</BODY>
+</HTML>

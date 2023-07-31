@@ -1,0 +1,1086 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>O SCURTĂ ISTORIE A UNIX-ului
+-- de la MULTICS la Linux --</TITLE>
+<META NAME="description" CONTENT="O SCURTĂ ISTORIE A UNIX-ului
+-- de la MULTICS la Linux --">
+<META NAME="keywords" CONTENT="unix-2-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">O SCURTĂ ISTORIE A UNIX-ului
+<BR>-- de la MULTICS la Linux --</H1>
+<P ALIGN="CENTER"><STRONG>Mihai BUDIU -- mihaib+ at cs.cmu.ro 
+<BR><TT>http://www.cs.cmu.edu/~mihaib</TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>decembrie 1995, revizuit septembrie 1998</STRONG></P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html21"
+  HREF="unix-2-html.html">Conjunctura</A>
+<LI><A NAME="tex2html22"
+  HREF="#SECTION00030000000000000000">Faptele</A>
+<UL>
+<LI><A NAME="tex2html23"
+  HREF="#SECTION00031000000000000000">Un nou limbaj</A>
+<LI><A NAME="tex2html24"
+  HREF="#SECTION00032000000000000000">O nouă gazdă</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html25"
+  HREF="#SECTION00040000000000000000">Propagarea</A>
+<LI><A NAME="tex2html26"
+  HREF="#SECTION00050000000000000000">Divergenţa</A>
+<LI><A NAME="tex2html27"
+  HREF="#SECTION00060000000000000000">Standardizarea</A>
+<LI><A NAME="tex2html28"
+  HREF="#SECTION00070000000000000000">Bariera sonică</A>
+<LI><A NAME="tex2html29"
+  HREF="#SECTION00080000000000000000">Războiul</A>
+<LI><A NAME="tex2html30"
+  HREF="#SECTION00090000000000000000">Decăderea</A>
+<LI><A NAME="tex2html31"
+  HREF="#SECTION000100000000000000000">Supravieţuirea?</A>
+<LI><A NAME="tex2html32"
+  HREF="#SECTION000110000000000000000">Încheiere</A>
+<LI><A NAME="tex2html33"
+  HREF="#SECTION000120000000000000000">Note Bibliografice</A>
+<LI><A NAME="tex2html34"
+  HREF="#SECTION000130000000000000000">Versiuni de UNIX</A>
+<LI><A NAME="tex2html35"
+  HREF="#SECTION000140000000000000000">Cronologie</A>
+<LI><A NAME="tex2html36"
+  HREF="#SECTION000150000000000000000">Standardul POSIX 1003</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+Orice informatician profesionist care s-a întîlnit cu UNIX odată
+s-a îndrăgostit cu siguranţă de el.  Motivele pasiunilor pe care le
+suscită constituie ele însele un subiect despre care s-au scris sute
+de cărţi şi nu despre asta intenţionez să povestesc aici.  Nu
+despre ``de ce'' voi vorbi, ci mai curînd despre ``cum'' şi
+``cînd''.  Istoria genezei acestui sistem de operare este ea
+însăşi plină de învăţăminte interesante.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Conjunctura</A>
+</H1>
+
+<P>
+Putem coborîpe firul timpului pentru a regăsi rădăcinile UNIX
+pînă la zilele de început ale calculatoarelor, prin anii '40-'50.
+Atunci lumea (de fapt ``selecta'' comunitate a informaticienilor)
+încerca să construiască un set de ``scule'' care să mărească
+productivitatea calculatoarelor, care pe atunci costau o grămadă de
+bani şi-şi petreceau tare mult timp citind cartele sau facînd alte
+treburi de acelaşi gen -- plictisitoare şi mari consumatoare de
+timp -- scule care vor fi sămînţa a ceea ce mai tîrziu se va numi
+``Sistem de Operare''.  Ar fi însă prea departe o astfel de
+întoarcere, deşi cu siguranţă nu lipsită de interes.
+
+<P>
+Povestea începe cu adevarat prin 1962, cînd trei mari companii din
+domeniul calculatoarelor din Statele Unite şi-au unit forţele pentru
+a da naştere unui monstru software.  MIT (Massachusets Institute of
+Technology -- o universitate de numele careia sunt legate multe
+pietre de hotar din istoria calculatoarelor), Bell Laboratories, care
+pe vremea aceea aparţinea de AT&amp;T (American Telephone and Telegraph
+-- un colos al telecomunicaţiilor) şi General Electric (atunci un
+important producător de calculatoare) s-au decis să pună la bătaie
+nişte creiere, şi o grămadă de bani ca să facă un ``utilitar''
+sofisticat.  Acesta trebuia să permită folosirea unei capacităţi
+de calcul în comun de către sute de utilizatori, cu un maximum de
+eficienţă şi securitate.  Modelul la care aspirau era cel al
+reţelei de electricitate: vroiau ca fiecare potenţial utilizator să
+aibă la dispoziţie un fel de mufă la care să cupleze un terminal
+şi prin care să aibă acces instantaneu la toate resursele de calcul
+ale sistemului.  Vroiau sa aibă un singur calculator care să
+satisfacă toate nevoile utilizatorilor din Boston.  Proiectul s-a
+numit MULTICS, prescurtare de la MULTiplexed Information and Computer
+Service -- serviciu multiplexat la informaţii şi putere de calcul.
+Acesta este unul dintre cele mai răsunătoare eşecuri din istoria
+informaticii mondiale.
+
+<P>
+Proiectul n-a ajuns la sfîrşit.  Bell s-a retras după cîţiva ani
+şi cîteva milioane de dolari cheltuiţi.  General Electric a
+renunţat cu totul să mai lucreze în industria calculatoarelor.
+
+<P>
+Motivele eşecului sunt multe.  Unul dintre ele este puterea
+hardware-ului de atunci.  Ideea că peste douăzeci de ani un
+calculator de puterea celui pe care îl foloseau va putea să fie
+vîndut cu numai cîteva mii de dolari drept un calculator personal nu
+era bună nici ca SF.  Un alt motiv, paradoxal, a fost o prea mare
+efervescenţă de idei.  Fiecare din cei implicaţi era un artizan,
+şi varietatea conceptelor a dus la o proastă integrare a părţilor.
+Nu în ultimul rînd a contribuit limbajul folosit: MULTICS ar fi
+trebuit să fie scris în PL/I, iar compilatorul era dezvoltat în
+acelaşi timp de o altă echipă, care niciodată nu era în termen.
+
+<P>
+Retrospectiv vorbind e greu de spus că MULTICS a fost un mare eşec.
+Majoritatea ideilor elaborate atunci sunt acum conceptele fundamentale
+din teoria sistemelor de operare. Pe de altă parte MIT a realizat
+pînă la urmă o variantă funcţională MULTICS care se foloseşte
+în cîteva locuri din lume.
+
+<P>
+MULTICS a fost prima dintre rădăcinile UNIX.  O a doua a fost
+fenomenala dezvoltare a minicalculatoarelor.  De la nişte coloşi
+(foarte, foarte scumpi), o ``rasă'' de calculatoare a evoluat spre
+dimensiuni mici şi preţuri accesibile.  Tipică este familia PDP a
+lui DEC (numit apoi Digital, cumpărat în 1998 de Compaq), care in
+1961 vindea un PDP-1 cu 4K de memorie RAM de cîte 18 biţi cu numai
+120 000$ (de douăzeci de ori mai ieftin decît un IBM 7094).  La
+preţul ăsta PDP-urile se vindeau ca pîinea caldă.  La asta s-a
+adăugat şi politica DEC de a scoate o întreagă familie de
+calculatoare (PDP) compatibile unele cu altele.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Faptele</A>
+</H1>
+
+<P>
+Unul dintre participanţii la proiectul MULTICS din partea Bell Labs,
+Ken Thomson, după nefericita experienţă, a găsit prin sediul
+firmei un PDP-7 pe care aparent nimeni nu-l folosea.  Şi-a propus să
+scrie pe el un program foarte interesant, şi anume un joc de simulare
+a unor nave spaţiale şi a sistemului solar.  Calculatorul avea tot
+hard-ul necesar, dar soft de loc.  Aşa că Thomson s-a apucat de
+lucru folosind întîi un cross-assembler (un asamblor care se executa
+pe o maşină dar genera cod pentru alta).  După ce s-a plictisit să
+tot care benzi cu hîrtie găurita de la asamblor la PDP ca să
+încarce programele s-a hotărît să-şi scrie un asamblor pentru
+PDP.  Zis şi făcut.
+
+<P>
+Să scrii un joc însă nu e o treabă deloc banală.  E o provocare
+pentru orice programator, oricît de experimentat.  Jocurile sunt
+programe extrem de complexe, care implică adesea algoritmi
+sofisticaţi.  Pe deasupra sunt greu de depanat şi testat.  Ei,
+asta-i trebuia de fapt şi lui Thomson: un <EM>mediu de dezvoltare</EM>,
+care să-i permită să scrie uşor şi eficient programul.  Atunci el
+şi-a folosit cunoştinţele acumulate cu prilejul MULTICS şi a
+scris, împreună cu un coleg, Dennis Ritchie, o variantă mai
+sărăcuţă a acestuia pentru PDP.  Prima piesă a fost un sistem de
+fişiere, duipă care au urmat un subsistem pentru execuţia
+proceselor şi apoi un interpretor de comenzi (shell).  Colegii lui au
+numit rezultatul, ca să rîdă de Thomson, UNICS (UNiplexed
+Information...).  Uite însă că numele a prins, deşi grafia a
+fost apoi schimbată in UNIX.  Această primă variantă era scrisă
+in assembler PDP-7.
+
+<P>
+Programul lui Thomson i-a fermecat pe colegii lui, programatori şi
+ei.  Iată însă că unul din departamentele hîrţogare ale Bell
+avea nevoie de nişte programe mai de doamne-ajută pentru prelucrarea
+de texte.  Sarcina a căzut tot pe umerii lui Thomson, care a primit
+pentru aceasta un calculator mai mare şi mai frumos, numit PDP-11/20.
+Si pentru că decît să scrie direct programele mai simplu i-ar fi
+fost să aibă un mediu de programare asemănător pe noua maşină,
+s-a decis să ``porteze'' UNIX pe noua arhitectură.  Compatibile,
+compatibile, dar nu chiar de tot.  Totul trebuia rescris de la cap, in
+limbaj de asamblare PDP-11.
+
+<P>
+
+<H2><A NAME="SECTION00031000000000000000">
+Un nou limbaj</A>
+</H2>
+
+<P>
+Aici interesele lui s-au unit cu al altui grup de la Bell, care lucra
+la nişte limbaje de programare care pot exprima algoritmi mai precis
+decît engleza şi mai fiabil decît FORTRAN-ul.  Ei elaborasera deja
+două noi limbaje care vor avea un rol important în evoluţia
+ulterioară a domeniului.  Acestea erau Algol şi BCPL.  Thomson şi-a
+scris un interpretor de B -- o versiune proprie de BCPL, dar acesta
+era mult prea lent ca să poată fi folosit pentru programe mari.
+Denis Ritchie a fost însărcinat să scrie un compilator pentru B.
+Ritchie era şi el un tip foarte inventiv, aşa ca a modificat masiv
+limbajul pentru a-l face cit mai eficace fără a pierde însă <EM>portabilitatea</EM>.  Programele nu trebuia să facă prea multe
+presupuneri despre arhitectura maşinii pe care rulează, pentru a se
+potrivi pe cît mai multe dintre ele.  Dialectului creat de el,
+Ritchie i-a spus C.
+
+<P>
+C a fost limbajul potrivit la momentul potrivit.  Este totodată
+simplu (sub 40 de cuvinte rezervate!), flexibil, extrem de eficient
+(aproape de maşină!), structurat, rapid şi portabil.  De altfel, de
+atunci încoace a dominat categoric scena programării de sistem:
+majoritatea sistemelor de operare, compilatoarelor şi utilitarelor
+existente în lume sunt scrise în C.  Succesul C a depăşit cu mult
+pe cel al Unix-ului.  C este încă direct sau indirect limbajul
+dominant în lume şi la ora actuală (indirect prin urmaşii săi C++
+şi Java).
+
+<P>
+Thomson şi Ritchie au rescris UNIX în C pentru noile maşini, şi
+apoi pe succesoarele lor PDP-11/45 şi PDP-11/70.  Acestea din urmă
+aveau mecanisme de protecţie hardware şi au permis o implementare
+eficientă a mecanismelor de securitate din UNIX.
+
+<P>
+Primele versiuni de Unix au fost folosite numai în interiorul Bell
+Laboratories.  Ediţia a treia, din februarie 1973 includea un
+compilator de C.  În acelaşi an întregul Unix a fost rescris în C.
+Thomson şi Ritchie au fost co-autori ai unui articol acum faimos,
+numit ``The Unix Time-Sharing System'', publicat în Communications of
+the ACM în iulie 1974.
+
+<P>
+
+<H2><A NAME="SECTION00032000000000000000">
+O nouă gazdă</A>
+</H2>
+
+<P>
+Prima portare în afara familiei PDP a fost făcută pe un calculator
+Interdata 8/32<A NAME="tex2html1"
+  HREF="#foot52"><SUP>1</SUP></A>.  Aceasta a fost ocazia de a constata că UNIX se baza
+cîteodată pe anumite particularităţi ale maşinii pe care trebuia
+să ruleze (cum ar fi că adresele sunt pe 16 biţi, deci sunt maximum
+64K de memorie).  O grămadă de timp a fost petrecută pentru a face
+UNIX independent de asemenea idiosincrazii.
+
+<P>
+La început transpunerea pentru Interdata s-a desfăşurat lent,
+pentru că dezvoltarea se făcea pe PDP, care se afla la etajul 5 al
+clădirii.  Interdata era la etajul 1.  O nouă versiune însemna să
+compilezi la etajul 5, şi să cobori cu benzile la 1, să vezi dacă
+merge. Dupa ce s-au uzat scările, a apărut un amplu interes pentru
+posibilitatea conectării a două maşini printr-un mediu electronic.
+Acesta a fost începutul programelor de comunicaţie în reţea de
+calculatoare din UNIX.
+
+<P>
+Sistemul era foarte uşor acum de portat, pentru ca 95 la sută din el
+era scris in C.  Dacă vroiai să-l muţi pe o maşină nouă, tot ce
+aveai de făcut era să scrii un compilator de C pentru maşina aceea,
+iar un compilator e mult mai mic decît un întreg sistem de operare.
+Asta nu era chiar totul, pentru că pe noua maşină trebuia să mai
+scrii un pic cod în asamblare (intreruperi, porturi) şi să rescrii
+partea care se ocupa cu perifericele (driverele pentru discuri, benzi,
+terminale).  Oricum, treaba era mult mai simplă pentru că tot ceea ce
+rămînea putea fi transportat neschimbat, iar asta e mare lucru!
+(Cîte din programele scrise de dumneavoastra se compilează uşor pe
+un calculator complet diferit de cel pe care le-aţi dezvoltat?)
+
+<P>
+Lucrurile nu s-au oprit aici! Steve Johnson de la Bell s-a apucat să
+studieze compilatorul de C şi a constatat că o mare parte din
+compilare se face la fel independent de maşina pentru care se
+generează codul.  Ideea lui a fost să parametrizeze compilatorul în
+aşa fel încît să-i furnizezi doar o descriere a maşinii pentru
+care trebuie să genereze cod, iar grosul compilatorului să fie
+neschimbat.  Acesta a fost compilatorul <EM>portabil</EM> de C.  Ani
+întregi compilatoarele de C de peste tot au fost bazate pe cel al lui
+Johnson, şi aceasta a ajutat mult la răspîndirea UNIX-ului.
+
+<P>
+Versiunea cea mai importantă de Unix numită ``Versiunea 7'' a fost
+lansată în ianuarie 1979; era primul sistem Unix cu adevărat
+portabil, mult mai robust şi mai funcţional decît toate versiunile
+anterioare.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Propagarea</A>
+</H1>
+
+<P>
+Poate nici unul din motivele de mai sus nu ar fi fost suficient pentru
+ca UNIX să cunoască popularitatea de care se bucură azi.  A mai
+fost ceva.  Pe vremea aceea AT&amp;T era un monopol pe telecomunicaţii
+in SUA.  Or americanii au nişte legi destul de severe anti-trust
+(vedeţi şi procesul intentat de departamentul de justiţie
+împotriva companiei Microsoft.)  AT&amp;T semnase cu DOJ (Department of
+Justice) o înţelegere prin care se abţinea să activeze în
+industria calculatoarelor.  De aceea n-a avut nimic împotrivă să
+vîndă licenţa codului sursă UNIX, pentru preţuri modice,
+universităţilor.  PDP-11 era, printr-o fericită coicidenţă,
+foarte răspîndit în universităţi, dar sistemul de operare cu care
+era livrat de DEC nu prea era pe placul utilizatorilor.  UNIX a fost
+providenţial.  Cursurile erau ţinute pe UNIX, cu exemple luate din
+UNIX.  Codul se putea studia la seminare.  Lumea era într-o
+efervescenţă nesfîrşită (un informatician obsedat este foarte
+obsedat!).  Fiecare inova ceva, fiecare depana ceva.  Conferinţe,
+întruniri, comunicări.  Un profesor australian, John Lions, a scris
+pe marginea codului un comentariu de genul celor pentru operele lui
+Shkespeare sau Chaucer.  Versiunile se succedau versiunilor.
+
+<P>
+În 1975 sistemul deja rula în colţuri foarte îndepărtate ale
+lumii: universitatea Berkeley din California, universitatea Ebraică
+din Ierusalim, universitatea South Wales din Australia şi
+universitatea din Toronto din Canada.  Studenţii absolvenţi au dus
+apoi cu ei în industrie lecţiile învăţate cu UNIX, contribuind la
+răspîndirea lui în continuare.  AT&amp;T încorpora adesea
+contribuţii din întreaga lume în codul sistemului (colaborare care
+s-a deteriorat simţitor cînd AT&amp;T a început mai tîrziu să
+comercializeze sistemul).
+
+<P>
+In 1984 Thomson şi Ritchie au primit prestigiosul premiu Turing al
+ACM (Association for Computing Machinery) pentru lucrarea lor din 1974
+care descria pentru prima oară UNIX.  ACM este o asociaţie
+profesională a calculatoriştilor din întreaga lume, de un prestigiu
+rivalizînd cu IEEE.
+
+<P>
+Lucrurile păreau a fi într-o deplină concordie, dar nu a fost să
+rămînă aşa.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Divergenţa</A>
+</H1>
+
+<P>
+În 1979 Microsoft (sic!) împreuna cu Santa Cruz Operations (SCO) au
+portat sistemul Unix pentru PCuri cu 80x86, sub numele de XENIX, una
+dintre primele variante comerciale ale sistemului.
+
+<P>
+Cam în acea perioadă, Thomson a avut un an sabatic (în sistemul
+american un cercetător cu experienţă din industrie face o dată la
+cîţiva ani o pauză şi lucrează -- de obicei -- în
+învăţămînt şi invers) la Universitatea Berkeley din California.
+Berkeley era una dintre primele universităţi care avusese licenţa
+codului.  Studenţii şi cercetătorii de la Berkeley au dezvoltat un
+sistem propriu gen UNIX numit BSD (Berkeley Software Distribution) şi
+care avea o mulţime de îmbunătăţiri faţă de System V.
+
+<P>
+Printre părţile tari BSD: un mecanism de memorie virtuală cu
+paginare, inspirat din sistemul de operare VMS de la Digital, scris de
+Bill Joy şi Ozap Babaoglu, care permitea executarea unor programe mai
+mari decît încăpeau în memorie, un sistem de fişiere mult mai
+rapid (``The Fast File System''), compilatoare de LISP şi Pascal şi
+o implementare a protocolului de comunicaţii pentru reţele de
+calculatoare numit TCP/IP, care este de departe cel mai răspîndit
+astăzi, mult înafara lumii UNIX (este protocolul folosit în
+reţeaua Internet), plus o grămadă de utilitare de toate felurile.
+Armata a investit o grămadă de bani în cercetarea legată de Unix
+la Berkeley, prin agenţia DARPA (Defense Advanced Research Projects
+Agency)<A NAME="tex2html2"
+  HREF="#foot56"><SUP>2</SUP></A>.  Dezvoltarea lui BSD a fost
+continuată la Berkeley pîna în 1993.
+
+<P>
+În 1982 Bill Joy a plecat de la Berkeley pentru a înfiinţa propria
+lui companie numită Sun Microsystems, care a lansat o variantă
+proprie de Unix numită SunOS, bazată pe BSD.
+
+<P>
+Tot în 1982 legea americana a spart AT&amp;T în mai multe companii
+independente şi concurente pentru a sfărîma monopolul asupra
+telecomunicaţiilor.  AT&amp;T a avut voie să intre în arena
+calculatoarelor.  Prima mişcare: a schimbat clauzele licenţei şi a
+făcut din el un sistem comercial, pentru care trebuia să dai o
+grămadă de bani şi ale cărui surse nu erau public disponibile.
+Prima variantă s-a numit System III, urmată curînd după aceea de
+System V.  SV (cum mai este numit) avea multe facilităţi şi
+inovaţii faţă de BSD (memorie partajată, semafoare, o nouă
+arhitectură de memorie virtuală, biblioteci partajate, STREAMS,
+etc.).
+
+<P>
+Spre sfîrşitul anilor '80 în lume existau două stiluri mari de
+UNIX: BSD şi System V, care adesea nu prea se potriveau între ele.
+Acest lucru împiedica succesul comercial al produselor, pentru că nu
+puteai garanta că programele vîndute vor funcţiona pe orice
+variantă.
+
+<P>
+Marile firme de calculatoare au început să elaboreze propriile
+variante, cu tot felul de adaosuri şi modificări.  Unele dintre ele
+se bazează pe codul cumpărat de la AT&amp;T şi dezvoltat, altele sunt
+scrise de la cap la coadă, altele împrumută idei de la BSD.
+Fiecare mare fabricant de calculatoare are propriul sau UNIX:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">Firmă</TD>
+<TD ALIGN="LEFT">Unix</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Hewlet Packard</TD>
+<TD ALIGN="LEFT">HP UX</TD>
+</TR>
+<TR><TD ALIGN="LEFT">IBM</TD>
+<TD ALIGN="LEFT">AIX</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Sun Microsystems</TD>
+<TD ALIGN="LEFT">SunOS, Solaris</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Digital</TD>
+<TD ALIGN="LEFT">Ultrix</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Silicon Graphics</TD>
+<TD ALIGN="LEFT">IRIX</TD>
+</TR>
+<TR><TD ALIGN="LEFT">SCO</TD>
+<TD ALIGN="LEFT">SCO Unix</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Numai pentru calculatoarele din familia PC există mai multe UNIXuri
+mititele: XENIX, Coherent, 386BSD, Minix, Linux, etc.
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Standardizarea</A>
+</H1>
+
+<P>
+Datorită proliferării de variante nu mai era foarte clar ce e şi ce
+nu e Unix.  Fiecare fabricant adăuga propriile lui ``ornamente''.
+Sistemele bazate pe BSD şi SV erau diferite într-o mulţime de
+aspecte fundamentale.
+
+<P>
+Din păcate încercarea de a standardiza Unix a dus la apariţia unui
+întreg set de standarde incompatibile!  În final 3 standarde
+diferite s-au bucurat de o acceptare largă: SVID, POSIX şi X/Open.
+Standardele descriu numai ce fel de servicii trebuie să exporte
+sistemul de operare, şi nu modul în care acestea sunt implementate.
+
+<P>
+Primul standard a fost făcut public de AT&amp;T şi a fost numit System
+V Interface Definition, sau SVID (1983).  Acesta este practic o
+descriere precisă a tuturor funcţionalităţilor pe care SV le
+oferea.  AT&amp;T a publicat şi o serie de teste pe care un sistem
+trebuia să le treacă înainte de a putea fi numit ``Unix''.
+
+<P>
+Oficiul de standarde al IEEE (Asociaţia Inginerilor Elecronişti) a
+făcut un alt pas spre reconciliere.  Sute de experţi din industrie,
+universităţi şi guvern au format un colectiv numit POSIX (Portable
+Operating System -- unIX).
+
+<P>
+Standardul elaborat de ei este publicat într-o serie de documente
+numite seria POSIX 1003.  Ele spun explicit cum trebuie să arate un
+sistem de operare ca să fie un UNIX.
+
+<P>
+Spre deosebire de standardele obişnuite din calculatoare, acesta este
+deosebit de bine scris, şi a extras din Sys V şi BSD intersecţia
+calităţilor iar nu reuniunea lor, plus cîteva din lucrurile foarte
+bune din BSD.  Prima versiune a fost publicată în 1990.
+
+<P>
+In plus limbajul C a fost standardizat de ANSI (American National
+Standard Institute).
+
+<P>
+În fine, X/Open este o coaliţie de fabricanţi şi comercianţi de
+calculatoare care a extins specificaţiile POSIX cu o grămadă de
+alte recomandări, de pildă despre sistemele de ferestre sau
+managementul datelor.  Recomandările lor sunt publicate sub numele
+X/Open Portability Guide.
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Bariera sonică</A>
+</H1>
+
+<P>
+La mijlocul anilor '80, la universitatea Carnegie Mellon a început un
+proiect de cercetare în arhitectura sistemelor de operare, folosind
+un nou sistem de operare numit Mach<A NAME="tex2html3"
+  HREF="#foot64"><SUP>3</SUP></A>.  Mach era un sistem revoluţionar, micro-nucleu, care
+oferea o serie foarte simplă de servicii peste care se puteau
+construi ca din cărămizi de Lego oricare altele; de exemplu Mach
+putea executa Unix ca pe un proces şi putea oferi toate serviciile
+Unix, simultan cu ale unui alt sistem de operare.  Mach nu avea nici
+un fel de restricţii de licenţiere ca Unix, aşa că a devenit
+extrem de popular; multe sisteme comerciale se bazează pe Mach 2.5:
+OSF/1, despre care vom vorbi mai jos, şi NextSTEP, al companiei NEXT,
+fondată de Steve Jobs (cunoscut ca creator al primului calculator
+Apple).
+
+<P>
+Sistemul de operare Windows NT (1992) de la Microsoft are o
+arhitectură extrem de apropiată de Mach.
+
+<P>
+
+<H1><A NAME="SECTION00080000000000000000">
+Războiul</A>
+</H1>
+
+<P>
+În 1987 AT&amp;T a cumpărat 20% din ac'tiunile Sun 'si a intrat
+într-un parteneriat strîns cu Sun pentru a dezvolta noile versiuni
+de Unix.  AT&amp;T a anunţat că Sun se va bucura de tratament
+preferenţial în ceea ce priveşte accesul la surse; Sun a renunţat
+complet la nucleul SunOS, bazat pe BSD şi a îmbrăţişat cealaltă
+versiune, SV.  AT&amp;T şi Sun au lansat împreună System V Release 4,
+sau SVR4.  Sistemul de operare de la Sun este numit de atunci încoace
+Solaris 2.x.
+
+<P>
+În reacţie, un grup de mari fabricanţi, cuprinzînd IBM, Digital,
+Hewlet Packard, Apollo a fondat un consorţiu numit OSF (Open Software
+Foundation) care lupta împotriva dominaţiei AT&amp;T şi Sun în arena
+UNIX.  OSF era finanţată de membrii componenţi şi trebuia să
+dezvolte o gamă largă de software şi să extindă sistemul Unix în
+alte direcţii; unele din părţile dezvoltate sunt: un sistem de
+ferestre grafice (X11, dezvoltat la MIT), o interfaţă grafică
+(Motif), un mediu de calcul distribuit (DCE -- Distributed Computing
+Environment), un mediu de management distribuit al resurselor (DME).
+
+<P>
+Primul sistem de operare al OSF a fost lansat de Digital s-a numit
+OSF/1 şi era bazat pe o combinaţie de Mach, 4.3BSD şi anumite
+funcţiuni din nucleul de la IBM, AIX.  În plus oferea o sumedenie de
+avantaje tehnologice care nu se găseau în oferta de la Sun/AT&amp;T
+(suport pentru multiprocesoare, biblioteci dinamice, etc.)
+
+<P>
+Ca să se răzbune AT&amp;T, Sun şi alţi comercianţi care se bazau pe
+SVR4 su făcut un consorţiu numit Unix International (UI).
+
+<P>
+
+<H1><A NAME="SECTION00090000000000000000">
+Decăderea</A>
+</H1>
+
+<P>
+Cînd doi se ceartă al treilea cîştigă.  O scădere economică la
+începutul anilor '90, rapida evoluţie a performanţei PCurilor şi
+dominanţa crescîndă a sistemului de operare Windows al Microsoft au
+oprit creşterea şi au ameninţat supravieţuirea Unix.  UI a
+fost desfiinţată în 1993 iar OSF şi-a îngustat simţitor
+anvergura planurilor.  (Chiar şi sistemul OSF/1 a fost redenumit în
+1995 Digital Unix).
+
+<P>
+A urmat o serie rapidă de schimbări de proprietar pentru marca
+comercială Unix şi drepturi asupra codului.  În 1991 Novell a
+cumpărat o parte din drepturile asupra Unix de la AT&amp;T şi a lansat
+propria lui versiune numită UnixWare în 1992.  În 1993 Novell a
+cumparat ce mai rămăsese de la AT&amp;T, iar Sun a cumpărat dreptul de
+a folosi cod de la Novell.  De curînd SCO a cumpărat în întregime
+Unix de la Novell.
+
+<P>
+
+<H1><A NAME="SECTION000100000000000000000">
+Supravieţuirea?</A>
+</H1>
+
+<P>
+Lupta marilor companii pentru dominanţă a dus aproape la pieirea
+Unix.  Dar un contracurent foarte spectaculos şi-a făcut la
+apariţia la început pe nesimţite, dar apoi cu din ce în ce mai
+multă forţă.
+
+<P>
+Lucrurile au pornit de la un informatician american care lucrează la
+universitatea ``Frei'' din Amsterdam, Andrew Tanenbaum.  În 1987 el a
+publicat codul unui mic sistem de operare, care pe dinafară seamănă
+cu UNIX, deşi pe dinauntru este complet diferit (într-un stil
+micro-nucleu, ca Mach).  Sistemul lui Tanenbaum se numea MINIX şi
+putea fi folosit fără nici un fel de plată în scopuri academice,
+dar cu restricţii de copiere, modificare şi distribuire.  Codul
+merge pe o varietate de calculatoare şi este excelent comentat.  (O a
+doua ediţie a cărţii şi MINIX 2.0 au fost publicate în 1997.)
+
+<P>
+Comunitatea utilizatorilor MINIX se bucura de o creştere constantă
+cînd, în 1992, un student finlandez în vîrstă de 22 de ani, Linus
+Torvalds, după lectura cărţii în care Tanenbaum dă sursele
+sistemului lui, modifică iniţial MINIX, scrie un sistem pentru PC cu
+80386, şi îl face ``free software'', adică fără restricţii de
+copiere şi distribuire.  Faptul că era ceva mai performant,
+datorită design-ului tradiţional, a dus la o răspîndire explozivă
+a sistemului, care are la ora actuală milioane de utilizatori în
+întreaga lume.
+
+<P>
+La versiunea actuală de Linux (2.1.10x) au pus umărul mii de
+programatori pasionaţi din întreaga lume.  Fiecare a găsit un bug,
+a scris un utilitar, a scris o documentaţie.  În aceste condiţii
+codul Linux este de foarte bună calitate (eficient şi fără bug-uri
+grave) rivalizînd şi surclasînd implementări de firmă.  În plus
+este absolut gratuit.
+
+<P>
+Colaborarea aceasta a fost posibilă datorită dezvoltării
+extraordinare a reţelelor de calculatoare.  La crearea produsului
+final au contribuit mii de oameni care nu s-au întîlnit niciodată!
+Lipsa restricţiilor şi disponibilitatea codului sursă face Linux un
+candidat ideal pentru cercetare şi dezvoltare.  La ora aceasta Linux
+este considerat de analişti singurul sistem de operare care poate
+oferi o alternativă solidă dominaţiei totale Microsoft.  Cele mai
+mari firme de calculatoare renunţă încetul cu încetul la
+variantele lor de Unix speriate de creşterea rapidă a Windows NT.
+Deşi Windows NT este încă un sistem relativ imatur faţă de Unix,
+forţa comercială a Microsoft precum şi compatibilitatea cu alte
+sisteme Windows, care domină 95% din pia't'a sunt ni'ste adversari
+de temut.
+
+<P>
+Pentru comparaţie, iată dimensiunile nucleelor în linii de
+cod-sursă:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">Nucleu</TD>
+<TD ALIGN="LEFT">Linii</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Linux</TD>
+<TD ALIGN="LEFT">1 milion</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Solaris</TD>
+<TD ALIGN="LEFT">11 milioane</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Windows NT</TD>
+<TD ALIGN="LEFT">40 milioane</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Pe de altă parte Linux se bucură de o creştere constantă, sub
+directa supervizare a autorului său, Linus, care acum lucrează la o
+companie nou înfiinţată în California.  Linux este pe departe cel
+mai portat sistem de operare din istorie, funcţionînd pe o gamă
+extrem de largă de calculatorare şi staţii de lucru, şi pentru
+care din ce în ce mai multe companii lansează software.
+
+<P>
+
+<H1><A NAME="SECTION000110000000000000000">
+Încheiere</A>
+</H1>
+
+<P>
+Sistemele Unix comerciale sunt încă nişte realizări impresionante,
+care oferă funcţionalităţi superioare Linux sau NT.
+
+<P>
+Unii analişti cred că versiunile de Unix vor dispărea încet din
+arena jucătorilor ``grei'' economici; ultimul supravieţuitor
+comercial pronosticat fiind Sun.  Mulţi pariază pe o luptă
+Linux/NT.  Ce se va întîmpla însă numai un profet ar putea spune.
+Oricum, deşi substanţial sub cifra de afaceri a lui Microsoft,
+sistemele Unix continuă să reprezinte o piaţă de mai multe zeci de
+miliarde de dolari.
+
+<P>
+La ora actuală UNIX este singurul sistem de operare care
+funcţionează simultan pe microcalculatoare şi supercalculatoare.
+Este practic singurul sistem de operare pentru minicalculatoare şi
+staţii de lucru.  TCP/IP este protocolul folosit pe cea mai mare
+reţea de calculatoare din lume: Internet, cu sute milioane de
+abonaţi pe toate continentele.
+
+<P>
+Eleganţa interfeţelor sale şi calitatea remarcabilă a
+abstracţiilor pe care le oferă utilizatorilor au influenţat şi vor
+continua să influenţeze profund arhitectura sistemelor de calcul.
+
+<P>
+Să ne amintim că totul a început de la un joc.
+
+<P>
+
+<H1><A NAME="SECTION000120000000000000000">
+Note Bibliografice</A>
+</H1>
+
+<P>
+Informaţiile din acest text sunt extrase dintr-o multitudine de
+surse.  Iată aici unele dintre ele:
+
+<P>
+
+<UL>
+<LI>Andrew S. Tanenbaum, ``Modern Operating Systems'', Prentice
+Hall, 1995.
+
+<P>
+</LI>
+<LI>Uresh Vahalia, ``Unix Internals'', Prentica Hall, 1995.
+
+<P>
+</LI>
+<LI>Thomson, K., Ritchie, D. ``The UNIX Time-Sharing System'',
+Communications of the ACM, vol 17, no 7, iulie 1974.
+</LI>
+</UL>
+
+<P>
+
+<H1><A NAME="SECTION000130000000000000000">
+Versiuni de UNIX</A>
+</H1>
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT"><B>Nume</B></TD>
+<TD ALIGN="LEFT"><B>Bazat pe</B></TD>
+<TD ALIGN="LEFT"><B>Fabricant</B></TD>
+</TR>
+<TR><TD ALIGN="LEFT">AIX</TD>
+<TD ALIGN="LEFT">SV</TD>
+<TD ALIGN="LEFT">IBM</TD>
+</TR>
+<TR><TD ALIGN="LEFT">A/UX</TD>
+<TD ALIGN="LEFT">SV</TD>
+<TD ALIGN="LEFT">Apple</TD>
+</TR>
+<TR><TD ALIGN="LEFT">BOS</TD>
+<TD ALIGN="LEFT">SV</TD>
+<TD ALIGN="LEFT">Bull</TD>
+</TR>
+<TR><TD ALIGN="LEFT">BSD</TD>
+<TD ALIGN="LEFT">BSD</TD>
+<TD ALIGN="LEFT">University of California at Berkeley (UCB)</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Chorus</TD>
+<TD ALIGN="LEFT">SV</TD>
+<TD ALIGN="LEFT">Chorus</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Coherent</TD>
+<TD ALIGN="LEFT">SV</TD>
+<TD ALIGN="LEFT">Mark Williams Company</TD>
+</TR>
+<TR><TD ALIGN="LEFT">EP/IX</TD>
+<TD ALIGN="LEFT">POSIX</TD>
+<TD ALIGN="LEFT">Control Data Corporation</TD>
+</TR>
+<TR><TD ALIGN="LEFT">FreeBSD</TD>
+<TD ALIGN="LEFT">BSD</TD>
+<TD ALIGN="LEFT">UCB</TD>
+</TR>
+<TR><TD ALIGN="LEFT">GNU Hurd</TD>
+<TD ALIGN="LEFT">Mach</TD>
+<TD ALIGN="LEFT">Free Software Foundation</TD>
+</TR>
+<TR><TD ALIGN="LEFT">HP-UX</TD>
+<TD ALIGN="LEFT">SV+BSD</TD>
+<TD ALIGN="LEFT">Hewlet Packard</TD>
+</TR>
+<TR><TD ALIGN="LEFT">IRIX</TD>
+<TD ALIGN="LEFT">SV</TD>
+<TD ALIGN="LEFT">Silicon Graphics</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Linux</TD>
+<TD ALIGN="LEFT">--</TD>
+<TD ALIGN="LEFT">Linus Torvalds + hackeri</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Minix</TD>
+<TD ALIGN="LEFT">clone SV</TD>
+<TD ALIGN="LEFT">Tanenbaum (Vrije Universitet Amsterdam)</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Net/2</TD>
+<TD ALIGN="LEFT">BSD</TD>
+<TD ALIGN="LEFT">UCB</TD>
+</TR>
+<TR><TD ALIGN="LEFT">NEWS-OS</TD>
+<TD ALIGN="LEFT">?</TD>
+<TD ALIGN="LEFT">Sony</TD>
+</TR>
+<TR><TD ALIGN="LEFT">QNX</TD>
+<TD ALIGN="LEFT">?</TD>
+<TD ALIGN="LEFT">Quantum Software</TD>
+</TR>
+<TR><TD ALIGN="LEFT">OSF/1</TD>
+<TD ALIGN="LEFT">Mach</TD>
+<TD ALIGN="LEFT">DEC, Open Software Foundation</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Plan 9</TD>
+<TD ALIGN="LEFT">-</TD>
+<TD ALIGN="LEFT">AT&amp;T</TD>
+</TR>
+<TR><TD ALIGN="LEFT">SCO Xenix</TD>
+<TD ALIGN="LEFT">SV</TD>
+<TD ALIGN="LEFT">SCO</TD>
+</TR>
+<TR><TD ALIGN="LEFT">SCO Unix</TD>
+<TD ALIGN="LEFT">SV</TD>
+<TD ALIGN="LEFT">SCO</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Solaris</TD>
+<TD ALIGN="LEFT">SV</TD>
+<TD ALIGN="LEFT">Sun Microsystems</TD>
+</TR>
+<TR><TD ALIGN="LEFT">SunOs</TD>
+<TD ALIGN="LEFT">BSD</TD>
+<TD ALIGN="LEFT">Sun Microsystems</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Ultrix</TD>
+<TD ALIGN="LEFT">BSD</TD>
+<TD ALIGN="LEFT">DEC</TD>
+</TR>
+<TR><TD ALIGN="LEFT">UNICOS</TD>
+<TD ALIGN="LEFT">SV</TD>
+<TD ALIGN="LEFT">Cray</TD>
+</TR>
+<TR><TD ALIGN="LEFT">UnixWare</TD>
+<TD ALIGN="LEFT">SV</TD>
+<TD ALIGN="LEFT">Novell</TD>
+</TR>
+<TR><TD ALIGN="LEFT">UTEK</TD>
+<TD ALIGN="LEFT">?</TD>
+<TD ALIGN="LEFT">Tektronix</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Xenix</TD>
+<TD ALIGN="LEFT">SV</TD>
+<TD ALIGN="LEFT">Microsoft</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+
+<H1><A NAME="SECTION000140000000000000000">
+Cronologie</A>
+</H1>
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">1968</TD>
+<TD ALIGN="LEFT">Proiectul Multics</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1969</TD>
+<TD ALIGN="LEFT">Unics pentru PDP-7, Bell Labs, AT&amp;T</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1971</TD>
+<TD ALIGN="LEFT">Unix versiunea 1, asamblor PDP11/20</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1974</TD>
+<TD ALIGN="LEFT">Unix versiuna 4, C</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1975</TD>
+<TD ALIGN="LEFT">Unix versiunea 6, foarte răspîndit</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1978</TD>
+<TD ALIGN="LEFT">2.x Berkeley Software Distribution (BSD)</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1978</TD>
+<TD ALIGN="LEFT">3BSD, memorie virtuală</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1979</TD>
+<TD ALIGN="LEFT">Unix V7 ``ultimul Unix adevărat''</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1980</TD>
+<TD ALIGN="LEFT">4.0BSD</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1982</TD>
+<TD ALIGN="LEFT">System III, Unix comercial de la AT&amp;T</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1982</TD>
+<TD ALIGN="LEFT">Fondat Sun Microsystems</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1983</TD>
+<TD ALIGN="LEFT">System V</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1983</TD>
+<TD ALIGN="LEFT">4.2BSD, TCP/IP</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1984</TD>
+<TD ALIGN="LEFT">System V Release (SVR)2; publicată SV Interface Definition SVID</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1984</TD>
+<TD ALIGN="LEFT">X/Open, consorţiu de comercianţi Unix</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1985</TD>
+<TD ALIGN="LEFT">SVID1, SVR2</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1986</TD>
+<TD ALIGN="LEFT">SVR3, SVID2</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1986</TD>
+<TD ALIGN="LEFT">4.3BSD</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1986</TD>
+<TD ALIGN="LEFT">Mach</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1987</TD>
+<TD ALIGN="LEFT">X/Open Portability Guide 2 publicat</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1987</TD>
+<TD ALIGN="LEFT">Alianţă AT&amp;T - Sun</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1988</TD>
+<TD ALIGN="LEFT">SVR4, amestecă SV, BSD, SunOS</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1988</TD>
+<TD ALIGN="LEFT">Se fondează OSF</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1989</TD>
+<TD ALIGN="LEFT">X/Open Portability Guide 3</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1991</TD>
+<TD ALIGN="LEFT">OSF/1 bazat pe SVR2; micronucleu Mach2.5</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1992</TD>
+<TD ALIGN="LEFT">Linux e creat</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1992</TD>
+<TD ALIGN="LEFT">X/Open Portability Guide 4</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1992</TD>
+<TD ALIGN="LEFT">Windows NT 1.0</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1993</TD>
+<TD ALIGN="LEFT">4.4BSD; dezvoltarea Unix la Berkeley încetează</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1993</TD>
+<TD ALIGN="LEFT">Novell cumpără Unix System Laboratories</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1993</TD>
+<TD ALIGN="LEFT">Novell vinde dreptul pentru marca UNIX lui X/Open</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1995</TD>
+<TD ALIGN="LEFT">Digital OSF/1</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1996</TD>
+<TD ALIGN="LEFT">GNU Hurd alfa lansat</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1998</TD>
+<TD ALIGN="LEFT">Solaris 2.6</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1998</TD>
+<TD ALIGN="LEFT">Windows NT 5.0 (amînat)</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+
+<H1><A NAME="SECTION000150000000000000000">
+Standardul POSIX 1003</A>
+</H1>
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">1003.1</TD>
+<TD ALIGN="LEFT">funcţii de bibliotecă, apeluri de sistem</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1003.2</TD>
+<TD ALIGN="LEFT">shell-ul şi utilitarele</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1003.3</TD>
+<TD ALIGN="LEFT">metode de testare</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1003.4</TD>
+<TD ALIGN="LEFT">timp real</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1003.5</TD>
+<TD ALIGN="LEFT">limbajul Ada pentru Unix</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1003.6</TD>
+<TD ALIGN="LEFT">securitatea</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1003.7</TD>
+<TD ALIGN="LEFT">administraţia sistemului</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1003.8</TD>
+<TD ALIGN="LEFT">accesul la fişiere</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1003.9</TD>
+<TD ALIGN="LEFT">Limbajul FORTRAN pentru Unix</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1003.10</TD>
+<TD ALIGN="LEFT">super-calculatoare</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1003.12</TD>
+<TD ALIGN="LEFT">interfeţele independente de protocol</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1003.13</TD>
+<TD ALIGN="LEFT">real-time profiles</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1003.15</TD>
+<TD ALIGN="LEFT">interfeţele pentru supercalculatoare - batch processing</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1003.16</TD>
+<TD ALIGN="LEFT">limbajul C</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1003.17</TD>
+<TD ALIGN="LEFT">servicii de directoare</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1003.18</TD>
+<TD ALIGN="LEFT">POSIX standardized profile</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1003.19</TD>
+<TD ALIGN="LEFT">FORTRAN 90</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot52">... 8/32</A><A NAME="foot52"
+ HREF="unix-2-html.html#tex2html1"><SUP>1</SUP></A>
+<DD>Investigaţii istorice au arătat că prima
+portare a fost de fapt făcută la universitatea Wollongong din
+Australia, urmată la scurtă durată de o portare făcută de Bell
+Labs.
+
+<DT><A NAME="foot56">...
+Agency)</A><A NAME="foot56"
+ HREF="unix-2-html.html#tex2html2"><SUP>2</SUP></A>
+<DD>O mare parte din cercetarea tehnologică în Statele
+Unite este sposorizată de DARPA.
+
+<DT><A NAME="foot64">... Mach</A><A NAME="foot64"
+ HREF="unix-2-html.html#tex2html3"><SUP>3</SUP></A>
+<DD>Ernst Mach este un mare
+fizician din secolul 20; 1 Mach este şi unitatea de măsură a
+vitezei egală cu viteza sunetului; de aici şi titlul acestei
+secţiuni.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

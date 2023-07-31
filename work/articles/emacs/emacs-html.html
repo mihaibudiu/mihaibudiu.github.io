@@ -1,0 +1,680 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Cui i-e frică de Emacs?</TITLE>
+<META NAME="description" CONTENT="Cui i-e frică de Emacs?">
+<META NAME="keywords" CONTENT="emacs-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+<body>
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Cui i-e frică de Emacs?</H1>
+<P ALIGN="CENTER"><STRONG>Mihai BUDIU - budiu@cs.cornell.edu 
+<BR>
+http://www.cs.cornell.edu/Info/People/budiu/budiu.html</STRONG></P>
+<P ALIGN="CENTER"><STRONG>21 martie 1997</STRONG></P>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html7"
+  HREF="emacs-html.html">Terminologie</A>
+<LI><A NAME="tex2html8"
+  HREF="#SECTION00030000000000000000">Taste fundamentale</A>
+<LI><A NAME="tex2html9"
+  HREF="#SECTION00040000000000000000">De ce Emacs</A>
+<LI><A NAME="tex2html10"
+  HREF="#SECTION00050000000000000000">Anexă</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>Comenzile esenţiale ale editorului Emacs
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>editor de texte
+</DD>
+<DT><STRONG>Cunoştinţe necesare: </STRONG></DT>
+<DD>un editor de texte
+</DD>
+</DL>
+
+<P>
+Sunt un mare fan al editorului de texte Emacs.  Nu am devenit dintr-o
+dată: prima oară cînd mi s-a sugerat să învăţ să-l folosesc am
+strîmbat din nas după 15 minute de citit manualul introductiv.
+``Prea multe lucruri de memorat, nici o regulă, nu aranjează frumos
+în pagină, ce-mi trebuie mie ceva aşa de sofisticat'' -- motive ca
+să amîn.
+
+<P>
+Ei bine, recunosc, am greşit.  Emacs este un program foarte simpatic,
+foarte eficient şi foarte flexibil.  Atît de flexibil încît mai am
+foarte multe lucruri de învăţat despre el, deşi îl folosesc de 4
+ani şi adaug mereu cunoştinţe.
+
+<P>
+Nu, nu plecaţi.  Nu am spus asta ca să vă descurajez, ci
+dimpotrivă!  Ideea pe care vreau s-o pun în evidenţă este că se
+pot învăţa foarte repede toate funcţiile esenţiale din Emacs,
+care sunt utile (şi suficiente) pentru treburile de zi cu zi.  Dacă
+folosiţi în mod regulat un calculator pentru a scrie texte (de orice
+fel: programe, articole, scrisori), ar fi o idee bună să
+învăţaţi să folosiţi Emacs, pentru că vă va permite ca în
+scurtă vreme să faceţi aceste lucruri mai repede şi mai eficient
+decît multe alte editoare.
+
+<P>
+Dacă nu sunteţi un sofisticat nimeni nu vă împinge la a folosi
+cantitatea nesfîrşită de resurse pe care Emacs le pune la
+dispoziţie: puteţi să vă mulţumiţi cu puţin.  Dacă sunteţi
+însă un împătimit al calculatoarelor, Emacs se poate dovedi o
+sculă foarte eficientă pentru multe dintre activităţile
+dumneavoastră, şi atunci merită într-adevăr să-l învăţaţi.
+
+<P>
+Articolul acesta este foarte elementar; nu îşi propune deloc să
+pună în evidenţă toată puterea care se ascunde sub acest motor de
+programe interactive (Emacs este folosit pentru multe alte lucruri
+decît scrierea de texte: cam toate activităţile de natură
+interactivă: căutarea prin fişiere, plimbatul pe web, depanarea
+programelor sunt toate activităţi la care Emacs poate ajuta).
+Din această cauză foarte adesea nu vom spune tot adevărul cu
+privire la anumite lucruri, ci doar atît cît este nevoie.
+
+<P>
+Există mai multe ``digest''-uri (sumare) cu comenzile esenţiale
+Emacs în circulaţie.  Întîmplător nici unul nu mi s-a părut
+foarte sintetic, aşa că m-am apucat să mai fac eu încă unul.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Terminologie</A>
+</H1>
+
+<P>
+Probabil cea mai grea este pentru un începător problema
+terminologiei; Emacs are nume foarte precise pentru tot felul de
+componente, pe care le foloseşte în mod uniform în toate
+documentaţiile.  De aceea este foarte important să ştim ce este un
+``buffer'', o fereastră (``window''), marcă (``mark'') şi punctul
+(``point'').
+
+<P>
+Două motive mă îndeamnă să păstrez numele originale ale
+comenzilor şi termenilor, în engleză:
+
+<P>
+
+<UL>
+<LI>Toată lumea aşa le foloseşte; o traducere nu ar putea ajuta
+la comunicare, pentru că nimeni nu ar înţelege mai bine despre ce e
+vorba;
+
+<P>
+</LI>
+<LI>Numele abrevierilor/tastelor sunt mnemonice (uşor de reţinut)
+în engleză.
+</LI>
+</UL>
+
+<P>
+Din păcate aceste două motive vor face textul românesc să fie
+amplu pigmentat cu cuvinte englezeşti.  Cred că aceasta va fi multă
+vreme soarta scrierilor despre calculatoare.
+
+<P>
+<DL>
+<DT><STRONG>Buffer = zonă de lucru separată.</STRONG></DT>
+<DD><P>
+Una din trăsăturile foarte utile ale lui Emacs este că poate lucra
+cu mai multe fişiere simultan.  Fiecare fişier este deschis pentru
+inspectare/modificare într-un ``buffer'' diferit.  La un moment dat
+numai unele dintre buffere sunt vizibile utilizatorului; celelalte
+sunt ascunse undeva ``în spate'', dar conţin fişierele aşa cum au
+fost ele modificate.  În fiecare clipă unul dintr buffere este cel
+``curent'': în care se petrece acţiunea.
+
+<P>
+</DD>
+<DT><STRONG>Window = un buffer vizibil.</STRONG></DT>
+<DD><P>
+Fiecare fişier este prelucrat într-un buffer care-i aparţine.
+Numai unele dintre buffere sunt însă vizibile.  Emacs afişează la
+un moment dat la un moment numai unele dintre buffere.  Fiecare buffer
+vizibil este arătat într-o fereastră (``window'').  Numărul de
+ferestre vizibile este variabil, controlat de utilizator.  Bufferul
+curent este întotdeauna într-o fereastră.
+
+<P>
+</DD>
+<DT><STRONG>Cursor = locul curent unde se acţionează</STRONG></DT>
+<DD><P>
+Noţiunea de cursor este familiară tuturor editoarelor de texte;
+cursorul este locul unde următorul caracter va fi inserat/şters.
+Emacs încearcă să arate cursorul ca pe un dreptunghi mic negru.
+
+<P>
+</DD>
+<DT><STRONG>Point = poziţia curentă într-un buffer</STRONG></DT>
+<DD><P>
+Fiecare buffer are propriul lui punct.  Caracterele apăsate sunt
+inserate în text în locul unde se află punctul.  Diferenţa dintre
+cursor şi punct este că există un punct în fiecare buffer, dar
+unul singur dintre puncte este şi cursor, cel din buffer-ul curent.
+
+<P>
+</DD>
+<DT><STRONG>Minibuffer = locul pentru dialoguri cu Emacs</STRONG></DT>
+<DD><P>
+Unul dintre buffere este rezervat pentru dialogul cu Emacs; acolo
+Emacs raportează rezultatele comenzilor, afişează combinaţiile de
+taste care au fost apăsate parţial.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="emacs"></A><A NAME="133"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 1:</STRONG>
+Emacs în acţiune.</CAPTION>
+<TR><TD><IMG
+ WIDTH="721" HEIGHT="534" BORDER="0"
+ SRC="img1.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=16cm\epsffile{emacs.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Figura&nbsp;<A HREF="emacs-html.html#emacs">1</A> arată un editor Emacs în acţiune.  Sunt vizibile
+3 ferestre, fiecare desigur cu un buffer.  (Mai există încă un
+buffer care nu e vizibil).
+
+<P>
+</DD>
+<DT><STRONG>Mode line = raportul stării curente</STRONG></DT>
+<DD><P>
+Fiecare buffer are la bază o linie care de obicei este tipărită pe
+fond negru, care sumarizează lucrurile importante despre acel buffer.
+Printre altele linia arată ce fişier este prezent în buffer, dacă
+fişierul a fost modificat, ``modul major şi cele minore active'' în
+buffer (vedeţi ceva mai jos), poziţia cursorului (relativă şi
+absolută = linie/coloană).  Utilizatorul poate influenţa ce
+informaţii să apară pe linia de mod, aşa că forma ei nu este
+întotdeauna aceeaşi.  Nu o să-i consacrăm prea mult spaţiu în
+acest articol.
+
+<P>
+</DD>
+<DT><STRONG>mark = o poziţie marcată în buffer</STRONG></DT>
+<DD><P>
+Aşa cum fiecare buffer are un punct, fiecare poate avea şi o
+``marcă''.  Marca este o poziţie a punctului indicată de
+utilizator; practic atunci cînd utilizatorul vrea pentru un motiv
+oarecare să-şi amintească o anumită poziţie, pune punctul acolo
+şi apasă o combinaţie de taste.  Locul acesta este marcat.
+
+<P>
+</DD>
+<DT><STRONG>region = zona dintre punct şi marcă</STRONG></DT>
+<DD><P>
+În fiecare buffer partea cuprinsă între marcă (unde a fost pusă
+ultima oară) şi punct se numeşte ``regiune''.  Regiunea este extrem
+de utilă pentru că multe comenzi funcţionează pe zone de text: de
+pildă corectură de texte, aranjarea în pagină, capitalizarea,
+ştergerea, etc.  Pe anumite terminale regiunea este înfăţişată
+cu altă culoare.
+
+<P>
+</DD>
+<DT><STRONG>kill = a şterge text</STRONG></DT>
+<DD><P>
+Emacs ne pune la dispoziţie multe comenzi pentru a şterge părţi de
+text.  În terminologia sa ştergerea unei părţi de text ceva mai
+mari se numeşte ``omorîre'' (kill).  Omorîrea este interesantă
+pentru că Emacs păstrează undeva în măruntaiele sale textele care
+au fost şterse, şi permite accesul la ele, aşa că ele nu sunt
+pierdute.  Pentru a muta o bucată de text dintr-un loc într-altul ea
+este marcată cu o regiune, omorîtă şi apoi pusă la loc.
+
+<P>
+</DD>
+<DT><STRONG>yank = a pune la loc un text omorît</STRONG></DT>
+<DD><P>
+Acţiunea de a recupera un text omorît se numeşte ``to yank''.
+Emacs încearcă să ţină minte cît se poate de multe texte
+omorîte (cît are memorie), în ceea ce se cheamă ``inelul cu texte
+omorîte'' (kill ring).  E un inel pentru că la un moment dat texte
+omorîte vechi sunt ``uitate'' şi textele noi omorîte sunt scrise
+peste ele.  Emacs permite extragerea (yank) tuturor textelor din inel.
+
+<P>
+</DD>
+<DT><STRONG>undo = a des-face ultima acţiune</STRONG></DT>
+<DD><P>
+Una din trăsăturile foarte plăcute ale lui Emacs este că ţine
+minte foarte multe din operaţiile făcute asupra textelor şi permite
+des-facerea lor.  Dacă ai şters părţi mari de text, ai modificat
+altele, le-ai reordonat şi apoi te-ai răzgîndit, Emacs îţi permite
+să dai înapoi cît vrei.
+
+<P>
+</DD>
+<DT><STRONG>mode (major/minor) = modul de lucru</STRONG></DT>
+<DD><P>
+Emacs este foarte flexibil: în funcţie de tipul textelor pe care le
+editaţi permite efectuarea anumitor operaţii cu uşurinţă.  De
+exemplu dacă scrieţi programe permite aranjarea automată în
+pagină, căutarea variabilelor şi funcţiilor în fişiere,
+compilarea, etc.  Dacă scrieţi texte în limbi ``naturale'' oferă o
+suită de comenzi pentru prelucrat fraze, paragrafe, cuvinte.
+Aceeaşi comandă înseamnă un lucru diferit dacă se scriu programe
+sau texte.
+
+<P>
+Practic modul major arată ce comenzi oferă Emacs.  Astfel, există
+suite de comenzi speciale pentru următoarele tipuri de texte (lista
+este ne-exhaustivă!):
+
+<P>
+
+<UL>
+<LI>Limbi omeneşti;
+</LI>
+<LI>Limbaje de programare (C, Lisp, Pascal, Fortran, ML, Ada,
+Simula, asamblare, etc.);
+</LI>
+<LI>Scris şi citit poştă electronică;
+</LI>
+<LI>Manipulat fişiere şi directoare;
+</LI>
+<LI>Comenzi date calculatorului (shell);
+</LI>
+<LI>Lucru prin reţea (ftp, www, news);
+</LI>
+<LI>L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X, nroff;
+</LI>
+<LI>Compilare, depanare;
+</LI>
+<LI>Calendare şi agende;
+</LI>
+<LI>Felurite jocuri;
+</LI>
+<LI>etc, etc, etc.
+</LI>
+</UL>
+
+<P>
+Modurile minore oferă operaţiuni suplimentare şi coexistă cu
+modurile majore.  De exemplu moduri minore oferă salvare automată a
+fişierelor, aranjare automată în pagină, posibilitatea de a
+abrevia anumite texte, etc.
+
+<P>
+</DD>
+<DT><STRONG>fill = a aranja text</STRONG></DT>
+<DD><P>
+Operaţia de a aranja textul în pagină în aşa fel încît sa nu
+aibă liniile prea lungi se numeşte la Emacs ``fill'' (umplere).
+
+<P>
+</DD>
+<DT><STRONG>C-x, M-x = Control-x, Meta-x</STRONG></DT>
+<DD><P>
+Emacs a fost proiectat să funcţioneze pe aproape orice fel de
+terminal.  Din cauza asta, Emacs încearcă să se descurce fără să
+folosească taste cu săgeţi sau alte ciudăţenii care nu se găsesc
+peste tot (dacă le aveţi însă de obicei le puteţi folosi).
+
+<P>
+Pentru o implementa funcţionalitatea tastelor speciale Emacs
+foloseşte doar tastele ordinare prezente peste tot (litere, cifre,
+cîteva semne speciale) plus doar 2 taste speciale.  Denumirile lor
+sunt <B>CONTROL</B> şi <B>META</B>.  Ele nu trebuie să existe
+întocmai pe tastatura dumneavoastră.  ``Control'' este prezentă pe
+cele mai multe claviaturi.  Meta e mai rară, şi atunci de obicei
+tasta ``Alt'' îi ţine locul.  Pentru uniformitate însă se
+foloseşte peste tot numele de ``Meta''.
+
+<P>
+Control şi Meta se folosesc numai în combinaţii cu alte taste, ca
+şi shift-urile.  Notaţia standard în Emacs pentru apăsarea
+simultană a lui Control <B>cu</B> x este <TT>C-x</TT>.  Asta înseamnă
+că se apasă Control, se ţine apăsată şi se apasă apoi tasta x,
+după care se eliberează amîndouă.
+
+<P>
+<B>Atenţie:</B> <TT>C-X</TT> este altceva decît <TT>C-x</TT>: prima se
+apasă cu 3 taste!, Control, Shift şi X (e X mare), iar a doua numai
+cu Control şi x.  Există şi combinaţii <TT>C-M-x</TT>: control, meta
+şi x simultan (nu le folosesc prea des).
+
+<P>
+Dacă chiar nu aveţi o tastă pentru Meta, se poate folosi tasta <B>ESCAPE</B> pentru acest scop, dar într-un mod diferit.  Tasta ESCAPE se
+mai numeşte ``metafy'', pentru că apăsată <EM>separat</EM> face
+următoarea tastă să se comporte ca şi cum ar fi apăsată cu Meta
+împreună.  Cu alte cuvinte, următoarele acţiuni sunt echivalente:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">Apăs Meta</TD>
+<TD ALIGN="LEFT">Apăs Escape</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Apăs x</TD>
+<TD ALIGN="LEFT">Eliberez Escape</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Eliberez Meta şi x</TD>
+<TD ALIGN="LEFT">Apăs x</TD>
+</TR>
+<TR><TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT">Eliberez x</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Anumite comenzi sunt formate din suite de taste.  De exemplu comanda
+<TT>C-x C-s</TT> (care salvează fişierul din bufferul curent)
+înseamnă să se apese <TT>C-x</TT>, după care să se apese <TT>C-s</TT>.
+Comanda este complet diferită de <TT>C-x s</TT>.  Dacă apăsaţi numai
+<TT>C-x</TT> Emacs va aştepta o urmare.  Dacă ea nu vine suficient de
+repede, Emacs va scrie în minibuffer ce aţi apăsat: <TT>C-x</TT>.
+</DD>
+</DL>
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Taste fundamentale</A>
+</H1>
+
+<P>
+Voi prezenta foarte puţine taste, dar care practic folosesc cam 95%
+din timp.  Voi încerca să arăt ca numele lor sunt foarte bine alese
+pentru a fi uşor de memorat.  Ca dovadă (indirectă) că lucrurile
+stau aşa, comenzile Emacs pentru editat texte au devenit folosite de
+din ce in ce mai multe programe interactive: shell-uri (bash, csh),
+managere de fişiere (git), Netscape, etc.  În plus, toate modurile
+majore încearcă să folosească tastele cam în acelaşi fel: de
+exemplu ``P'' să însemne mereu ``înapoi'' (Previous).
+
+<P>
+Iată deci regulile mnemonice:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">Tasta</TD>
+<TD ALIGN="LEFT">Mnemonică (în engleză)</TD>
+<TD ALIGN="LEFT">Traducere</TD>
+</TR>
+<TR><TD ALIGN="LEFT">p</TD>
+<TD ALIGN="LEFT">Previous</TD>
+<TD ALIGN="LEFT">Anterior</TD>
+</TR>
+<TR><TD ALIGN="LEFT">n</TD>
+<TD ALIGN="LEFT">Next</TD>
+<TD ALIGN="LEFT">Următor</TD>
+</TR>
+<TR><TD ALIGN="LEFT">b</TD>
+<TD ALIGN="LEFT">Back</TD>
+<TD ALIGN="LEFT">Înapoi</TD>
+</TR>
+<TR><TD ALIGN="LEFT">f</TD>
+<TD ALIGN="LEFT">Forward</TD>
+<TD ALIGN="LEFT">Înainte</TD>
+</TR>
+<TR><TD ALIGN="LEFT">v</TD>
+<TD ALIGN="LEFT"><IMG
+ WIDTH="15" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img2.png"
+ ALT="$\downarrow$"></TD>
+<TD ALIGN="LEFT">În jos</TD>
+</TR>
+<TR><TD ALIGN="LEFT">e</TD>
+<TD ALIGN="LEFT">End</TD>
+<TD ALIGN="LEFT">Sfîrşit</TD>
+</TR>
+<TR><TD ALIGN="LEFT">a</TD>
+<TD ALIGN="LEFT">A</TD>
+<TD ALIGN="LEFT">Început</TD>
+</TR>
+<TR><TD ALIGN="LEFT">s</TD>
+<TD ALIGN="LEFT">Search</TD>
+<TD ALIGN="LEFT">Caută</TD>
+</TR>
+<TR><TD ALIGN="LEFT">r</TD>
+<TD ALIGN="LEFT">Reverse Search</TD>
+<TD ALIGN="LEFT">Caută invers</TD>
+</TR>
+<TR><TD ALIGN="LEFT">t</TD>
+<TD ALIGN="LEFT">Transpose</TD>
+<TD ALIGN="LEFT">Interschimbă</TD>
+</TR>
+<TR><TD ALIGN="LEFT">d</TD>
+<TD ALIGN="LEFT">Delete</TD>
+<TD ALIGN="LEFT">Şterge</TD>
+</TR>
+<TR><TD ALIGN="LEFT">k</TD>
+<TD ALIGN="LEFT">Kill</TD>
+<TD ALIGN="LEFT">Omoară</TD>
+</TR>
+<TR><TD ALIGN="LEFT">y</TD>
+<TD ALIGN="LEFT">Yank</TD>
+<TD ALIGN="LEFT">Adu text omorît</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Fireşte, anumite comenzi nu au nume atît de sugestive, dar era de
+aşteptat.  Iată ce cred că ar mai trebui ştiut:
+
+<P>
+
+<UL>
+<LI><TT>C-x</TT> este o comandă-prefix foarte folosită.  Următoarea
+comandă indică ce trebuie să se întîmple.  În general
+operaţiile pe fişiere şi pe ferestre încep cu <TT>C-x</TT>.
+
+<P>
+</LI>
+<LI>Cam toate comenzile care încep cu <TT>C-</TT> acţionează pe
+unităţi de text (litere, rînduri).  Toate comenzile
+corespunzătoare care încep cu <TT>M-</TT> acţionează pe unităţi de
+<EM>limbă</EM> (cuvinte, fraze).
+
+<P>
+</LI>
+<LI>Pentru a opera eficient pe fraze şi paragrafe, Emacs consideră
+ca frazele se termină <EM>cu două spaţii</EM> după ultimul semn de
+punctuaţie.  Dacă vă obişnuiţi să scrieţi în acest fel veţi
+profita de Emacs mult mai mult.  De asemenea, paragrafele se termină
+cu un ``newline'' urmat de orice caracter spaţiu (spaţiu, tab sau
+alt newline, recomandabilă fiind ultima variantă, care înseamnă o
+linie liberă.
+
+<P>
+</LI>
+<LI>Emacs vine cu un help foarte amănunţit despre toate comenzile
+lui.  Acesta se invocă cu <TT>C-h i</TT>.  Cînd nu ştiţi cum se face
+ceva, apelaţi la acest help.  După ce aţi stăpînit comenzile de
+bază (din acest text), veţi avea nevoie relativ rar de help, ca să
+nu fie o corvoadă.
+
+<P>
+</LI>
+<LI>Anumite comenzi pot fi precedate de un argument numeric, şi
+atunci se execută repetat.  Argumente numerice se introduc folosind
+<TT>C-u</TT>.  De exemplu, <TT>C-f</TT> înseamnă ``înainte un caracter''
+(forward), iar <TT>C-u 20 C-f</TT> înseamnă ``înainte 20 de
+caractere''.
+
+<P>
+</LI>
+<LI>Dacă aţi tastat o comandă parţial puteţi să o
+întrerupeţi oricînd apăsînd <TT>C-g</TT>.  De asemenea, dacă aveţi
+o procesare care durează mult, puteţi să o întrerupeţi cu <TT>C-g</TT>.
+
+<P>
+</LI>
+<LI>Orice comandă are un nume simbolic (un şir de caractere).
+Orice comandă se poate tasta folosind acest nume simbolic.  Unele
+comenzi nici nu au tasta asociate, ci doar numele.  Pentru a tasta o
+comandă prin nume, se tastează <TT>M-x nume-comanda ENTER</TT>.
+Numele sunt destul de sugestiv alese pentru a fi uşor de reamintit.
+Astfel, în loc de <TT>C-f</TT> puteţi tasta <TT>M-x forward-char</TT>,
+care înseamnă acelaşi lucru, ``înainte un caracter''.  Desigur,
+exemplul este idiot, dar ilustrativ.  Numele comenzilor este afişat
+în minibuffer pe măsură ce-l tastaţi; dacă nu vă amintiţi un
+nume în întregime, ajunge să tastaţi primele litere şi să
+apăsaţi pe tasta <TT>TAB</TT>; Emacs vă va da indicaţii despre ce ar
+putea urma.
+</LI>
+</UL>
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+De ce Emacs</A>
+</H1>
+
+<P>
+Ca să vă îndemn mai tare să folosiţi Emacs, iată o pagină de
+reclamă fără prea multe explicaţii.  De-a lungul timpului veţi
+învăţa să folosiţi şi să apreciaţi aceste trăsături.
+
+<P>
+
+<UL>
+<LI>Ştie să manipuleze dreptunghiuri de text (text delimitat
+între două linii şi coloane);
+</LI>
+<LI>Poate accepta orice comanda prin numele ei (cu <TT>M-x</TT>);
+</LI>
+<LI>Are interfaţă la shell (<TT>M-x shell</TT>);
+</LI>
+<LI>Are interfaţă pentru compilare (<TT>M-x compile</TT>) care
+permite corectarea erorilor cu uşurinţă (folosind după compilare
+<TT>C-x `</TT>);
+</LI>
+<LI>Are interfaţă la debuggere (<TT>M-x gdb</TT>);
+</LI>
+<LI>Are interfaţă la manualele Unix (<TT>M-x man</TT>);
+</LI>
+<LI>Are interfaţă pentru corectarea de texte (<TT>M-x ispell</TT>);
+</LI>
+<LI>Are operaţii cu expresii regulate (<TT>M-x replace-regexp</TT>);
+</LI>
+<LI>Foloseşte automat sisteme de control a versiunii (RCS, SCCS,
+VC);
+</LI>
+<LI>Manipulează tabele de simboluri pentru programe cu multe
+fişiere (etags, <TT>M-.</TT>);
+</LI>
+<LI>Permite gruparea unor suite de taste sub un singur nume pentru
+procesări complicate (``keyboard macros'');
+</LI>
+<LI>Permite scrierea de programe în lisp pentru efectuarea de
+operaţiuni asupra textelor;
+</LI>
+<LI>Are un help foarte sofisticat (<TT>C-h</TT>);
+</LI>
+<LI>Merge pe sute de calculatoare diferite arhitectural;
+</LI>
+<LI>Este Free Software: poate fi obţinut gratuit, distribuit fără
+restricţii, modificat, citit;
+</LI>
+<LI>Multe, multe alte avantaje.
+</LI>
+</UL>
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Anexă</A>
+</H1>
+
+<P>
+Iată pe o pagină, condensate toate lucrurile importante spuse de-a
+lungul articolului.  Cred că dacă tipăriţi pagina asta şi o
+ţineţi la-ndemînă în timp ce-nvăţaţi Emacs, se poate dovedi
+foarte utilă.
+
+<P>
+Tabelul principal este în engleză, din cauza mnemonicilor şi e
+ordonat pentru a ilustra înrudirile dintre comenzi.
+
+<P>
+
+<PRE>
+                           Essential Emacs keys
+
+C-@      Set Mark (also C-SPC)         M-w      Copy region in kill ring
+C-a      Beginning of line             C-x 0    Delete this window
+M-a      Beginning of sentence         C-x 1    Keep only this window
+C-b      Back one char                 C-x 2    Split window vertically
+M-b      Backward word                 C-x 3    Split window horizontally
+C-d      Delete one char               C-x b    Select buffer by name
+M-d      Delete word                   C-x C-b  List all buffers
+DEL      Delete previous character     C-x C-c  Exit
+M-DEL    Delete previous word          C-x C-f  Find a file and load it
+C-e      End of line                   C-x C-w  Write in file (save as)
+M-e      End of sentence               C-x d    Directory editor (file manager)
+C-f      Forward one char              C-x k    Kill this buffer
+M-f      Forward word                  C-x o    Move to other window
+C-g      Abort current command         C-x s    Save all buffers
+C-h i    Info help system              C-x u    Undo
+C-k      Kill line                     C-y      Yank last killed text
+M-k      Kill sentence                 M-y      Yank previous from kill ring
+C-l      Refresh screen                C-z      Stop emacs
+C-n      Next line                     M-/      Fill word automatically
+C-p      Previous line                 M--      Same as C-u -1
+C-r      Incremental search backward   M-c      Capitalize word
+C-s      Incremental search forward    M-h      Make this paragraph region
+C-SPC    Set mark here                 M-l      Lowercase word
+C-t      Transpose characters          M-q      Fill paragraph
+M-t      Transpose words               M-SPC    Delete space arount point
+C-u      Numeric argument follows      M-u      Uppercase word
+C-v      Page down                     M-x      Type command by name
+M-v      Page up                       M-&lt;      Beginning of buffer
+C-w      Kill region                   M-&gt;      End of buffer
+
+                        Moduri majore importante
+
+text            Text (limbi normale)   gnus            Citit news
+c               Limbajul C             tex             TeX
+rmail           Citit mail             latex           LaTeX
+mail            Scris mail             lisp            Lisp editting
+dired           Manipulari fisiere     info            Help hipertext
+</PRE>
+<BR><HR>
+
+</BODY>
+</HTML>

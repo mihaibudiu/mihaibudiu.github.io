@@ -1,0 +1,1223 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>DDD -- Un debugger vizual</TITLE>
+<META NAME="description" CONTENT="DDD -- Un debugger vizual">
+<META NAME="keywords" CONTENT="ddd-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+<body>
+
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">DDD -- Un debugger vizual</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- <TT>mihaib+@cs.cmu.edu</TT> 
+<BR><TT><A NAME="tex2html1"
+  HREF="http://www.cs.cmu.edu/~mihaib/">http://www.cs.cmu.edu/~mihaib/</A></TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>18 mai 1999</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>corectitudinea programelor şi scule pentru depanarea lor
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>cunoştinţe elementare despre
+programare şi sisteme de operare
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>verificare statică, verificare dinamică,
+debugger
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Cuprins</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html30"
+  HREF="ddd-html.html">Corectitudinea programelor</A>
+<LI><A NAME="tex2html31"
+  HREF="#SECTION00030000000000000000">Soluţii statice</A>
+<LI><A NAME="tex2html32"
+  HREF="#SECTION00040000000000000000">Soluţii dinamice</A>
+<UL>
+<LI><A NAME="tex2html33"
+  HREF="#SECTION00041000000000000000">Trasarea: debugging dumps</A>
+<LI><A NAME="tex2html34"
+  HREF="#SECTION00042000000000000000">Aserţiuni</A>
+<LI><A NAME="tex2html35"
+  HREF="#SECTION00043000000000000000">Cod care se auto-verifică</A>
+<LI><A NAME="tex2html36"
+  HREF="#SECTION00044000000000000000">Software Fault Isolation</A>
+<LI><A NAME="tex2html37"
+  HREF="#SECTION00045000000000000000">Debuggere</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html38"
+  HREF="#SECTION00050000000000000000">Funcţionarea unui debugger</A>
+<UL>
+<LI><A NAME="tex2html39"
+  HREF="#SECTION00051000000000000000">Tabela de simboluri</A>
+<LI><A NAME="tex2html40"
+  HREF="#SECTION00052000000000000000">Breakpoint-uri şi watchpoint-uri</A>
+<LI><A NAME="tex2html41"
+  HREF="#SECTION00053000000000000000">Interfaţa sistemului de operare pentru depanare</A>
+<LI><A NAME="tex2html42"
+  HREF="#SECTION00054000000000000000">Core dumps</A>
+<LI><A NAME="tex2html43"
+  HREF="#SECTION00055000000000000000">Bibliotecile; bibliotecile dinamice</A>
+<LI><A NAME="tex2html44"
+  HREF="#SECTION00056000000000000000">Funcţionarea unui debugger</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html45"
+  HREF="#SECTION00060000000000000000">gdb: un debugger cu linie de comandă</A>
+<LI><A NAME="tex2html46"
+  HREF="#SECTION00070000000000000000">DDD - o interfaţa vizuală</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+Societatea contemporană se bazează din ce în ce mai mult pe
+calculatoare; cu atît mai dramatică este situaţia curentă a
+software-ului: mulţi specialişti estimează că cea mai importantă
+criză a tehnologiei informaţionale contemporane este robusteţea
+redusă a programelor produse.
+
+<P>
+Situaţia este într-adevăr îngrijorătoare: productivitatea medie a
+unui programator este de circa 3 linii de cod pe zi (cod comentat,
+depanat şi verificat); frecvenţa medie a erorilor este de una la o
+mie de linii.
+
+<P>
+Productivitatea programatorilor nu s-a schimbat în mod substanţial
+în ultimii douăzeci de ani, dar s-au schimbat enorm sculele pe care
+le au la dispoziţie.  Limbajele folosite în ziua de azi sunt mult
+mai expresive, şi ca atare 3 linii de cod pot exprima mult mai mult.
+Scule sofisticate asistă programatorul în scrierea, verificarea,
+întreţinerea, portarea şi depanarea programelor.
+
+<P>
+În acest text voi face reclamă unui produs de excelentă calitate
+pentru depanarea programelor.  Foarte interesant este faptul că
+produsul în seamă este în întregime free software, şi ca atare este
+disponibil oricui de pe Internet, pe gratis (am scris un <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#open">articol</a>
+întreg despre fenomenul ``free software'' cu mai mult timp în urmă în
+PC Report; copia articolului este accesibilă din pagina mea de web.)
+
+<P>
+Programul în sine este ceea ce se numeşte un ``debugger vizual'';
+``vizual'' pentru că permite o interacţiune foarte intuitivă
+utilizatorului.  Calitatea sa rivalizează cu produse de firmă
+renumite, cum ar fi debugger-ul vizual al lui Microsoft.  Pentru cei
+nerăbdători, programul se numeşte DDD (Data Display Debugger), şi
+poate fi obţinut, în surse sau executabile, cu documentaţia
+aferentă, de la Universitatea Tehnică din Braunschweig din Germania:
+<TT><A NAME="tex2html2"
+  HREF="http://www.cs.tu-bs.de/softech/ddd">http://www.cs.tu-bs.de/softech/ddd</A></TT>.  De fapt vom vedea că DDD
+este doar un înveliş vizual care poate colabora cu alte debuggere
+care au interfeţe mai simple (linie de comandă).
+
+<P>
+Trebuie să recunosc că eu însumi sunt un ins destul de conservator,
+care în general preferă interfaţă seacă în linie de comandă,
+stil Unix, unei interfeţe vizuale ``desktop'', gen Microsoft Windows.
+Dar criteriul care ne face să alegem între cele două nu trebuie să
+fie unul religios, ci unul pragmatic.  Productivitatea pe care o am
+în depanarea codului este mult crescută cu DDD<A NAME="tex2html3"
+  HREF="#foot60"><SUP>1</SUP></A>, aşa că programul merită încercat.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Corectitudinea programelor</A>
+</H1>
+
+<P>
+Corectitudinea programelor este o noţiune mult mai complicată decît
+pare la prima vedere; există o sumedenie de definiţii posibile,
+unele implicînd un aparat matematic sofisticat.  Trebuie însă spus
+că, deşi există o cantitate enormă de cercetare în ingineria
+programării (software engineering), în metode de verificare
+automată a programelor, în generatoare de programe, rezultatele
+practice sunt cu douăzeci de ani în urma cerinţelor proiectelor
+moderne.
+
+<P>
+Fără a mă avînta în detalii (în care dealtfel nu sunt expert)
+pot totuşi face cîteva observaţii generale, sper interesante pentru
+cititor.  Există două clase mari de metode folosite pentru a
+garanta/analiza corectitudinea programelor.  Prima clasă mare
+priveşte programele în întregime, şi studiind codul sursă poate
+garanta proprietăţi pe care programul le va avea oricînd,
+indiferent de datele de intrare.  Aceste soluţii se numesc <EM>statice</EM>.
+
+<P>
+A doua clasă studiază programele în execuţie cu anumite date de
+intrare, şi garantează oricînd că anumite lucruri nu se vor
+întîmpla niciodată, pentru că vor fi prevenite în mod explicit.
+Aceste metode sunt cele <EM>dinamice</EM>.  Debugger-ele fac parte din
+clasa metodelor dinamice, deci vor avea partea leului în acest text.
+De aceea să acordăm cîteva cuvinte soluţiilor statice.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Soluţii statice</A>
+</H1>
+
+<P>
+Trebuie spus dintru început că cele două clase de soluţii (statice
+şi dinamice) sunt fundamental diferite, pentru că proprietăţile pe
+care le pot garanta sunt altele.  Există astfel proprietăţi care
+pot fi garantate numai cu soluţii statice, proprietăţi care pot fi
+garantate numai cu soluţii dinamice, sau cu ambele (sau, din păcate,
+cu nici una).
+
+<P>
+Scula statică cea mai comună este compilatorul.  Un compilator
+traduce un program dintr-un limbaj sursă într-un limbaj destinaţie.
+Proprietatea pe care trebuie s-o garanteze compilatorul este că
+ambele programe au acelaşi ``înţeles'' (semantică).
+
+<P>
+Depinzînd de expresivitatea limbajului sursă, compilatoarele pot
+garanta static anumite proprietăţi ale programelor.  De exemplu, în
+limbajele puternic tipizate (strongly typed), anumite erori sunt pur
+şi simplu imposibile.  În Java, de pildă, nu poţi nicicum aduna un
+număr cu un caracter; această operaţie nici nu are sens, şi este
+explicit interzisă prin sistemul de tipuri al limbajului.  Din cauza
+asta, putem fi siguri că programatorul nu va face niciodată o astfel
+de eroare.
+
+<P>
+Folosind proprietăţile deduse ale programului, compilatoarele
+moderne nu numai că transformă un program într-altul, ci
+efectuează şi o serie întreagă de <EM>optimizări</EM>.  Analiza
+statică pe care compilatoarele o efectuează garantează că
+optimizările făcute sunt corecte, în sensul că nu schimbă
+semnificaţia programului (ci doar viteza lui de execuţie sau poate
+mărimea lui, sau alţi parametri de interes pentru optimizare).
+
+<P>
+Există proprietăţi care nu se pot garanta static niciodată; astfel
+de proprietăţi se numesc <EM>nedecidabile</EM>.  De exemplu la
+întrebarea ``va avea variabila <TT>X</TT> vreodată valoarea 0?'' nu se
+poate, în general, răspunde în mod static.  Fireşte, pentru unele
+programe, acest lucru poate fi dovedit, dar nu pentru <EM>orice</EM>
+program care manipulează variabila <TT>X</TT>.  Acest lucru poate fi
+demonstrat matematic.  Îmi propun ca într-un articol ulterior,
+consacrat logicii matematice, să revin asupra acestui fapt.  O
+ramură a informaticii, numită teoria calculabilităţii, se ocupă
+cu astfel de fapte.
+
+<P>
+Mi se pare interesant de menţionat şi următorul fapt, care este tot
+o consecinţă a teoriei calculabilităţii: am văzut că există mai
+multe programe diferite care fac acelaşi lucru (de exemplu un program
+şi versiunea lui optimizată.)  Ei bine, în general este imposibil de
+determinat care este <EM>cel mai mic program</EM> care face anumit lucru.
+Acest enunţ se mai numeşte şi <EM>Teorema Non-Şomajului</EM> pentru
+cei care scriu compilatoare (<EM>full-employment theorem for compiler
+writers</EM>).  Asta înseamnă practic că seria de optimizări pe care
+le pot implementa compilatoarele este nesfîrşită!  Formal vorbind,
+dacă cineva implementează un compilator pe care-l decretează
+perfect, atunci eu pot construi un alt compilator, care pentru cel
+puţin un program va genera un rezultat optimizat mai bine!
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Soluţii dinamice</A>
+</H1>
+
+<P>
+Pe de altă parte, o proprietate ca ``<TT>X</TT> este 0'' poate fi
+detectată cu o soluţie dinamică: pur şi simplu este suficient să
+verificăm înainte de fiecare instrucţiune care se execută dacă nu
+cumva efectul ei va fi să dea această valoare lui <TT>X</TT>.
+
+<P>
+În mod dinamic putem garanta o sumedenie de proprietăţi care nu pot
+fi garantate static.  De pildă, pentru limbaje de gen Java, care nu
+permit accesul înafara marginilor unui vector, putem garanta acest
+lucru folosind teste dinamice: de fiecare dată cînd accesăm un
+vector, testăm indicele dacă are o valoare între limitele admise.
+
+<P>
+Analiza dinamică are şi ea limitările ei.  De pildă, analiza
+dinamică nu va putea <EM>elimina</EM> astfel de teste din program; pe
+cînd un compilator inteligent va observa că într-un cod ca acesta:
+
+<P>
+<PRE>
+int a[10], i;
+for (i=3; i &lt; 7; i++) a[i] = 0;
+</PRE>
+
+<P>
+variabila <TT>i</TT> va fi tot timpul între 0 şi 9, limitele
+vectorului, deci va putea elimina testele indicelui din interiorul
+buclei <TT>for</TT>.  Aşa ceva nu putem realiza în mod dinamic.
+
+<P>
+Este foarte important să înţelegem o altă limitare esenţială a
+metodelor dinamice: ele depind de datele de intrare.  Dacă un program
+verificat dinamic nu face nici un fel de eroare pentru anumite date,
+nu avem nici o garanţie că cu alte date nu se va comporta prost.
+Prin contrast, în mod static putem verifica adesea proprietăţi care
+sunt valabile pentru orice intrări.
+
+<P>
+Vom trece în revistă mai jos o serie de alte metode dinamice de
+garantare a corectitudinii.  Deşi depanarea nu garantează
+proprietăţi, ci doar permite verificarea lor în cursul execuţiei,
+o vom categorisi ca metodă dinamică.  Vreau să subliniez că
+metodele care urmează sunt <EM>metode practice</EM>, care se bucură de
+un deosebit succes în activitatea programatorilor, şi să vă
+îndemn să le folosiţi în proiectele dumneavoastră.
+
+<P>
+
+<H2><A NAME="SECTION00041000000000000000">
+Trasarea: debugging dumps</A>
+</H2>
+
+<P>
+O metodă relativ primitivă, dar extrem de eficace, este de a face
+programul însuşi să indice progresul, inserînd în cod
+instrucţiuni de tipărire.  Metoda este cîteodată singura
+posibilă: de exemplu cînd depanaţi nucleul unui sistem de operare,
+acesta nu are o noţiune de intrare/ieşire, şi nici nu poate fi pus
+sub controlul unui debugger (adesea poate fi <EM>observat</EM> cu un
+debugger, dar nu oprit şi modificat).
+
+<P>
+În programele mele eu pun în anumite zone de cod instrucţiuni de
+genul:
+
+<P>
+<PRE>
+if (NIVEL_DEPANARE_OPTIMIZARE &gt; 2)
+        fprinf(log, "Am ajuns in acest punct si X=%d\n", X);
+</PRE>
+
+<P>
+Apoi inventez o metodă prin care pot controla nivelul de depanare
+fără a fi nevoie să recompilez, sau chiar să reopresc programul.
+De pildă, programul poate avea opţiuni în linia de comandă, care
+modifică nivelul de depanare.  În acest fel pot controla nivelul de
+depanare independent în diferite părţi ale programului; schimbînd
+nivelul obţin informaţii de detalii diferite.
+
+<P>
+În Unix se foloseşte adesea o metodă interesantă pentru a controla
+nivelul de depanare a unor programe care nu se opresc niciodată din
+execuţie, cum ar fi demonii care se ocupă de comunicaţia în
+Internet: nivelul de depanare poate fi controlat trimiţînd anumite
+semnale acestor procese, cîteodată în conjuncţie cu modificarea
+unor fişiere de configurare care controlează operaţiile demonilor.
+
+<P>
+
+<H2><A NAME="SECTION00042000000000000000">
+Aserţiuni</A>
+</H2>
+
+<P>
+O tehnică de o utilitate greu de supraestimat este cea a folosirii
+aserţiunilor.  Toate limbajele moderne pun la dispoziţie aserţiuni;
+o aserţiune este o funcţie care termină execuţia programului dacă
+primeşte un argument nul.  (Tocmai am măsurat numărul de aserţiuni
+în codul scris de mine: am în medie o aserţiune la 40 de linii de
+cod scrise.)
+
+<P>
+Aserţiunile sunt folosite pentru a verifica dacă anumiţi <EM>invarianţi</EM> ai programului sunt adevăraţi.  De exemplu mărimea
+unui vector care se schimbă dinamic trebuie să fie pozitivă.  Putem
+avea deci în codul care modifică acest vector ceva de genul:
+
+<P>
+<PRE>
+char* resize(char* vector, int marime)
+{
+   assert(marime &gt; 0);
+   ....
+}
+</PRE>
+
+<P>
+De îndată ce vom viola această condiţie programul se va opri din
+execuţie.
+
+<P>
+
+<H2><A NAME="SECTION00043000000000000000">
+Cod care se auto-verifică</A>
+</H2>
+
+<P>
+Adesea aserţiunile pe care vrem să le verificăm sunt mai
+complicate; de pildă vrem să vedem dacă toate elementele dintr-un
+vector se însumează la 1000.  Astfel de verificări sunt foarte
+costisitoare, şi nu ne putem permite să le facem permanent.  Dar
+dacă suspectăm că avem un bug care violează acest invariant,
+atunci putem proceda astfel (în C cel puţin): creăm o funcţie
+specială care verifică invariantul, pe care o invocăm apoi dintr-o
+zonă de cod controlată de nivelul de depanare:
+
+<P>
+<PRE>
+if (NIVEL_DEPANARE)
+        assert(suma_vector() == 1000);
+</PRE>
+
+<P>
+Astfel, folosim viteza calculatorului însuşi pentru a verifica
+corectitudinea programului, făcînd teste complicate.  Cînd
+programul este ``complet'' depanat (mai exact cînd credem noi asta),
+putem scoate aserţiunile şi astfel de fragmente din cod foarte
+simplu; de pildă în C dacă definim macro-ul <TT>NDEBUG</TT> toate
+aserţiunile dispar automat din cod.
+
+<P>
+
+<H2><A NAME="SECTION00044000000000000000">
+Software Fault Isolation</A>
+</H2>
+
+<P>
+De fapt tehnologiile dinamice descrise mai sus fac parte dintr-o
+clasă foarte largă, numită <EM>software fault isolation</EM>.
+Tehnologia aceasta este folosită cu mult succes în mai multe
+produse, începînd cu nuclee ale sistemelor de operare, care permit
+utilizatorilor să le insereze în nucleu cod, şi terminînd cu
+programe comerciale ca Purify şi Insure.
+
+<P>
+Cele mai sofisticate astfel de scule funcţionează chiar fără a
+avea la dispoziţie programul sursă; ele fac ceea ce se numeşte <EM>binary instrumentation</EM>: modifică chiar fişierele executabile,
+inserînd verificări în anumite puncte cheie.  De exemplu, foarte
+popularul program Purify, de la Pure Software, inserează cod special
+care verifică toate accesele la memorie, şi modifică funcţiile de
+alocare a memoriei din biblioteca standard.  Astfel de software prinde
+foarte multe erori de acces la memorie, cum ar fi accese în zone de
+memorie nealocate, re-folosirea memoriei de-alocate, citirea unor zone
+de memorie neiniţializate, scurgeri de memorie (adică uitarea de a
+dealoca memoria alocată: ``memory leaks''), etc.  Anumite clase de
+erori, ca cele cauzate de pointeri eronaţi, sunt adesea foarte uşor
+de depanat cu astfel de scule (şi foarte greu altfel).
+
+<P>
+
+<H2><A NAME="SECTION00045000000000000000">
+Debuggere</A>
+</H2>
+
+<P>
+În fine, ajungem la subiectul acestui articol.  Debugger-ele sunt
+programe sofisticate, care permit executarea altor programe într-un
+mod controlat; ele permit execuţia, observarea şi modificarea altui
+program.  Debugger-ele folosesc o sumedenie de tehnici, înrudite cu
+software fault isolation (vom vedea cum), şi suport din partea
+sculelor care generează programele, şi a sistemului de operare.
+Debugger-ele se comportă vis-a-vis de programul depanat asemănător
+cu nişte <EM>interpretoare</EM>, executînd instrucţiunile una cîte
+una.  Pentru că scrierea unui interpretor (interpretoarele de
+cod-maşină se numesc ``emulatoare'') este o treabă foarte
+complicată, debugger-ele folosesc anumite servicii puse la dispoziţie
+de către sistemul de operare.
+
+<P>
+Sistemul de operare este el însuşi o uriaşă sculă care face
+software fault isolation: el permite execuţia paralelă a mai multor
+programe, dar previne interferenţa lor, claustrînd accesele
+fiecăruia în propria lui zonă de memorie, cu ajutorul memoriei
+virtuale, şi controlînd interacţiunea dintre procese şi resurse
+prin apelurile de sistem.  (Despre sisteme de operare am scris o
+mulţime de articole în PC Report în trecut).
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Funcţionarea unui debugger</A>
+</H1>
+
+<P>
+Vom discuta aici numai despre debugger-ele care permit depanarea unui
+program în limbajul în care a fost scris (limbajul sursă);
+debugger-ele care depanează numai limbaj maşină sunt substanţial
+mai simple, şi mai puţin utile.
+
+<P>
+Figura&nbsp;<A HREF="ddd-html.html#debugger">1</A> ilustrează interacţiunile unui debugger; vom
+detalia pe fiecare în parte în secţiunile următoare.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="debugger"></A><A NAME="221"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 1:</STRONG>
+Un debugger interacţionează cu sistemul de
+operare, pentru a controla programul depanat, cu fişierul executabil,
+pentru a extrage informaţiile de depanare şi cu fişierele sursă,
+pentru a conversa cu utilizatorul.</CAPTION>
+<TR><TD><IMG
+ WIDTH="361" HEIGHT="261" BORDER="0"
+ SRC="img1.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=8cm\epsffile{debugger.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H2><A NAME="SECTION00051000000000000000">
+Tabela de simboluri</A>
+</H2>
+
+<P>
+Cel mai important suport îl primeşte un debugger de la compilatorul
+care translatează fişierul din sursă în limbaj maşină.
+Compilatorul poate fi rugat să depună în fişierul executabil
+informaţii despre structura programului.  Aceste informaţii sunt
+ceea ce se numeşte ``tabela de simboluri''.  Informaţiile asociază
+fiecare instrucţiune din codul maşină rezultat cu linia din codul
+sursă din care provine, indică adresele tuturor variabilelor din
+programul sursă, tipurile lor, adresele procedurilor şi tipurile
+lor, etc.  Adesea mai mult de 60% din m'arimea unui fi'sier
+executabil constă doar în informaţii de acest gen.  Pe sistemele
+Unix există un utilitar numit <TT>strip</TT> (dezbracă) care şterge
+astfel de informaţii; el poate fi folosit pentru a face economie de
+spaţiu pe disc.
+
+<P>
+Fără informaţiile de depanare însă, debugger-ul nu poate face
+corespondenţa între codul obiect şi fişierele sursă.
+
+<P>
+Există o sumedenie de standarde de reprezentare a informaţiilor de
+depanare, care sunt menite să facă posibilă depanarea unui program
+generat de orice compilator cu orice debugger.  
+
+<P>
+
+<H2><A NAME="SECTION00052000000000000000">
+Breakpoint-uri şi watchpoint-uri</A>
+</H2>
+
+<P>
+Pentru a fi eficace, un debugger foloseşte şi suportul oferit de
+hardware.  Acest suport îi permite să execute programele de depanat
+cu viteză maximă, intervenind numai atunci cînd este nevoie, în
+loc de a le urmări execuţia pas cu pas, emulînd fiecare
+instrucţiune separat.
+
+<P>
+Iată cum funcţionează aceste mecanisme: microprocesoarele moderne au
+nişte regiştri speciali, în care se pot scrie felurite adrese.
+Procesoarele promit că atunci cînd aceste adrese apar în program,
+hardware-ul generează o excepţie, care poate fi tratată apoi de
+software.
+
+<P>
+Un <EM>breakpoint</EM> (punct de întrerupere) este o valoare care este
+comparată cu adresa curentă a codului din registrul PC (Program
+Counter): cu alte cuvinte, cînd programul atinge adresa indicată de
+un breakpoint, se generează automat o întrerupere.
+
+<P>
+În mod alternativ, un breakpoint poate fi o instrucţiune care
+generează ea însăşi o întrerupere atunci cînd este executată,
+numită chiar ``instrucţiune breakpoint''.  Debugger-ele pot folosi
+ambele feluri de breapoint-uri.
+
+<P>
+O variantă de breakpoint-uri sunt cele <EM>condiţionale</EM>: acestea
+opresc execuţia numai dacă o anumită expresie are o anumită
+valoare, altfel continuă.
+
+<P>
+Un <EM>watchpoint-uri</EM> (punct de supraveghere) este o valoare care este
+comparată cu adresa datelor; dacă un program vrea să citească sau
+să scrie la o anumită adresă, se generează o întrerupere.
+
+<P>
+
+<H2><A NAME="SECTION00053000000000000000">
+Interfaţa sistemului de operare pentru depanare</A>
+</H2>
+
+<P>
+Debugger-ul este un program, iar programul depanat este un altul.  Cum
+de poate debugger-ul să controleze un program independent, care nu a
+fost scris în acest scop?  Sistemele moderne de operare izolează
+programele unul faţă de altul; atunci cum de poate debugger-ul să se
+uite la cele mai intime informaţii din spaţiul de adrese al
+celuilalt program?
+
+<P>
+Fără ajutorul sistemului de operare nici n-ar putea.
+
+<P>
+Tot sistemul de operare pune la dispoziţie o interfaţă specială,
+prin care un program poate observa comportarea altuia.  De asemenea,
+sistemul de operare asigură respectarea unor reguli de securitate:
+numai utilizatorul care a pornit un proces are dreptul să-l depaneze;
+altfel debugger-ele ar putea fi folosite pentru a extrage informaţii
+nepermise.
+
+<P>
+Voi discuta aici interfaţa oferită de sistemele de tip Unix; deşi
+nu ştiu ce oferă sistemele de tip Windows, este probabil că au
+mecanisme înrudite.
+
+<P>
+Există în Unix în mod tradiţional două interfeţe pentru depanare
+oferite de sistemul de operare.  Prima este mai veche, şi mai
+puţin elegantă.  Ea constă dintr-un singur apel de sistem, numit
+<TT>ptrace</TT>.
+
+<P>
+
+<H3><A NAME="SECTION00053100000000000000">
+<TT>ptrace</TT></A>
+</H3>
+
+<P>
+Ptrace vine de la <EM>process trace</EM>: urmăreşte execuţia altui
+proces.  Acest apel de sistem de fapt implementează un mic limbaj,
+prin care debugger-ul conversează cu nucleul sistemului de operare.
+Iată cum arată <TT>ptrace</TT> pe Linux:
+
+<P>
+<PRE>
+int ptrace(int operatie, int proces, int adresa, int date);
+</PRE>
+
+<P>
+Prin execuţia acestui apel, debugger-ul cere nucleului să efectueze
+operaţia indicată asupra procesului descris, la adresa şi cu
+valorile pasate.
+
+<P>
+Iată exemple de operaţii: citeşte un cuvînt (de date, de cod, de
+stivă), scrie un cuvînt, trimite un semnal, opreşte procesul,
+reporneşte procesul, etc.
+
+<P>
+Un debugger pune un breakpoint în celălalt proces astfel: citeşte o
+instrucţiune din proces, o memorează local, şi o înlocuieşte cu o
+``instrucţiune breakpoint''.  Apoi nucleul este rugat să continue
+execuţia procesului, iar cînd breakpoint-ul este executat, o
+întrerupere transferă din nou control debugger-ului, care pune la
+loc instrucţiunea originală şi decide apoi ce să facă cu
+procesul.
+
+<P>
+Un breakpoint condiţional poate fi implementat ca un breakpoint
+obişnuit, doar că debugger-ul va verifica la fiecare oprire condiţia
+(citind din spaţiul celuilalt proces valorile necesare), şi va
+reporni programul doar dacă condiţia este falsă.
+
+<P>
+Interfaţa aceasta este oarecum incomodă, din mai multe motive.
+
+<P>
+
+<UL>
+<LI>În primul rînd, ideea de a avea un mic limbaj de comunicare
+între nucleu şi debugger prin argumentul ``operaţie'' nu este în
+spiritul Unix, care are interfeţe cu semantică foarte simplă şi
+clară;
+
+<P>
+</LI>
+<LI>În al doilea rînd, interfaţa este foarte restrictivă, pentru
+că permite accesul numai la nivel de cuvînt; mai mult, pentru
+fiecare cuvînt debugger-ul trebuie să execute un apel de sistem.  Ori
+un apel de sistem este foarte costisitor, în termeni de timp de
+execuţie; din cauza asta un breakpoint condiţional va încetini
+substanţial execuţia programului depanat.
+</LI>
+</UL>
+
+<P>
+Din cauza aceasta, în 1984, cercetătorii de la AT&amp;T (unde a fost
+dezvoltat Unix-ul original) au propus o interfaţă alternativă,
+extrem de elegantă, bazată pe un sistem de fişiere virtual.
+
+<P>
+
+<H3><A NAME="SECTION00053200000000000000">
+<TT>/proc</TT></A>
+</H3>
+
+<P>
+Sistemul de fişiere <TT>proc</TT> oferă acces la toate procesele în
+execuţie în acelaşi fel în care oferă acces la fişiere.  Am mai
+vorbit în alte articole despre eleganţa interfeţei Unix pentru
+accesul la fişiere, şi despre sistemul de fişiere <TT>proc</TT>; aici
+nu voi face decît să recapitulez faptele esenţiale.  
+
+<P>
+În paranteză voi nota că tot cercetătorii de la AT&amp;T au împins
+ideea accesului la obiecte prin interfaţa de fişiere şi mai departe
+în proiectul lor de sistem distribuit numit Plan9, care însă din
+păcate nu a devenit niciodată un produs comercial.
+
+<P>
+Dacă aveţi un sistem Linux la-ndemînă puteţi experimenta
+<TT>proc</TT> în mod direct, şi veţi înţelege mai precis ce vreau
+să povestesc.  Mergeţi în directorul <TT>/proc</TT> şi uitaţi-vă.
+Fiecare proces în execuţie are aici un fişier care îi corespunde;
+procesul cu identificatorul 100 va avea un director cu numele
+<TT>100</TT>.
+
+<P>
+În acest director se află o mulţime de ``fişiere virtuale'', care
+descriu informaţiile nucleului despre acest proces.  Aceste fişiere
+nu există pe disc; atunci cînd cineva încearcă să citească din
+aceste fişiere, nucleul de fapt extrage datele din memorie, din
+anumite structuri de date, şi le returnează cititorului.
+
+<P>
+În acest director există şi un fişier virtual care reprezintă
+întreg spaţiul de memorie al acestui proces; citind octetul 5 din
+acest fişier se citeşte de fapt octetul de la adresa virtuală 5 din
+spaţiul de adrese al acestui proces.
+
+<P>
+Utilizînd acest fişier, debugger-ul are imediat o vedere de ansamblu
+asupra întregului proces, putînd citi şi scrie zone întregi cu un
+singur apel de sistem de citire, respectiv scriere.
+
+<P>
+
+<H2><A NAME="SECTION00054000000000000000">
+Core dumps</A>
+</H2>
+
+<P>
+Sistemele de operare pun adesea la dispoziţie încă o interesantă
+funcţiune: fişierele-imagine (<EM>core</EM>).  Utilizatorul poate
+inhiba crearea acestora cu apelul de sistem <TT>setrlimit</TT>.  
+
+<P>
+Atunci cînd un proces execută o operaţie ilegală, nucleul îl
+omoară şi simultan crează un fişier numit <TT>core</TT>, care este
+foarte asemănător cu fişierul din <TT>proc</TT> care descrie imaginea
+de memorie a procesului; acest fişier conţine imaginea procesului
+aşa cum arăta el în momentul răposării.  Debugger-ul poate folosi
+acest fişier pentru a studia cauzele morţii: poate inspecta
+variabilele, stiva, etc. în momentul morţii, dar nu poate executa
+programul.
+
+<P>
+
+<H2><A NAME="SECTION00055000000000000000">
+Bibliotecile; bibliotecile dinamice</A>
+</H2>
+
+<P>
+Dacă bibliotecile cu care programul este legat vin cu informaţii de
+depanare, debugger-ul poate fi folosit pentru a le depana şi pe ele.
+Debugger-ul captează apelurile prin care procesele îşi leagă
+bibliotecile dinamice în momentul execuţiei, şi le citeşte
+simbolurile de îndată ce sunt încărcate.
+
+<P>
+
+<H2><A NAME="SECTION00056000000000000000">
+Funcţionarea unui debugger</A>
+</H2>
+
+<P>
+Iată aici recapitulată funcţionarea unui debugger, pas cu pas:
+
+<P>
+
+<OL>
+<LI>Un debugger poate lansa procesul de depanat ca pe un
+proces-copil, sau se poate <EM>ataşa</EM> (attach) unui proces care deja
+se execută;
+
+<P>
+</LI>
+<LI>După aceea debugger-ul extrage informaţiile de depanare din
+tabela de simboluri a fişierului executabil;
+
+<P>
+</LI>
+<LI>Apoi debugger-ul încearcă să localizeze fişierele sursă din
+care programul a fost compilat; utilizatorul poate de obicei indica
+debugger-ului în ce directoare să caute aceste fişiere;
+
+<P>
+</LI>
+<LI>Apoi debugger-ul intră într-o buclă, aşteptînd comenzi de la
+utilizator.
+
+<P>
+</LI>
+<LI>După fiecare comandă debugger-ul acţionează asupra imaginii
+executabile în conformitate cu comanda;
+
+<P>
+</LI>
+<LI>Dacă utilizatorul vrea să vadă o variabilă, de pildă,
+debugger-ul va căuta în tabela de simboluri adresa variabilei, apoi
+va citi zona de memorie unde variabila se află.  Pentru variabilele
+locale, care pot avea mai multe instanţe, debugger-ul le va căuta pe
+stivă, iar nu în segmentul de date; pentru asta debugger-ul trebuie
+să ştie cum îşi aranjează datele pe stivă fiecare procedură;
+
+<P>
+</LI>
+<LI>Cînd utilizatorul vrea să execute programul pentru un număr
+de paşi, debugger-ul instalează un breakpoint, după care roagă
+nucleul să pornească programul, el dormitînd apoi în aşteptarea
+semnalului de oprire prin care nucleul indică faptul ca breakpoint-ul
+a fost atins;
+
+<P>
+</LI>
+<LI>Debugger-ul poate de asemenea să roage nucleul să trimită
+semnale pentru a întrerupe un proces în execuţie;
+
+<P>
+</LI>
+<LI>Utilizatorul poate cere modificarea unor valori, pe care
+debugger-ul le înscrie în zonele de memorie corespunzătoare;
+
+<P>
+</LI>
+<LI>Debugger-ul poate permite utilizatorilor să întrerupă
+secvenţa normală de execuţie; de exemplu utilizatorii pot termina
+imediat procedura curentă, pot cere apelul unor anumite funcţii, sau
+pot cere ca execuţia să se continue de la un anumit punct, şi nu de
+la instrucţiunea următoare.
+</LI>
+</OL>
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+gdb: un debugger cu linie de comandă</A>
+</H1>
+
+<P>
+În această secţiune voi discuta pe scurt despre unul dintre cele mai
+răspîndite debuggere, cel al proiectului GNU (despre proiectul GNU
+puteţi citi în articolul meu anterior despre free software, pe care
+l-am mai menţionat).  GDB a fost scris iniţial de Richard Stallman,
+celebrul iniţiator al Fundaţiei pentru Free Software (FSF), care a
+scris şi editorul de texte Emacs (despre care am avut un alt <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#emacs">articol</a>
+în PC Report) şi compilatorul de C numit GCC (Gnu C Compiler).
+
+<P>
+La data apariţiei sale, gdb avea tot felul de trăsături inovatoare.
+Voi menţiona pe scurt unele dintre cele mai exotice; gdb poate face
+toate lucrurile pe care le-am descris mai sus, cînd am vorbit în
+general despre debuggere.
+
+<P>
+Gdb este un debugger în linie de comandă, dar există mai multe
+interfeţe vizuale pentru el.  O interfaţă excelentă permite
+folosirea lui gdb din editorul de texte Emacs; alte interfeţe sunt
+xxgdb, gdbtk, şi DDD, care este pretextul acestui articol.
+
+<P>
+
+<UL>
+<LI>Gdb poate permite utilizatorului să evalueze expresii arbitrar
+de complicate; de la aflarea valorii unei variabile, la expresii care
+conţin operatori complicaţi, sau chiar apeluri de funcţii;
+
+<P>
+</LI>
+<LI>Gdb poate fi folosit atît pentru inspectat cît şi pentru
+modificat valori.  În ambele cazuri comanda este <TT>print</TT>.  De
+exemplu putem spune:
+
+<P>
+<PRE>
+(gdb) print a
+$1 = 5
+(gdb) print a=3
+$2 = 3
+(gdb) print sin(a)
+$3 = .14112000805986722210
+(gdb) print $1
+$4 = 5
+</PRE> 
+<P>
+Semnele $ de mai sus pot fi folosite pentru a re-evalua expresii
+complicate.  $1 ţine locul expresiei <TT>a</TT> mai sus.
+
+<P>
+</LI>
+<LI>Comenzile gdb pot fi abreviate, daca nu sunt ambigue; de pildă
+<TT>print</TT> se poate scrie simplu <TT>p</TT>.  De asemenea, tastînd
+ENTER drept comandă va repeta execuţia comenzii precedente, ceea ce
+este foarte economic.
+
+<P>
+</LI>
+<LI>Gdb poate permite tipărirea vectorilor, şi tipăreşte
+şirurile de caractere într-un mod inteligent.  De pildă, dacă în
+program aveţi un vector alocat cu 
+
+<P>
+<PRE>
+int *array = (int *) malloc (lungime * sizeof (int));
+</PRE>
+
+<P>
+puteţi tipări array-ul cu:
+
+<P>
+<PRE>
+(gdp) p *array@lungime
+</PRE>
+
+<P>
+</LI>
+<LI>Puteţi folosi gdb şi pentru a chema propriile dumneavoastră
+funcţii.  Eu implementez în codul meu funcţii care tipăresc
+structurile de date complicate.  Cind folosesc gdb pot inspecta aceste
+structuri chemînd funcţiile din linia de comandă:
+
+<P>
+<PRE>
+(gdb) print tipareste_arbore(t)
+1
+|--2
+|--3
+   |--4
+   |  |--5
+   |--6
+$1 = void
+(gdb)
+</PRE> 
+<P>
+Rezultatul evaluării funcţiei <TT>tipareste_arbore</TT> este nul
+(<TT>void</TT>), dar efectul executării ei se vede pe ecran.
+
+<P>
+</LI>
+<LI>Gdb oferă o multitudine de comenzi pentru controlul stivei:
+<DL>
+<DT><STRONG>backtrace:</STRONG></DT>
+<DD>arată procedurile în curs de execuţie pe
+stivă, cu argumentele lor;
+</DD>
+<DT><STRONG>down/up:</STRONG></DT>
+<DD>mută punctul de interes în procedura apelată,
+respectiv apelantă (dar nu şi execuţia); se pot apoi inspecta
+variabilele locale ale acestor proceduri;
+</DD>
+<DT><STRONG>return:</STRONG></DT>
+<DD>termină imediat procedura curentă, returnîndu-se la
+apelant;
+</DD>
+<DT><STRONG>frame:</STRONG></DT>
+<DD>face o anumită procedură de pe stivă punctul de
+interes.
+</DD>
+</DL>
+
+<P>
+</LI>
+<LI>Gdb poate face ca breakpoint-urile să evalueze de fiecare dată
+o expresie şi să continue execuţia dacă expresia e falsă.  Sau
+poate ignora fiecare breakpoint pentru un număr de repetiţii.
+Breakpoint-Uri se instalează cu comanda <TT>break</TT>, se şterg cu
+comanda <TT>delete</TT>, şi pot avea ataşate condiţii cu comanda
+<TT>cond</TT>.  Watchpoint-uri se pot instala cu comanda <TT>watch</TT>;
+
+<P>
+</LI>
+<LI>Gdb poate fi folosit pentru a depana programe care au mai multe
+thread-uri concurente în execuţie.
+
+<P>
+</LI>
+<LI>Gdb permite definirea de variabile noi, numite cu $ în faţă.
+Să zicem că avem un vector de structuri, şi vrem să vedem din
+fiecare cîmpul <TT>cheie</TT>; putem face asta în felul următor:
+
+<P>
+<PRE>
+(gdb) set $i = 0
+(gdb) p vector[$i++].cheie
+(gdb) ENTER
+(gdb) ENTER
+...
+</PRE>
+
+<P>
+La fiecare ENTER se va re-executa instrucţiunea anterioară, care va
+incrementa variabila <TT>$i</TT>, plimbîndu-se prin vector;
+
+<P>
+</LI>
+<LI>Cu comanda <TT>display</TT> gdb poate fi rugat să evalueze şi
+tipărească o expresie de fiecare dată cînd se programul urmărit
+se opreşte din execuţie;
+
+<P>
+</LI>
+<LI>Gdb poate tipări informaţii despre tipurile obiectelor, şi
+chiar şi tipuri:
+
+<P>
+<PRE>
+(gdb) whatis v
+type = struct complex
+(gdb) ptype v
+type = struct complex {
+    double real;
+    double imag;
+}
+</PRE>
+
+<P>
+</LI>
+<LI>Gdb poate fi folosit pentru a depana programe la distanţă, pe
+alte calculatoare; gdb poate fi conectat prin reţea la programul
+depanat.  În felul asta se pot depana nucleele unor sisteme de
+operare, sau programe pe sisteme de operare care nu suportă
+debuggere.  Programele vor trebui atunci să fie legate cu nişte
+proceduri speciale, care transformă programul depanat într-un
+server, debugger-ul fiind un client pe o maşină la distanţă.
+Pentru a depana la distanţă pe sisteme care suportă debuggere,
+programul <TT>gdbserver</TT> funcţionează simultan ca un debugger şi
+ca un server (şi atunci nu mai trebuie legat codul special în
+programul depanat).  Gdbserver rulează pe aceeaşi maşină cu
+programul de depanat, iar gdb se conectează la server prin reţea,
+permiţînd depanarea la distanţă.
+
+<P>
+</LI>
+<LI>Gdb oferă un limbaj simplu în care poate fi programat, şi
+poate executa ``scripturi'' (mici programe).  Oferă construcţiile
+<TT>if</TT>, <TT>while</TT>, <TT>define</TT> (care defineşte macrouri).
+</LI>
+</UL>
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+DDD - o interfaţa vizuală</A>
+</H1>
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="ddd-splash"></A><A NAME="257"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 2:</STRONG>
+</CAPTION>
+<TR><TD><IMG
+ WIDTH="225" HEIGHT="76" BORDER="0"
+ SRC="img2.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=5cm\epsffile{ddd-splash.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+În fine, voi spune cîteva cuvinte despre DDD.  DDD nu este un
+debugger, ci doar o interfaţă pentru un alt debugger.  DDD
+beneficiază de toată puterea debugger-ului pe care îl foloseşte,
+pentru că una din ferestrele sale oferă de fapt chiar interfaţa în
+linie de comandă clasică cu debugger-ul.  
+
+<P>
+DDD face practic inutilă învăţarea majorităţii comenzilor gdb,
+pentru că oferă interfeţe foarte intuitive.  Figura&nbsp;<A HREF="ddd-html.html#ddd">3</A>
+arată principalele ferestre ale lui DDD.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="ddd"></A><A NAME="263"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 3:</STRONG>
+Cele trei ferestre ale lui DDD: <B>sus</B> pentru
+inspecţia valorilor, <B>centru</B> pentru surse, <B>jos</B> pentru
+consola depanatorului.</CAPTION>
+<TR><TD><IMG
+ WIDTH="543" HEIGHT="431" BORDER="0"
+ SRC="img3.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{ddd.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Iată ce poate face DDD mai bine decît debugger-ele:
+
+<P>
+
+<UL>
+<LI>Afişează simultan consola de interacţiune cu debugger-ul, o
+vedere asupra fişierului sursă, şi o imagine instantanee a
+structurilor de date care se doresc vizualizate;
+
+<P>
+</LI>
+<LI>Drag-and-drop breakpoint-uri: poţi să creezi, muţi şi modifici
+breakpoint-uri cu uşurinţă;
+
+<P>
+</LI>
+<LI>Controlul sesiunilor: DDD ţine minte o grămadă de lucruri pe
+care le faci, le poate salva, şi reîncărca altă dată.  De exemplu
+DDD poate pune automat la loc toate breakpoint-urile.  Cînd debugger-ul
+``crapă'' (se mai întîmplă şi asta) DDD îl reporneşte automat;
+
+<P>
+</LI>
+<LI>DDD se poate interfaţa cu debuggere multiple, nu numai cu gdb.
+Ştie de multe alte debuggere comerciale, ca dbx, sau debuggere
+specializate;
+
+<P>
+</LI>
+<LI>Ca atare DDD suportă o mulţime de limbaje, nu numai C şi C++:
+folosind debuggere specializate, DDD poate fi folosit pentru a depana
+programe Perl, Python, Modula-2, Java;
+
+<P>
+</LI>
+<LI>Cea mai impresionantă trăsătură a lui DDD este modul în
+care poate afişa structuri de date complexe şi relaţiile dintre
+ele.  Figura&nbsp;<A HREF="ddd-html.html#display">4</A> arată cum DDD înfăţişează structuri.
+Un simplu dublu-click pe un cîmp al unei structuri va afişa apoi
+cîmpul respectiv;
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="display"></A><A NAME="272"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 4:</STRONG>
+Un display care afişează relaţii
+complicate între variabile de tip structură.</CAPTION>
+<TR><TD><IMG
+ WIDTH="677" HEIGHT="401" BORDER="0"
+ SRC="img4.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=15cm\epsffile{display.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+</LI>
+<LI>Pe lîngă afişarea datelor, DDD poate folosi programul de
+desenat grafice <TT>gnuplot</TT> pentru a face grafice ale unor array-uri
+enorme.  Asta este foarte util pentru cei care scriu cod pentru
+calcule cu matrici mari;
+
+<P>
+</LI>
+<LI>Utilizatorul îşi poate defini propriile butoane, care cînd
+sunt apăsate trimit comenzi complexe debugger-ului;
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="butoane"></A><A NAME="279"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 5:</STRONG>
+Butoane definite de utilizator, cu funcţiuni
+complexe.</CAPTION>
+<TR><TD><IMG
+ WIDTH="631" HEIGHT="20" BORDER="0"
+ SRC="img5.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=14cm\epsffile{butoane.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+</LI>
+<LI>Este suficient să duci mouse-ul pe o variabilă din fereastra
+cu sursa programului pentru a vedea valoarea ei;
+
+<P>
+</LI>
+<LI>Debugger-ul memorează valorile afişate atunci cînd programul
+se opreşte, şi permite mersul înainte şi înapoi pentru a
+vizualiza valori din trecut, cu butoanele Undo/Redo.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="comanda"></A><A NAME="285"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 6:</STRONG>
+Panoul de comandă central al lui DDD, cu
+funcţiunile cele mai importanta.</CAPTION>
+<TR><TD><IMG
+ WIDTH="87" HEIGHT="242" BORDER="0"
+ SRC="img6.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=2cm\epsffile{comanda.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+</LI>
+</UL>
+
+<P>
+Una peste alta, DDD este o sculă extrem de ergonomică, şi care se
+poate dovedi de un ajutor de nepreţuit pentru cei care au de depanat
+programe complexe.
+
+<P>
+Vă doresc programe cît mai corecte!
+
+<P>
+<BR><HR><H4>Note</H4>
+<DL>
+<DT><A NAME="foot60">... DDD</A><A NAME="foot60"
+ HREF="ddd-html.html#tex2html3"><SUP>1</SUP></A>
+<DD>Şi aici
+putem dezbate: putem zice că atunci cînd nu avem la dispoziţie un
+debugger, vom fi motivaţi să scriem un cod de calitate mai bună,
+gîndindu-ne mai mult la structura lui, tocmai pentru că depanarea
+este dificilă.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

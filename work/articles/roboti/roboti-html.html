@@ -1,0 +1,1325 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Cercetarea ştiinţifică în robotică</TITLE>
+<META NAME="description" CONTENT="Cercetarea ştiinţifică în robotică">
+<META NAME="keywords" CONTENT="roboti-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Cercetarea ştiinţifică în robotică</H1>
+<P ALIGN="CENTER"><STRONG>Cristian Dima -- <TT>cdima+@cs.cmu.edu</TT>, 
+<BR>
+Mihai Budiu -- <TT>mihaib+@cs.cmu.edu</TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>mai 2000</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>institutul de robotică al universităţii Carnegie Mellon
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>nici una
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>roboţi, program doctoral
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Cuprins</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html44"
+  HREF="roboti-html.html">Despre roboţi</A>
+<LI><A NAME="tex2html45"
+  HREF="#SECTION00030000000000000000">Institutul de robotică al universităţii Carnegie Mellon</A>
+<LI><A NAME="tex2html46"
+  HREF="#SECTION00040000000000000000">Cercetarea în robotică</A>
+<LI><A NAME="tex2html47"
+  HREF="#SECTION00050000000000000000">Robotica: cercetare multi-disciplinară</A>
+<UL>
+<LI><A NAME="tex2html48"
+  HREF="#SECTION00051000000000000000">Percepţie</A>
+<LI><A NAME="tex2html49"
+  HREF="#SECTION00052000000000000000">Cogniţie</A>
+<LI><A NAME="tex2html50"
+  HREF="#SECTION00053000000000000000">Acţiune</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html51"
+  HREF="#SECTION00060000000000000000">Alte surse de informaţie</A>
+<UL>
+<LI><A NAME="tex2html52"
+  HREF="#SECTION00061000000000000000">Despre autori</A>
+</UL></UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Despre roboţi</A>
+</H1>
+
+<P>
+Imaginea pe care majoritatea dintre noi o au despre roboţi vine în
+principal din filme ca ``Războiul Stelelor'' şi ``Star Trek'' şi
+în secundar din imagini ale plictisitoarelor linii de asamblare ale
+automobilelor japoneze.  Contrastul dintre aceste două imagini a
+produs o anumită dezamăgire a publicului în ceea ce priveşte
+robotica: în definitiv, după atîţia ani de progres tehnologic, nu
+avem încă roboţi cărora sa le putem vorbi şi care să poată fi
+de ajutor în îndeletnicirile casnice.  Nici nu poate fi vorba de
+roboţi care sa lupte în război, să piloteze naveta spaţială sau
+alte ocupaţii frecvente în romanele ştiinţifico-fantastice.
+Există deci tendinţa de a cădea în cealaltă extremă, de a
+presupune că nu există decît roboţi plicticoşi, buni doar pentru
+asamblarea plăcilor electronice şi a automobilelor.
+
+<P>
+Realitatea contrazice însă ambele imagini.  E adevărat că nu avem
+încă roboţi cărora să le putem vorbi, avem însă roboţi care au
+participat cu mult succes la operaţii chirurgicale extrem de
+complicate; nu avem încă soldaţi-roboţi, armata americană este
+în schimb unul dintre cei mai mari investitori în tehnologie
+robotică, şi deşi rezultatele sunt departe de ``Terminator-i'',
+există roboţi care pot contribui în mod eficace la salvarea de
+vieţi omeneşti (cum ar fi celebrul robot care a fost trimis să
+inspecteze Cernobîl).
+
+<P>
+E naiv să ne aşteptăm ca robotica să pornească de la zero şi să
+ajungă într-un timp relativ scurt (cam cinci decenii de la primele
+prototipuri funcţionale) la performanţe comparabile cu cele
+omeneşti.  Deşi încă departe de visele pionierilor din domeniu,
+robotica ne aduce în fiecare zi un pic mai aproape de ele, iar acest
+progres este în continuă acceleraţie.
+
+<P>
+Cel puţin cercetătorii din robotică au planuri foarte ambiţioase
+şi pline de optimism.  În acest articol vom încerca să vă
+comunicăm unele din motivele optimismului lor.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Institutul de robotică al universităţii Carnegie Mellon</A>
+</H1>
+
+<P>
+Dacă există discipline spectaculoase în ştiinţa calculatoarelor,
+atunci cu siguranţă robotica este pe locul întîi.  Desigur, se
+poate argumenta că roboţii sunt de fapt o disciplină separată;
+importanţa calculatoarelor în componenţa lor este însă din ce în
+ce mai mare, după cum sperăm să arătăm cu acest articol, aşa că
+ne vom permite să catalogăm robotica drept o sub-disciplină a
+informaticii.  Cel mai potrivit este deci să povestim despre
+robotică prin exemple concrete.
+
+<P>
+Vom folosi deci drept exemplificări proiecte realizate în cadrul
+Institutului de Robotică al Universităţii Carnegie Mellon din
+Statele Unite.  Pentru început, cîteva fapte despre această
+instituţie:
+
+<P>
+Institutul de Robotică al CMU este cel mai mare institut de
+învăţămînt superior de specialitate din lume.  Personalul constă
+în 57 de profesori, 67 de studenţi la doctorat, 14 post-doctoranzi,
+şi 83 de cercetători.  Institutul oferă diplome de master şi
+doctorat în robotică; fondurile de cercetare se ridică la peste 30
+de milioane de dolari anual.  Aceste cifre sunt cu adevărat
+impresionante, mai ales dacă socotim că resursele sunt dedicate
+roboticii: puţine alte universităţi au departamente de calculatoare
+care sunt atît de mari, ori aceasta este doar o sub-diviziune a
+şcolii de calculatoare de la CMU.
+
+<P>
+Aceste resurse impresionante se reflectă printr-un uriaş număr de
+proiecte (peste o sută) din toate domeniile roboticii; pagina de web
+(indicată în secţiunea ``Alte surse de informaţie'') are legături
+spre multe din aceste proiecte (dar nu toate).  În mod necesar, vom
+putea ilustra acest text cu doar cîteva dintre ele, poate nu
+întotdeauna cele mai reprezentative.
+
+<P>
+Menirea acestui text este să ilustreze teoria că robotica este un
+domeniu extrem de complex, care rezultă din îmbinarea foarte multor
+domenii disjuncte.  Cercetarea în robotică se desfăşoară în
+fiecare din aceste direcţii simultan.  Unele dintre proiecte se
+desprind şi devin autonome: de exemplu vom vedea mai multe proiecte
+al căror scop originar era de a înzestra robotul cu percepţie prin
+prelucrarea imaginilor, însă mai tîrziu au devenit subiecte de
+cercetare în sine.  Chiar dacă în forma prezentată ele aduc mai
+mult cu prelucrarea de imagine, sau cu viziunea automată (computer
+vision) decît cu construcţia de roboţi, cercetarea este
+desfăşurată în Institutul de Robotică.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Cercetarea în robotică</A>
+</H1>
+
+<P>
+Cred că este instructiv să trecem în revistă domeniile de interes
+central pentru cercetarea în robotică.  Dar înainte de a vedea ce
+se cercetează, să vedem întîi ce <EM>nu</EM> se cercetează.
+
+<P>
+În general cercetarea academică în robotică (adică cea făcută
+în universităţi) nu se ocupă de probleme de ``nivel scăzut'', cum
+ar fi: motoare, probleme electrice, construirea de hardware.  În
+trecut universităţile trebuiau să dezvolte nu numai ``creierul''
+robotului, ci şi toate celelalte ``organe'' ale lui.  Dar în clipa
+de faţă companiile industriale produc piese de o calitate care nu
+poate fi atinsă în producţie de serie mică la un cost rezonabil.
+
+<P>
+Ca atare, cercetarea fundamentală în robotică se desfăşoară în
+zona teoriei şi algoritmilor.  Cercetătorii din robotică se află
+la intersecţia următoarelor domenii: inteligenţa artificială,
+statistică, algoritmi, geometrie, geometrie diferenţială, algebră,
+teoria sistemelor.  Unele proiecte ``evadează'' în ramuri exotice,
+cum ar fi neuro-biologie, psihologie, medicină, fizică şi
+mecanică, etc., în funcţie de aplicaţiile roboţilor cu pricina.
+
+<P>
+Cercetarea în domeniul electro-mecanic este în general limitată în
+descoperirea unor tehnologii noi (de exemplu roboţi care folosesc
+cîmpul magnetic, dispozitive micro-electro-mecanice -- roboţi de
+cîţiva microni, mijloace extreme de locomoţie -- roboţi-păianjen,
+roboţi extratereştri pentru gravitaţie redusă, etc.).
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Robotica: cercetare multi-disciplinară</A>
+</H1>
+
+<P>
+Construcţia unui robot cere cunoştinţe din domenii foarte diferite.
+Pentru a îndeplini chiar o misiune foarte simplă, este nevoie de
+sisteme complicate, care acoperă multe discipline.
+
+<P>
+În mare, robotica poate fi divizată în trei domenii: <EM>percepţie</EM>, <EM>cogniţie</EM> şi <EM>acţiune</EM>.  Această diviziune e
+naturală: un robot trebuie în general să ``simtă'', pentru a primi
+informaţii despre mediul înconjurător.  Informaţiile în sine
+însă nu folosesc la nimic: robotul trebuie sa ``inţeleagă'' ce se
+petrece, să construiască planuri, să evalueze situaţii, etc.
+Aceasta este partea de cogniţie.  Un robot ar fi inutil dacă nu ar
+putea să <EM>facă</EM> ceva: să se deplaseze, să transforme în mod
+intenţionat mediul înconjurător, să exploreze, într-un cuvînt,
+să acţioneze.
+
+<P>
+În anumite cazuri putem elimina cogniţia, obţinînd fie ceea ce se
+numeşte <EM>teleoperare</EM> (operare de la distanţă), în care caz nu
+există decizie la nivelul robotului, fie celebrii roboţi lucrători
+la o linie de asamblare.
+
+<P>
+Sa studiem deci fiecare domeniu în parte.
+
+<P>
+
+<H2><A NAME="SECTION00051000000000000000">
+Percepţie</A>
+</H2>
+
+<P>
+Percepţia include practic tot ceea ce ţine de senzorii prin care
+robotul poate primi informaţii despre mediul în care operează.
+Diversitatea senzorilor este practic nelimitată: un robot poate
+înregistra imagini, măsura distanţe, acceleraţii, cîmpuri
+magnetice, orientări, poziţii geografice, viteze, etc.  Vom încerca
+să alcătuim o listă (inevitabil incompletă) a senzorilor
+utilizaţi pentru percepţie în robotică.
+
+<P>
+<DL>
+<DT><STRONG>Camere de filmat:</STRONG></DT>
+<DD>informaţia vizuală este în general
+obţinută cu ajutorul camerelor de filmat în diferite spectre:
+vizibil, infraroşu, ultraviolet, etc.  Cu ajutorul camerelor de
+filmat (digitale sau analogice) se obţin în final imagini digitale
+care sunt apoi prelucrate pentru a extrage informaţia de care este
+nevoie.  Acest proces de prelucrare este în general extrem de
+laborios: conversia de la o lume tridimensională la o imagine
+bidimensională implică pierderea de informaţie.  În plus,
+imaginile obţinute au de obicei o rezoluţie foarte scăzută precum
+şi o gama relativ redusă de culori.  De exemplu, în cazul unei
+imagini alb-negru obţinută cu un convertor analog-digital de 8 biţi
+(practic standard) rezultă numai 256 de tonuri de gri; filmul
+fotografic -- mult mai puţin performant decît ochiul omenesc --
+poate reproduce în jur de 8000 de tonuri.
+
+<P>
+Anumite informaţii sunt foarte greu de extras din imagini: pentru a
+recupera de exemplu informaţie tridimensională este nevoie fie de
+camere stereoscopice fie de algoritmi care folosesc imagini succesive
+pentru a recupera informaţia pierdută prin proiecţia de la 3D la 2D.
+
+<P>
+Camerele de luat vederi sunt însă foarte ieftine în comparaţie cu
+alţi senzori.  Pentru comparaţie să vedem alte două sisteme: un
+sistem de telemetrie prin laser este incomparabil mai precis, mai uşor
+de folosit şi mai puţin sensibil la iluminaţie.  Un sistem
+stereoscopic (cu două, trei sau mai multe camere de filmat) trebuie
+calibrat, funcţionează numai în anumite condiţii (nu poate de
+exemplu măsura distanţa către obiecte care au o culoare uniformă)
+şi poate fi făcut inutilizabil de umbre.  Un sistem laser costa
+între 10 şi 50 de mii de dolari; un sistem stereoscopic performant
+aproximativ 1500-2000 de dolari.  
+
+<P>
+</DD>
+<DT><STRONG>Laseri:</STRONG></DT>
+<DD>sistemele laser sunt folosite în două moduri: pentru
+măsurători directe de distanţă şi ca surse de <EM>lumină
+structurată</EM> (structured light).  În primul caz, o raza laser
+scanează o scena şi permite măsurarea precisă a distanţelor (şi
+a direcţiilor) faţă de punctul din care raza este emisă.  În al
+doilea, prin procese optice sau/şi mecanice, raza laser este
+transformată într-un ``plan'' laser, care baleiază întreaga scenă
+de interes, iar o cameră video cu poziţie fixă înregistrează
+intersecţia dintre acest plan laser şi scena măsurată.  Mulţimea
+tuturor punctelor de pe conturul 3D alcătuieşte un model
+tri-dimensional, ce poate fi ulterior folosit fie pentru localizare,
+pentru detectarea de obstacole, pentru a crea puncte de reper, şi
+pentru alte foloase.
+
+<P>
+Laserele însă au şi probleme, cele mai mult inerente principiilor
+de funcţionare.  În cazul laserelor care măsoară distanţe, pentru
+a obţine informaţie despre o întreagă scenă, raza trebuie
+baleiată pe o arie mare; cum însă rezoluţia unghiulară cerută
+în cele mai multe dintre aplicaţii este relativ mare (cîteva zecimi
+de grad atît în plan orizontal cît şi vertical) şi creşte
+proporţional cu distanţa obiectelor scanate, este foarte dificil
+(din punct de vedere mecanic) de construit un sistem care va scana cu
+rezoluţie mare şi în acelaşi timp foarte repede.  
+
+<P>
+Un laser pentru măsurat distanţa este caracterizat prin numărul de
+grade de libertate (0, 1 sau 2), prin numărul de puncte măsurate
+într-o singură trecere şi prin numărul de astfel de treceri ce pot
+realizate într-o secundă.  Limitarea laserilor nu este în
+măsurarea distanţei (de obicei mult mai precisă decît necesar
+pentru majoritatea aplicaţiilor) ci din procesul (pînă acum
+mecanic) de poziţionare a razei laser şi din rata de transfer a
+informaţiei.
+
+<P>
+Am spus ``pînă acum mecanic'' pentru că relativ recent au apărut
+laseri fără părţi mobile, în care direcţia razei este
+controlată electronic, prin reflexie pe cristale lichide.  Deşi în
+prezent astfel de sisteme există doar în laboratoare, ele promit
+performanţe interesante: permit scanarea cu viteze mult mai mari şi
+au o uzură redusă.
+
+<P>
+Pentru a încheia această discuţie despre laseri trebuie să
+menţionăm încă o problemă: laserii au dificultăţi cu ceaţa,
+ploaia, ninsoarea, şi mai ales cu soarele puternic.  În cazul
+primelor trei, raza laser este reflectată de particulele de apă.
+În cazul soarelui, un laser cu putere mai mare nu ar avea de suferit
+din cauza iluminaţiei naturale, însă într-un mediu populat,
+laserul poate dăuna retinei trecătorilor<A NAME="tex2html3"
+  HREF="#foot67"><SUP>1</SUP></A>.
+
+<P>
+</DD>
+<DT><STRONG>Sonare, radar:</STRONG></DT>
+<DD>sonarele (acronim pentru ``SOund NAvigation and
+Ranging'') şi radarele (acronim pentru ``RAdio Detection And
+Ranging'') funcţionează pe baza aceloraşi principii: un semnal
+(sonor, respectiv electromagnetic) este emis de robot; semnalul este
+reflectat de suprafeţe, se întoarce la emiţător, care măsoară
+timpul între emisie şi recepţie.  Cum viteza undei respective este
+cunoscută, se poate evalua distanţa pînă la suprafaţa
+reflectătoare.  Sonarele au marele (şi probabil singurul) avantaj de
+a costa foarte puţin în comparaţie cu alţi senzori.  În acelaşi
+timp, au o precizie extrem de mică, şi sunt sensibile la mediul în
+care sunt folosite.  Anumite materiale reflectă undele sonore foarte
+bine (caz în care există şi pericolul reflexiilor multiple), altele
+foarte prost (caz în care anumite semnale emise pot fi pierdute).
+Datorită lungimii de undă mult mai mici, radarele nu sunt în
+general afectate de aceste probleme.  Însă costul unei unităţi
+radar este mare, are limitări în rezoluţie şi în precizie.
+
+<P>
+</DD>
+<DT><STRONG>Alţi senzori:</STRONG></DT>
+<DD>există numeroase alte metode pentru a măsura
+realitatea înconjurătoare, unele cu aplicabilitate generală, altele
+foarte specializate.  Pentru localizarea roboţilor cu roţi sau
+şenile sunt adeseori folosite aşa-numitele codificatoare (encoders)
+care numără rotaţiile axelor roţilor.  Din raza roţii se poate
+evalua distanţa parcursă, folosind acelaşi principiu ca la
+kilometrajul automobilelor.  În orice caz, datorită inerentelor
+alunecări şi derapaje, rezultatele unui asemenea senzor sunt doar
+orientative.
+
+<P>
+Numeroase proiecte folosesc renumitul <EM>GPS</EM>, (acronim pentru
+Global Positioning System), un sistem de localizare prin satelit
+disponibil oriunde pe glob şi care oferă precizii uluitoare: chiar
+şi în cazul aplicaţiilor civile<A NAME="tex2html4"
+  HREF="#foot69"><SUP>2</SUP></A>  se
+pot atinge precizii de numai cîţiva centimetri!  Un sistem de
+sateliţi emite tot timpul semnale electronice; semnalele de la mai
+mulţi sateliţi pot fi combinate pentru a afla poziţia relativă
+faţă de sateliţi; din asta se poate calcula poziţia pe suprafaţa
+pămîntului.  Deşi limitate doar la aplicaţii în aer liber şi cu
+un cost ridicat, precizia şi simplitatea sistemelor GPS a le-a impus
+în multe aplicaţii ale roboţilor.
+
+<P>
+Alţi senzori utilizaţi frecvent sunt <EM>inclinometrele</EM> şi <EM>accelerometrele</EM>.  Preţurile lor sunt relativ scăzute (crescînd
+o dată cu precizia) iar aplicaţiile numeroase.
+
+<P>
+Înainte de a încheia aceasta enumerare trebuie menţionat că
+acestea nu sunt decît cîteva dintre opţiunile disponibile.
+Alegerea senzorilor potriviţi depinde de mediul în care robotul va
+funcţiona, de resursele financiare şi, nu în ultimul rînd, de
+experienţa constructorului.  Un robot care funcţionează în
+interiorul clădirilor nu trebuie sa ia atît de mult în calcul
+problemele impuse de iluminaţia naturală.  Un tractor robotizat nu
+are nevoie să detecteze obstacole de cîţiva centimetri.  Regula
+generală este că dificultatea dezvoltării unui robot este invers
+proporţională cu numărul de restricţii impus asupra mediului de
+funcţionare.  Diferenţa între un robot care merge excelent în
+laborator, unde ``dificultăţile'' sunt cu grijă eliminate prin
+configuraţia experimentului şi un robot capabil sa ducă la bun
+sfîrşit o misiune într-un mediu natural este extrem de mare.
+</DD>
+</DL>
+
+<P>
+
+<H4><A NAME="SECTION00051010000000000000">
+Un exemplu: Realitate Virtualizată<sup>TM</sup>.</A>
+</H4>
+
+<P>
+Una dintre aplicaţiile cele mai interesante dezvoltate la Institutul
+de Robotică CMU este laboratorul de ``realitate virtualizată'' (a
+nu se confunda cu <EM>realitatea virtuală</EM>).  Laboratorul constă
+într-o încăpere în care 49 de camere de filmat digitale sunt
+plasate pe pereţi şi tavan, astfel încît orice punct din spaţiu
+este vizibil cîtorva camere, indiferent de obiectele din încăpere.
+Toate camerele de filmat sunt atent calibrate (ceea ce înseamnă că
+se pot stabili corespondenţe între imaginile oricăror două camere:
+pentru orice punct vizibil în cel puţin două obiective se pot
+obţine coordonate în spaţiul tri-dimensional) şi sincronizate,
+astfel încît toate să înregistreze imagini în acelaşi timp.
+Folosind principiile stereoscopiei se pot obţine modele
+tridimensionale pentru orice eveniment petrecut în această cameră.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="vr"></A><A NAME="175"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 1:</STRONG>
+Realitatea Virtualizată permite explorarea unei
+scene reale din puncte din care nu a fost niciodată văzută.
+Sistemul începe prin filmarea unei scene reale (b) din toate
+unghiurile posibile (imaginea (a) prezintă un dom pe care sunt
+montate 49 de camere de filmat).  Din imaginile filmate este
+reconstituit un model tridimensional al scenei.  Modele ale unor scene
+diferite pot fi puse laolaltă, ca în figura (c), în care apar trei
+jucători de basket care nu au fost niciodată la un loc.  Prin
+maparea texturii, adăugarea de noi obiecte şi redarea imaginii putem
+vedea scenele îniţiale din orice punct de vedere (d).</CAPTION>
+<TR><TD><IMG
+ WIDTH="631" HEIGHT="526" BORDER="0"
+ SRC="img2.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=14cm\epsffile{vr.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Sistemul prelucrează apoi informaţia înregistrată şi construieşte
+un model (descris în limbajul VRML) tri-dimensional pentru fiecare
+moment din secvenţa înregistrată.  Cu metode împrumutate din
+grafica pe calculator se poate extrage informaţie despre forma,
+culoarea şi textura suprafeţelor vizibile.
+
+<P>
+Din momentul în care un astfel de model tridimensional este
+disponibil şi cunoaştem culoarea fiecărui punct, putem genera o
+imagine artificială a aceste scene, văzută din orice punct de
+vedere (chiar din puncte în care iniţial nu avem camere de filmat).
+Acest lucru poate fi realizat pentru fiecare moment din secvenţa
+înregistrată: ca urmare, se poate alege chiar o traiectorie pentru
+camera de filmat, şi putem obţine o secvenţă video care simulează
+ceea ce ar fi văzut o cameră de luat vederi în mişcare de-a lungul
+traiectoriei respective.
+
+<P>
+Deşi calitatea imaginilor obţinute nu este perfectă, iar procesarea
+nu se poate face în timp real, una dintre aplicaţiile deja negociate
+cu sponsori interesaţi constă în a înregistra meciuri de basket din
+NBA; spectatorul apoi poate controla în trei dimensiuni poziţia
+camerei ``virtuale'', care-i furnizează informaţia video.  De
+exemplu, spectatorul ar putea viziona meciul din punctul de vedere al
+unui arbitru, din punctul lui Shaquille O'Neal sau chiar din punctul
+de vedere al mingiei.
+
+<P>
+
+<H4><A NAME="SECTION00051020000000000000">
+Un exemplu: modelare 3D după filme video.</A>
+</H4>
+
+<P>
+Un proiect deosebit de fascinant din domeniul percepţiei este cel
+numit ``modelare cu camera video'' (modelling by videotape).
+
+<BR><TT><A NAME="tex2html6"
+  HREF="http://www.ius.cs.cmu.edu/IUS/mbvc0/www/modeling.html">http://www.ius.cs.cmu.edu/IUS/mbvc0/www/modeling.html</A></TT>
+<P>
+Problema care se dă este următoarea: mă plimb cu camera de filmat
+în jurul unui obiect.  Pot să reconstitui doar din aceaste imagini:
+
+<UL>
+<LI>forma obiectului filmat?
+</LI>
+<LI>traiectoria camerei de luat vederi?
+</LI>
+</UL>
+
+<P>
+Asumpţia de bază este că obiectul filmat este rigid (nu se
+deformează în timpul filmării).  Cercetări de ultimă oră au
+extins această metodă pentru scene care conţin mai multe obiecte
+rigide în mişcare relativă unele faţă de altele.
+
+<P>
+Rezultatele sunt deosebit de spectaculoase (pagina de web conţine
+mici filme demonstrative): de exemplu, mişcări de mică amplitudine
+în jurul unei scene din bucătărie (ca şi cum cel care filmează se
+clatină) permit reconstituirea deplină a formei acesteia şi
+vizualizarea din orice unghi.  Figura&nbsp;<A HREF="roboti-html.html#mvt">2</A> explică procedura pe
+scurt.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="mvt"></A><A NAME="181"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 2:</STRONG>
+Reconstituirea porneşte de la un film al
+obiectului, făcut din mişcare.  Tehnici standard de procesare de
+imagine identifică puncte cheie (features) ale imaginii.  Tehnici
+aplicate pentru calculul fluxului de imagine (optical flow) permit
+identificarea punctelor corespunzătoare din imagini diferite (o
+problemă netrivială, dacă ne gîndim că unele puncte pot dispărea
+ascunse în spatele unor suprafeţe).  Din mişcarea punctelor se
+poate reconstitui plasamentul lor în spaţiul tridimensional, precum
+şi traiectoria camerei de filmat.  Odată ce geometria punctelor
+cheie este stabilită, feţele obiectului sunt reconstituite şi apoi
+textura (desenul) original este transformat în raport cu ecuaţia
+mişcării şi suprapus peste cadru.  Tehnologiile de plasare a
+texturii sunt folosite de toate jocurile tridimensionale, dar problema
+reconstrucţiei formei este mult mai dificilă.</CAPTION>
+<TR><TD><IMG
+ WIDTH="633" HEIGHT="380" BORDER="0"
+ SRC="img3.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=14cm\epsffile{mvt.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Tehnica are o eficacitate excelentă: în pagina de web există o
+demonstraţie a unui teren filmat din avion de la mare înălţime;
+nici cu ochiul nu poţi spune prea clar ce se întîmplă jos.
+Calculatorul însă este capabil să construiască o hartă completă
+de elevaţii a terenului.  Aplicaţiile comerciale şi militare ale
+tehnologiei sunt evidente.
+
+<P>
+
+<H2><A NAME="SECTION00052000000000000000">
+Cogniţie</A>
+</H2>
+
+<P>
+Roboţii au nevoie de o putere substanţială de calcul pentru a
+procesa informaţiile venite de la senzori, extrăgînd trăsăturile
+esenţiale.  Dar odată aflate informaţiile esenţiale, mai rămîne
+de pus la punct setul de acţiuni care trebuie îndeplinite pentru a
+duce la bun sfîrşit sarcinile robotului.  Aici intră în joc
+``creierul'' robotului.
+
+<P>
+Prin asemuire cu funcţiunea principală a creierului uman, numim
+această activitate a robotului ``cogniţie''.  Putem distinge trei
+mari tipuri de activitate ``cognitivă'': <EM>învăţare</EM>, <EM>planificare</EM> şi <EM>control</EM>.
+
+<P>
+
+<H3><A NAME="SECTION00052100000000000000">
+Învăţare</A>
+</H3>
+
+<P>
+Învăţarea poate avea aspecte extrem de variate, de la memorare pur
+mecanică pînă la acţiuni ``inteligente''.
+
+<P>
+
+<UL>
+<LI>Un robot industrial care vopseşte maşini, este de
+obicei ``educat'' de un om, care-i mişcă braţul pentru a-l
+învăţa cum trebuie să opereze.
+
+<P>
+</LI>
+<LI>Dar dacă senzorii au un domeniu foarte limitat, şi nu poţi
+şti totul despre lumea în care te afli?  Algoritmii de căutare vin
+în ajutor robotului, indicîndu-i cum să exploreze lumea din jur
+pentru a extrage maximum de cunoştinţe cu minimum de risipă.
+
+<P>
+</LI>
+<LI>Dacă senzorii pe care îi ai sunt nesiguri, cum poţi învăţa
+ceva despre lumea din jur?  Modelele Markov ``ascunse'' (hidden Markov
+models) sunt folosite exact în astfel de circumstanţe.
+
+<P>
+</LI>
+<LI>Dar dacă nu ştii nimic despre propriile acţiuni: ce poţi
+face şi ce efecte rezultă?  Folosind tehnologia numită
+``reinforcement learning'' poţi învăţa să te comporţi
+surprinzător de eficace chiar în medii incerte.  De exemplu,
+antrenarea reţelelor neurale face parte din această categorie.
+
+<P>
+</LI>
+<LI>Cum trebuie să te comporţi dacă nici măcar nu ai control
+perfect asupra corpului tău?  Motoarele au imperfecţiuni,
+suprafeţele alunecă, şi precizia este limitată.  Tehnica
+proceselor de decizie Markov este aplicată cu succes în astfel de
+circumstanţe.
+
+<P>
+</LI>
+<LI>În fine, cum poţi reprezenta în mod compact cantitatea
+uriaşă de date care vin tot timpul din mediu?  Ce faci cu
+contradicţiile (cauzate de pildă de imperfecţiunea senzorilor, sau
+de un mediu în schimbare)?  Tehnici din învăţarea automată
+(machine learning) sunt folosite pentru a rezolva astfel de probleme.
+</LI>
+</UL>
+
+<P>
+
+<H3><A NAME="SECTION00052200000000000000">
+Planificare</A>
+</H3>
+
+<P>
+Putem argumenta că funcţia principală a unui robot este
+<EM>planificarea</EM>.  Ideal noi îi specificăm robotului doar un scop
+care trebuie atins, iar robotul are la dispoziţie o mulţime de
+mişcări elementare.  Robotul trebuie să pună cap la cap o serie de
+astfel de mişcări care conduc la realizarea scopului.
+
+<P>
+Planificarea se poate face la nivele diferite, şi poate fi extrem de
+sofisticată dacă avem de-a face cu un mediu în schimbare şi în
+care avem constrîngeri dinamice importante:
+
+<P>
+
+<UL>
+<LI>Cel mai simplu tip de planificare (scheduling) trebuie doar să
+decidă ordinea în care o suită de operaţii trebuie efectuate
+pentru a atinge un anumit scop.
+
+<P>
+</LI>
+<LI>Pe de altă parte, adesea operaţiile făcute nu sunt
+independente, şi nu orice ordine este posibilă: de exemplu dacă pui
+un obiect greu pe un scaun, nu mai poţi împinge apoi scaunul.
+Găsirea planurilor pentru a transforma o configuraţie a mediului
+într-alta este o problemă dificilă (planning).
+
+<P>
+</LI>
+<LI>Şi mai complicat este cînd ai de-a face cu un spaţiu
+continuu, şi nu doar cu un număr finit de configuraţii posibile.
+Asta se întîmplă cînd vrei să planifici de pildă mişcarea.
+De exemplu, figura&nbsp;<A HREF="roboti-html.html#plan">3</A> arată un plan conceput pentru un robot
+care poate doar să împingă un obiect.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="plan"></A><A NAME="187"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 3:</STRONG>
+Imaginea unui planificator pentru mişcarea unor
+obiecte prin împingere într-o lume bidimensională.  Robotul şi
+obiectele au trei grade de libertate (translaţii pe două axe şi
+rotaţie), iar robotul este limitat la a împinge obiectul de pe o
+muchie (nu poate împinge un colţ).  Suprafaţa are un coeficient de
+frecare cunoscut.  Imaginea din stînga arată plasamentul iniţial
+şi final al obiectului (cu roşu şi respectiv verde) şi planul
+conceput pentru a duce obiectul într-o poziţie specificată.</CAPTION>
+<TR><TD><IMG
+ WIDTH="586" HEIGHT="236" BORDER="0"
+ SRC="img4.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=13cm\epsffile{plan.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+</LI>
+<LI>Dacă iei la socoteală şi faptul că robotul are inerţie,
+viteză, masă, acceleraţie, poate are articulaţii inerte (să zicem
+că un braţ s-a stricat), problema deplasării într-un mediu cu
+obstacole de forme variate este şi mai complicată.
+
+<P>
+</LI>
+<LI>Dificultatea planificării mişcării (motion planning) creşte
+de asemenea foarte rapid cu numărul de grade de libertate al
+robotului: un robot în formă de şarpe, cu multe multe articulaţii,
+poate ajunge în foarte multe feluri dintr-un loc într-altul.
+</LI>
+</UL>
+
+<P>
+
+<H4><A NAME="SECTION00052210000000000000">
+Un exemplu: Minerva şi muzeele.</A>
+</H4>
+
+<P>
+Pe culoarele universităţii Carnegie Mellon poţi adesea vedea nişte
+roboţei care se plimbă de ici colo şi caută lume în clădire;
+unii din aceşti roboţi pot fi comandaţi de la distanţă, prin
+Internet: <TT><A NAME="tex2html9"
+  HREF="http://jubilee.learning.cs.cmu.edu:8080/">http://jubilee.learning.cs.cmu.edu:8080/</A></TT>.
+
+<P>
+Un grup de cercetare a vrut să împingă această idee mai departe,
+şi a construit un robot care face pe ghidul în muzeu.  Robotul
+Minerva&nbsp;<A HREF="roboti-html.html#minerva">4</A> a funcţionat în Muzeul de Istorie Naturală
+Smithsonian din Washington DC în vara anului 1988
+<TT><A NAME="tex2html10"
+  HREF="http://www.cs.cmu.edu/~minerva">http://www.cs.cmu.edu/~minerva</A></TT>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="minerva"></A><A NAME="193"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 4:</STRONG>
+Robotul Minerva a funcţionat în vara anului
+1998 ca ghid în Muzeul de Istorie Naturală ``Smithsonian'' din
+Washington DC.</CAPTION>
+<TR><TD><IMG
+ WIDTH="225" HEIGHT="305" BORDER="0"
+ SRC="img5.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=5cm\epsffile{minerva.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Problemele principale investigate cu această ocazie au fost
+navigaţia într-un spaţiu necunoscut şi evitarea obstacolelor
+(inclusiv a persoanelor).
+
+<P>
+Iată pe scurt unele din problemele ivite şi algoritmii folosiţi
+pentru a le rezolva:
+
+<P>
+<DL>
+<DT><STRONG>Învăţare:</STRONG></DT>
+<DD>Minerva trebuie să înveţe harta locului în
+care se află.  Pentru acest scop este echipată cu senzori laser,
+care pot măsura precis distanţa pînă la obiectele
+înconjurătoare.  Prima poză din figura&nbsp;<A HREF="roboti-html.html#tavan">5</A> arată harta
+muzeului învăţată prin explorare după ora închiderii (pentru ca
+nu cumva publicul să fie luat drept exponate).
+
+<P>
+</DD>
+<DT><STRONG>Repere:</STRONG></DT>
+<DD>Minerva trebuie apoi să-şi construiască nişte
+repere fiabile, pe care să le poată folosi tot timpul.  Din cauză
+că în timpul zilei robotul va fi înconjurat de curioşi, singura
+metodă fiabilă este să urmărească...tavanul.  A doua poză
+din figura&nbsp;<A HREF="roboti-html.html#tavan">5</A> arată harta tavanului aşa cum este
+construită de Minerva, plasată peste cea a muzeului.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="tavan"></A><A NAME="199"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 5:</STRONG>
+Pentru navigaţie în timpul zilei Minerva îşi
+construieşte o hartă a tavanului muzeului, singurul lucru pe care
+ştie că-l poate privi fără a fi obstrucţionată.  Dacă credeţi
+că e un lucru simplu să te orientezi după tavan, încercaţi să
+spuneţi în care parte a clădirii vă aflaţi cînd vedeţi a treia
+poză din această figură.</CAPTION>
+<TR><TD><IMG
+ WIDTH="631" HEIGHT="528" BORDER="0"
+ SRC="img6.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=14cm\epsffile{tavan.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+</DD>
+<DT><STRONG>Senzori:</STRONG></DT>
+<DD>În timpul orelor de vizită, Minerva se uită tot
+timpul cu o cameră de filmat în tavan.  Ce vede puteţi privi în
+partea a treia a figurii&nbsp;<A HREF="roboti-html.html#tavan">5</A>.
+
+<P>
+</DD>
+<DT><STRONG>Localizare:</STRONG></DT>
+<DD>Problema cea mai complicată este ca robotul
+să-şi dea seama unde se află în clădire folosind informaţii
+incomplete (senzorii se vor împiedica de persoanele din jur, şi vor
+vedea doar o fracţiune din tavan).  Figura&nbsp;<A HREF="roboti-html.html#localizare">6</A> arată
+doi paşi din evoluţia unui algoritm care estimează probabilitatea
+robotului de a se afla într-un anumit loc.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="localizare"></A><A NAME="205"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 6:</STRONG>
+Algoritmul de localizare al lui Minerva
+construieşte o distribuţie de probabilitate a amplasamentului
+robotului.  Punctele unde e cel mai probabil ca robotul să se afle
+sunt marcate cu verde în figură.  Pe măsură ce robotul se
+deplasează şi vede noi porţiuni de tavan, incertitudinea scade (de
+exemplu, se ajunge într-o secundă de la imaginea din stînga la cea
+din dreapta).  După cinci secunde robotul ştie precis unde se
+află.</CAPTION>
+<TR><TD><IMG
+ WIDTH="541" HEIGHT="236" BORDER="0"
+ SRC="img7.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{localizare.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+</DD>
+<DT><STRONG>Planificare:</STRONG></DT>
+<DD>În fine, odată ce a aflat unde este plasat,
+robotul trebuie să-şi planifice mişcările prin muzeu pentru a face
+turul şi a explica exponatele.  Această problemă nu este de loc
+simplă, pentru că mediul este în continuă schimbare, şi
+mişcările lui sunt împiedicate de audienţa curioasă.
+</DD>
+</DL>
+
+<P>
+
+<H3><A NAME="SECTION00052300000000000000">
+Control</A>
+</H3>
+
+<P>
+În fine, una dintre problemele binecunoscute este cea a algoritmilor
+de control (control theory).  Aşa cum nu putem conduce o maşină cu
+100 km/h pînă în parcare, pentru că nu putem opri instantaneu,
+nici roboţii nu pot face mişcări arbitrare.  
+
+<P>
+Teoria controlului dezvoltă algoritmi care să permită roboţilor sa
+se deplaseze în mod stabil; algoritmii de control cunosc doar unii
+din parametrii sistemului; pe ceilalţi îi pot observa din chiar
+comportarea robotului.  Algoritmii observă permanent deviaţia de la
+traiectoria ideală stabilită de planificator şi generează comenzi
+de corecţie.
+
+<P>
+Dar aşa cum o învîrtire bruscă de volan poate răsturna maşina,
+sau poate duce la o oscilaţie periculoasă, simpla încercare de a
+corecta imediat traiectoria se poate solda cu catastrofe; algoritmii
+de control iau în calcul aceste lucruri cînd coordonează mişcarea.
+
+<P>
+
+<H2><A NAME="SECTION00053000000000000000">
+Acţiune</A>
+</H2>
+
+<P>
+În fine, ajungem la ultima mare parte a roboticii, acţiunea.
+Roboţii pot folosi cele mai diverse mijloace de locomoţie; de la
+roboţi umanoizi, cu picioare (care de altfel sunt foarte greu de
+construit) pînă la şerpi şi ţopăitori, avem de-a face cu o gamă
+extrem de largă de dispozitive.  Iată aici unele dintre ele:
+
+<P>
+<DL>
+<DT><STRONG>Roti şi şenile:</STRONG></DT>
+<DD>despre acestea nu e mare lucru de spus; sunt
+cele mai comune mijloace de locomoţie.
+
+<P>
+</DD>
+<DT><STRONG>Miliboţii:</STRONG></DT>
+<DD>sunt probabil unul din cele mai mici (în sens
+propriu) proiecte robotice.  Miliboţii sunt roboţi de numai 5-10
+centimetri, care acţionează în echipe, în principal în misiuni de
+recunoaştere.  Dimensiunea redusă a miliboţilor constituie una
+dintre cerinţele principale pentru acest proiect; cu cît un robot
+este mai mic, cu atît este mai greu de detectat.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="miliboti"></A><A NAME="211"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 7:</STRONG>
+Construiţi modular, miliboţii au un modul
+de locomoţie, unul de procesare şi, desigur, baterii.  În rest, ei
+pot transporta module de viziune -- echipate cu o mini-cameră de
+luat vederi -- de sunet -- un microfon mobil -- sonare şi
+echipamente de comunicaţii radio.  Ei schimbă informaţii între ei,
+colaborează, şi în viitorul apropiat vor putea să-şi schimbe unul
+altuia bateriile.</CAPTION>
+<TR><TD><IMG
+ WIDTH="541" HEIGHT="181" BORDER="0"
+ SRC="img8.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{miliboti.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+În cadrul proiectului se lucrează în prezent la un mecanism de
+cuplare care va permite miliboţilor sa se cupleze între ei, formînd
+fie o ``roată'', fie un pod, fie alte configuraţii care vor spori
+mobilitatea sistemului.  Cea mai mare problemă în astfel de proiecte
+este dificultatea stocării unei cantităţi suficiente de energie în
+puţinul spaţiu disponibil.
+
+<P>
+</DD>
+<DT><STRONG>Şerpii</STRONG></DT>
+<DD>sunt cîteodată forma ideală pentru roboţi care
+trebuie să ajungă în locuri greu accesibile; de exemplu, un robot
+care verifică un motor de maşină şi care se tîrăşte printre
+diferitele piese poate fi singura soluţie de implementare.
+
+<P>
+</DD>
+<DT><STRONG>Module:</STRONG></DT>
+<DD>un proiect de cercetare studiază construcţia unor
+``module universale'' plug-and-play, care pot fi asamblate într-un
+robot în aproape orice fel.  Modulele auto-detectează configuraţia
+electrică, mecanică, şi generează automat planuri pentru mişcarea
+robotului format, în funcţie de numărul de grade de libertate
+disponibile.
+
+<P>
+</DD>
+<DT><STRONG>Roboţi spaţiali:</STRONG></DT>
+<DD>NASA este unul dintre sponsorii principali
+ai Institutului de Robotică de la CMU; unele din proiectele de
+cercetare explorează construcţia roboţilor care ar putea funcţiona
+pe staţia spaţială, în lipsa gravitaţiei, şi care se pot deplasa
+pe structuri metalice de forma unor schele. 
+
+<P>
+</DD>
+<DT><STRONG>Gyro, hopping:</STRONG></DT>
+<DD>roboţi exotici care constau dintr-o singură
+roată (echilibrată cu un giroscop) sau roboţi care ţopăie sunt
+alternative extreme explorate de cercetători (figura&nbsp;<A HREF="roboti-html.html#exotic">8</A>).
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="exotic"></A><A NAME="217"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 8:</STRONG>
+<B>Gyrover</B> este un robot care constă dintr-o
+singură roată ţinută în echilibru un giroscop.  Gyrover poate să
+stea pe loc şi să se rotească pe verticală, să urce pante uşoare
+şi să meargă pe un teren accidentat la viteze mari.  Mecanismul
+robotului este în întregime în interiorul roţii, protejat de
+impact.  <B>Bow-leg</B> este un robot care ţopăie folosind un picior
+elastic; simplitatea robotului duce la algoritmi simpli de control;
+robotul este capabil să sară peste pietrele care-i împiedică
+mersul, şi poate calcula traiectorii în timp real, în funcţie de
+obstacolele întîlnite.</CAPTION>
+<TR><TD><IMG
+ WIDTH="541" HEIGHT="209" BORDER="0"
+ SRC="img9.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{exotic.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+</DD>
+<DT><STRONG>Interfeţe haptice:</STRONG></DT>
+<DD>haptica este domeniul care se ocupă cu
+introducerea senzaţiilor tactile în interacţiunea cu calculatorul.
+Prin utilizarea unor dispozitive de intrare/ieşire speciale:
+joystick-uri, ``mănuşi electronice'' (data-gloves), etc.,
+utilizatorii pot recepta senzaţii tactile.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="haptic"></A><A NAME="225"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 9:</STRONG>
+În Institutul de Robotică s-a dezvoltat un
+dispozitiv bazat pe levitaţie electromagnetică care poate exercita
+asupra unui ``joystick'' forţe şi cupluri generate artificial de
+calculator.  Dispozitivul are 6 grade de libertate şi este susţinut
+practic fără frecare într-un cîmp magnetic foarte puternic.  Cu
+ajutorul forţelor Lorentz şi variaţiei unor curenţi din bobinele ce
+înconjoară dispozitivul, un program poate simula o ``lume''
+artificială în care maneta poate fi folosită pentru a mişca anumite
+obiecte în 3D.  Forţele aplicate prin intermediul cîmpului
+magnetic asupra manetei simulează cu mare acurateţe senzaţiile pe
+care le-ar avea un utilizator dacă ar manipula obiectul respectiv
+direct în ``lumea artificială''.</CAPTION>
+<TR><TD><IMG
+ WIDTH="541" HEIGHT="231" BORDER="0"
+ SRC="img10.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{haptic.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Utilizatorul poate urmări pe ecran (într-o simulare grafică)
+rezultatele acţiunilor sale, şi poate simţi prin intermediul
+manetei coliziunile, vibraţiile, frecarea, etc.  În
+figura&nbsp;<A HREF="roboti-html.html#haptic">9</A> de exemplu, utilizatorul primeşte senzaţia
+frecării celor doua suprafeţe şi a vibraţiilor produse la
+introducerea obiectului în locaşul pătrat.
+
+<P>
+Interfeţele haptice sunt folosite în general pentru antrenarea în
+acţiunile în care coordonarea între mîini şi sistemul vizual este
+crucială: de exemplu chirurgie sau pentru manevre în
+imponderabilitate.
+
+<P>
+</DD>
+<DT><STRONG>Elicopterul autonom:</STRONG></DT>
+<DD>este unul dintre proiectele cele mai
+ambiţioase ale Institutului de Robotica, care constă în realizarea
+unui elicopter capabil de a zbura complet autonom, fără pilot sau
+telecomandă.  Aplicaţiile unui astfel de elicopter sunt evidente:
+aproape orice misiune pe care un elicopter ar putea-o realiza dar care
+ar pune în pericol viaţa piloţilor (salvare, spionaj, inspectare
+vizuală a barajelor, liniilor de înaltă tensiune, etc.) ar putea fi
+executată de un elicopter autonom, care poate naviga şi executa
+misiunea sub controlul calculatorului.
+
+<P>
+Anual se desfăşoară o competiţie în care echipe din întreaga
+lume îşi compară elicopterele autonome, pe care CMU se mîndreşte
+a o fi cîştigat anul trecut.  Elicopterul (de mărime redusă,
+produs iniţial pentru împrăştierea pesticidelor prin zbor
+telecomandat) poate decola, ateriza şi naviga complet autonom, iar
+în cadrul competiţiei a fost capabil de a executa zbor la punct fix
+în condiţii de vînt şi de a recupera un mic obiect metalic de pe
+sol cu ajutorul unei macarale magnetice.  Demonstraţii cu adevărat
+impresionante şi detalii ale concursului sunt disponibile on-line la
+<TT><A NAME="tex2html17"
+  HREF="http://www.cs.cmu.edu/afs/cs/project/chopper/www/">http://www.cs.cmu.edu/afs/cs/project/chopper/www/</A></TT>
+<P>
+Ceea ce face acest proiect deosebit de dificil este că nu exista o
+stare de echilibru stabil: odată în zbor, dacă ceva nu
+funcţionează perfect, elicopterul nu se poate opri şi aştepta
+ajutor, ca în cazul roboţilor ``clasici''.  Un eşec de genul acesta
+este echivalent cu pierderea întregului aparat, suficient de
+costisitor.  Pentru a reduce probabilitatea unor astfel de catastrofe,
+s-a încercat reducerea pe cît posibil unor sisteme critice unice.
+De exemplu, pentru a-şi menţine nivelul orizontal în timpul
+zborului, elicopterul foloseşte inclinometre (două giroscoape care
+măsoară înclinaţia), cît şi un sistem care extrage poziţia
+elicopterului din imagini video.  Pentru aprecierea distanţelor
+parcurse elicopterul foloseşte atît un sistem GPS, cît şi un
+sistem vizual, care măsoară viteza pămîntului în imaginile luate,
+o cuplează cu altitudinea de zbor, şi extrage o aproximaţie a
+vitezei reale.
+
+<P>
+Se lucrează în continuare atît la îmbunătăţirea algoritmilor de
+control, cît şi la aplicaţii; în prezent există un sistem care
+foloseşte telemetrie laser şi stereoscopie pentru a alcătui din
+zbor o hartă 3D de foarte mare rezoluţie.
+
+<P>
+</DD>
+<DT><STRONG>Braţe:</STRONG></DT>
+<DD>poate cele mai bine cunoscute dispozitive de acţiune
+sunt braţele robotice.  Toate acele braţe care execută cu o
+precizie uluitoare suduri, lipituri, montează motoare şi alte
+componente în fabricile de automobile sunt cele care au introdus
+termenul de ``robotica'' în industrie.  Un braţ nu este nimic
+altceva decît un ansamblu de motoare şi articulaţii care pot fi
+controlate de către un calculator.  Principalele caracteristici ale
+unui braţ sunt numărul de grade de libertate, forţele şi cuplurile
+maxime la fiecare încheietură a robotului şi precizia cu care poate
+fi localizată fiecare încheietură.  În orice caz, puterea unui
+astfel de braţ vine din programul de planificare care nu este deloc
+trivial: calculele necesare pentru a alege o traiectorie optimă
+pentru diferitele operaţii au o complexitate foarte ridicată.
+
+<P>
+</DD>
+<DT><STRONG>Mîini şi picioare artificiale:</STRONG></DT>
+<DD>în final, să nu uităm că
+aproape toate uneltele şi facilităţile disponibile la ora actuală
+au fost concepute pentru a fi utilizate de către oameni.  Pentru ca un
+robot sa poate înlocui oamenii în anumite situaţii el trebuie sa fie
+capabil sa mînuiască uneltele aşa cum sunt ele (de exemplu,
+roboţii trebuie să fie capabili să urce şi să coboare pe scări).
+
+<P>
+Deşi există foarte multe proiecte în lume care se concentrează
+asupra realizării roboţilor umanoizi, se pare ca firma japoneza
+Honda are un avans considerabil faţă de alţi competitori.  Ei au
+construit deja un robot umanoid care arată aproape exact ca un
+cosmonaut într-un costum etanş.  Deşi robotul este capabil să
+păşească şi să urce scări, există încă probleme imense:
+sistemul de viziune -- extrem de ambiţios -- va necesita încă ani
+buni de cercetare pentru a deveni capabil să extragă informaţii din
+mediul înconjurător cu viteza şi precizia necesară.
+
+<P>
+Într-un alt proiect, sponsorizat de NASA, s-a realizat un ``bust''
+umanoid care va lucra în spaţiu, în exteriorul navetei spaţiale.
+Proiectul a construit deja o mînă artificială cu 19 grade de
+libertate: tot atîtea cît o mînă umană!  Puneţi la socoteală
+faptul ca ``mîna'' poate exercita o forţă incredibilă şi că are
+suficient de multă precizie pentru a desface şuruburi mai mici de un
+centimetru fără unelte, şi veţi avea o idee despre minunăţia
+electro-mecanică de care vorbim.
+
+<P>
+</DD>
+</DL>
+
+<P>
+
+<H4><A NAME="SECTION00053010000000000000">
+Un exemplu: manipulare dinamică.</A>
+</H4>
+
+<P>
+Dacă vedem deplasarea dintr-un loc într-altul ca pe o succesiune de
+puncte, atunci găsirea unei traiectorii este o problemă de
+planificare.  Dacă putem la socoteală şi faptul că o maşină nu
+poate coti la unghi drept, ci trebuie să ia curbe, şi faptul ca
+viteza nu-ţi permite să iei o curbă oricît de strînsă, avem de-a
+face (aşa cum am văzut) cu o problemă mai complicată, de control.
+Dacă însă vrem să manipulăm obiecte în mişcare rapidă (de
+exemplu obiecte aruncate), atunci avem de-a face cu o problemă şi
+mai complicată, a manipulării dinamice.
+
+<P>
+Puteţi vedea mai multe variaţiuni pe această temă în felurite
+proiecte; profesorul Matt Mason, un jongleur amator foarte priceput,
+îşi propune să construiască roboţi capabili să ``jongleze''.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="arunca"></A><A NAME="231"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 10:</STRONG>
+În acest exemplu, un robot cu un singur grad
+de libertate aruncă un cub în aer în aşa fel încît să se
+rotească în aer fie cu 90, fie cu 180, fie cu 360 de grade.</CAPTION>
+<TR><TD><IMG
+ WIDTH="224" HEIGHT="224" BORDER="0"
+ SRC="img11.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=5cm\epsffile{arunca.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Aceasta este o problemă deosebit de dificilă de planificare într-un
+spaţiu continuu şi de teorie a controlului: robotul ştie doar
+ecuaţiile fizicii (acceleraţia gravitaţională, legile lui Newton,
+etc.) şi parametri proprii (viteza cu care-şi poate mişca braţul,
+inerţia, etc.).  Robotul trebuie să planifice cum să arunce,
+împingă, susţină, încline, lovească, etc. un obiect pentru a-l
+aduce într-o poziţie dorită.  
+
+<P>
+
+<H4><A NAME="SECTION00053020000000000000">
+Exemplu: vehicule autonome.</A>
+</H4>
+
+<P>
+Unul dintre proiectele cele mai faimoase este Navlab:
+
+<BR><TT><A NAME="tex2html19"
+  HREF="http://www.ri.cmu.edu/labs/lab_28.html">http://www.ri.cmu.edu/labs/lab_28.html</A></TT>.  Scopul proiectului
+este de a dezvolta maşini autonome, care pot conduce pe autostradă
+fără intervenţie umană (problema condusului prin oraş
+depăşeşte adesea chiar şi capacitatea omului, aşa că este o
+temă de cercetare viitoare).  O demonstraţie a reuşitei a fost
+turneul ``no hands accross America'', în care un vehicul autonom a
+parcurs Statele Unite de la este la vest, 4000 de kilometri, cu
+intervenţie umană minimă (98,2% din timp vehiculul a condus
+singur), la o viteză de pînă la 140 km/h!  Maşina schimba chiar
+şi banda de una singură.
+
+<P>
+Un proiect de genul Navlab îmbină laolaltă extrem de multe
+tehnologii diferite.  Ideal este ca, deşi fiecare din tehnologii este
+imperfectă, combinaţia lor să fie mai robustă decît fiecare în
+parte.  Vehiculele folosesc multe tipuri diferite de senzori: GPS
+pentru poziţie, radare pe unde ultrascurte şi lasere în infraroşu
+(pentru detecţia obstacolelor), camere de filmat stereoscopice cu
+trei şi cinci obiective (pentru urmărirea şoselei), algoritmi cu
+reţele neurale pentru urmărirea şoselei, algoritmi de control
+dinamic pentru calculul frînării, acceleraţiei, schimbării de
+direcţie, şi multe alte tehnologii.  
+
+<P>
+Rezultatele proiectului sunt evaluate de firma Toyota pentru
+construirea unor sisteme automate de prevenire a ieşirii din şosea
+(în fiecare an 3000 de accidente în Statele Unite sunt produse de
+somnul la volan).
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Alte surse de informaţie</A>
+</H1>
+
+<P>
+Trebuie să oprim aici înşiruirea de informaţii, care ar putea
+continua pe întreg conţinutul revistei.  Oferim cititorului
+interesat, ca punct de pornire, cîteva cîteva adrese pe web unde se
+pot găsi informaţii despre robotică:
+
+<P>
+<TT><A NAME="tex2html20"
+  HREF="http://www.ri.cmu.edu">http://www.ri.cmu.edu</A></TT>: Institutul de Robotică al
+universităţii Carnegie Mellon.  Această pagină are legături la
+peste o sută de proiecte ale institutului, precum şi spre multe alte
+informaţii.
+
+<P>
+<TT><A NAME="tex2html21"
+  HREF="http://www.frc.ri.cmu.edu/robotics-faq/">http://www.frc.ri.cmu.edu/robotics-faq/</A></TT>: Întrebări frecvente
+despre roboţi (Robotics FAQ).  Documentul pare cam învechit (ultima
+modificare este aparent în 1996), dar nu am găsit unul mai recent pe
+Internet.
+
+<P>
+<TT><A NAME="tex2html22"
+  HREF="http://www-robotics.cs.umass.edu/robotics.html">http://www-robotics.cs.umass.edu/robotics.html</A></TT>: Resurse Internet
+despre roboţi: o colecţie de legături spre informaţii utile despre
+robotică, începînd cu programe educaţionale, trecînd prin
+industrie şi terminînd cu jucării.
+
+<P>
+<TT><A NAME="tex2html23"
+  HREF="http://www.cs.cmu.edu/~cil/vision.html">http://www.cs.cmu.edu/~cil/vision.html</A></TT>: Pagina ``viziunii
+automate'' (Computer Vision): o colecţie centralizată de informaţii
+despre percepţie, prelucrare de imagine şi viziune automată.
+
+<P>
+<TT><A NAME="tex2html24"
+  HREF="http://www.soundvisioninc.com/publications.htm">http://www.soundvisioninc.com/publications.htm</A></TT>: pentru mai multe
+detalii legate de procesul de funcţionare al camerelor de filmat şi
+digitizoarelor.
+
+<P>
+<TT><A NAME="tex2html25"
+  HREF="http://www.nuhorizons.com/Home/tech/newgps.html-ssi">http://www.nuhorizons.com/Home/tech/newgps.html-ssi</A></TT>: pentru mai
+multe informaţii legate de sistemele GPS.
+
+<P>
+
+<H2><A NAME="SECTION00061000000000000000">
+Despre autori</A>
+</H2>
+
+<P>
+Cristian Dima tocmai a terminat primul an de doctorat în cadrul
+Institutului de Robotică al Universităţii Carnegie Mellon.
+Cercetarea lui este în domeniul ``computer vision'' , mai precis în
+cel al detecţiei obstacolelor folosind informaţii vizuale.  Este
+membru al proiectului ``Automated Sprying'', care de ocupa de
+robotizarea unui tractor ce poate îndeplini în mod autonom diferite
+operaţiuni agricole.
+
+<P>
+Mihai Budiu intră în această toamnă în al patrulea an de doctorat
+în cadrul Departamentului de Calculatoare al Universităţii Carnegie
+Mellon.  Deşi cercetarea sa este orientată în alte direcţii, este
+profund fascinat de proiectele Institutului de Robotică, care-i dau
+adesea senzaţia că priveşte romane SF ieftine.
+
+<P>
+<BR><HR><H4>Note</H4>
+<DL>
+<DT><A NAME="foot67">... atorilor</A><A NAME="foot67"
+ HREF="roboti-html.html#tex2html3"><SUP>1</SUP></A>
+<DD>Îmi amintesc de
+un semn dintr-un laborator de fizică: ``Nu priviţi în raza laser cu
+ochiul rămas''.
+
+<DT><A NAME="foot69">... civile</A><A NAME="foot69"
+ HREF="roboti-html.html#tex2html4"><SUP>2</SUP></A>
+<DD>Pînă de curînd
+sateliţii GPS bruiau în mod intenţionat semnalul pentru
+aplicaţiile civile; acest bruiaj o fost încetat anul acesta.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

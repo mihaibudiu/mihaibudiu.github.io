@@ -1,0 +1,854 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Execuţia speculativă</TITLE>
+<META NAME="description" CONTENT="Execuţia speculativă">
+<META NAME="keywords" CONTENT="speculativ-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Execuţia speculativă</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- <TT>mihaib+@cs.cmu.edu</TT> 
+<BR><TT><A NAME="tex2html2"
+  HREF="http://www.cs.cmu.edu/~mihaib/">http://www.cs.cmu.edu/~mihaib/</A></TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>august 2001</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>diferite forme de execuţie speculativă în
+procesoarele contemporane
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>cunoştinţe despre arhitectura
+microprocesoarelor
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>execuţie speculativă, thread, microprocesor
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Cuprins</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html31"
+  HREF="speculativ-html.html">Performanţa procesoarelor</A>
+<LI><A NAME="tex2html32"
+  HREF="#SECTION00030000000000000000">Paralelismul din programe</A>
+<LI><A NAME="tex2html33"
+  HREF="#SECTION00040000000000000000">Execuţia speculativă</A>
+<LI><A NAME="tex2html34"
+  HREF="#SECTION00050000000000000000">Execuţia speculativă în software</A>
+<LI><A NAME="tex2html35"
+  HREF="#SECTION00060000000000000000">Execuţie speculativă în microprocesoare</A>
+<UL>
+<LI><A NAME="tex2html36"
+  HREF="#SECTION00061000000000000000">Soluţia hardware</A>
+<LI><A NAME="tex2html37"
+  HREF="#SECTION00062000000000000000">Soluţia mixtă</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html38"
+  HREF="#SECTION00070000000000000000">Execuţie speculativă la nivel de thread</A>
+<LI><A NAME="tex2html39"
+  HREF="#SECTION00080000000000000000">Rezumat</A>
+<LI><A NAME="tex2html40"
+  HREF="#SECTION00090000000000000000">Alte surse de informaţie</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Performanţa procesoarelor</A>
+</H1>
+
+<P>
+Iată un citat din ştirile de astăzi (16 august 2001): ``Pe data de
+27 august, la Intel Developer Forum, compania Intel va lansa noul
+procesor Pentium 4 la 2 Ghz''.
+
+<P>
+Deja nu mai surprinde pe nimeni apariţia unei noi generaţii de
+procesoare: timp de treizeci de ani noile generaţii s-au succedat
+celor vechi, crescînd performanţa de fiecare dată cu un factor
+constant.  Chiar dacă constanta în sine este mică, rezultatele
+acumulate de-a lungul timpului sunt copleşitoare.  Pentru a măsura
+distanţa parcursă, este suficient să ne uităm la Intel 4004,
+primul microprocesor, care avea o viteză de ceas de 0,7 Mhz.
+Creşterea înregistrată în exact 30 de ani este de 2 Ghz/0.7 Mhz =
+2875 de ori!
+
+<P>
+Performanţa computaţională a calculatoarelor a crescut însă şi
+mai mult în această perioadă.  Acest lucru este posibil pentru că
+performanţa unui microprocesor nu depinde doar de frecvenţa
+ceasului, ci şi de numărul de instrucţiuni care pot fi executate
+într-un ciclu de ceas.  Procesoarele au evoluat enorm şi în
+această privinţă: Intel 4004 lucra la o singură instrucţiune la
+un moment dat, şi îi trebuiau mai mulţi cicli de ceas pentru a o
+executa complet, Pentium 4 poate avea simultan în execuţie pînă la
+126 de instrucţiuni diferite, şi poate termina execuţia mai multor
+instrucţiuni în fiecare ciclu.
+
+<P>
+În acest articol voi discuta despre contribuţia la performanţă a
+micro-arhitecturii şi compilatoarelor şi voi ignora contribuţia
+ceasului.  Voi discuta atît procesoare contemporane, dar şi unele
+aflate încă pe ``planşetele'' designer-ilor, care încă nu au făcut
+saltul din laboratoarele de cercetare în fabrici.
+
+<P>
+Am mai scris articole în PC Report despre arhitectura procesoarelor
+moderne (unele sunt menţionate în finalul acestui articol); în
+articolul de faţă mă voi concentra asupra unei singure tehnologii,
+şi anume <EM>execuţia speculativă</EM> a codului.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Paralelismul din programe</A>
+</H1>
+
+<P>
+Pentru a motiva folosirea execuţiei speculative, trebuie să
+subliniem încă odată rolul paralelismului în performanţa
+sistemelor de calcul.  Dacă fixăm frecvenţa ceasului, singura
+metodă prin care putem creşte performanţa este să executăm mai
+multe instrucţiuni în aceeaşi perioadă de timp.  (Putem face ca
+fiecare instrucţiune să dureze mai puţini cicli de ceas, dar
+beneficiile pe care le putem extrage cu această metodă sunt
+limitate.)  O sursă de performanţă este deci execuţia mai multor
+instrucţiuni <EM>simultan</EM>.  Toate procesoarele moderne folosite în
+calculatoare (nu neapărat şi cele din sisteme de control) sunt <EM>superscalare</EM>, putînd executa mai multe instrucţiuni în paralel.
+De exemplu, Pentium 4 are 8 unităţi funcţionale care pot opera în
+paralel.
+
+<P>
+Aparent punem deci mai multe unităţi computaţionale în paralel şi
+performanţa creşte.  În realitate lucrurile sunt mult mai
+complicate, pentru că nu oricare două instrucţiuni dintr-un program
+se pot executa simultan.  De exemplu, dacă o instrucţiune foloseşte
+rezultatul alteia, atunci prima trebuie să-şi termine execuţia
+înainte ca a două să înceapă.  Acest fenomen se numeşte <EM>dependenţă</EM> între cele două instrucţiuni.
+
+<P>
+Există două feluri de dependenţe între instrucţiuni: dependenţe
+de date şi dependenţe de control.  Acestea sunt ilustrate în
+figura&nbsp;<A HREF="speculativ-html.html#dependenta">1</A>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="dependenta"></A><A NAME="206"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 1:</STRONG>
+Dependenţe (a) <B>dependenţă de date:</B>
+instrucţiunea a doua are nevoie de rezultatul primeia (b) <B>dependenţă de control:</B> instrucţiunea a doua trebuie să aştepte
+evaluarea condiţiei pentru a şti dacă trebuie să fie executată.</CAPTION>
+<TR><TD><IMG
+ WIDTH="361" HEIGHT="129" BORDER="0"
+ SRC="img1.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=8cm\epsffile{dependenta.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Putem să ne punem întrebarea: cîte instrucţiuni independente
+există într-un program?  Cît de multe instrucţiuni putem executa
+potenţial în paralel, presupunînd că avem un procesor ideal, cu o
+infinitate de resurse?  Care tipuri de dependenţe impun mai multe
+constrîngeri?
+
+<P>
+Pentru a răspunde la astfel de întrebări, la începutul anilor '90
+mai mulţi cercetători au făcut nişte studii ``limită'', care
+încercau să estimeze paralelismul total disponibil într-un program
+(cu alte cuvinte, care este limita superioară pentru paralelismul
+care poate fi exploatat de hardware).
+
+<P>
+Un astfel de studiu, a fost publicat de doi cercetători de la
+universitatea Stanford în 1992; titlul său este ``Limite ale
+dependenţelor de control asupra paralelismului''.  Voi rezuma aici
+doar concluziile principale ale studiului, care sunt foarte
+interesante.
+
+<P>
+Putem clasifica programele analizate în acest studiu în două mari
+categorii: programe ``numerice'', scrise în FORTRAN, care
+manipulează matrici mari şi au structuri de date foarte simple, şi
+programe ne-numerice, care sunt scrise în C, au structuri de date
+complicate alocate dinamic şi folosesc pointeri.  Această
+categorisire este relativ standard; suita de programe SPEC, cea mai
+folosită pentru a evalua performanţa sistemelor de calcul, conţine
+o mixtură de astfel de programe.
+
+<P>
+Natura paralelismului este diferită pentru cele două categorii:
+programele în FORTRAN exhibă mai mult paralelism şi mai multă
+regularitate în calcul (de exemplu, instrucţiunile de salt sunt mai
+predictibile).  Dacă socotim numai dependenţele de date,
+paralelismul variază între 45 şi 3200 de instrucţiuni simultan
+pentru programele ne-numerice şi între 800 şi 300000 (sic!) pentru
+programele FORTRAN.
+
+<P>
+Dacă însă ne uităm şi la dependenţele de control, situaţia se
+schimbă în mod dramatic: paralelismul disponibil coboară la o
+valoare sub 10 pentru programele ne-numerice, şi la valori între 2
+şi 60000 pentru cele numerice.  Acest lucru se întîmplă pentru că
+instrucţiunile de salt sunt foarte frecvente în programe: în medie,
+una din 7 instrucţiuni este un salt.  Dacă în plus presupunem că
+calculatorul nu poate executa două salturi simultan, paralelismul
+coboară la o valoare sub 3 pentru programele ne-numerice şi la un
+maxim de 400 pentru cele numerice.
+
+<P>
+Din acest studiu putem extrage următoarea concluzie:: <EM>dacă
+executăm instrucţiunile programului în ordine, respectînd dependenţele
+de control, nu putem creşte performanţa programului prea mult:</EM>
+pur şi simplu, nu există suficient paralelism în program.  Acest lucru
+este foarte pregnant pentru programele ne-numerice, care constituie
+majoritatea covîrşitoare a programelor care se execută pe un desktop
+contemporan.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Execuţia speculativă</A>
+</H1>
+
+<P>
+Dacă vrem să exploatăm mai mult paralelism, trebuie să facem ceva
+deosebit; nu putem executa instrucţiunile din programe în ordine.
+Soluţia este să executăm cod <EM>înainte</EM> de a fi siguri că
+trebuie executat; în felul acesta, dacă mai tîrziu aflăm că am
+anticipat corect, vom avea rezultatele pre-calculate.  Aceasta este
+execuţia speculativă.
+
+<P>
+Există două feluri de execuţie speculativă:
+
+<P>
+
+<UL>
+<LI>Care prezice instrucţiunile care se vor executa în viitor şi
+le execută mai devreme;
+</LI>
+<LI>Care execută instrucţiuni în toate direcţiile posibile
+simultan şi păstrează numai rezultatele corecte.
+</LI>
+</UL>
+
+<P>
+În general microprocesoarele execută programele după prima
+strategie.  A doua strategie este însă adesea folosită în
+circuitele hardware.  Figura&nbsp;<A HREF="speculativ-html.html#speculatie">2</A> ilustrează beneficiile
+execuţiei speculative.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="speculatie"></A><A NAME="214"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 2:</STRONG>
+(a) Un fragment de program în C (b)
+Execuţie a programului care respectă dependenţele de control:
+întîi trebuie evaluată condiţia C, şi abia după aceea se poate
+executa blocul A sau blocul B, depinzînd de rezultat.  (c) Execuţia
+speculativă execută simultan A, B şi C.  Apoi rezultatul evaluării
+condiţiei este folosit pentru a alege rezultatele corecte.</CAPTION>
+<TR><TD><IMG
+ WIDTH="498" HEIGHT="295" BORDER="0"
+ SRC="img2.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=11cm\epsffile{speculatie.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Lucrurile nu sunt însă chiar aşa de simple: ce se întîmplă cu
+rezultatele speculaţiei dacă am executat ramura greşită?  În
+acest caz va trebui să distrugem rezultatele parţiale calculate şi
+să re-calculăm pe ramura corectă.  Execuţia speculativă elimină
+dependenţele de tip control din program, dar nu poate elimina
+dependenţele de date.
+
+<P>
+Execuţia speculativă poate fi incorectă din două motive:
+
+<P>
+
+<UL>
+<LI>Bucata de cod pe care am ales-o nu trebuia executată de loc: de
+exemplu, alegem să executăm A, dar trebuia să executăm B;
+</LI>
+<LI>Bucata de cod pe care o executăm speculativ are nevoie de
+informaţii care încă nu au fost calculate: de exemplu, o valoare
+calculată de C este necesară în calculul lui A.
+</LI>
+</UL>
+
+<P>
+În concluzie, pentru a implementa execuţia speculativă avem nevoie
+de următoarele ingrediente:
+
+<P>
+<DL>
+<DT><STRONG>alegere:</STRONG></DT>
+<DD>Un mecanism care alege codul care va fi executat în
+viitor;
+</DD>
+<DT><STRONG>detecţie:</STRONG></DT>
+<DD>Un mecanism care depistează cînd execuţia
+speculativă este eronată, fie pentru că am ales o ramură
+greşită, fie pentru că am ignorat o dependenţă de date;
+</DD>
+<DT><STRONG>reparaţie:</STRONG></DT>
+<DD>Un mecanism care permite ca execuţia speculativă
+greşită să fie des-făcută (rezultatele ei să fie ``şterse'');
+</DD>
+<DT><STRONG>reluare:</STRONG></DT>
+<DD>Un mecanism care ne permite după o eroare să reluăm
+execuţia pe calea corectă.
+</DD>
+</DL>
+
+<P>
+În cele ce urmează voi discuta pe scurt în ce fel este
+implementată execuţia speculativă în procesoarele de astăzi, şi
+apoi cum arată propunerile pentru procesoarele viitorului.
+Procesoarele contemporane execută speculativ cod la nivel de
+instrucţiune, pe cînd cele viitoare vor suporta probabil execuţia
+speculativă la nivel de fir de execuţie (thread).
+
+<P>
+Execuţia speculativă poate fi implementată în software, în
+hardware, sau folosind o mixtură a ambelor tehnici.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Execuţia speculativă în software</A>
+</H1>
+
+<P>
+Execuţia speculativă implementată în software este folosită în
+cazul procesoarelor paralele.  Avem atunci de a face cu programe pe
+care vrem să le executăm pe mai multe procesoare simultan, dar care
+nu au fost scrise în mod paralel.  Cînd compilatorul nu poate
+paraleliza automat codul, poate recurge la execuţia paralelă
+speculativă.  Iată un astfel de exemplu:
+
+<P>
+<PRE>
+for (i=0; i &lt; N; i++) 
+        a[b[i]] = f(i);
+</PRE>
+
+<P>
+Să presupunem că <TT>N=2</TT>, şi că evaluarea funcţiei <TT>f</TT> nu
+are ``efecte laterale''.
+
+<P>
+
+<UL>
+<LI>Dacă matricea <TT>b</TT> conţine valorile <TT>[1,1]</TT>, atunci
+cele două atribuiri din buclă trebuie executate una după alta,
+pentru că amîndouă modifică variabila <TT>a[1]</TT>.
+
+<P>
+</LI>
+<LI>Dacă matricea <TT>b</TT> însă conţine valorile <TT>[1,2]</TT>,
+cele două atribuiri se pot efectua în paralel, pentru că folosesc
+indici diferiţi în <TT>a</TT>.
+</LI>
+</UL>
+
+<P>
+Un compilator nu poate în general şti care sunt valorile din
+vectorul <TT>b</TT>, şi ca atare nu va paraleliza acest cod.  Dacă
+<TT>N</TT> este mare şi ştim că în vectorul <TT>b</TT> nu există două
+valori identice, atunci putem distribui toate aceste operaţii pe mai
+multe procesoare, fiecare procesor efectuînd unele dintre ele.
+
+<P>
+Lawrence Rauchwerger a fost primul care a studiat în detaliu
+execuţia speculativă complet în software; în schema pe care o
+propune, compilatorul generează un program cu următoarea structură:
+
+<P>
+
+<UL>
+<LI>Execută codul speculativ în paralel pe mai multe procesoare,
+colectînd rezultatul într-un vector auxiliar <TT>aux</TT>;
+</LI>
+<LI>Monitorizeaza valorile din vectorul <TT>b</TT>;
+
+<UL>
+<LI>Dacă în final nu există două valori identice în <TT>b</TT>,
+copiază rezultatul din variabila <TT>aux</TT> în variabila <TT>a</TT>;
+</LI>
+<LI>Dacă se depistează două valori identice în <TT>b</TT>,
+execută versiunea originală secvenţială a codului şi ignoră
+variabila <TT>aux</TT>.
+</LI>
+</UL>
+</LI>
+</UL>
+
+<P>
+Frumuseţea acestei scheme este că, atunci cînd speculaţia este
+corectă, programul se execută mult mai repede, iar cînd speculaţia
+este incorectă, nu se pierde foarte mult timp (se iroseşte doar
+timpul pentru o execuţie paralelă, care e mai mic decît cel pentru
+execuţia secvenţială).  Preţul suplimentar pe care îl plătim
+este execuţia codului care verifică dacă valorile din vectorul
+<TT>b</TT> se suprapun.
+
+<P>
+Observaţi toate ingredientele pe care le-am descris mai sus:
+
+<P>
+<DL>
+<DT><STRONG>alegere:</STRONG></DT>
+<DD>în cazul nostru, se vor executa viitoarele iteraţii
+ale buclei&nbsp;<TT>for</TT>;
+</DD>
+<DT><STRONG>detecţie:</STRONG></DT>
+<DD>cod suplimentar care monitorizează accesele la
+variabila&nbsp;<TT>b</TT>; 
+</DD>
+<DT><STRONG>reparaţie:</STRONG></DT>
+<DD>variabila auxiliară <TT>aux</TT> stochează
+rezultatele intermediare, fără a ``polua'' variabila reală&nbsp;<TT>a</TT>;
+</DD>
+<DT><STRONG>reluare:</STRONG></DT>
+<DD>codul generat de compilator, care include atît
+versiunea paralelă cît şi pe cea secvenţială.
+</DD>
+</DL>
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Execuţie speculativă în microprocesoare</A>
+</H1>
+
+<P>
+
+<H2><A NAME="SECTION00061000000000000000">
+Soluţia hardware</A>
+</H2>
+
+<P>
+O schemă de execuţie speculativă implementată complet în hardware
+este folosită la ora actuală de toate microprocesoarele moderne:
+PowerPC 620, MIPS R10000, arhitectura P6 de la Intel, AMD K5 şi
+succesorii acestora.  Multe din ingredientele necesare le-am discutat
+în alte articole din PC Report:
+
+<P>
+<DL>
+<DT><STRONG>alegerea:</STRONG></DT>
+<DD>este făcută circuitele de predicţia salturilor,
+care ``ghicesc'' direcţiile salturilor condiţionale înainte ca
+acestea să fie executate;
+</DD>
+<DT><STRONG>detecţie:</STRONG></DT>
+<DD>cînd rezultatul saltului este cunoscut, acesta este
+comparat cu valoarea prezisă;
+</DD>
+<DT><STRONG>reparaţie:</STRONG></DT>
+<DD>procesorul foloseşte o structură numită <EM>reorder buffer</EM>, în care face toate modificările (fără a modifica
+regiştrii adevăraţi);
+</DD>
+<DT><STRONG>reluare:</STRONG></DT>
+<DD>în cazul unei erori, registrul PC, care indică
+instrucţiunea curentă, este pus să indice spre instrucţiunea care
+trebuia să fie executată după salt.
+</DD>
+</DL>
+
+<P>
+Deşi implementarea în hardware este foarte sofisticată, ideea este
+relativ simplă:
+
+<P>
+
+<UL>
+<LI>Procesorul lansează în execuţie instrucţiuni înainte de a
+şti dacă salturile spre acele instrucţiuni vor fi sau nu executate;
+</LI>
+<LI>Aceste instrucţiuni se execută, dar rezultatele lor sunt
+scrise fie în nişte regiştri ``ascunşi'' (shadow registers), fie
+într-un buffer (dacă instrucţiunile modifică memoria);
+</LI>
+<LI>Cînd instrucţiunea de salt este în fine evaluată, se decide
+dacă speculaţia a fost corectă:
+
+<UL>
+<LI>Dacă saltul a fost corect prezis, regiştrii ascunşi sunt
+copiaţi în cei corecţi, şi informaţiile din buffer sunt trimise
+spre memorie.
+</LI>
+<LI>Dacă saltul a fost incorect prezis, regiştrii ascunşi sunt
+ignoraţi, buffer-ul este golit şi execuţia este repornită de la
+instrucţiunea corectă.
+</LI>
+</UL>
+</LI>
+</UL>
+
+<P>
+
+<H2><A NAME="SECTION00062000000000000000">
+Soluţia mixtă</A>
+</H2>
+
+<P>
+Arhitectura IA-64 de la Intel oferă o altă soluţie pentru execuţia
+speculativă, în care compilatorul colaborează cu procesorul.
+Fiecare instrucţiune este etichetată cu o valoare de 1 bit, numită
+<EM>predicat</EM>.  Dacă predicatul unei instrucţiuni este 1, atunci
+instrucţiunea se execută, altfel instrucţiunea este ignorată.
+Dacă notăm cu
+
+<P>
+<PRE>
+p# a = b + c
+</PRE>
+
+<P>
+faptul că instrucţiunea <TT>a = b + c</TT> se execută numai
+dacă <TT>p=1</TT>, atunci un programul:
+
+<P>
+<PRE>
+if (a &lt; 0)
+        b = b + 1;
+else
+        d = b * 2;
+</PRE>
+
+<P>
+se va traduce în ceva de genul:
+
+<P>
+<PRE>
+1# p = a &lt; 0   /* predicatul este 1: instructiunea se executa neconditionat */
+1# q = not p
+p# b = b + 1
+q# d = b * 2
+</PRE>
+
+<P>
+Dacă are destule resurse, microprocesorul va executa toate aceste
+instrucţiuni simultan.
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Execuţie speculativă la nivel de thread</A>
+</H1>
+
+<P>
+Execuţia speculativă la nivel de fir de execuţie (thread) este un
+subiect de cercetare foarte fierbinte; se publică în continuare
+foarte multe articole pe această temă, dar nici un procesor încă
+nu implementează astfel de scheme.  În această secţiune voi
+ilustra pe scurt una dintre propuneri; legături web spre alte
+proiecte puteţi găsi în finalul acestui text.
+
+<P>
+Motivaţia pentru acest gen de cercetare vine din faptul că, în
+viitorul foarte apropiat, din cauza miniaturizării, arhitecţii vor
+avea atît de multe resurse încît vor putea implementa mai multe
+procesoare pe aceeaşi pilulă de siliciu.  Desigur, aceste procesoare
+pot executa fiecare alt program, dar cercetarea pe care o voi descrie
+aici discută despre cum mai multe procesoare pot colabora la
+execuţia <EM>unui singur program secvenţial</EM>.
+
+<P>
+Cheia este, desigur, execuţia speculativă: programul este
+împărţit în mai multe fragmente de cod, în general de zeci pînă
+la mii de instrucţiuni fiecare.  Fiecare fragment este un <EM>thread</EM>, care este executat în paralel pe un alt procesor.  Unul
+dintre thread-uri este cel ``corect''; celelalte execută părţi din
+``viitorul'' probabil al programului.
+
+<P>
+Să ne uităm la un simplu exemplu:
+
+<P>
+<PRE>
+while (! gata) {
+        ...
+        x = hash[index1];
+        ...
+        hash[index2] = y;
+}
+</PRE>
+
+<P>
+Dacă valorile <TT>index1</TT> şi <TT>index2</TT> sunt
+diferite pentru toate iteraţiile, toate accesele făcute de buclă
+în tabela <TT>hash</TT> se pot efectua în paralel.  Dacă însă
+valoarea lui <TT>index2</TT> dintr-o iteraţie este aceeaşi cu valoarea
+lui <TT>index1</TT> dintr-o iteraţie ulterioară, între valorile
+corespunzătoare din <TT>hash</TT> se stabileşte o dependenţă de date,
+care împiedică execuţia paralelă.  În figura&nbsp;<A HREF="speculativ-html.html#iteratii">3</A> (b)
+ilustrăm o posibilă execuţie secvenţială a acestui program; în
+dreptunghiuri am ilustrat fiecare iteraţie.  În
+figura&nbsp;<A HREF="speculativ-html.html#iteratii">3</A> (c) ilustrăm cum s-ar putea desfăşura
+execuţia acestui program pe un multiprocesor cu 3 procesoare, cînd
+fiecare iteraţie a buclei este un thread separat.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="iteratii"></A><A NAME="251"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 3:</STRONG>
+Execuţia unui program (a) pe un uniprocesor
+(b) sau pe un multiprocesor cu execuţie speculativă (c).  În (c)
+procesorul al treilea descoperă că a violat o dependenţă datorită
+execuţiei speculative, şi ca atare rezultatele pe care le-a calculat
+sunt distruse şi execuţia iteraţiei sale este reluată.</CAPTION>
+<TR><TD><IMG
+ WIDTH="676" HEIGHT="324" BORDER="0"
+ SRC="img3.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=15cm\epsffile{iteratii.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Observaţi că, spre deosebire de schema software-pur pe care am
+descris-o mai devreme, în caz de speculaţie eronată aici nu reluăm
+întreg procesul de calcul, ci doar partea care a fost eronată.
+
+<P>
+Ingredientele acestei scheme sunt următoarele:
+
+<P>
+<DL>
+<DT><STRONG>alegere:</STRONG></DT>
+<DD>au fost propuse foarte multe scheme diferite de
+separare a programului în thread-uri; cele mai multe soluţii
+implică compilatorul, care inserează instrucţiuni suplimentare
+pentru pornirea şi oprirea thread-urilor.  Schemele cele mai populare
+construiesc un thread din fiecare iteraţie a unei bucle (ca în
+exemplul nostru), sau execută apelul unei proceduri în paralel cu
+codul care urmează procedurii.
+</DD>
+<DT><STRONG>detecţie:</STRONG></DT>
+<DD>una dintre cele mai elegante scheme foloseşte
+cache-urile procesoarelor şi protocolul de coerenţă al acestora
+(mai multe detalii urmează mai jos);
+</DD>
+<DT><STRONG>reparaţie:</STRONG></DT>
+<DD>cache-ul este folosit şi pentru reparaţie după o
+speculaţie greşită: în figura&nbsp;<A HREF="speculativ-html.html#iteratii">3</A>, cache-ul
+procesorului 3 este golit după detecţia dependenţei eronate;
+</DD>
+<DT><STRONG>reluare:</STRONG></DT>
+<DD>reluarea este obţinută re-setînd registrul PC la
+începutul thread-ului.
+</DD>
+</DL>
+
+<P>
+Dintre toate thread-urile, unul singur este ``cel mai bătrîn'':
+acesta se execută ne-speculativ, şi poate face orice modificări.
+Celelalte thread-uri sunt ordonate după vîrstă: în
+figura&nbsp;<A HREF="speculativ-html.html#iteratii">3</A> thread-ul de pe procesorul 1 este cel mai vechi,
+cel de pe procesorul 2 este următorul şi cel de pe procesorul 3 este
+cel mai nou.  Thread-urile 2 şi 3 se execută speculativ, pînă
+cînd thread-ul 1 se termină.  Apoi 2 devine cel mai bătrîn, şi
+procesorul 1 poate porni un thread-ul 4 (care nu e ilustrat în
+figură).
+
+<P>
+Fiecare thread face toate citirile şi scrierile din memorie folosind
+cache-ul propriu.  Cînd un thread citeşte un cuvînt în cache, îl
+marchează ca accesat (de exemplu, thread-ul 3 marchează cuvîntul de
+la adresa <TT>hash[10]</TT>).  Cînd un thread modifică un cuvînt,
+trimite această informaţie tuturor celorlalte thread-uri mai tinere
+decît el.  Cînd un thread tînăr a folosit o valoare care apoi este
+modificată de un thread mai bătrîn (<TT>hash[10]</TT> în figură este
+citit de thread-ul tînăr 3 înainte de modificarea thread-ului
+bătrîn 1), mesajul de modificare care vine de la thread-ul 1
+(indicat de săgeata roşie din figură) îi indică thread-ului 3
+faptul ca a speculat incorect.  Cînd un thread detectează o
+speculaţie eronată, se sinucide şi reporneşte.
+
+<P>
+Thread-urile se pot termina numai în ordinea în care au fost create:
+chiar dacă thread-ul 3 se termină înainte de 1, trebuie să
+aştepte pînă cînd 1 s-a isprăvit şi a anunţat toate
+modificările sale, ca să vadă dacă nu cumva unele din valorile pe
+care le-a folosit el însuşi au fost ilegale.
+
+<P>
+
+<H1><A NAME="SECTION00080000000000000000">
+Rezumat</A>
+</H1>
+
+<P>
+În acest articol am discutat despre paralelismul prezent în
+programe, care poate fi exploatat pentru a executa programele mai
+rapid.  Am văzut că există două feluri de dependenţe care fac ca
+instrucţiunile să <EM>nu</EM> fie paralele: dependenţe de date şi
+dependenţe de control.  Ambele tipuri de dependenţe limitează
+paralelismul, dar dependenţele de control au impact foarte important,
+limitînd paralelismul în programe ne-numerice la valori între 2 şi
+8.
+
+<P>
+Am văzut că execuţia speculativă încearcă să elimine impactul
+dependenţelor de control, executînd cod înainte de a fi certă
+necesitatea lui.  Am văzut de asemenea că execuţia speculativă
+poate fi implementată în multe feluri: în software, în hardware,
+sau cu suportul amîndurora; de asemenea, am văzut că putem specula
+la nivel de instrucţiuni sau de thread.
+
+<P>
+Problema selecţiei thread-urilor şi a suportului care trebuie să
+fie oferit de hardware este încă un subiect foarte activ de
+cercetare; cu certitudine însă speculaţia la nivel de thread va fi
+un ingredient al procesoarelor viitoarului.
+
+<P>
+
+<H1><A NAME="SECTION00090000000000000000">
+Alte surse de informaţie</A>
+</H1>
+
+<P>
+
+<UL>
+<LI>Articolele mele anterioare despre arhitectură din PC Report:
+
+<P>
+
+<UL>
+<LI>Despre dependenţe şi metoda redenumirii regiştrilor, PC Report din
+iulie 1999:
+<BR><TT><A NAME="tex2html6"
+  HREF="http://www.cs.cmu.edu/~mihaib/articles/articles.html#redenumire">http://www.cs.cmu.edu/~mihaib/articles/articles.html#redenumire</A></TT>.
+</LI>
+<LI>Despre predicţia salturilor pentru suportul execuţiei
+speculative, PC Report din august 1999: 
+<BR><TT><A NAME="tex2html7"
+  HREF="http://www.cs.cmu.edu/~mihaib/articles/articles.html#predictie">http://www.cs.cmu.edu/~mihaib/articles/articles.html#predictie</A></TT>.
+</LI>
+<LI>Despre evoluţia arhitecturii microprocesoarelor şi implementarea
+de thread-uri direct în hardware, PC Report din martie 2000: <TT><A
+NAME="tex2html8"
+HREF="http://www.cs.cmu.edu/~mihaib/articles/articles.html#micro">http://www.cs.cmu.edu/~mihaib/articles/articles.html#micro</A></TT>.
+</LI>
+<LI>Despre coerenţa cache-urilor în multiprocesoare, PC Report din
+noiembrie 1998: <BR><TT><A NAME="tex2html9"
+HREF="http://www.cs.cmu.edu/~mihaib/articles/articles.html#smp">http://www.cs.cmu.edu/~mihaib/articles/articles.html#smp</A></TT>.
+</LI>
+</UL>
+
+<P>
+</LI>
+<LI>Studiul menţionat în acest articol, despre limitele
+paralelismului existent în programe şi depăşirea lui prin
+execuţia speculativă: ``Limits of Control Flow on Parallelism'', de
+Monica Lam şi Robert Wilson de la universitatea Stanford, publicat
+în 1992 în conferinţa International Symposium on Computer
+Architecture <TT><A NAME="tex2html10"
+  HREF="http://suif.stanford.edu/papers/lam92.ps">http://suif.stanford.edu/papers/lam92.ps</A></TT>.
+
+<P>
+</LI>
+<LI>Proiecte universitare de cercetare despre execuţia speculativă
+la nivel de thread pentru multiprocesoare:
+
+<P>
+
+<UL>
+<LI>Proiectul <EM>Stampede</EM> la universitatea Carnegie Mellon este
+cel pe care l-am descris în acest articol: 
+<BR><TT><A NAME="tex2html11"
+  HREF="http://www.cs.cmu.edu/~stampede">http://www.cs.cmu.edu/~stampede</A></TT>
+</LI>
+<LI>Proiectul <EM>Multiscalar</EM> la universitatea Wisconsin-Maddison:
+
+<BR><TT><A NAME="tex2html12"
+  HREF="http://www.cs.wisc.edu/~mscalar">http://www.cs.wisc.edu/~mscalar</A></TT>
+</LI>
+<LI>Proiectul <EM>Hydra</EM> la universitatea Stanford: 
+<BR><TT><A NAME="tex2html13"
+  HREF="http://ogun.stanford.edu">http://ogun.stanford.edu</A></TT>
+</LI>
+<LI>Cercetare la universitatea Politehnică din Catalunya: 
+<BR><TT><A NAME="tex2html14"
+  HREF="http://www.ac.upc.es/homes/antonio/specula.html">http://www.ac.upc.es/homes/antonio/specula.html</A></TT>
+</LI>
+<LI>Proiectul <EM>IACOMA</EM> la universitatea Illinois-Urbana: 
+<BR><TT><A NAME="tex2html15"
+  HREF="http://iacoma.cs.uiuc.edu/iacoma">http://iacoma.cs.uiuc.edu/iacoma</A></TT>
+</LI>
+<LI>Cercetarea lui Lawrence Rauchwerger la universitatea Texas A&amp;M:
+
+<BR><TT><A NAME="tex2html16"
+  HREF="http://www.cs.tamu.edu/faculty/rwerger">http://www.cs.tamu.edu/faculty/rwerger</A></TT>
+</LI>
+<LI>Proiectul <EM>M-Machine</EM> la universitatea Stanford (migrat de
+la universitatea MIT):
+
+<BR><TT><A NAME="tex2html17"
+  HREF="http://cva.stanford.edu/m-machine/cva_m_machine.html">http://cva.stanford.edu/m-machine/cva_m_machine.html</A></TT>
+</LI>
+<LI>Proiectul <EM>TimeWarp</EM> la universitatea din Waiklao, Noua
+Zeelandă: 
+<BR><TT><A NAME="tex2html18"
+  HREF="http://www.cs.waiklao.ac.nz/timewarp/wengine/index.html">http://www.cs.waiklao.ac.nz/timewarp/wengine/index.html</A></TT>
+</LI>
+<LI>Proiectul <EM>Multiplex</EM> la universitatea Purdue:
+
+<BR><TT><A NAME="tex2html19"
+  HREF="http://dynamo.ecn.purdue.edu/~mux">http://dynamo.ecn.purdue.edu/~mux</A></TT>
+</LI>
+</UL>
+</LI>
+</UL>
+
+<P>
+<BR><HR>
+
+</BODY>
+</HTML>

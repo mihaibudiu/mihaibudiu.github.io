@@ -1,0 +1,536 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>``Uşa din spate''</TITLE>
+<META NAME="description" CONTENT="``Uşa din spate''">
+<META NAME="keywords" CONTENT="usa-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">``Uşa din spate''</H1>
+<P ALIGN="CENTER"><STRONG>Mihai BUDIU - budiu@cs.cornell.edu 
+<BR>
+http://www.cs.cornell.edu/Info/People/budiu/budiu.html</STRONG></P>
+<P ALIGN="CENTER"><STRONG>18 martie 1997</STRONG></P>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html7"
+  HREF="usa-html.html">Personajele</A>
+<LI><A NAME="tex2html8"
+  HREF="#SECTION00030000000000000000">Programul <TT>login</TT></A>
+<LI><A NAME="tex2html9"
+  HREF="#SECTION00040000000000000000">Ticăloşia</A>
+<LI><A NAME="tex2html10"
+  HREF="#SECTION00050000000000000000">Compilatorul</A>
+<LI><A NAME="tex2html11"
+  HREF="#SECTION00060000000000000000">Concluzii</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>Putem avea încredere în programe?
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>back-door
+</DD>
+<DT><STRONG>Cunoştinţe necesare: </STRONG></DT>
+<DD>elemente despre funcţionarea
+calculatoarelor, compilare, elemente de C
+</DD>
+</DL>
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Personajele</A>
+</H1>
+
+<P>
+Ken Thomson este unul dintre numele cele mai mari din istoria
+calculatoarelor.  Sau, dacă asta poate fi contestat, este cu
+siguranţă unul dintre numele cele mai faimoase.  Ken Thomson
+lucrează la laboratoarele Bell, care au aparţinut firmei AT&amp;T.
+(Laboratoarele Bell au fost sediul cercetării gigantului
+telecomunicaţiilor; multe dintre descoperirile revoluţionare ale
+secolului au fost făcute aici.  O lista ne-exhaustivă trebuie să
+cuprindă: sateliţii de telecomunicaţii, bateriile solare,
+tranzistorul, laser-ul, sistemul de operare Unix şi limbajul C++.  La
+ora actuală AT&amp;T a fost spartă în bucăţi de legea americană
+anti-trust, aşa că o parte însemnată a laboratoarelor Bell a
+devenit o firmă independentă numită Lucent Technologies).
+
+<P>
+Ken Thomson este practic inventatorul Unix-ului.  (Am scris un articol
+ceva mai detaliat in BYTE din August 1996 despre istoria acestui
+faimos sistem de operare).  Acest sistem a revoluţionat în multe
+privinţe sistemele de calcul, iar influenţele sale se dovedesc
+fructuoase şi în ziua de azi.  Pentru această realizare lui Thomson
+i-a fost decernat în 1984 premiul Turing al ACM (Association for
+Computing Machinery), care pentru lumea calculatoarelor este
+echivalent cu un Nobel.
+
+<P>
+În cuvîntarea ţinută cu prilejul decernării premiului, Thomson a
+dezvăluit cea mai mare fraudă informatică, al cărei autor este el
+însuşi.  Textul comunicării este ``Reflections on Trusting Trust'',
+adică ``Reflecţii asupra încrederii în încredere''.  Problema
+centrală care pe care Thomson o pune este dacă putem avea încredere
+în programele pe care le folosim, şi cum putem dobîndi încredere
+în ele.  Expunerea lui arată că posibilitatea de a citi programele
+nu este o garanţie suficientă pentru a ne asigura de corectitudinea
+lor!
+
+<P>
+O mulţime de bani se investesc în ziua de azi în cercetări legate
+de această întrebare.  Fericiţi sunt cei care nu au avut niciodată
+de suferit de pe urma viruşilor.  În ziua de azi programele devin
+din ce în ce mai mobile (de exemplu applet-urile sunt programe
+transferate prin reţea în momentul cînd clientul de web accesează
+un document) şi Internetul este calul de bătaie al marilor firme,
+care au înţeles că o mulţime de bani se pot obţine prin servicii
+oferite prin reţea.  Întrebările lui Thomson sunt cu atît mai
+acute din această cauză, iar răspunsuri pe deplin satisfăcătoare
+sunt departe de a fi date.
+
+<P>
+Thomson sesiza însă gravitatea acestor probleme acum 20 de ani,
+cînd calculatoarele erau departe de a fi atît de răspîndite.
+Iată povestea lui:
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Programul <TT>login</TT></A>
+</H1>
+
+<P>
+Thomson este, după cum am spus, autorul sistemului de operare Unix.
+Sistemul Unix este conceput pentru calculatoare care sunt folosite de
+mai mulţi utilizatori simultan, şi din cauza aceasta adresează de
+la bun început destul de serios problema securităţii.  Unix-ul
+încearcă să izoleze procesele care se execută pe o aceeaşi
+maşină între ele, ca să nu se poată incomoda.  (Un proces este un
+program care a fost pornit in execuţie, deci un obiect activ).  În
+Unix programele care sunt executate de un acelaşi utilizator au
+oarecari posibilităţi lărgite de a se influenţa reciproc; de
+exemplu un proces al meu poate omorîpe un altul care-mi aparţine,
+dar nu poate omorînici unul din procesele care nu a fost create de
+mine.  (Mai precis, poate trimite semnale, care uneori pot cauza
+moartea; <EM>moartea</EM> unui proces este încetarea execuţiei sale).
+
+<P>
+Pentru a putea decide ce drepturi au procesele, ele trebuie să fie
+asociate cumva utilizatorilor.  Asocierea aceasta este realizată în
+Unix de programul <TT>/bin/login</TT>.
+
+<P>
+(În cele ce urmează vom simplifica discuţia pentru a pune în
+valoare doar detaliile care ne interesează; în realitate lucrurile
+sunt puţin mai complicate.  Poate vom consacra cîndva un articol
+special securităţii în sistemele Unix.)
+
+<P>
+Programul <TT>login</TT> face legătura dintre un utilizator şi
+procesele sale; acest program <EM>autentifică</EM> un utilizator
+testînd cunoaşterea unui secret.  Această verificare se face cînd
+utilizatorul se aşează prima oară în faţa calculatorului (face
+``login''), o singură dată, şi efectele ei sunt vizibile pînă
+cînd utilizatorul părăseşte terminalul în mod explicit (face
+``logout'').  Toate comenzile lansate de la acest terminal între cele
+două evenimente sunt implicit ale utilizatorului care a fost
+autentificat.  (Dacă utilizatorul părăseşte terminalul pentru o
+pauză de cafea şi altcineva îl foloseşte în răstimp,
+calculatorul nu are nici o metodă de a verifica acest lucru, şi ia
+comenzile ca fiind executate de persoana care a fost ultima
+autentificată.  Calculatorul nu are la ora actuală nici o metodă de
+a ``simţi'' lumea exterioară, pentru a observa că utilizatorul este
+altul.)
+
+<P>
+Lucrurile funcţionează cam aşa:
+
+<P>
+
+<OL>
+<LI>Dacă un utilizator (eu) vrea să folosească o maşina Unix,
+în primul rînd trebuie să vorbească cu administratorul de sistem.
+Administratorul de sistem îi acordă un nume de utilizator (<TT>budiu</TT>) şi un număr asociat întotdeauna (uid = ``user
+identifier''); pentru mine din întîmplare uid=831.  Pentru că în
+general corespondenţa nume-număr este unu-la-unu, vom folosi numele
+de ``uid'' pentru ambele.  Comanda <TT>id</TT> în Unix afişează numele
+şi numărul, precum şi alte informaţii legate de identificare:
+
+<P>
+<PRE>
+uid=813(budiu) gid=5(users)
+</PRE>
+
+<P>
+</LI>
+<LI>Noul utilizator îi comunică administratorului un secret: o
+<EM>parolă</EM>.  Parola este criptată şi pusă pe disc ca fiind
+asociată utilizatorului respectiv.
+
+<P>
+</LI>
+<LI>Toate parolele (criptate) şi numele de utilizatori sunt ţinute
+în Unix-urile tradiţionale într-un fişier numit <TT>/etc/passwd</TT>.
+Iată o posibila linie:
+
+<P>
+<PRE>
+budiu:PGffJFh3BfCAw:831:5:Mihai Budiu:/home/budiu:/bin/bash
+</PRE>
+
+<P>
+Cîmpurile sunt separate cu semnul ``:''.  Primul este numele meu de
+utilizator asociat, al doilea este parola mea criptată, al treilea
+este numărul (uid) asociat mie; celelalte nu ne interesează prea tare
+în acest articol, dar pentru curioşi sunt: numărul grupului din
+care fac parte, numele meu real, directorul meu casă şi programul cu
+care conversez eu în mod normal (``shell''-ul meu).
+
+<P>
+</LI>
+<LI>În acest moment fiecare utilizator are un nume şi o parolă,
+pe care nu trebuie să le comunice nimănui (ori altcineva se va putea
+substitui lui în folosirea calculatorului).  Utilizatorul poate
+să-şi schimbe mai tîrziu parola dacă vrea, dar uid-ul este în
+principiu fixat.
+
+<P>
+</LI>
+<LI>Calculatorul la pornire execută pentru fiecare terminal legat
+la calculator cîte o copie a programului <TT>/bin/login</TT>.
+
+<P>
+</LI>
+<LI>Programul <TT>login</TT> scrie pe fiecare terminal textul <TT>login:</TT> şi aşteaptă să vină un utilizator.
+
+<P>
+</LI>
+<LI>Utilizatorul se aşează la terminal şi îşi tastează numele
+asignat (eu de pildă scriu <TT>login: budiu</TT>).
+
+<P>
+</LI>
+<LI>Programul <TT>login</TT> cere parola scriind: <TT>Password:</TT>.
+
+<P>
+</LI>
+<LI>Utilizatorul tastează parola (nu spun).  <TT>/bin/login</TT>
+criptează parola, şi compară rezultatul cu şirul din fişierul
+<TT>/etc/passwd</TT>.  Dacă rezultatele coincid (în cazul meu se
+obţine <TT>PGffJFh3BfCAw</TT>), atunci utilizatorul este considerat
+autentificat, şi este primit de sistem.
+
+<P>
+</LI>
+<LI>Dacă utilizatorul nu este primit, <TT>/bin/login</TT> se execută
+din nou de la pasul 6.
+
+<P>
+</LI>
+<LI>Dacă utilizatorul a fost primit, pe acel terminal se execută
+un program care acceptă comenzi de la utilizator şi le execută
+(shell).  Acest program are pusă în frunte o ştampilă care spune:
+``acest program aparţine lui cutare uid'' (831 pentru mine).
+
+<P>
+</LI>
+<LI>În continuare, shell-ul ascultă comenzile mele, le execută
+una cîte una, şi reia conversaţia cu mine, pîna tastez <TT>logout</TT>.
+
+<P>
+</LI>
+<LI>Toate comenzile care sunt ``pui'' ai shell-ului moştenesc
+genetic de la el uid-ul meu, 831.
+</LI>
+</OL>
+
+<P>
+Discuţia se poate dovedi pe alocuri confuză pentru că acelaşi
+cuvînt se foloseşte simultan pentru a desemna mai multe lucruri; de
+pildă ``login'' înseamnă:
+
+<P>
+
+<UL>
+<LI>Acţiunea de a te prezenta calculatorului;
+</LI>
+<LI>Un program care se execută pentru a face prezentările;
+</LI>
+<LI>Textul scris de acel program pe ecran;
+</LI>
+</UL>
+
+<P>
+Din schema asta complexă trebuie reţinut un lucru destul de simplu:
+toate procesele mele moştenesc de la <TT>/bin/login</TT> uid-ul meu;
+<TT>/bin/login</TT> este singurul program care mă identifică.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Ticăloşia</A>
+</H1>
+
+<P>
+De acest lucru s-a folosit Thomson pentru a crea o intrare universală
+(o ``uşa din spate neştiută de nimeni'': a ``back door''): Thomson
+a scris programul <TT>/bin/login</TT> în aşa fel încît dacă cineva
+tastează numele lui şi o parolă fixată să fie acceptat în sistem
+chiar dacă nu are dreptul (adică chiar dacă în <TT>/etc/passwd</TT>
+nu există nici o linie pentru Thomson!).  În felul acesta Thomson
+poate avea acces neîngrădit la orice sistem Unix din lume.
+
+<P>
+Lumea şi-a exprimat dintotdeauna temerile cu privire la programe
+cumpărate pe de-a gata: ele sunt întotdeauna susceptibile să
+conţină asemenea portiţe care îi dau fabricantului tot felul de
+privilegii din momentul în care programele ajung să se execute.  Nu
+ne vom lansa în consideraţii etice aici, mai bine să urmărim mai
+departe subterfugiile lui Thomson, care nu se opresc aici!
+
+<P>
+Thomson este gata să pună la dispoziţia celor sperioşi sursele C
+ale programului <TT>/bin/login</TT>, pe care aceştia să le poată
+inspecta.  Programul în principiu trebuie să fie destul de simplu
+ceva de genul (scris în pseudo-C):
+
+<P>
+<PRE>
+while (1) {
+  scrie("login: ");
+  nume = citeste();
+  scrie("Password: ");
+  parola = citeste();
+
+  criptata = cripteaza(parola);
+  parola_corecta = cauta_parola("/etc/passwd", nume);
+  if (egale(criptata, parola_corecta)) {
+     uid = cauta_uid("/etc/passwd", nume);
+     shell = cauta_shell("/etc/passwd", nume);
+     executa(shell);
+  }
+}
+</PRE>
+
+<P>
+Dar dacă sursele sunt vizibile, oricine poate depista porţiunea în
+care în funcţie de o comparaţie cu numele lui Thomson se ia o
+decizie specială.
+
+<P>
+Probabil testul arată cam aşa:
+
+<P>
+<PRE>
+usa_din_spate()
+{
+  if (egale(nume, "Thomson") &amp;&amp;
+      egale(parola, "secret")) 
+    executa("/bin/sh");
+}
+</PRE>
+
+<P>
+Testul poate fi invocat inserînd o linie care cheamă funcţia <TT>usa_din_spate()</TT> în locul unde am lăsat o linie albă în sursele
+lui <TT>login</TT>.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Compilatorul</A>
+</H1>
+
+<P>
+Thomson a scos acest test din sursele programului <TT>/bin/login</TT>,
+dar a modificat compilatorul de C!  (În definitiv tot el a scris şi
+compilatorul, nu?).  Compilatorul de C se uită atunci cînd
+compilează un program dacă nu cumva programul este chiar sursa de la
+<TT>/bin/login</TT>; dacă este chiar sursa, atunci înainte de a compila
+programul, compilatorul de C inserează el însuşi funcţia <TT>usa_din_spate()</TT> şi apelul ei în sursă!
+
+<P>
+În felul acesta sursele programului sunt absolut inofensive pentru
+orice cititor, pentru că ele sunt transformate abia la compilare, iar
+rezultatul compilării nu mai este atît de simplu de citit.
+
+<P>
+De data asta cel care arată ciudat este compilatorul însuşi: codul
+lui este probabil cam aşa (şirurile de caractere sunt foarte lungi,
+aşa că înlocuim cu ``...'' conţinutul lor în exemplul de mai
+jos):
+
+<P>
+<PRE>
+char * cod_login = "while (1) {\n\tscrie(\"login: \");\n....";
+char * cod_usa_din_spate = "usa_din_spate(){if(egale(nume, ....";
+char * apel_usa_din_spate = "usa_din_spate();";
+
+modifica_login(program)
+{
+   /* text care modifica programul login */
+   insereaza(program, cod_usa_din_spate);
+   insereaza(program, apel_usa_din_spate);
+}
+
+analizeaza(program)
+{
+   if (seamana(program, cod_login)) {
+       modifica_login(program);
+   }
+   compilare_obisnuita();
+}
+</PRE>
+
+<P>
+Dacă cineva se uită la sursele compilatorului de C va observa
+probabil acest tratament neobişnuit al programului care tocmai se
+compilează.
+
+<P>
+Din cauza asta Thomson a mers şi mai departe, acţionînd în
+acelaşi fel: a modificat compilatorul de C în aşa fel încît să
+depisteze şi cînd codul compilat este chiar compilatorul de C.
+Sursele compilatorului de C distribuite utilizatorilor sunt ``curate''
+(nu conţin codul de mai sus), dar compilatorul deja instalat pe
+fiecare maşină este deja ``infectat'', pentru că procedează
+astfel:
+
+<P>
+Cînd observă că tocmai compilez din nou compilatorul din surse (de
+exemplu cînd compilez funcţia <TT>analizeaza()</TT>, atunci inserează
+la începutul ei codul care modifică programul login.
+
+<P>
+Cu alte cuvinte compilatorul instalat arată cam aşa:
+
+<P>
+<PRE>
+modifica_login(program)
+{
+    ....
+    insereaza(program, cod_usa_din_spate);
+}    
+
+modifica_compilator(program)
+{
+    ....
+    insereaza(program, cod_modifica_login);
+    insereaza(program, cod_modifica_compilator);
+}
+
+analizeaza(program)
+{
+   ...
+   if (seamana(program, cod_login)) {
+      modifica_login(program);
+   }
+   if (seamana(program, cod_analizeaza)) {
+      modifica_compilator(program)
+   }
+   compilare_obisnuita();
+}
+</PRE>
+
+<P>
+Nimeni nu poate descoperi această stratagemă cu uşurinţă.  Un
+individ mai suspicios va analiza cu atenţie codul compilatorului, va
+observa că totul este în regulă, îl va compila folosind
+compilatorul existent.  Dar deja în acest moment compilatorul sigur a
+devenit infectat.  Pe de altă parte este foarte greu să compilezi
+ceva fără a folosi compilatorul de C (în Unix C este limbajul
+favorit).  Din această cauză este extrem de dificil de îndepărtat
+uşa din spate.
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Concluzii</A>
+</H1>
+
+<P>
+Voi încheia acest articol traducînd literal încheierea lui Thomson
+însuşi; cei la curent cu atacurile informatice petrecute în ultima
+vreme în România vor vedea aceste cuvinte ca fiind de o remarcabilă
+actualitate (vă reamintesc că textul este din 1984):
+
+<P>
+<BLOCKQUOTE>
+Morala este evidentă: nu poţi avea încredere în cod pe care nu
+l-ai creat <EM>în totalitate</EM> tu însuţi (mai ales cod de la
+companii care angajează oameni ca mine).  Nici o cantitate de
+verificare a codului la nivelul surselor sau analiză nu te va proteja
+în cazul în care foloseşti cod nesigur.  Demonstrînd posibilitatea
+acestui fel de atac am ales compilatorul de C.  Aş fi putut alege
+orice alt program care mînuieşte programe, cum ar fi un asamblor, un
+încărcător (loader) sau chiar microcod hardware.  Pe măsură ce
+nivelul programelor scade, aceste ``bug''-uri devin din ce in ce mai
+greu de detectat.  Un bug bine-instalat in microcod va fi aproape
+imposibil de detectat.
+</BLOCKQUOTE>
+<P>
+<BLOCKQUOTE>După ce am încercat sa vă conving că nu pot fi crezut, vreau să
+moralizez un pic.  Aş vrea să critic presa în felul în care
+tratează ``hackerii'' [...]  Actele făcute de aceşti copii sunt
+vandalism în cel mai bun caz, şi probabil încălcarea proprietăţii
+private şi furt în cel mai rău.  Numai inadecvarea legilor penale
+îi salvează pe aceşti hackeri de la urmăriri penale serioase.
+Companiile care sunt vulnerabile activităţii lor (şi majoritatea
+companiilor mari sunt vulnerabile) fac mari presiuni pentru a adapta
+legile.  [În Statele Unite în ziua de azi lucrurile stau deja mult
+mai bine din acest punct de vedere.]
+</BLOCKQUOTE>
+<P>
+<BLOCKQUOTE>Este o situaţie explozivă: pe de o parte presa, televiziunea şi
+filmele fac eroi din vandali numindu-i ``copii minune''.  Pe de altă
+parte actele acestor copii vor fi în curînd pedepsibile cu ani grei
+de închisoare.
+</BLOCKQUOTE>
+<P>
+<BLOCKQUOTE>Am privit aceşti copii depunînd mărturie în faţa Congresului.
+Este evident că nu-şi dau de loc seama de seriozitatea actelor lor.
+Este evident o prăpastie culturală.  Actul de a pătrunde într-un
+sistem de calcul ar trebui să fie însoţit de acelaşi stigmat
+social cu acela de a intra în casa vecinului.  Nu trebuie să conteze
+că uşa vecinului nu este încuiată.  Presa trebuie să înveţe că
+folosirea ``strîmbă'' a unui calculator nu este cu nimic mai
+uimitoare decît condusul în stare de ebrietate.
+
+</BLOCKQUOTE>
+
+<P>
+<BR><HR>
+
+</BODY>
+</HTML>

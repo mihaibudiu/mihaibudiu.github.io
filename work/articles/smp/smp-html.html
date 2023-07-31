@@ -1,0 +1,1146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Multiprocesoare simetrice: coerenţa cache-urilor Seria: arhitectura modernă a calculatoarelor</TITLE>
+<META NAME="description" CONTENT="Multiprocesoare simetrice: coerenţa cache-urilor Seria: arhitectura modernă a calculatoarelor">
+<META NAME="keywords" CONTENT="smp-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Multiprocesoare simetrice: coerenţa cache-urilor 
+<BR>
+Seria: arhitectura modernă a calculatoarelor</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- <TT>mihaib+@cs.cmu.edu</TT> 
+<BR><TT>http://www.cs.cmu.edu/~mihaib/</TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>octombrie 1998</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>cum se implementează coerenţa cache-urilor în
+maşinile multiprocesor
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>cache, programare în limbaj maşină,
+noţiuni elementare despre arhitectura calculatoarelor
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>multiprocesoare simetrice, coerenţă, cache,
+atomat finit
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html23"
+  HREF="smp-html.html">Paralelism şi performanţă</A>
+<LI><A NAME="tex2html24"
+  HREF="#SECTION00030000000000000000">Multiprocesoare</A>
+<LI><A NAME="tex2html25"
+  HREF="#SECTION00040000000000000000">Cache-uri</A>
+<UL>
+<LI><A NAME="tex2html26"
+  HREF="#SECTION00041000000000000000">Problema coerenţei</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html27"
+  HREF="#SECTION00050000000000000000">Un protocol bazat pe ascultarea magistralei</A>
+<LI><A NAME="tex2html28"
+  HREF="#SECTION00060000000000000000">Detaliile protocolului</A>
+<UL>
+<LI><A NAME="tex2html29"
+  HREF="#SECTION00061000000000000000">Semnalele</A>
+<LI><A NAME="tex2html30"
+  HREF="#SECTION00062000000000000000">Starea blocului</A>
+<LI><A NAME="tex2html31"
+  HREF="#SECTION00063000000000000000">Operaţiile pe magistrală</A>
+<LI><A NAME="tex2html32"
+  HREF="#SECTION00064000000000000000">Comunicaţia</A>
+<LI><A NAME="tex2html33"
+  HREF="#SECTION00065000000000000000">Automatul finit al bus-master-ului</A>
+<LI><A NAME="tex2html34"
+  HREF="#SECTION00066000000000000000">Automatul finit al unui cache non-master</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html35"
+  HREF="#SECTION00070000000000000000">Corectitudine</A>
+<LI><A NAME="tex2html36"
+  HREF="#SECTION00080000000000000000">Un exemplu: SGI Challenge</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+În ultimele numere din PC Report am văzut o serie de articole
+deosebit de interesante despre arhitectura internă a unor procesoare
+moderne (Pentium, AMD K6, etc.).  Articolele erau bine documentate,
+şi prezentau o cantitate impresionantă de informaţii într-un
+spaţiu mai curînd restrîns.  Ca atare mi-am propus să scriu o
+întreagă serie de articole numite generic ``arhitectura modernă a
+calculatoarelor'' în care să explic pe îndelete noţiunile
+esenţiale care apar în proiectarea acestor bijuterii tehnologice.
+Voi încerca pe rînd să ``demistific'' noţiuni ca ``superscalar'',
+``pipelined'', ``staţie de rezervare'', ``paralelism la nivel de
+instrucţiune'', ``multiprocesoare simetrice'', ``redenumirea
+regiştrilor'', ``forwarding'', ``protocol de coerenţă'',
+``predicţia salturilor'', ``execuţie speculativă'',
+``prefetching'', etc.
+
+<P>
+Adevărul este că în ultimii 10 ani arhitectura calculatoarelor a
+suferit nişte modificări uriaşe.  În urmă cu 20 de ani gama de
+putere şi preţ ale calculatoarelor avea extreme foarte
+îndepărtate; PCul era o jucărioară în comparaţie cu staţiile de
+lucru, care la rîndul lor erau puse în umbră de ``mainframes''; la
+vîrful ierarhiei tronau supercalculatoarele.  Cu fiecare an trecut,
+extremele s-au apropiat simţitor; practic toate firmele care făceau
+numai supercalculatoare au dat faliment<A NAME="tex2html1"
+  HREF="#foot51"><SUP>1</SUP></A>, iar diferenţele între puterea de calcul a unui PC şi a
+unei staţii de lucru s-au redus enorm; idei care se foloseau pe
+vremuri în proiectarea supercalculatoarelor sunt acum în mod comun
+implementate în procesoarele PCurilor de pe biroul fiecăruia.
+Complexitatea design-urilor şi ingeniozitatea soluţiilor sunt extrem
+de surprinzătoare pentru cel care nu a rămas la curent cu evoluţia
+domeniului fie şi pentru puţină vreme.
+
+<P>
+Complexitatea aparatelor este uriaşă, iar viteza cu care apar
+inovaţiile depăşeşte cu mult viteza cu care pot tasta eu texte,
+aşa că nu voi putea face decît o ilustrare a conceptelor
+esenţiale, care sper să poată da o idee generală despre anatomia
+unui calculator contemporan.
+
+<P>
+Prima tema pe care mi-am ales-o are de-a face cu arhitectura
+calculatoarelor cu mai multe procesoare; din spectrul larg de
+implementări (despre care vorbesc pe scurt în
+secţiunea&nbsp;<A HREF="smp-html.html#multiprocesoare">2</A>) voi ataca o singură opţiune, dar
+care este dominantă economic: cea a multiprocesoarelor simetrice cu
+memorie partajată bazate pe o magistrală comună.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Paralelism şi performanţă</A>
+</H1>
+
+<P>
+De vreo douăzeci de ani încoace se prezice moartea paradigmei
+arhitecturale numită ``von Neumann'', a calculatoarelor cu un singur
+procesor şi o unitate de memorie.  Unii experţi se
+încăpăţînează să prezică plafonarea performanţelor sistemelor
+bazate pe astfel de arhitecturi, iar fabricanţii de sisteme se
+încăpăţînează să contrazică prin sistemele construite
+predicţiile sumbre.  În trecere vreau să observ că numele
+``arhitectură von Neumann'', folosit adesea peiorativ pentru a indica
+o arhitectură depăşită, nu este întru totul potrivit; John von
+Neumann, care a murit în 1956, a fost conştient pe deplin de
+importanţa paralelismului; a şi scris nişte cărţi foarte
+interesante pe tema asta; von Neumann însă era un inginer
+extraordinar (de fapt era profesor de matematică la Princeton, cu o
+diplomă în inginerie chimică de la universitatea din Budapesta, dar
+nu o să ne incomodeze astfel de distincţii din a-l trata drept
+``inginer''), şi a realizat că pentru a rezolva problemele ele
+trebuie adesea simplificate, sparte în bucăţi mai mici care sunt
+apoi tratate independent.  Starea catastrofală a componentelor
+electronice disponibile pe vremea aceea (relativ la ziua de azi)
+făcea proiectarea şi întreţinerea unui sistem atît de complex ca
+un calculator o sarcină supraomenească, aşa că von Neumann a
+făcut problema tractabilă şi a rezolvat-o cu atît de mult succes
+încît şi acum, după 50 de ani, organizarea propusă de el este
+dominantă.
+
+<P>
+Oricum, fie că se plafonează sau nu performanţele unui
+microprocesor, să ai mai multe nu poate să strice prea tare, nu?
+Unde-s mai multe capete se gîndeşte mai bine.  Că lucrurile nu stau
+întotdeauna aşa reiese din următoarea întrebare: ``dacă un ins
+sapă o groapă în 60 de secunde, 60 de inşi sapă o groapă într-o
+secundă?''  E (aproape) clar că nu orice poate fi rezolvat în
+paralel cu eficacitate.  Asupra consecinţelor acestui enunţ, care
+sunt exprimate şi de celebra lege a lui Amdahl, vom reveni în alte
+articole.
+
+<P>
+Oricum, anumite activităţi se pot într-adevăr face relativ repede
+dacă avem mai multe resurse computaţionale la-ndemînă.  De
+exemplu, într-o întreagă suită de articole despre sistemele de
+operare, am observat că sistemele de operare moderne permit executarea
+simultană a mai multor programe printr-un mecanism simplu numit
+time-sharing, care constă în executarea întreţesută a grupe de
+instrucţiuni din programe diferite (adică programul 1 merge 10
+milisecunde, după care programul 2 10 milisecunde, etc.).  Dacă avem
+mai multe procesoare, atunci putem executa cu adevărat mai multe
+programe deodată: cîte unul pe fiecare procesor.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Multiprocesoare</A>
+</H1>&nbsp;<A NAME="multiprocesoare"></A>
+<P>
+Există mai multe feluri de maşini cu mai multe procesoare, dar noi
+ne vom ocupa de unul singur în acest articol.  Celelalte variante
+merită desigur menţiune; să le-o dăm.
+
+<P>
+Putem împărţi multiprocesoarele în două mari categorii, care
+diferă din modul în care se accesează memoria în care se află
+programele şi datele.
+
+<P>
+
+<UL>
+<LI>Prima variantă pune toate procesoarele la un loc, ca
+utilizatoare ale unei singure memorii.  Aceste sisteme se numesc cu
+memorie partajată (<EM>shared memory</EM>).
+
+<P>
+Există două feluri mari de sisteme cu memorie partajată:
+
+<P>
+
+<UL>
+<LI>Sisteme cu acces uniform la memorie (UMA, <EM>uniform memory
+access</EM>): dacă oricare ar fi sursa şi destinaţia unui cuvînt de
+date accesat timpul este cam acelaşi.  Noi vom vorbi în acest
+articol despre o clasă de maşini UMA numite multiprocesoare
+simetrice (SMP: <EM>Symmetric Multi-Processors</EM>).  Vom vedea imediat
+de ce se numesc aşa.
+
+<P>
+</LI>
+<LI>A doua variantă se numeşte NUMA: de la ne-uniform.  În astfel
+de sisteme fiecare procesor are propria lui memorie la care poate
+ajunge repede, iar accesul la memoria altuia ia ceva mai mult timp.
+</LI>
+</UL>
+
+<P>
+</LI>
+<LI>În fine, avem sistemele la care un procesor nu poate accesa
+nicicum memoria altuia, iar comunicaţia între procesoare se face
+prin mesaje (<EM>message passing</EM>).
+</LI>
+</UL>
+
+<P>
+Trebuie spus că tipul în care se încadrează o maşină depinde
+foarte mult de nivelul la care o privim.  De pildă dacă luăm o
+colecţie de staţii de lucru, la nivel hardware acestea categoric
+comunică prin mesaje.  Pe de altă parte putem instala pe ele un
+nivel software (cum ar fi de pildă sistemul de operare Mach), care
+folosind tehnici de memorie virtuală permite maşinilor să partajeze
+un acelaşi spaţiu de adrese virtual, astfel încît ce scrie o
+maşina la adresa 5 celelalte pot citi de la adresa 5; în cazul ăsta
+maşinile au ceea ce se numeşte memorie distribuită partajată (DSM:
+<EM>Distributed Shared Memory</EM>), care este un tip de NUMA.
+
+<P>
+Un alt exemplu despre fragilitatea clasificării: chiar maşinile
+cărora acest articol le este dedicat, multiprocesoarele simetrice,
+sunt categorisite drept maşini UMA.  Dar vom vedea că fiecare
+procesor dintr-un sistem SMP are de fapt un cache (o memorie locală
+mică), la care accesul este mult mai rapid decît la memoria globală
+a sistemului; la acest nivel maşina arată de fapt ca o NUMA...
+
+<P>
+O maşină cu mai multe procesoare se numeşte ``simetrică'' dacă
+toate procesoarele au roluri egale: fiecare procesor poate executa
+orice tip de cod.  Prin contrast, maşinile asimetrice dedică anumite
+procesoare anumitor treburi, cum ar fi executarea codului
+întreruperilor, executarea codului sistemului de operare, etc.  Pe
+noi ne vor interesa procesoarele simetrice pentru că sunt cele mai
+reprezentate în maşinile comerciale; există şi PCuri cu 2 sau 4
+procesoare Pentium.
+
+<P>
+În fine, vom mai disocia calculatoarele cu memorie partajată în
+două categorii distincte, după felul în care ajung la memorie.
+Tipul care ne va interesa, şi din care cele mai multe maşini SMP fac
+parte, este cel al maşinilor bazate pe o magistrală comună (bus):
+toate procesoarele pun cererile de acces la memorie pe o singură
+sîrmă.  Vom vedea că acesta este un factor crucial.  PCurile SMP
+sunt de acest tip, ca şi cele mai multe maşini comerciale (staţiile
+ULTRASparc, SGI Challenge, etc.)
+
+<P>
+Pe de altă parte, există maşini care au o reţea de interconectare
+<EM>interconnection network</EM> între procesoare şi (de obicei
+multiplele) module de memorie.
+
+<P>
+<PRE>
+sistem bazat pe magistrala comuna     sistem bazat pe retea de interconectare  
+     -----------                              ------------------ 
+     | memorie |                              |    retea de    | 
+     -----------                              | interconectare | 
+          ||                                  ------------------ 
+     ===========   magistrala                    |    |    | 
+     |    |    |                                ---- ---- ----
+    ---- ---- ----                              |m1| |m2| |m3| memorie locala
+    |c1| |c2| |c3| cacheuri                     ---- ---- ---- 
+    ---- ---- ----                               |    |    | 
+     |    |    |                                ---- ---- ---- 
+    ---- ---- ----                              |c1| |c2| |c3| cacheuri 
+    |p1| |p2| |p3| procesoare                   ---- ---- ---- 
+    ---- ---- ----                               |    |    | 
+                                                ---- ---- ---- 
+                                                |p1| |p2| |p3| procesoare 
+                                                ---- ---- ----
+</PRE>
+
+<P>
+Diferenţa esenţială este de <EM>scalabilitate</EM>: este extrem de
+greu de construit o maşină bazată pe bus cu multe procesoare, din
+cauză că, aşa cum e uşor de imaginat, de de la un anumit număr de
+procesoare încolo bus-ul devine factorul care limitează viteza de
+comunicare.  
+
+<P>
+Pe de altă parte, maşinile cu reţea de interconectare pot creşte
+mai bine, pînă la sute sau chiar mii de procesoare (maşina IBM care l-a
+bătut pe Kasparov, un SP2, e bazată pe o reţea care
+interconectează pînă la o mie de procesoare).
+
+<P>
+Trebuie spus că multiprocesoarele sunt încă departe de a fi
+panaceul universal în a rezolva probleme computaţionale dificile,
+mai ales din cauză că scrierea de programe pentru astfel de maşini
+este extrem de dificilă.  Oricum, cercetarea în domeniu este în
+continuare febrilă, şi o mulţime de schimbări revoluţionare
+aşteaptă probabil la cotitură.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Cache-uri</A>
+</H1>
+
+<P>
+Chiar dacă avem un singur procesor, viteza de răspuns a unei memorii
+DRAM este de vreo 15 ori mai mică decît viteza cu care procesorul
+doreşte date şi instrucţiuni, iar disparitatea de viteză tinde să
+crească.  Din cauza aceasta fiecare procesor modern este echipat cu o
+memorie SRAM rapidă, plasată foarte aproape de procesor, numită cache.
+(SRAMul este mult mai scump decît DRAMul; pentru acest motiv nu
+înlocuim tot DRAMul cu SRAM.)  Despre cache am scris cel puţin două
+articole în PC Report: <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#cache">unul</a>
+în martie 1997 şi <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#masuri">unul</a>
+luna trecută, în octombrie 1998.  Dacă nu aveţi revistele sunteţi
+bineveniţi să luaţi articolele din pagina mea de web.  Cu toate astea
+vom vedea că subiectul nu a fost epuizat, pentru că miezul acestui
+articol tot despre cache-uri va vorbi.
+
+<P>
+Ideea de bază este relativ simplă: programele au nevoie foarte rar
+de o cantitate mare de date sau instrucţiuni simultan; ele tind să
+refolosească de mai multe ori o cantitate relativ mică de date.
+Această proprietate, verificată empiric, se numeşte ``localitate''.
+Din cauza asta un cache este util: dacă cuprinde toate datele
+necesare, sau măcar o mare parte dintre ele, atunci eficienţa
+creşte simţitor, pentru că timpul mediu de acces este redus simţitor.
+
+<P>
+Procesoarele dintr-un sistem SMP nu fac excepţie: fiecare este
+echipat cu un cache (sau chiar două, de mărimi diferite, unul fiind
+mai mare şi mai lent).
+
+<P>
+
+<H2><A NAME="SECTION00041000000000000000">
+Problema coerenţei</A>
+</H2>
+
+<P>
+Toate bune şi frumoase, aparent: în loc să punem un procesor pe
+magistrală punem două, şi maşina merge de două ori mai repede.
+Hopa, să nu ne grăbim.  O grămadă de probleme urîte apar de
+îndată.
+
+<P>
+Să luăm un exemplu simplu, în care două procesoare accesează
+aceeaşi adresă de memorie.  Iată o posibilă evoluţie în timp:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="CENTER" COLSPAN=2>Instrucţiune</TD>
+<TD ALIGN="CENTER" COLSPAN=2>cache</TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Timp</TD>
+<TD ALIGN="LEFT">Procesor 1</TD>
+<TD ALIGN="LEFT">Procesor 2</TD>
+<TD ALIGN="LEFT">Procesor 1</TD>
+<TD ALIGN="LEFT">Procesor 2</TD>
+<TD ALIGN="LEFT">Memorie</TD>
+</TR>
+<TR><TD ALIGN="LEFT">0</TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT">mem[5]=3</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1</TD>
+<TD ALIGN="LEFT">read 5</TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT">cache[5]=3</TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT">mem[5]=3</TD>
+</TR>
+<TR><TD ALIGN="LEFT">2</TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT">read 5</TD>
+<TD ALIGN="LEFT">cache[5]=3</TD>
+<TD ALIGN="LEFT">cache[5]=3</TD>
+<TD ALIGN="LEFT">mem[5]=3</TD>
+</TR>
+<TR><TD ALIGN="LEFT">3</TD>
+<TD ALIGN="LEFT">write 5, 4</TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT">cache[5]=4</TD>
+<TD ALIGN="LEFT">cache[5]=3</TD>
+<TD ALIGN="LEFT">mem[5]=3</TD>
+</TR>
+<TR><TD ALIGN="LEFT">4</TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+<TD ALIGN="LEFT">write  5,2</TD>
+<TD ALIGN="LEFT">cache[5]=4</TD>
+<TD ALIGN="LEFT">cache[5]=2</TD>
+<TD ALIGN="LEFT">mem[5]=3</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Avem acum nu mai puţin de 3 valori diferite pentru adresa 5: un 4 în
+cache-ul procesorului 1, un 2 la procesorul 2 şi 3 în memoria
+însăşi.  Noi am pus procesoarele la aceeaşi memorie tocmai ca să
+poată comunica mai uşor; dacă vroiam izolare foloseam două
+calculatoare.  Care este acum de fapt conţinutul real al adresei 5?
+Cache-urile au devenit <EM>ne-coerente</EM>.
+
+<P>
+Trebuie menţionat că problema coerenţei nu apare numai în
+sistemele SMP; ea apare la o mulţime de nivele în proiectarea
+sistemelor, oricînd avem de-a face cu <EM>replicarea</EM> (copierea)
+informaţiei; ea apare de exemplu cînd avem de-a face cu replicarea
+unor servere de web, sau cu sisteme de fişiere în reţea (Network
+File System, Andrew File System, etc), sau în oricare sistemele cu un
+singur procesor atunci cînd un alt controler de magistrală (de
+pildă discul) accesează memoria prin acces direct (<EM>DMA: Direct
+Memory Access</EM>).
+
+<P>
+Problema aceasta apare de îndată ce cineva poate modifica o copie a
+datelor; problema este că celelalte copii vor avea valori diferite.
+Din cauza asta trebuie luate măsuri speciale ca celelalte valori să
+fie aduse la zi imediat.  Orice întîrziere se poate solda cu efecte
+bizare pentru programator, care se aşteaptă ca efectele execuţiei
+unei instrucţiuni să fie imediat vizibile.
+
+<P>
+Deşi problema pare relativ simplă, există zeci de soluţii foarte
+diferite calitativ, fiecare cu avantajele şi dezavantajele ei.  Ele
+diferă prin complexitatea implementării în hardware, prin gradul de
+scalabilitate (cît de bine se pot implementa pentru maşini cu mai
+multe procesoare), prin modul în care se manifestă pentru
+programator, prin gradul de performanţă pe care îl oferă.
+
+<P>
+Interesant este că soluţiile cele mai economice din punct de vedere
+al impactului administrativ (overhead) cer colaborarea explicită a
+programatorului şi oferă o vedere puţin bizară asupra memoriei.
+În acest articol vom vedea însă o soluţie relativ ``simplă''.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Un protocol bazat pe ascultarea magistralei</A>
+</H1>
+
+<P>
+Acum vom vedea cum multiprocesoarele simetrice bazate pe o magistrală
+comună reuşesc să sincronizeze cache-urile.  Faptul că avem o
+singură magistrală pentru toate procesoarele este crucial.  Iată de
+ce: orice transfer de date între memorie şi un cache se va petrece
+pe magistrală.  Magistrala este din punct de vedere electric un
+singur circuit, conectat la toate cache-urile.  Astfel, atunci cînd
+procesorul 1 aduce cuvîntul 5 din memorie în cache-ul său local,
+transferul se desfăşoară pe magistrală şi toată lumea vede acest
+lucru.  Celelalte procesoare vor şti deci că o copie a cuvîntului 5
+se află la procesorul 1, aşa că atunci cînd vor dori să o
+modifice vor negocia cu acesta.
+
+<P>
+Pentru că fiecare cache se uită la magistrală şi atunci cînd
+alţii discută, acest gen de protocoale se numesc ``snoopy
+bus-based''.  ``To snoop'' înseamnă ``a-şi băga nasul în
+treburile altora'', adică exact ceea ce se întîmplă.
+
+<P>
+Ca să înţelegem avantajul schemei, să ne gîndim la schema
+alternativă, care foloseşte o reţea de interconectare.  Cînd
+procesorul P1 ia ceva din memorie, această tranzacţie nu este
+vizibilă pentru nimeni altcineva.  Asta înseamnă că P2 o să
+trebuiască să afle acest lucru (de la memorie) abia cînd încearcă
+să acceseze acelaşi obiect, şi abia după aceea poate să iniţieze
+negocierea cu P1.
+
+<P>
+Perfect; avem un mecanism extrem de ieftin pentru a strînge
+informaţii despre plasamentul datelor (trasul cu urechea).  Acum mai
+trebuie să punem la punct un protocol care să folosească această
+informaţie.
+
+<P>
+Problema centrală sunt scrierile; atunci cînd vrem să modificăm o
+valoare, ca să garantăm consistenţa, trebuie să fim siguri că nu
+mai există alte copii care după modificare vor avea valori diferite.
+(Soluţia de a modifica toate copiile simultan pune mari dificultăţi
+tehnice.)  Ce vom face: atunci cînd vrem să scriem la adresa 5, vom
+face în aşa fel încît nimeni altcineva să nu mai aibă o copie a
+datelor de acolo.  Din cauză că am făcut ``snoop'' ştim precis
+cine are copii; ceea ce avem de făcut este să rugăm pe toţi
+aceştia să <EM>invalideze</EM> copiile lor, scoţîndu-le din cache.
+Cînd nimeni nu mai are o copie, luăm noi una, pe care o putem
+modifica apoi în deplină siguranţă.
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Detaliile protocolului</A>
+</H1>
+
+<P>
+Chiar dacă lucrurile par simple, pînă la o implementare completă
+şi corectă mai sunt mulţi paşi de făcut, şi chiar multe alegeri.
+Noi o să dăm o anumită posibilă implementare, şi o să indicăm
+pe alocuri unde sunt posibile variaţiuni.  Vom fi relativ compleţi
+în detalii, în aşa fel încît un arhitect să poată implementa
+în mod neambiguu din descrierea noastră un sistem.
+
+<P>
+
+<H4><A NAME="SECTION00060010000000000000">
+Tipul de cache:</A>
+</H4> fiecare procesor va avea un cache
+<EM>write-back</EM>.  Asta înseamnă că atunci cînd procesorul scrie
+date, valoarea modificată rămîne în cache şi nu este trimisă
+spre memorie.  (Varianta alternativă, <EM>write-through</EM> ar utiliza
+magistrala, şi aşa supra-încărcată, la fiecare scriere, pentru a
+trimite datele în memorie.)
+
+<P>
+
+<H4><A NAME="SECTION00060020000000000000">
+Bus master:</A>
+</H4> În fiecare clipă un singur cache va avea
+dreptul de a folosi magistrala.  Dacă două procesoare simultan
+găsesc datele în cache-urile proprii, atunci ele pot continua
+execuţia în paralel.  Dacă însă amîndouă vor să acceseze
+memoria, atunci unul dintre ele va trebui să aştepte pînă
+celălalt termină.  Regula după care se decide cine are dreptul să
+folosească magistrala se numeşte <EM>arbitrarea magistralei</EM>;
+există mai multe protocoale pentru asta, dar, pentru a nu ne îneca
+în detalii, nu o să discutăm despre cum se face asta.
+
+<P>
+
+<H4><A NAME="SECTION00060030000000000000">
+Copiile datelor:</A>
+</H4> Fiecare informaţie din memorie se poate
+afla simultan în mai multe cache-uri, dacă nu este modificată; o
+informaţie care are mai multe copii <EM>nici nu poate fi
+modificată</EM> (e ``read-only'').  Dacă cineva vrea să modifice o
+valoare, trebuie să obţină o copie <EM>exclusivă</EM>.  Odată
+obţinută o astfel de copie, după modificare valoarea este marcată
+ca ``murdărită'' (<EM>dirty</EM>).
+
+<P>
+
+<H4><A NAME="SECTION00060040000000000000">
+Propagarea copiilor:</A>
+</H4> Dacă un cache doreşte să obţină
+o copie, o să facă o cerere pe magistrală.  Memoria va oferi datele
+dacă acestea sunt ``curate'', altfel ele vor veni de la cache-ul
+posesor.  Cînd nişte date ``murdare'' sunt copiate la un alt
+procesor, ele sunt copiate şi în memorie, şi devin apoi ``curate''.
+
+<P>
+
+<H2><A NAME="SECTION00061000000000000000">
+Semnalele</A>
+</H2>
+
+<P>
+Să facem o schemă care arată cum vor comunica procesorul, cache-ul
+şi magistrala.  Fiecare săgeată arată direcţia în care
+informaţia este transportată.
+
+<P>
+<PRE>
+                                  cache
+    ________     adresa     _________________               | m |
+   |        |-------------&gt;|adresa stare date|  operatie    | a |
+   |        |     date     |-----------------|-------------&gt;| g |
+   |procesor|&lt;------------&gt;|  1    curat   3 |   adresa     | i |
+   |        | scrie/citeste|  2    murdar  2 |-------------&gt;| s |
+   |        |-------------&gt;|  3   invalid  - |    date      | t |
+   |        | gata / blocat|                 |&lt;------------&gt;| r |
+   |________|&lt;-------------|_________________|              | a |
+                                                            | l |
+                                                            | a |
+</PRE>
+
+<P>
+
+<H2><A NAME="SECTION00062000000000000000">
+Starea blocului</A>
+</H2>
+
+<P>
+Aşa cum indică şi desenul anterior, fiecare bloc dintr-un cache va
+fi într-una din următoarele stări:
+
+<P>
+<DL>
+<DT><STRONG>Curat:</STRONG></DT>
+<DD>valoarea din bloc este validă şi nu poate fi
+modificată de posesor; aceeaşi valoare se află în memoria
+principală, şi poate şi în alte cache-uri;
+</DD>
+<DT><STRONG>Murdar:</STRONG></DT>
+<DD>blocul este modificat de procesorul curent, şi nu
+există nici o altă copie a sa; valoarea din memorie nu este
+corectă;
+</DD>
+<DT><STRONG>Invalid:</STRONG></DT>
+<DD>acest bloc nu se găseşte de loc în cache.
+</DD>
+</DL>
+
+<P>
+
+<H2><A NAME="SECTION00063000000000000000">
+Operaţiile pe magistrală</A>
+</H2>
+
+<P>
+Cînd un procesor devine master de magistrală, comanda lansată de
+acesta va fi pusă pe magistrală şi observată de toată lumea.
+Vom presupune că din clipa în care un procesor devine master de
+magistrală el rămîne astfel pînă cînd tranzacţia dorită de el
+a fost terminată.  Această presupunere este destul de restrictivă
+pentru sistemele reale, în care timpul de reacţie al memoriei poate
+fi de sute de cicli; un sistem real complicat va permite executarea
+operaţiilor în două faze diferite, cerere-răspuns (astfel de
+operaţii se numesc <EM>split-transaction</EM>: tranzacţie despicată,
+din motive evidente).  Din păcate protocoalele cu tranzacţii
+despicate devin extrem de complicate, mai ales dacă vrem să ne
+asigurăm de corectitudinea lor.
+
+<P>
+Pe magistrală se poate afla una din următoarele cereri:
+
+<P>
+<DL>
+<DT><STRONG>Citeşte:</STRONG></DT>
+<DD>procesorul vrea să citească o copie ne-exclusivă;
+</DD>
+<DT><STRONG>Scrie:</STRONG></DT>
+<DD>unicul procesor care posedă un bloc murdar trimite
+valoarea lui spre memorie (sau/şi un alt cache);
+</DD>
+<DT><STRONG>Invalidează:</STRONG></DT>
+<DD>masterul vrea să modifice blocul indicat; pentru
+aceasta roagă pe toată lumea care are o copie să o invalideze, iar
+pe eventualul posesor exclusiv să scrie valoarea copiei sale.
+</DD>
+</DL>
+
+<P>
+
+<H2><A NAME="SECTION00064000000000000000">
+Comunicaţia</A>
+</H2>
+
+<P>
+Vom folosi următorul tabel cu 7 linii pentru a indica semnalele care
+circulă de la/spre un cache:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">Cine iniţiază operaţia</TD>
+<TD ALIGN="CENTER">procesor / bus</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Operaţia cerută</TD>
+<TD ALIGN="CENTER">citire / scriere / invalidare</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Este blocul cerut în cache</TD>
+<TD ALIGN="CENTER">da / nu</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Operaţia executată pe bus</TD>
+<TD ALIGN="CENTER">citire / scriere / nimic / invalidare</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Datele aflate pe bus</TD>
+<TD ALIGN="CENTER">adresa</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Modificarea în cache-ul local</TD>
+<TD ALIGN="CENTER">adresa</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Ce face procesorul local</TD>
+<TD ALIGN="CENTER">citeşte / scrie / blocat</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Primele trei rînduri descriu o cerere care soseşte la un cache;
+următoarele 4 rînduri indică cum acea cerere este executată de
+către un cache.  Figurile care urmează conţin astfel de tabele, dar
+numai coloana a doua.
+
+<P>
+
+<H2><A NAME="SECTION00065000000000000000">
+Automatul finit al bus-master-ului</A>
+</H2>
+
+<P>
+Dificultatea proiectării unui astfel de sistem este mare din cauză
+că trebuie să descriem ce face fiecare părticică avînd la
+dispoziţie numai informaţia vizibilă acelei părticele.  Noi, ca
+proiectanţi, putem ``vedea'' sistemul în ansamblul său, dar un
+cache nu poate să vadă decît sîrmele cu care e conectat; cacheul 1
+nu are nici cea mai mică idee despre conţinutul lui 2 (înafară de
+ceea ce a inferat pe parcurs).
+
+<P>
+Modul în care se descrie comportarea fiecărei entităţi este
+folosind <EM>un automat finit</EM>.  Noi vom construi automatul finit al
+unui cache, care arată exact ce acţiune trebuie acesta să facă ca
+răspuns la fiecare stimul venit din afară.
+
+<P>
+Un automat finit este o colecţie de <EM>stări</EM>, în care circuitul
+se poate afla la un moment dat.  Voi indica în desene stările prin
+cerculeţe.  Între stări există săgeţi numite <EM>tranziţii</EM>.
+Fiecare tranziţie este etichetată cu o tabelă ca cea de mai sus;
+primele rînduri indică cererile făcute asupra cache-ului, fie că
+ele vin din partea procesorului local, fie dinspre bus, de la masterul
+de magistrală; ultimele rînduri indică reacţia cache-ului.
+
+<P>
+În realitate, fiecare cuvînt din cache are un astfel de automat
+finit; noi vom arăta cum se comportă automatul finit asociat
+cuvîntului din cache care trebuie modificat de tranzacţia curentă.
+Pentru a simplifica expunerea, vom desena două automate finite, unul
+care este valabil pentru procesorul master de magistrală, şi unul
+care este valabil pentru celelalte procesoare.  Fiecare procesor va
+acţiona după una din reguli, depinzînd de starea lui la acel moment
+de timp.
+
+<P>
+Figura&nbsp;<A HREF="smp-html.html#master">1</A> arată automatul asociat unui master de
+magistrală.  Automatul este destul de complicat, şi are 10
+tranziţii posibile, numerotate în figură (sunt doar 5 săgeţi, dar
+unele tranziţii folosesc aceeaşi săgeată).  Le vom analiza una
+cîte una.  Rîndurile albe din tabele indică faptul că nu contează
+ce se află acolo, sau că acolo nu se află nimic.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="master"></A><A NAME="153"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 1:</STRONG>
+Acţiunile unui master de magistrală atunci
+cînd procesorul vrea să opereze asupra blocului x iar în cache se
+află blocul y.</CAPTION>
+<TR><TD><IMG
+ WIDTH="541" HEIGHT="452" BORDER="0"
+ SRC="img1.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{master.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Cititorul care este plictisit de minuţiozitatea detaliilor din desen
+şi text va trebui cu siguranţă să-şi caute o meserie înafara
+proiectării de calculatoare; modelul pe care îl prezentăm aici este
+de fapt o simplificare pedagogică substanţială; ceea ce se
+construieşte în realitate în procesoarele pe care le folosim în
+fiecare zi este cu mult mai complicat.  Voi spune cîteva cuvinte mai
+jos despre încrederea pe care o putem avea în astfel de design-uri.
+
+<P>
+Pe de altă parte uneltele pe care le prezint aici pentru a descrie
+comportarea sunt chiar cele folosite de către designerii
+profesionişti: automate finite cu reguli detaliate de tranziţie.
+
+<P>
+Iată explicaţia tranziţiilor, în ordine crescătoare a
+dificultăţii:
+
+<P>
+<DL>
+<DT><STRONG>Tranziţia numărul 3:</STRONG></DT>
+<DD>Procesorul (linia 1 din tabelul nr. 3)
+doreşte să citească (indicat de linia 2) de la adresa x.  Cuvîntul
+este prezent în cache (linia 3), şi este ``curat'' (starea curentă
+este ``curat'').  Rezultatul este foarte simplu: nici o acţiune nu este
+iniţiată pe magistrală (liniile 4, 5 sunt goale în tabel);
+cuvîntul este imediat servit procesorului, care termină operaţia de
+citire (linia 7).
+
+<P>
+</DD>
+<DT><STRONG>Tranziţia 8:</STRONG></DT>
+<DD>Procesorul doreşte să citească de la adresa x,
+care este în cache, şi este marcată ``murdară''.  Citirea se poate
+face imediat, fără a implica magistrala.
+
+<P>
+</DD>
+<DT><STRONG>Tranziţia 7:</STRONG></DT>
+<DD>Procesorul vrea să scrie la adresa x, iar
+cuvîntul de la adresa x este prezent şi este deja murdar.  Scrierea
+se poate face imediat, fără a implica magistrala.
+
+<P>
+Primele trei tranziţii descrise mai sus sunt foarte simple, pentru
+că datele sunt imediat disponibile şi pentru că nu trebuie recurs
+la magistrală.  Iată acum trei situaţii care se pot rezolva cu
+cîte o tranziţie fiecare, dar care au nevoie de magistrală:
+
+<P>
+</DD>
+<DT><STRONG>Tranziţia 1:</STRONG></DT>
+<DD>Procesorul doreşte să citească de la adresa x.
+În cache obiectul de la adresa x este marcat ca fiind invalid.  În
+cazul asta pe magistrală este lansată comanda de citire (linia 4 din
+tabel) de la adresa x (linia 5).  Modelul nostru presupune că datele
+de la adresa x vor fi trimise imediat de cel care le posedă (memoria
+sau un alt cache), deci ele vor fi încărcate în cache (linia 6);
+simultan ele vor fi trimise la procesor, care termină astfel
+operaţia de citire (linia 7).  Pentru că procesorul are de acum o
+copie a valorii, blocul este marcat ca ``curat'' (tranziţie de la
+Invalid la Curat).
+
+<P>
+</DD>
+<DT><STRONG>Tranziţia 4:</STRONG></DT>
+<DD>Procesorul vrea să citească x, dar în cache
+în acel loc se află altceva (linia 3), care este curat.  Pentru că
+acea valoare este curată, ea este imediat ştearsă din cache
+(există o copie în memorie), pe bus este pusă o cerere pentru x
+(linia 5); presupunem că x vine imediat.  x este apoi încărcat în
+cache, şi procesorul termină citirea.
+
+<P>
+</DD>
+<DT><STRONG>Tranziţia 6:</STRONG></DT>
+<DD>Vreau să scriu în cuvîntul de la adresa x, am
+o copie a lui, dar nu sunt singurul.  Atunci pun o cerere de
+invalidare (linia 4) a adresei x (linia 5) pe magistrală; în acest
+fel toţi posesorii lui x sunt rugaţi să-l invalideze (ştiu că
+nimeni nu are o copie murdară).  Toată lumea va reacţiona corect la
+această cerere, aşa că putem modifica valoarea lui x în cache-ul
+local.  Valoarea ca atare devine ``murdară''.
+
+<P>
+Şi astea trei situaţii au fost relativ simple, datorită modelului
+nostru care nu foloseşte ``split transaction'' (am presupus că
+datele cerute vin imediat; dacă durează mai mulţi cicli, practic
+procesorul master şi bus-ul sunt blocate pînă cînd datele
+aşteptate de master ajung la destinaţie).  
+
+<P>
+Operaţiile rămase sunt mult mai încîlcite, şi cer o <EM>succesiune de mai multe tranziţii pentru a fi îndeplinite</EM>.
+Presupunem, din nou pentru a simplifica, că acelaşi cache rămînă
+master de magistrală pînă termină operaţia începută, chiar daca
+asta implică mai multe transferuri pe magistrală.
+
+<P>
+Iată nişte operaţii care cer cîte <EM>două tranzacţii</EM> pentru a
+fi executate (pe bus trebuie să circule două valori diferite).
+Procesorul master este deci blocat timp de două operaţii.
+
+<P>
+</DD>
+<DT><STRONG>Tranziţia 5 (+6):</STRONG></DT>
+<DD>Vreau să scriu în cuvîntul de la x, dar
+nu-l am.  Atunci fac doi paşi: întîi obţin o copie a cuvîntului
+(tranziţia 5), după care continui cu tranzacţia 6, invalidînd
+celelalte copii şi scriind valoarea.  Tranziţia 5 va bloca
+procesorul (linia 7) pînă se termină tranziţia 6 (abia atunci pot
+să fac ceea ce mi s-a cerut).
+
+<P>
+</DD>
+<DT><STRONG>Tranziţia 9 (+1):</STRONG></DT>
+<DD>Vreau să citesc la adresa x, dar locul e
+ocupat de cuvîntul de la y, care e şi murdar pe deasupra.  Atunci,
+în tranziţia 9, pun acest cuvînt pe bus, şi rog memoria să-l
+copieze.  Blochez procesorul.  După ce am scris cuvîntul, marchez
+linia ca invalidă şi execut tranziţia 1, pentru a citi cuvîntul
+cerut.
+
+<P>
+</DD>
+<DT><STRONG>Tranziţia 2 (+6):</STRONG></DT>
+<DD>Vreau să scriu la adresa x, dar nu am nici
+o copie a lui x (e marcată ``invalidă'').  Atunci în primul rînd
+(tranziţia 2) obţin o copie a lui x ca la o citire (linia 4)
+obişnuită, după care pot face scrierea (tranziţia 6).
+
+<P>
+În fine, avem o situaţie, cea mai neplăcută, cînd pentru a face
+ceea ce procesorul ne cere, trebuie să facem nu mai puţin de 3
+tranziţii!  Situaţia apare cînd vreau să scriu într-un cuvînt,
+dar am în acel loc un altul murdar.
+
+<P>
+</DD>
+<DT><STRONG>Tranziţia 10 (+1, +6):</STRONG></DT>
+<DD>Încep prin a goli cuvîntul murdar cu
+tranziţia 10; marchez linia ``invalidă''.  Apoi fac tranziţia 1,
+pentru a obţine o copie ``curată'', şi apoi fac tranziţia 6,
+pentru a invalida celelalte copii şi marchez copia curentă ca
+murdară.
+
+<P>
+</DD>
+</DL>
+
+<P>
+
+<H2><A NAME="SECTION00066000000000000000">
+Automatul finit al unui cache non-master</A>
+</H2>
+
+<P>
+Bravo!  Dacă aţi ajuns pînă aici sunteţi foarte răbdători, sau
+aţi sărit suficient de multe paragrafe.
+
+<P>
+Ce-a rămas este mult mai simplu: descrierea acţiunilor unui cache
+``sclav'' (care nu e master de magistrală).  Schema este mult mai
+simplă, pentru că un astfel de cache nu poate folosi de loc
+magistrala, cu o singură excepţie: cînd primeşte o cerere de
+citire a unui bloc murdar, în care caz trebuie să-l pună pe
+magistrală pentru master.  Toată schema este în figura&nbsp;<A HREF="smp-html.html#sclav">2</A>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="sclav"></A><A NAME="159"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 2:</STRONG>
+Acţiunile unui sclav.</CAPTION>
+<TR><TD><IMG
+ WIDTH="541" HEIGHT="373" BORDER="0"
+ SRC="img2.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{sclav.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+<DL>
+<DT><STRONG>Tranziţia 4:</STRONG></DT>
+<DD>bus-ul vrea o anumită adresă pe care nu o avem;
+nu facem nimic;
+
+<P>
+</DD>
+<DT><STRONG>Tranziţia 3:</STRONG></DT>
+<DD>bus-ul vrea o adresă pe care o avem, dar care e
+curată; atunci memoria o să satisfacă această cerere, deci
+iarăşi nu facem nimic;
+
+<P>
+</DD>
+<DT><STRONG>Tranziţia 2:</STRONG></DT>
+<DD>bus-ul vrea o adresă pe care nu o am; nu fac
+nimic;
+
+<P>
+</DD>
+<DT><STRONG>Tranziţia 1:</STRONG></DT>
+<DD>primesc o cerere de invalidare a unui bloc curat
+pe care îl am: atunci marchez blocul ca invalid;
+
+<P>
+</DD>
+<DT><STRONG>Tranziţia 5:</STRONG></DT>
+<DD>bus-ul vrea să citească un bloc pe care îl am
+murdar; atunci pun valoarea pe bus, memoria va copia această valoare.
+Eu o marchez curată.
+</DD>
+</DL>
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Corectitudine</A>
+</H1>
+
+<P>
+Perfect; am specificat fiecare acţiune în funcţie de circumstanţe
+suficient de detaliat pentru a putea fi implementată.  Dar cum de
+ştim că protocolul este corect?
+
+<P>
+De pildă poate părea ciudat că în ultima diagramă nu e nici o
+săgeată din starea ``murdar'' care să aibă în tabel o invalidare.
+Este cumva o omisiune?  Nu, pentru că aşa cum am proiectat
+protocolul, un cache poate lansa o invalidare numai după ce are o
+copie a datelor, deci ele nu pot fi simultan murdare altundeva.
+
+<P>
+Inutil de spus că verificarea unor sisteme reale este o treabă
+extrem de grea; modelul nostru este simplificat într-o mulţime de
+privinţe.  Ceea ce e într-un Pentium este de multe ori mai complicat
+decît modelul prezentat (Pentium are cache-uri ne-blocante, şi dacă
+procesorul nu primeşte nişte date pe care le-a cerut, el poate cere
+altele; datele pot sosi într-o ordine diferită de cea a cererilor!).
+
+<P>
+Marile companii de hardware (ex. Intel, IBM) folosesc pentru a
+verifica corectitudinea unor astfel de scheme tot calculatoarele.  Pe
+de o parte se folosesc simulări şi teste complete: sistemul este
+implementat ca un program, care apoi este testat pe toate
+combinaţiile posibile de ordini de evenimente care pot apărea.
+Treaba asta este extrem de complicată, pentru că numărul de teste
+creşte enorm cu complexitatea circuitului, ajungînd rapid la valori
+impractice chiar pentru cele mai performante calculatoare.
+
+<P>
+O altă metodă este cea de a folosi scule speciale pentru a verifica
+corectitudinea; o ramură specială a ştiinţei calculatoarelor se
+numeşte ``model theory'' şi se ocupă cu metode de a analiza sisteme
+finite extrem de complicate folosind ecuaţiile care descriu
+traiectoria sistemului.  Un automat finit este o descriere suficient
+de precisă pentru a face o analiză exactă posibilă.  Metodele se
+bazează pe teorii matematice destul de sofisticate, pentru a reduce
+substanţial spaţiul căutărilor (logici temporale, diagrame binare
+de decizie, simulare şi bisimulare, abstracţie, etc.).  Din păcate
+metodele practice sunt cam cu 10 ani în urma tehnologiei: nici nu se
+pune problema de a verifica exhaustiv circuitele contemporane, chiar
+şi cu scule atît de sofisticate.
+
+<P>
+
+<H1><A NAME="SECTION00080000000000000000">
+Un exemplu: SGI Challenge</A>
+</H1>
+
+<P>
+Iată caracteristicile tehnice ale unei maşini reale care foloseşte
+tehnicile prezentate: SGI Challenge; acesta este cel mai mare
+multiprocesor bazat pe bus, cu 36 de procesoare MIPS R4400, o
+adevărată minune tehnologică.
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">Procesoare</TD>
+<TD ALIGN="LEFT">pînă la 36</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Memorie</TD>
+<TD ALIGN="LEFT">pînă la 16 Gb</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Lăţime bus (date)</TD>
+<TD ALIGN="LEFT">256 biţi</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Lăţime bus (adrese)</TD>
+<TD ALIGN="LEFT">40 biţi</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Rata de transfer</TD>
+<TD ALIGN="LEFT">1.22 Gb/sec</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Tranzacţii</TD>
+<TD ALIGN="LEFT">model ``split''</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Frecvenţa magistralei</TD>
+<TD ALIGN="LEFT">50Mhz</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Penalizarea pentru un rateu în cache</TD>
+<TD ALIGN="LEFT">&gt 164 cicli</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Costul unei operaţii care nu găseşte datele în cache este extrem de
+substanţial, datorită complexităţii protocoalelor (în <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#masuri">articolul
+anterior</a> din PC Report am văzut ca la un Pentium uniprocesor
+durata este de ordinul a 13 cicli de procesor).  Din cauza asta
+implementarea unor protocoale de coerenţă eficiente este extrem de
+importantă, dar performanţa obţinută datorită unui număr ridicat de
+procesoare compensează costul ridicat al execuţiei fiecăruia.
+
+<P>
+Voi încheia acest articol aici, deşi îmi propusesem să mai atac
+şi alte subiecte; rezultatul însă pare destul de consistent, aşa
+că o să amîn pentru alte ocazii discuţii despre subiecte subtile
+cum ar fi: alte protocoale de coerenţă, sau impactul modului în
+care e implementat un protocol de coerenţă pentru performanţa
+anumitor construcţii din programele utilizatorilor.  Vă îndemn să
+studiaţi cu atenţie diagramele de mai sus.  Chiar dacă conceptele
+sunt pe alocuri simplificate, scenariile sunt toate plauzibile.  În
+definitiv e foarte plăcut să înţelegi sculele cu care lucrezi, nu?
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot51">... faliment</A><A NAME="foot51"
+ HREF="smp-html.html#tex2html1"><SUP>1</SUP></A>
+<DD>La ora asta
+supercalculatoare mai fabrică numai Intel, IBM, Silicon Graphics --
+care a cumpărat în 1987 cea mai celebră firmă de
+supercalculatoare, Cray Research -- Hitachi şi dacă nu mă înşel
+Fujitsu.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

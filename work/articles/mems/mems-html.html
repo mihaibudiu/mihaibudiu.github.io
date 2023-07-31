@@ -1,0 +1,551 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Discuri micro-electro-mecanice</TITLE>
+<META NAME="description" CONTENT="Discuri micro-electro-mecanice">
+<META NAME="keywords" CONTENT="mems-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Discuri micro-electro-mecanice</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- <TT>mihaib+@cs.cmu.edu</TT> 
+<BR><TT><A NAME="tex2html2"
+  HREF="http://www.cs.cmu.edu/~mihaib/">http://www.cs.cmu.edu/~mihaib/</A></TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>decembrie 2000</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>parametrii discurilor magnetice construite pe baza
+dispozitivelor micro-electro-mecanice
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>funcţionarea unui hard-disc
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>MEMS, disc
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Cuprins</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html19"
+  HREF="mems-html.html">Evoluţie şi revoluţie tehnologică</A>
+<LI><A NAME="tex2html20"
+  HREF="#SECTION00030000000000000000">Dispozitive micro-electro-mecanice (MEMS)</A>
+<LI><A NAME="tex2html21"
+  HREF="#SECTION00040000000000000000">MEMS pentru stocarea de informaţii</A>
+<LI><A NAME="tex2html22"
+  HREF="#SECTION00050000000000000000">Parametri</A>
+<LI><A NAME="tex2html23"
+  HREF="#SECTION00060000000000000000">Direcţii viitoare de cercetare</A>
+<LI><A NAME="tex2html24"
+  HREF="#SECTION00070000000000000000">Concluzii</A>
+<LI><A NAME="tex2html25"
+  HREF="#SECTION00080000000000000000">Alte surse de informaţie</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Evoluţie şi revoluţie tehnologică</A>
+</H1>
+
+<P>
+Marea majoritate a calculatoarelor fabricate şi vîndute în ziua de
+azi, indiferent de mărime şi cost, folosesc cam aceleaşi tehnologii
+fundamentale: memorii DRAM, microprocesoare, hard-disc-uri, reţele de
+interconectare (de exemplu, bus-ul între procesor şi memorii, dar şi
+reţelele locale).  Am lăsat deoparte dispozitivele de
+intrare-ieşire care sunt ceva mai variate, dar care sunt mai puţin
+esenţiale pentru funcţia de calcul a maşinii.  Orice cercetător
+în domeniile ne-teoretice ale calculatoarelor trebuie să ţină cont
+de parametri acestor variate dispozitive (de exemplu, un procesor la
+ora actuală poate funcţiona la o frecvenţă a ceasului intern de
+pînă 1500 de megahertzi) şi de evoluţia lor în viitorul apropiat
+(de exemplu, ne aşteptăm ca frecvenţa de ceas să se dubleze la
+fiecare 18 luni).
+
+<P>
+Din cînd în cînd însă apar în arenă jucători noi, care nu
+respectă regulile jocului tradiţional.  Aceşti jucători sunt noi
+tehnologii, care încearcă să ofere o soluţie radical diferită
+unei probleme clasice.  Despre o astfel de tehnologie va vorbi pe
+scurt şi articolul de faţă.  În general, soarta unei tehnologii
+revoluţionare este greu de anticipat; o mulţime de factori
+contribuie la succesul sau insuccesul său.  Una dintre cele mai mari
+bariere pe care o tehnologie nouă trebuie să le doboare este
+eficienţa deosebită atinsă de tehnologiile tradiţionale.  
+
+<P>
+De exemplu, în acest text voi prezenta o tehnologie care vrea să
+suplinească discurile dure (hard-disc) folosite în mod curent pentru
+stocarea informaţiei.  Însă aceste dispozitive sunt fabricate în
+cantităţi astronomice, şi ca atare beneficiază de <EM>economii de
+scară</EM>: preţul unitar este mult mai redus dacă se produc foarte
+multe unităţi.  Deoarece tehnologiile noi sunt adoptate lent, la
+început nu vor beneficia de o economie de scară; pentru a lupta
+cot-la-cot împotriva celor tradiţionale, nu este suficient să fie
+la fel de bune: trebuie să fie mult mai bune, să ofere calităţi
+suplimentare, pentru a fi adoptate încetul cu încetul, înainte de a
+deveni şi foarte economice.
+
+<P>
+De aceea, chiar dacă veţi fi fascinaţi (cum şi eu sunt) de
+calităţile dispozitivelor pe care le voi prezenta, asta nu
+înseamnă că de mîine le veţi putea cumpăra din magazin: ele mai
+au o luptă foarte lungă de dus pînă la a fi adoptate pe scară
+largă.  la ora actuală ele sunt încă doar în laboratoarele de
+cercetare; cu toate că se arată foarte promiţătoare, nu e limpede
+dacă vor izbîndi în războiul economic.  Eu cred însă că veţi
+fi intrigaţi de combinaţia lor de calităţi suficient pentru a nu
+regreta că aţi citit acest articol.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Dispozitive micro-electro-mecanice (MEMS)</A>
+</H1>
+
+<P>
+Dispozitivele micro-electro-mecanice sunt, aşa cum arată şi numele
+lor, rodul cercetării interdisciplinare la graniţa a trei domenii
+diferite: mecanică fină (foarte, foarte fină), electronică şi
+semiconductori.
+
+<P>
+Numele lor englezesc este ``Micro-electro-mechanical systems'',
+abreviat MEMS.  Voi folosi în continuare această prescurtare.
+
+<P>
+Aceste dispozitive conţin mecanisme de dimensiuni de ordinul
+micronilor, capabile de mişcări foarte precise.  Adesea aceste
+mecanisme sunt acţionate fie de forţe electro-magnetice, fie de
+energie chimică, fie luminoasă.  Pentru comparaţie, un fir de păr
+omenesc are o grosime de aproximativ 100 de microni.  Dispozitivele
+MEMS sunt deci de zeci de ori mai mici decît grosimea unui fir de
+păr!
+
+<P>
+Un fapt foarte interesant este că tehnologia cea mai folosită pentru
+a fabrica mecanisme atît de mici este aceeaşi ca cea folosită
+pentru construirea circuitelor integrate pe bază de siliciu.  Asta
+înseamnă că metodologia este foarte bine înţeleasă, şi că
+fabricaţia este foarte eficientă.  Circuitele integrate (deci şi
+MEMS) sunt fabricate prin <EM>litografie</EM>, folosind lumina
+ultravioletă trecută printr-o <EM>mască</EM> cu umbre pentru a grava
+semne pe o pilulă minusculă de siliciu.  Lumina acţionează
+simultan asupra întregii suprafeţe, putînd crea simultan obiecte
+foarte complicate.
+
+<P>
+Credeţi ca e vorba de SF?  Dimpotrivă, MEMS sunt deja folosite pe
+scară largă în multe domenii, şi vor deveni din ce în ce mai
+întîlnite.  Iată cîteva exemple:
+
+<P>
+
+<UL>
+<LI>Fiecare maşina echipată cu air-bag foloseşte accelerometre
+pentru a detecta momentul impactului (şocul se traduce printr-o
+deceleraţie foarte puternică).  Aceste accelerometre sunt bazate pe
+dispozitive MEMS.
+
+<P>
+</LI>
+<LI>Filmul Star-Wars, episodul I ``The Phantom Menace'' al lui
+George Lucas a inaugurat o nouă epocă în cinematografie prin
+introducerea cinematografiei digitale.  Imaginea este filmată cu
+camere digitale, care nu au filme procesate chimic, ci citesc imaginea
+pe dispozitive fotoelectrice şi o stochează pe hard-disc-uri.
+Proiecţia imaginii se face folosind proiectoare digitale, care
+reproduc pixelii individuali.  Aceste proiectoare, foarte puţine la
+număr deocamdată, costînd cam o sută de mii de dolari fiecare,
+conţin milioane de mici oglinzi care reflectă lumina spre ecran.
+Fiecare oglindă se mişcă de 24 de ori pe secundă (pentru fiecare
+cadru), fiind acţionată de un dispozitiv MEMS.
+
+<P>
+</LI>
+<LI>În urmă cu cîteva luni compania Lucent a anunţat primul
+ruter complet optic pentru reţele de calculatoare<A NAME="tex2html3"
+  HREF="#foot60"><SUP>1</SUP></A>.  Acest ruter nu mai transformă semnalul optic într-unul
+electric pentru prelucrare şi înapoi, ci foloseşte oglinzi
+MEMS pentru a comuta direct semnalul optic.
+
+<P>
+</LI>
+<LI>Există motoare de dimensiunea a zeci microni, roboţi
+articulaţi, pensete de cîţiva microni şi tot felul de alte
+dispozitive miraculoase, ale căror aplicaţii de la medicină la cele
+militare sunt nenumărate.
+</LI>
+</UL>
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+MEMS pentru stocarea de informaţii</A>
+</H1>
+
+<P>
+În acest articol voi discuta doar despre una dintre posibilele
+aplicaţii ale dispozitivelor MEMS, dezvoltată în cadrul unui grup
+de cercetare din Departamentul de Inginerie Electrică şi
+Calculatoare al Universităţii Carnegie Mellon.  Figurile din acest
+text au fost puse la dispoziţie cu amabilitate de Steve Schlosser,
+care lucrează la teza sa de doctorat în cadrul acestui colectiv.
+Este vorba de utilizarea dispozitivelor MEMS pentru stocarea de
+informaţii persistente, asemenea discurilor.
+
+<P>
+Figura&nbsp;<A HREF="mems-html.html#circuit">1</A> ilustrează arhitectura sistemului conceput la
+Carnegie Mellon.  Figura&nbsp;<A HREF="mems-html.html#layout">2</A> arată cum sunt plasate datele
+pe mediul magnetic.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="circuit"></A><A NAME="99"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 1:</STRONG>
+Arhitectura dispozitivelor MEMS pentru
+stocarea informaţiei.  Informaţia este stocată pe un mediu
+magnetic, asemănător celui folosit pentru hard-disk-urile
+comerciale.  Întregul circuit are cam 1cm<sup>2</sup>.  Mediul
+magnetic este 
+mobil, putînd fi deplasat de-a lungul axelor X şi Y cu aproximativ
+100 microni.  Mişcarea mediului este realizată cu un cîmp
+electrostatic, format între ``pieptenii'' de la extremităţi.
+Controlînd valoarea cîmpului pentru fiecare din piepteni se obţine
+deplasarea dorită pe cele două axe.  Arcurile de la colţuri
+balansează cîmpul electrostatic şi aduc mediul mobil la loc după
+ce cîmpul este oprit.
+Deasupra mediului magnetic sunt plasate 6400 de capete de
+citire-scriere, înfăţişate în partea de sus a figurii.  Fiecare
+cap are mecanisme proprii de control, care reglează distanţa pe
+verticală dintre cap şi mediul magnetic, corectînd fluctuaţiile
+datorate variaţiei de temperatură.</CAPTION>
+<TR><TD><IMG
+ WIDTH="631" HEIGHT="474" BORDER="0"
+ SRC="img2.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=14cm\epsffile{circuit.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="layout"></A><A NAME="105"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 2:</STRONG>
+Plasamentul datelor pe dispozitivul MEMS.  Din
+cauza deplasamentului limitat, fiecare cap accesează o porţiune
+separată a mediului magnetic.  Informaţia este înregistrată în
+<EM>sectoare</EM> de-a lungul axei Y.  Fiecare sector conţine 8 octeţi
+de date codificaţi folosind un cod corector de erori (Error
+Correcting Code, ECC), şi informaţii despre identitatea sectorului.
+Acestea din urmă sunt folosite de servo-mecanismele ataşate capului
+pentru a calibra poziţia capului, adaptînd dispozitivul la
+imperfecţiuni de fabricaţie şi variaţii de dimensiune datorate
+încălzirii produse de funcţionare.</CAPTION>
+<TR><TD><IMG
+ WIDTH="631" HEIGHT="472" BORDER="0"
+ SRC="img3.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=14cm\epsffile{layout.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Parametri</A>
+</H1>
+
+<P>
+Pentru a putea spune dacă dispozitivele MEMS au oarece merite,
+trebuie să vedem care sunt parametrii lor de funcţionare, şi cum se
+compară cu cei ai unui disc modern (sau chiar ai unui disc din
+viitorul apropiat, cînd dispozitivele MEMS vor intra pe piaţă).
+În tabela de mai jos am sintetizat unii dintre cei mai importanţi
+parametri.  Valorile lor sunt aproximative: cele pentru MEMS sunt
+derivate fie din măsurători, fie folosind modele fizice sau
+electrice ale dispozitivelor (încă nu există un prototip complet
+fabricat).  Parametrii discurilor sunt combinaţi şi extrapolaţi de
+la felurite discuri performante din ziua de astăzi.
+
+<P>
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">Parametru</TD>
+<TD ALIGN="RIGHT">MEMS</TD>
+<TD ALIGN="RIGHT">disc</TD>
+</TR>
+<TR><TD ALIGN="LEFT">lăţimea unui bit</TD>
+<TD ALIGN="RIGHT">30x30nm<sup>2</sup></TD>
+<TD ALIGN="RIGHT">10000nm<sup>2</sup></TD>
+</TR>
+<TR><TD ALIGN="LEFT">acceleraţia saniei cu mediul magnetic</TD>
+<TD ALIGN="RIGHT">15g</TD>
+<TD ALIGN="RIGHT">-</TD>
+</TR>
+<TR><TD ALIGN="LEFT">rata de transfer a informaţiei</TD>
+<TD ALIGN="RIGHT">400 kbiţi/s/cap</TD>
+<TD ALIGN="RIGHT">&nbsp;</TD>
+</TR>
+<TR><TD ALIGN="LEFT">viteza de deplasare</TD>
+<TD ALIGN="RIGHT">12mm/s</TD>
+<TD ALIGN="RIGHT">10000 rotaţii pe minut</TD>
+</TR>
+<TR><TD ALIGN="LEFT">timp de amortizare a oscilaţiilor după deplasare</TD>
+<TD ALIGN="RIGHT">0.5ms</TD>
+<TD ALIGN="RIGHT">-</TD>
+</TR>
+<TR><TD ALIGN="LEFT">viteza maximă de transfer a informaţiei</TD>
+<TD ALIGN="RIGHT">54Mbps</TD>
+<TD ALIGN="RIGHT">20Mbps</TD>
+</TR>
+<TR><TD ALIGN="LEFT">număr de capete active simultan</TD>
+<TD ALIGN="RIGHT">1000</TD>
+<TD ALIGN="RIGHT">1</TD>
+</TR>
+<TR><TD ALIGN="LEFT">număr de suprafeţe magnetice</TD>
+<TD ALIGN="RIGHT">1</TD>
+<TD ALIGN="RIGHT">8x2</TD>
+</TR>
+<TR><TD ALIGN="LEFT">număr total de capete</TD>
+<TD ALIGN="RIGHT">6400</TD>
+<TD ALIGN="RIGHT">16</TD>
+</TR>
+<TR><TD ALIGN="LEFT">capacitatea</TD>
+<TD ALIGN="RIGHT">5.8G</TD>
+<TD ALIGN="RIGHT">80G</TD>
+</TR>
+<TR><TD ALIGN="LEFT">timp mediu de acces la informaţie</TD>
+<TD ALIGN="RIGHT">2ms</TD>
+<TD ALIGN="RIGHT">7ms</TD>
+</TR>
+<TR><TD ALIGN="LEFT">cost/Gb</TD>
+<TD ALIGN="RIGHT">10$</TD>
+<TD ALIGN="RIGHT">1$</TD>
+</TR>
+<TR><TD ALIGN="LEFT">putere consumată</TD>
+<TD ALIGN="RIGHT">1mW/cap activ</TD>
+<TD ALIGN="RIGHT">2.5W</TD>
+</TR>
+<TR><TD ALIGN="LEFT">putere consumată în standby</TD>
+<TD ALIGN="RIGHT">0.05mW</TD>
+<TD ALIGN="RIGHT">600mW</TD>
+</TR>
+<TR><TD ALIGN="LEFT">timp de tranziţie din activ în standby</TD>
+<TD ALIGN="RIGHT">1ms</TD>
+<TD ALIGN="RIGHT">3-8s</TD>
+</TR>
+<TR><TD ALIGN="LEFT">rezistenţă la şoc</TD>
+<TD ALIGN="RIGHT">excelentă</TD>
+<TD ALIGN="RIGHT">slabă</TD>
+</TR>
+</TABLE>
+
+<P>
+La o prima privire putem spune că dispozitivele MEMS pierd la
+dimensiuni şi cost.  În schimb cîştigă la timp de acces, rata de
+transfer a informaţiei, densitate informaţională şi consum de
+putere.
+
+<P>
+Multe din aceste avantaje pot fi uşor explicate dacă studiem
+diferenţele dintre cele două dispozitive.  Un disc magnetic trebuie
+să se rotească permanent pentru a putea fi citit.  Asta implică un
+consum constant de energie, chiar şi cînd discul nu este folosit.
+Discurile din calculatoare portabile sunt programate ca după un timp
+de inactivitate să oprească discurile.  Dezavantajul acestei metode
+este că repornirea consumă şi mai multă energie şi durează
+destul de mult timp.  Un dispozitiv MEMS în poziţie standby
+(nefolosit) nu are nimic de făcut; ``sania'' cu mediul magnetic stă
+în echilibru.
+
+<P>
+Timpul de acces extrem de rapid al dispozitivelor MEMS este datorat
+distanţei foarte mici de parcurs pentru a accesa orice bit:
+deplasarea maximă este de 100 de microni pe fiecare axă.  Prin
+contrast, un disc în medie trebuie să facă o jumătate de rotaţie
+şi să deplaseze capetele pe pista dorită.
+
+<P>
+Viteza de transfer a informaţiei este superioară în dispozitivele
+MEMS pentru că foarte multe capete pot citi şi transmite
+informaţiile <EM>simultan</EM>.  Prin comparaţie, un disc magnetic are
+un număr foarte mic de capete, care arareori sunt folosite simultan.
+
+<P>
+Din păcate nu toate capetele pot fi active simultan pentru un
+dispozitiv MEMS, fiindcă consumul de energie este proporţional cu
+numărul de capete active.  Simulări arată că dacă mai mult de
+circa 1000 de capete sunt active, energia nu se poate disipa suficient
+de rapid, iar încălzirea produsă pune în pericol integritatea
+circuitului.
+
+<P>
+Densitatea sporită de informaţie provine din faptul că biţii
+pot fi stocaţi de un MEMS în pătrăţele, pe cînd un disc
+obişnuit foloseşte dreptunghiuri de 16 ori mai lungi decît late.
+MEMS poate funcţiona cu o arie mai mică din cauză că precizia de
+poziţionare e mai mare pentru un aparat atît de mic.
+
+<P>
+Folosind aceşti parametri, a fost construit un simulator care
+funcţional se comportă ca un disc.  Simulatorul de disc a fost
+inserat într-un simulator mai mare, care simulează activitatea
+întregului sistem de operare.  Apoi au fost executate mai multe
+programe pentru a vedea impactul noului dispozitiv pentru performanţa
+aplicaţiilor.
+
+<P>
+Rezultatele au fost foarte plăcute: din cauza timpului de aşteptare
+mediu mult redus, aplicaţiile care erau limitate de disc au
+beneficiat de o creştere substanţială a vitezei de execuţie.
+Bazele de date şi linker-ul (programul care crează executabilul
+final după compilarea unui program) au beneficiat cel mai mult.
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Direcţii viitoare de cercetare</A>
+</H1>
+
+<P>
+În acest articol am trecut sub tăcere o grămadă de dificultăţi
+potenţiale.  Mai există importante probleme de rezolvat pe toate
+planurile înainte de a transforma circuitele micro-electro-mecanice
+în dispozitive fiabile de stocare a informaţiei.  De exemplu, nu
+este de loc limpede care este fiabilitatea unor dispozitive care au
+atîtea părţi active.  Cîte capete pot fi defecte, şi care este
+durata medie de viaţă?  Coduri mai puternice pentru corectarea de
+erori, şi tehnici folosite în discurile RAID (Redundant Array of
+Inexpensive Disks) pot fi folosite pentru a compensa unele erori.
+
+<P>
+Alte posibilităţi constau în a găsi locul ideal în sistem pentru
+un dispozitiv MEMS; costul acestuia este undeva între disc şi o
+memorie FLASH, iar funcţionalitatea este asemănătoare.  Se pot
+imagina o mulţime de aplicaţii utile: cache pentru un disc mai mare
+şi mai lent, memorie stabilă pentru aparate portabile, cum ar fi
+telefoane celulare, aparate muzicale digitale, etc.  Aplicaţiile
+militare ale unui dispozitiv rezistent la şocuri şi cu capacitate
+mare de stocare sunt nelimitate.
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Concluzii</A>
+</H1>
+
+<P>
+În acest text am aruncat o privire sumară într-un domeniu
+interdisciplinar foarte ``fierbinte'', cel al dispozitivelor
+micro-electro-mecanice.  Unele din aplicaţiile acestora au păşit
+deja din domeniul SF în realitatea imediată.  O cercetare febrilă
+pentru aplicaţiile noii tehnologii se desfăşoară în mai multe
+domenii; foarte multe universităţi şi companii au centre speciale
+de cercetare consacrate acestei tehnologii.
+
+<P>
+În acest text am descris pe scurt o serie de studii care analizează
+arhitectura şi performanţele unui sistem bazat pe MEMS pentru
+stocarea de informaţii persistente, asemănător unui hard-disc.
+Rezultatele preliminare arată că performanţa MEMS este superioară
+discurilor.  Cu toate acestea, costul şi fiabilitatea sunt încă
+necunoscute.  Succesul noii tehnologii depinde acum în mare măsură
+de felul în care inginerii, fabricanţii şi comercianţii vor
+răspunde întrebărilor rămase.
+
+<P>
+
+<H1><A NAME="SECTION00080000000000000000">
+Alte surse de informaţie</A>
+</H1>
+
+<P>
+O pagină de web cu multe informaţii despre MEMS şi cu şi mai multe
+legături pe web este la <TT><A NAME="tex2html6"
+  HREF="http://mems.isi.edu">http://mems.isi.edu</A></TT>.
+
+<P>
+Cercetarea în domeniul micro-electro-mecanic din Departamentul de
+Inginerie Electrică şi Calculatoare al Universităţii Carnegie
+Mellon are o pagină la <TT><A NAME="tex2html7"
+  HREF="http://www.ece.cmu.edu/~mems">http://www.ece.cmu.edu/~mems</A></TT>.  Acest
+laborator este preocupat mai ales de nivele ``joase'': fabricaţie,
+materiale, proprietăţi fizice, electrice şi mecanice, etc.
+
+<P>
+Proiectul care foloseşte MEMS pentru stocarea de informaţii este
+parte din ``Laboratory of Computer Science'' din acelaşi departament.
+Pagina sa de web este la
+<TT><A NAME="tex2html8"
+  HREF="http://www.lcs.ece.cmu.edu/research/MEMS/index.html">http://www.lcs.ece.cmu.edu/research/MEMS/index.html</A></TT>.
+
+<P>
+În luna mai a anului 2000 prestigioasa revista Scientific American a
+consacrat un număr special viitorului dispozitivelor de stocare.  Din
+fericire, articolul de fond este disponibil electronic la
+<TT><A NAME="tex2html9"
+  HREF="http://www.sciam.com/2000/0500issue/0500toig.html">http://www.sciam.com/2000/0500issue/0500toig.html</A></TT>; conţine şi
+o secţiune despre dispozitive MEMS.
+
+<P>
+Proiectul industrial cel mai avansat pentru stocarea de date pe MEMS
+este proiectul Millipede, al companiei IBM (literal ``miriapod'').
+Una dintre publicaţiile foarte ample ale acestui proiect este
+disponibilă la
+<TT><A NAME="tex2html10"
+  HREF="http://www.research.ibm.com/journal/rd/443/vettiger.html">http://www.research.ibm.com/journal/rd/443/vettiger.html</A></TT>.  Multe
+idei sunt asemănătoare cu cele ale proiectului CMU, dar există
+diferenţe substanţiale în privinţa materialelor şi metodei
+folosite pentru stocare.
+
+<P>
+<BR><HR><H4>Note</H4>
+<DL>
+<DT><A NAME="foot60">... calculatoare</A><A NAME="foot60"
+HREF="mems-html.html#tex2html3"><SUP>1</SUP></A> <DD>Pentru un articol
+despre rutere şi rolul lor în Internet vedeţi şi <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#internet">textul</a>
+meu din PC Report din mai 1998, disponibil şi din pagina mea de web.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

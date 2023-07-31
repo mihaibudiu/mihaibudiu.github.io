@@ -1,0 +1,820 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Shell-ul; cazul Unix</TITLE>
+<META NAME="description" CONTENT="Shell-ul; cazul Unix">
+<META NAME="keywords" CONTENT="shell-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Shell-ul; cazul Unix</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- mihaib+@cs.cmu.edu 
+<BR><TT>http://www.cs.cmu.edu/~mihaib</TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>11 aprilie 1997</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>Ce este un shell; un exemplu pentru Unix.
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>Programare în C sub Unix de cel puţin
+un 1 an vechime.
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>proces, apel de sistem, shell, biblioteci,
+interpretor.
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html17"
+  HREF="shell-html.html">Ce este un shell?</A>
+<UL>
+<LI><A NAME="tex2html18"
+  HREF="#SECTION00021000000000000000">Bucla principală</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html19"
+  HREF="#SECTION00030000000000000000">Cel mai simplu exemplu</A>
+<UL>
+<LI><A NAME="tex2html20"
+  HREF="#SECTION00031000000000000000">Cărămizile: funcţiile de bibliotecă</A>
+<LI><A NAME="tex2html21"
+  HREF="#SECTION00032000000000000000">Apeluri de sistem</A>
+<LI><A NAME="tex2html22"
+  HREF="#SECTION00033000000000000000">Ansamblul</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html23"
+  HREF="#SECTION00040000000000000000">Recompensă</A>
+<LI><A NAME="tex2html24"
+  HREF="#SECTION00050000000000000000">Rezumat</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+Orice utilizator al unui calculator interacţionează la un moment dat
+cu shell-ul.  Fie că apare sub forma unor iconiţe mititele, fie sub
+forma unui <EM>prompt</EM> care invită la tastarea unor comenzi, shell-ul
+este prima interfaţă pe care un sistem de operare o oferă
+utilizatorilor săi.  În acest articol ne propunem să arătăm că
+shell-ul este un program ca oricare altul şi să arătăm cum poate
+fi construit unul în cazul sistemului de operare Unix.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Ce este un shell?</A>
+</H1>
+
+<P>
+Cuvîntul <EM>shell</EM> înseamnă în limba engleză <EM>scoică</EM> sau
+carapace.  Asta este şi programul care se numeşte shell pentru
+sistemul de operare: un înveliş care îmbracă sistemul, primul
+lucru pe care îl vedem dintr-un sistem de operare, şi pe care
+trebuie să-l dăm la o parte pentru a zări măruntaiele moluştei.
+
+<P>
+Pentru a fi concreţi ne vom plasa în contextul sistemului de operare
+Unix.  Ideile prezentate sunt însă valabile şi pentru alte sisteme
+de operare, deşi corespondenţa poate să nu fie evidentă.
+
+<P>
+Teza centrală a acestui articol este următoarea: un nucleu de sistem
+de operare este o bibliotecă de funcţii, care pune la dispoziţia
+utilizatorului o serie de operaţii, numite ``apeluri de sistem''
+(vedeţi şi articolul ``<a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#nucleu">Nucleul</a>''
+din PC Report Decembrie 1996).  Shell-ul este un simplu program care
+foloseşte aceste operaţii pentru a oferi o primă interfaţă cu
+utilizatorul.
+
+<P>
+
+<PRE>
+                            utilizator
+                            |       ^
+                     comenzi|       |rezultate
+                    --------v-------|---------
+                    |    shell  |  proces    |
+                    |           |            |
+                    |---v----------------^---|
+                    |    \_creaza_proces_/   |
+                    |                        |
+                    |         nucleu         |
+                    --------------------------
+                    |       hardware         |
+                    --------------------------
+</PRE>
+
+<P>
+
+<H2><A NAME="SECTION00021000000000000000">
+Bucla principală</A>
+</H2>
+
+<P>
+Misiunea unui shell este de a citi de la utilizator comenzi pe care
+apoi le interpretează şi le execută.  Executarea comenzilor se face
+folosind apelurile de sistem.  Pe scurt, orice shell are structura
+următoare:
+
+<P>
+<PRE>
+while (1) {
+/* 1 */   scrie_prompt();
+/* 2 */   linie = citeste_linie_de_la_utilizator();
+/* 3 */   comanda = identifica_comanda(linie);
+/* 4 */   argumente = identifica_argumente(linie);
+/* 5 */   executa_comanda(comanda, argumente);
+/* 6 */   asteapta_terminarea_comenzii();
+}
+</PRE>
+
+<P>
+Apelurile de sistem sunt folosite pentru:
+
+<P>
+
+<UL>
+<LI>A scrie utilizatorului mesaje (prompt);
+</LI>
+<LI>a citi tastele apăsate de utilizator;
+</LI>
+<LI>a ruga nucleul să execute o comandă;
+</LI>
+<LI>a aştepta executarea acesteia să se termine.
+</LI>
+</UL>
+
+<P>
+Observaţi că shell-ul <EM>nu</EM> scrie nici un fel de rezultate pe
+ecran (poate doar cînd s-a produs o eroare)!  Shell-ul citeşte un
+nume de comandă, pe care o execută ca un proces separat.  Acest
+proces este cel care tipăreşte rezultatele văzute de utilizator.
+
+<P>
+De exemplu, cînd folosiţi un sistem Unix, o interacţiune tipică
+este:
+
+<P>
+<PRE>
+UNIX(r) System V Release 4.0 (hoho.cs.cornell.edu)
+
+login: budiu
+Password:
+Last login: Thu Apr 10 17:42:44 from hyndla.cs.cornel
+[budiu]:/home/budiu $ /bin/id
+uid=831(budiu) gid=831(budiu)
+[budiu]:/home/budiu $ /bin/ls /
+cdrom       etc         lib         usr         export      lost+found
+var         mnt         proc        bin         dev         home
+net         sbin        devices     kernel      tmp
+</PRE>
+
+<P>
+Textul <TT>login:</TT> este scris de programul <TT>getty</TT>, care
+aşteaptă să vină cineva la terminal.  Textul <TT>Password:</TT> este
+scris de programul <TT>login</TT>, care vrea să mă identifice.  După
+ce am fost identificat, porneşte shell-ul.  (Paragraful acesta se
+poate dovedi eliptic; vom reveni poate cu altă ocazie despre sistemul
+de autentificare din Unix; vedeţi şi articolul din PC Report ``<a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#usa">Uşa
+din spate</a>'' din aprilie 1997 pentru informaţii).
+
+<P>
+În fine, textul <TT>[budiu]:/home/budiu $</TT> este scris de shell-ul
+meu.  Acesta este <EM>prompt</EM>-ul, prin care shell-ul mă invită să
+tastez o comandă pentru el.  Dacă ne referim la pseudo-codul de mai
+sus, (din secţiunea ``bucla principală'') acum s-a executat linia
+<TT>/* 1 */</TT>.
+
+<P>
+Eu tastez întîi <TT>/bin/id</TT> ca să văd cine sunt eu.  Shell-ul
+execută linia <TT>/* 2 */</TT>, captînd caracterele apăsate de mine
+şi strîngîndu-le la un loc.
+
+<P>
+Cînd tastez ENTER, shell-ul pricepe că am terminat o comandă, şi
+trece la liniile <TT>/* 3 */</TT> şi apoi <TT>/* 4 */</TT>.  Descifrează
+cuvîntul <TT>/bin/id</TT>, care este numele unui fişier.  Acest fişier
+este codul executabil al comenzii <TT>id</TT>, pe care eu o doresc
+executată.  Pentru că nu mai există alte cuvinte după <TT>/bin/id</TT>, această comandă nu are argumente.  (Sintaxa comenzilor
+este o convenţie impusă de cel care a scris shell-ul).
+
+<P>
+Acum shell-ul meu trece la faza <TT>/* 5 */</TT>, rugînd nucleul
+sistemului de operare să execute fişierul <TT>/bin/id</TT>.  Shell-ul
+între timp aşteaptă terminarea ei, în faza <TT>/* 6 */</TT>.  Comanda
+<TT>/bin/id</TT> este executată şi provoacă scrierea pe ecran a
+textului <TT>uid=831(budiu) gid=831(budiu)</TT>.
+
+<P>
+Pentru că <TT>id</TT> s-a terminat, shell-ul o ia de la capăt în bucla
+<TT>while</TT>, citind o nouă comandă.
+
+<P>
+Pentru că voi tasta de data asta <TT>/bin/ls /</TT>, shell-ul va
+interpreta asta ca o comandă <TT>/bin/ls</TT> urmată de un argument,
+directorul rădăcină, <TT>/</TT>, şi va ruga nucleul să execute
+comanda <TT>ls</TT> cu argumentul <TT>/</TT>.  Rezultatul executării se
+vede pe ecran: <TT>ls</TT> scrie conţinutul directorului rădăcină.
+
+<P>
+Observaţi cum pe ecran alternează texte scrise de shell şi de
+comenzile executate de el.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Cel mai simplu exemplu</A>
+</H1>
+
+<P>
+Şi ca să nu rămînem în abstract, iată probabil cel mai simplu
+exemplu posibil de shell pentru sistemul Unix, care este pe deplin
+funcţional!  (Încercaţi-l!)  Shell-urile moderne oferă o grămadă
+de funcţionalităţi suplimentare care fac viaţă utilizatorului mai
+simplă, dar la rigoare exemplul din codul de mai jos este perfect
+suficient, deşi nu întotdeauna foarte convenabil de folosit.  O
+virtute incontestabilă însă are, şi anume simplitatea, lucru care
+îl şi face subiectul nostru de studiu.
+
+<P>
+Acest program este luat de pe Internet, din grupul de discuţii <TT>comp.unix.shell</TT>, unde eu l-am văzut trimis de Brian S. Hiles
+(bsh20858@news.fhda.edu).
+
+<P>
+<PRE>
+/* smallest shell */
+a,b[99],*c,d[99];main(){while(printf("&gt;"),c=d,*c=a=gets(b)){
+for(;*++c=strtok(a," ");a=0);fork()?wait(0):execvp(*d,d+1);}}
+</PRE>
+
+<P>
+Puteţi compila şi executa acest program pe orice platformă Unix
+care posedă un compilator de C.  Dacă fişierul se numeşte <TT>shell.c</TT>, puteţi sa o faceţi în următorul fel:
+
+<P>
+<PRE>
+$ cc shell.c -o shell
+"shell.c", line 2: warning: old-style declaration or incorrect type for: a
+"shell.c", line 2: warning: old-style declaration or incorrect type for: b
+"shell.c", line 2: warning: old-style declaration or incorrect type for: c
+"shell.c", line 2: warning: old-style declaration or incorrect type for: d
+$ ./shell
+&gt;
+</PRE>
+
+<P>
+(Nu trebuie să vă îngrijoreze eventuale <EM>warning</EM>-uri;
+programul este corect.)
+
+<P>
+Semnul <TT>&gt;</TT> este prompt-ul.  Puteţi tasta orice comandă:
+
+<P>
+<PRE>
+&gt; /bin/ls /
+cdrom       etc         lib         usr         export      lost+found
+var         mnt         proc        bin         dev         home
+net         sbin        devices     kernel      tmp
+&gt; /bin/id
+uid=831(budiu) gid=831(budiu)
+&gt;
+</PRE>
+
+<P>
+Puteţi tasta CONTROL-d pentru a termina interacţiunea cu el.
+
+<P>
+Să vedem cum funcţionează această miniatură.  Dacă aţi
+înţeles totul sunteţi un expert, atît în C, cît şi în Unix.
+Este remarcabil cîte tehnici interesante de programare se află
+într-un program atît de scurt...
+
+<P>
+
+<H2><A NAME="SECTION00031000000000000000">
+Cărămizile: funcţiile de bibliotecă</A>
+</H2>
+
+<P>
+Înainte de a încerca să înţelegem cum procedează, să analizăm
+fiecare din funcţiile C folosite.  O parte din funcţii sunt C
+standard, si este oferită de orice compilator civilizat (<TT>printf(), gets(), strtok()</TT>), altele sunt apeluri de sistem Unix (<TT>fork(), execvp(), wait()</TT>).
+
+<P>
+
+<H3><A NAME="SECTION00031100000000000000">
+<TT>printf()</TT></A>
+</H3>
+
+<P>
+Prima şi cea mai simplă funcţie folosită este <TT>printf()</TT>.  Ea
+este folosită pentru a tipări prompt-ul.  Această funcţie este o
+funcţie de bibliotecă, dar care este implementată la rîndul ei în
+termenii apelului de sistem <TT>write()</TT>, cu care în Unix se pot
+trimite date spre un periferic (în acest caz ecranul).
+
+<P>
+Deşi este extrem de interesantă în sine, nu-i vom consacra lui <TT>printf()</TT> mai multe rînduri, ca să nu ne îndepărtăm de scopul
+nostru declarat.
+
+<P>
+
+<H3><A NAME="SECTION00031200000000000000">
+<TT>gets()</TT></A>
+</H3>
+
+<P>
+Funcţia <TT>gets()</TT> este ``opusa'' lui <TT>printf()</TT>: este
+folosită pentru a citi o linie de la utilizator.  Argumentul ei este
+un array de caractere, unde va pune rezultatul citirii (un şir de
+caractere).  Rezultatul apelului funcţiei este chiar argumentul ei
+(sau 0 dacă s-a întîlnit ``sfîrşitul de fişier'', ceea ce în
+cazul utilizatorului în general înseamnă că acesta a apăsat
+CONTROL-d).  În plus, <TT>gets()</TT> schimbă sfîrşitul de linie
+(<code>\n</code>) cu un sfîrşit de şir (<code>\0</code>).
+
+<P>
+Ca şi <TT>printf()</TT>, <TT>gets()</TT> este o construită din cărămizi
+mai mici, din care principala este apelul de sistem <TT>read()</TT>, care
+(opusul lui <TT>write()</TT>), citeşte date de la un periferic sau
+fişier.
+
+<P>
+
+<H3><A NAME="SECTION00031300000000000000">
+<TT>strtok()</TT></A>
+</H3>
+
+<P>
+Exotica funcţie <TT>strtok()</TT> este standard C, deşi probabil
+doar programatorii experimentaţi ştiu de ea.  Declaraţia ei se
+găseşte în headerul <TT>&lt;string.h&gt;</TT>.  Numele ei înseamnă
+``string tokenize'', adică ``împarte şir în cuvinte''.
+Funcţionarea ei este relativ complexă.
+
+<P>
+Ea are două argumente, ambele şiruri de caractere, şi întoarce un
+pointer spre un şir de caractere:
+
+<P>
+<PRE>
+char *strtok(char * text, const char * separatori);
+</PRE>
+
+<P>
+Funcţionarea ei este specială dacă <TT>text == NULL</TT>.  Scopul ei
+este de a împărţi şirul <TT>text</TT> în bucăţele care sunt
+despărţite de caractere din şirul <TT>separatori</TT>.  Ca să
+înţelegem mai bine, iată întîi un exemplu care o foloseşte
+într-un mod tipic.
+
+<P>
+<PRE>
+#include &lt;string.h&gt;
+#include &lt;stdio.h&gt;
+main()
+{
+   char * text = "sir  de separat   in bucati";
+   char * separator = " ";
+   char * cuvint;
+
+   cuvint = strtok(text, separator);
+   while (cuvint != NULL) {
+        printf("%s\n", cuvint);
+        cuvint = strtok(NULL, separator);
+   }
+}
+</PRE>
+
+<P>
+Dacă executaţi acest program veţi obţine:
+
+<P>
+<PRE>
+sir
+de
+separat
+in
+bucati
+</PRE>
+
+<P>
+Prima oară cînd chem <TT>strtok(text, separator)</TT>, aceasta observă
+că <TT>text</TT> nu e 0 (<TT>NULL</TT>), deci îl memorează undeva
+într-un buffer intern funcţiei.  După aceasta caută prima
+apariţie a unui caracter din <TT>separator</TT>, pe care o înlocuieşte
+cu un caracter 0 (sau <code>\0</code>), care în C înseamnă ``sfîrşit de
+şir''.
+
+<P>
+Lucrurile arată cam aşa la intrare:
+
+<P>
+
+<PRE>
+text = |s|i|r| | |d|e| |s|e|p|a|r|a|t| | | |i|n| |b|u|c|a|t|i|\0|
+       ----------------------------------------------------------
+</PRE>
+
+<P>
+şi cam aşa la ieşire:
+
+<P>
+
+<PRE>
+text = |s|i|r|\0| |d|e| |s|e|p|a|r|a|t| | | |i|n| |b|u|c|a|t|i|\0|
+       -----------------------------------------------------------
+        ^          ^
+        cuvint     am ramas aici
+</PRE>
+
+<P>
+Cu alte cuvinte şirul <TT>text</TT> a fost modificat, rezultatul <TT>cuvint</TT> punctează la primul cuvînt, care a fost separat cu un 0 de
+restul şirului, iar <TT>strtok()</TT> ţine minte unde a rămas.
+
+<P>
+A doua oară cînd îl chem pe <TT>strtok()</TT> îi dau un argument 0
+în locul lui <TT>text</TT>.  Asta înseamnă: ``continuă de unde ai
+rămas''.  Aşa că rezultatul va fi:
+
+<P>
+
+<PRE>
+text = |s|i|r|\0| |d|e|\0|s|e|p|a|r|a|t| | | |i|n| |b|u|c|a|t|i|\0|
+       ------------------------------------------------------------
+                   ^      ^
+              cuvint      am ramas aici
+</PRE>
+
+<P>
+Data viitoare voi obţine:
+
+<P>
+
+<PRE>
+text = |s|i|r|\0| |d|e|\0|s|e|p|a|r|a|t|\0| | |i|n| |b|u|c|a|t|i|\0|
+       -------------------------------------------------------------
+                          ^                    ^
+                          cuvint               am ramas aici
+</PRE>
+
+<P>
+După încă două apeluri voi obţine rezultat 0, pentru că s-a
+ajuns la sfîrşitul şirului:
+
+<P>
+
+<PRE>
+text = |s|i|r|\0| |d|e|\0|s|e|p|a|r|a|t|\0| | |i|n|\0|b|u|c|a|t|i|\0|
+       --------------------------------------------------------------
+                                                                   ^
+cuvint=0                                                am ramas aici
+</PRE>
+
+<P>
+Iată deci cum <TT>strtok()</TT> hăcuieşte un şir de caractere.  <TT>strtok()</TT> este o funcţie care poate fi implementată fără ajutorul
+vreunui apel de sistem, pentru că manipulează simple array-uri de
+caractere.
+
+<P>
+
+<H2><A NAME="SECTION00032000000000000000">
+Apeluri de sistem</A>
+</H2>
+
+<P>
+Ultimele 3 funcţii sunt apeluri de sistem tipice Unix, care au de-a
+face cu crearea de noi procese.
+
+<P>
+
+<H3><A NAME="SECTION00032100000000000000">
+<TT>fork()</TT></A>
+</H3>
+
+<P>
+<TT>fork()</TT> este singura metodă prin care în Unix se poate crea un
+nou proces (vă reamintesc că un proces este un program în curs de
+execuţie).  Cînd un proces execută <TT>fork()</TT>, el dă naştere
+unui alt proces absolut identic cu el însuşi, care se numeşte
+``fiul'' lui, şi care îşi continuă execuţia în paralel cu
+tatăl.<A NAME="tex2html1"
+  HREF="#foot165"><SUP>1</SUP></A>
+<P>
+Amîndouă procesele îşi continuă execuţia ca şi cum tocmai ar fi
+executat instrucţiunea <TT>fork()</TT>; singura diferenţă dintre ele
+este că tatăl va primi ca rezultat al executării lui <TT>fork()</TT>
+un număr nenul, care identifică fiul, iar fiul va primi un 0.
+
+<P>
+Figura explică şi numele: ``fork'' înseamnă ``furculiţă''.
+
+<P>
+
+<PRE>
+            --------------
+            |            | proces=12
+inainte     | r = fork() |
+de          |            |
+fork()      -------------- ___________
+                 |                    \
+                 v                     v
+            --------------              --------------
+            |            | proces=12    |            | proces=13
+dupa        | r = fork() | (tata)       | r = fork() | (fiu)
+fork()      | (r=13)     |              | (r=0)      |
+            --------------              --------------
+</PRE>
+
+<P>
+În figura de mai sus, părintele (cu numărul de proces 12) crează
+un copil, care întîmplător capătă numărul 13.  După
+instrucţiunea <TT>fork()</TT> avem 2 procese, 12 şi 13, care se
+execută în paralel.  Cel cu numărul 12 (părintele), va avea <TT>r=13</TT>, numărul copilului, iar copilul, deşi va executa acelaşi cod,
+din acelaşi punct, va avea <TT>r=0</TT>.
+
+<P>
+
+<H3><A NAME="SECTION00032200000000000000">
+<TT>wait()</TT></A>
+</H3>
+
+<P>
+Cu apelul de sistem <TT>wait()</TT> un proces părinte aşteaptă
+terminarea unui copil.  Părintele este blocat din execuţie pînă
+unul dintre copii lui răposează, după care <TT>wait()</TT> returnează
+părintelui nişte informaţii despre cauza decesului (nu ne preocupă
+aici).  (Argumentul lui <TT>wait()</TT> este un pointer spre un loc unde
+se vor pune aceste informaţii; in programul nostru pointerul este 0;
+rezultatul lui <TT>wait()</TT> este numărul de proces copilului.)
+
+<P>
+
+<H3><A NAME="SECTION00032300000000000000">
+<TT>execvp()</TT></A>
+</H3>
+
+<P>
+Rezultatul compilării unui program este un fişier executabil (de
+exemplu, mai sus cînd aţi compilat <TT>shell.c</TT> aţi obţinut <TT>shell</TT>).  Apelul de sistem <TT>exec()</TT> roagă nucleul să citească
+un fişier executabil în memorie, să-l transforme în imaginea unui
+proces şi să-l execute, furnizînd şi argumentele care vor fi
+pasate noului proces.  Procesul care execută apelul acesta de sistem
+este complet înlocuit cu imaginea din fişier.
+
+<P>
+Există mai multe variante ale apelului de sistem <TT>exec()</TT> care
+fac cam acelaşi lucru, dar care împachetează altfel argumentele.
+Cea de faţă se numeşte <EM>execvp</EM> pentru că este ``exec'' cu un:
+``Vector de Pointeri'' spre argumentele procesului.  Declaraţia din
+<TT>&lt;unistd.h&gt;</TT> arată aşa:
+
+<P>
+<PRE>
+int execvp(const char *fisier, char * const argumente[]);
+</PRE>
+
+<P>
+Primul parametru este numele fişierului executabil.
+
+<P>
+Al doilea parametru este un array în care fiecare obiect este un
+pointer la un argument pasat procesului.  Argumentele sunt simple
+şiruri de caractere.  Argumentele sunt primite de funcţia <TT>main()</TT> a procesului exec-utat în parametrul <TT>argv</TT>:
+
+<P>
+<PRE>
+int main(int argc, char * argv[])
+                          ^^^^^^
+                         argumentele transmise de exec
+</PRE>
+
+<P>
+Acum ştim toate bucăţile.  Poate doar anumite caracteristici mai
+stranii ale C-ului mai stau în calea înţelegerii întregului
+program.
+
+<P>
+
+<H2><A NAME="SECTION00033000000000000000">
+Ansamblul</A>
+</H2>
+
+<P>
+Iată încă odată programul de mai sus, cu headerele incluse,
+indentat şi comentat:
+
+<P>
+<PRE>
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;sys/types.h&gt;
+#include &lt;unistd.h&gt;
+
+int a,                          /* char * plimbat pe sirul citit */
+    b[99],                      /* comanda tastata; folosit ca un char [] */
+    *c,                         /* pointer spre argumentul curent */
+    d[99];                      /* pointeri spre lista de argumente */
+
+int main()
+{
+  while(printf("&gt;"),            /* prompt */
+        c=d,                    /* argumentele vor fi plasate in vectorul d */
+        *c=a=gets(b)) {         /* citeste prima linie; a = b */
+    for( ;
+        *++c=strtok(a," ") ;    /* separa urmatorul cuvint; pune-l in d */
+        a=0);                   /* a = NULL -&gt; folosim acelasi buffer */
+    fork() ?                    /* eu sunt tatal? */
+      wait(0) :                 /* da, asteapta copilul! */
+      execvp(*d,d+1);           /* nu: executa comanda data cu argumente */
+}}
+</PRE>
+
+<P>
+În primul rînd programul foloseşte numere întregi pentru a memora
+atît caractere cît şi pointeri.  Standardul C spune că asta e
+perfect legal: ``există un tip întreg în care un pointer încape''.
+
+<P>
+Operatorul <TT>,</TT> este folosit cum scrie la carte: ``evaluarea
+expresiei <TT>e1,e2</TT> înseamnă că:
+
+<P>
+
+<UL>
+<LI>se evaluează <TT>e1</TT>;
+</LI>
+<LI>se evaluează <EM>după aceea</EM> <TT>e2</TT>;
+</LI>
+<LI>rezultatul final este rezultatul evaluării lui <TT>e2</TT>''.
+</LI>
+</UL>
+
+<P>
+Variabila <TT>a</TT> punctează la şirul citit de la utilizator, pentru
+a-l împărţi în felii cu <TT>strtok()</TT>.  Variabila <TT>b</TT>
+conţine chiar comanda tastată (e folosită ca un array de
+caractere).  Variabila <TT>d</TT> va conţine la sfîrşitul executării
+lui <TT>strtok()</TT> pointerii către argumente daţi lui <TT>execvp()</TT>.  În fine, variabila <TT>c</TT> se plimbă printre căsuţele
+lui <TT>d</TT>, arătînd care vine la rînd.
+
+<P>
+Situaţia la început arată astfel:
+
+<P>
+
+<PRE>
+| | | | | | | | | | | | | .... | b    | | | | | | | | | | | | | .... | d
+--------------------------------      --------------------------------   
+ ^                                     ^                                 
+ a                                     c
+</PRE>
+
+<P>
+Să presupunem că utilizatorul tastează la prompt textul <TT>echo
+a1 a2</TT>.  Atunci după executarea <TT>for</TT>-ului situaţia va fi
+următoarea:
+
+<P>
+
+<PRE>
+|e|c|h|o|\0|a|1|\0|a|2|\0| | | | .... |  b
+---------------------------------------
+ ^          ^      ^
+ |  ________|      |
+ | |  _____________/
+ | | |
+|*|*|*|0| | | | | | | | | | | .... |  d
+------------------------------------
+       ^
+       c
+</PRE>
+
+<P>
+Din cauza asta, după ce copilul e făcut şi părintele doarme,
+copilul execută comanda indicată de primul parametru al lui <TT>execvp()</TT>, <TT>*d</TT>, (care punctează spre şirul <TT>echo</TT>), iar
+argumentele lui <TT>echo</TT> sunt cuprinse în vectorul <TT>d</TT>,
+începînd de la căsuţa 1 (<TT>d+1</TT>).
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Recompensă</A>
+</H1>
+
+<P>
+Dacă aţi înţeles totul, vă propun spre ``dezlegare'' încă un
+cod de shell, de data asta mai sofisticat.  Acesta poate recunoaşte
+mai multe comenzi pe aceeaşi linie, pipe-uri (<TT>comanda1&nbsp;|&nbsp;comanda2</TT>), redirectări în fişiere (<TT>comanda
+&gt;fisier1 &lt;fisier2</TT>), comanda internă <TT>cd</TT>.  Programul este
+perfect funcţional!
+
+<P>
+Pentru că sunt convins că nu veţi putea tasta o asemenea oroare,
+fişierul cu sursa este disponibil în pagina mea de web; luaţi-l şi
+compilaţi-l.  Poate cu sprijinul redacţiei instaurăm şi un premiu
+pentru cel care reuşeşte să decodifice şi să comenteze programul
+într-un fel care să-l facă inteligibil.  (Eu am reuşit parţial
+abia după două zile de lucru.)
+
+<P>
+
+<PRE>
+#define D ,close(
+
+char              *c,q              [512              ],m[              256
+],*v[           99], **u,        *i[3];int         f[2],p;main       (){for
+ (m[m        [60]=   m[62      ]=32   ]=m[*      m=124   [m]=       9]=6;
+  e(-8)     ,gets      (1+(    c=q)     )||      exit      (0);     r(0,0)
+   )for(    ;*++        c;);  }r(t,      o){    *i=i        [2]=    0;for
+     (u=v  +98           ;m[*--c]         ^9;m [*c]          &amp;32  ?i[*c
+       &amp;2]=                *u,u-             v^98              &amp;&amp;++u:
+
+        3       )if(!m[*c]){for(*++c=0;!m[*--c];);
+        *       --u= ++c;}u-v^98?strcmp(*u,"cd")?*c?pipe(f),o=f[
+        1       ]:
+        4       ,(p=fork())?e(p),o?r(o,0)D o)D*f):
+        1       ,wait(0):(o?dup2(*f,0)D*f)D o):*i?
+        5       D 0),e(open(*i,0)):
+        9       ,t?dup2(t,1)D t):i[
+        2       ]?
+        6       D 1),e(creat(i[2],438)):
+        5       ,e(execvp(*u,u))):e(chdir(u[1])*2):
+        3       ;}e(x){x&lt;0?write(2,"?\n$ "-x/4,2),x+1||exit(1):
+        5       ;}
+
+/* from  bsh20858@news.fhda.edu (Brian S Hiles) */
+</PRE>
+
+Nota: iata o  <a href="explicat.txt">rezolvare</a> primita de la Ionut
+Ichim.  Din pacate nu a primit nici un premiu de la PC Report, dar
+satisfactia decodificarii e suficienta in sine ;-).
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Rezumat</A>
+</H1>
+
+<P>
+Observaţi că, pentru nucleu, shell-ul este un proces ca toate
+celelalte, care se execută fără nici un fel de privilegii şi care
+ocazional face cîte un apel de sistem.  Shell-urile citesc comenzi de
+la utilizator, pe care apoi le ``interpretează'' şi le transformă
+într-o serie de apeluri de sistem, care în general culminează cu
+executarea unuia sau mai multor fişiere.
+
+<P>
+Limbajul C este de o conciziune şi expresivitate admirabilă.  Nu-i aşa?
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot165">... al.</A><A NAME="foot165"
+ HREF="shell-html.html#tex2html1"><SUP>1</SUP></A>
+<DD>În Statele Unite această terminologie (``father,
+son'') este descurajată, pentru că face discriminare sexuală.  Se
+recomandă folosirea termenilor ``parent'' and ``child''.  Ar trebui
+deci să spunem ``părinte'' şi ``copil''.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

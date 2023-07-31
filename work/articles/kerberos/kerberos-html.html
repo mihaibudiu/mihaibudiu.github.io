@@ -1,0 +1,1090 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Kerberos</TITLE>
+<META NAME="description" CONTENT="Kerberos">
+<META NAME="keywords" CONTENT="kerberos-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Kerberos</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- <TT>mihaib+@cs.cmu.edu</TT> 
+<BR><TT>http://www.cs.cmu.edu/~mihaib/</TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>20 iulie 1998</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>Protocolul de autentificare Kerberos
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>cunoştinţe elementare de matematica,
+fundamente de Unix
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>autentificare, tichet, parola, securitate,
+funcţie neinversabilă
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html20"
+  HREF="kerberos-html.html">Securitate</A>
+<UL>
+<LI><A NAME="tex2html21"
+  HREF="#SECTION00021000000000000000">Sisteme sigure</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html22"
+  HREF="#SECTION00030000000000000000">Autentificare</A>
+<LI><A NAME="tex2html23"
+  HREF="#SECTION00040000000000000000">Criptografie</A>
+<UL>
+<LI><A NAME="tex2html24"
+  HREF="#SECTION00041000000000000000">Funcţii ``ne-inversabile''</A>
+<LI><A NAME="tex2html25"
+  HREF="#SECTION00042000000000000000">P = NP?</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html26"
+  HREF="#SECTION00050000000000000000">Pericole</A>
+<LI><A NAME="tex2html27"
+  HREF="#SECTION00060000000000000000">Protocolul Kerberos</A>
+<UL>
+<LI><A NAME="tex2html28"
+  HREF="#SECTION00061000000000000000">Principii</A>
+<LI><A NAME="tex2html29"
+  HREF="#SECTION00062000000000000000">Mesajele (protocolul Needham-Schroeder)</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html30"
+  HREF="#SECTION00070000000000000000">Implementarea Kerberos</A>
+<LI><A NAME="tex2html31"
+  HREF="#SECTION00080000000000000000">Slăbiciunile lui Kerberos</A>
+<LI><A NAME="tex2html32"
+  HREF="#SECTION00090000000000000000">Kerberos pentru un utilizator</A>
+<LI><A NAME="tex2html33"
+  HREF="#SECTION000100000000000000000">Concluzie</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Securitate</A>
+</H1>
+
+<P>
+O definiţie largă a noţiunii de ``securitate'' pentru calculatoare
+ar fi următoarea: interzicerea accesului unor persoane neautorizate
+la anumite date.  Putem distinge două tipuri de restricţii:
+restricţii asupra citirii unor date secrete şi restricţii asupra
+modificării de către persoane ne-autorizate.  Există mecanisme
+speciale pentru fiecare din aceste scopuri, şi există mecanisme care
+pot fi adaptate amîndurora.
+
+<P>
+
+<H2><A NAME="SECTION00021000000000000000">
+Sisteme sigure</A>
+</H2>
+
+<P>
+Înainte de a plonja în detalii să observăm că <EM>orice schemă
+de securitate trebuie să înceapă cu securitatea fizică a unor
+dispozitive de calcul</EM> (în sensul că accesul la aparatul însuşi
+este îngrădit).  Dacă nu poţi avea încredere în nici un
+calculator, atunci nu poţi face nici un fel de comunicaţie sau
+stocare de date sigură.  Dacă cineva are control asupra sistemul de
+operare al unui calculator atunci el poate intercepta toate tastele
+apăsate şi toate caracterele scrise pe ecran.
+
+<P>
+Atunci cînd lucraţi pe un calculator trebuie să aveţi deplină
+încredere cel puţin în consola la care lucraţi şi în celălalt
+capăt al liniei.  Dacă nu puteţi garanta aceste lucruri nu trebuie
+să vă aşteptaţi la nici un fel de garanţii de securitate din
+partea sistemului.  Marile bănci au calculatoarele îngropate în
+nişte buncăre subterane extrem de bine păzite; unul dintre motive
+este, desigur, acela de a nu pierde informaţii extrem de importante
+în cazul unei calamităţi, dar una dintre raţiunile primordiale
+este garantarea securităţii fizice a sistemului.
+
+<P>
+Oricare ar fi scopul pentru care vrem să protejăm date, politica pe
+care o aplicăm în acest sens va fi o funcţie de entitatea care vrea
+să acceseze datele.  De pildă anumite documente militare vor fi
+secrete pentru gradele mici, dar vor putea fi accesate de un general.
+
+<P>
+Pentru a putea face astfel de distincţii este deci necesar să avem
+la dispoziţie un mecanism de <EM>autentificare</EM>.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Autentificare</A>
+</H1>
+
+<P>
+Autentificarea (authentication) este procesul prin care se verifică
+identitatea unei instanţe (de exemplu un utilizator) care a produs
+nişte date.  Cele mai sigure metode de autentificare sunt cele
+biometrice, care măsoară caracteristici fizice unice ale unui
+individ (cum ar fi amprentele digitale sau forma irisului).  Acestea
+sunt foarte greu de păcălit.  Din (ne)fericire sunt încă foarte
+costisitoare şi puţin răspîndite.
+
+<P>
+Metoda prin care în mod uzual calculatoarele identifică identitatea
+unei entităţi cu care comunică este verificarea că acea entitate
+ştie o informaţie care foarte probabil nu mai este cunoscută de
+nimeni altcineva.  În sistemele tipice Unix acel secret este <EM>parola</EM> pe care utilizatorul trebuie să o tasteze înainte de a
+începe lucrul.
+
+<P>
+Să mai observăm că pentru a putea vorbi despre autentificare
+trebuie să avem o noţiune de <EM>identitate</EM> a utilizatorilor.
+Calculatorul trebuie să poată distinge cumva între diferiţii
+indivizi care îl folosesc.  Trebuie să existe un <EM>spaţiu de
+nume</EM> pentru utilizatori; autentificarea atunci va pune în
+corespondenţă o entitate activă cu un astfel de nume.  În Unix
+numele utilizatorilor autorizaţi sunt trecute într-o mică bază de
+date într-un fişier numit <TT>/etc/passwd</TT> (sistemele mai moderne
+au scheme mai complicate, dar înrudite); pentru un sistem Unix a
+autentifica un utilizator constă în a asigna unul dintre aceste nume
+cunoscute unui set de procese executate de acel utilizator.  Dacă un
+individ nu are un nume în acel fişier atunci el nu există pentru
+calculator.
+
+<P>
+Cu alte cuvinte, pentru a putea vorbi despre autentificare trebuie ca
+părţile implicate în comunicare să aibă un spaţiu de nume comun
+pentru utilizatori.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Criptografie</A>
+</H1>
+
+<P>
+Dacă întreg sistemul cu care lucrăm este sigur fizic atunci nu avem
+mare nevoie de autentificare; noţiunea de securitate fizică implică
+faptul că persoane neautorizate nu pot accesa sistemul.  De îndată
+însă ce datele trebuie să traverseze porţiuni nesigure trebuie să
+luăm măsuri suplimentare de precauţie.  Transformarea datelor în
+scopul de a împiedica accesul persoanelor neautorizate se numeşte
+<EM>criptare</EM>.  Criptarea transformă un text <EM>inteligibil</EM>
+(plaintext) într-un <EM>cifru</EM> (ciphertext).  Procesul de codificare
+se numeşte <EM>cifrare</EM> sau <EM>criptare</EM> (encryption) iar procesul
+invers se numeşte descifrare sau <EM>decriptare</EM> (decryption).
+
+<P>
+
+<H2><A NAME="SECTION00041000000000000000">
+Funcţii ``ne-inversabile''</A>
+</H2>
+
+<P>
+Putem vedea criptarea unui mesaj ca o transformare a mesajului.  În
+mod normal această transformare este una funcţională, în sensul
+că unui mesaj îi corespunde un singur cod.  Pentru a putea folosi la
+ceva mesajele codificate, trebuie să existe şi o transformare
+inversă, prin care dintr-un cifru obţinem textul iniţial.
+
+<P>
+Dacă notăm funcţia de criptare cu E (de la ``encryption'') şi cea 
+de decriptare cu D, pentru un mesaj x trebuie să avem relaţia
+D(E(x)) = x.  De aici rezultă în primul rînd că funcţia E
+trebuie să fie injectivă (altfel inversa nu este bine definită), cu
+alte cuvinte oricare două codificări ale unor cuvinte diferite
+trebuie să fie diferite.
+
+<P>
+În realitate funcţiile de criptare şi decriptare mai au un
+parametru relativ mic (comparat cu lungimea mesajului x, numit
+<EM>cheia</EM> de criptare.  Cheia este un obiect relativ uşor de
+descris şi manipulat, spre deosebire de funcţiile D şi E.  E va fi atunci
+de forma E(x, k), unde k este cheia.  D(x, k<sub>1</sub>) este funcţia de
+decriptare, k<sub>1</sub> fiind cheia pentru decriptare.
+
+<P>
+Se deosebesc două feluri de sisteme de criptare: simetrice, în care
+k = k<sub>1</sub> şi asimetrice în care cheile sunt diferite.
+
+<P>
+Ceea ce este important este că funcţiile D şi E sunt cunoscute
+de toată lumea; atunci cînd vreau să stabilesc un canal sigur cu un
+alt individ noi trebuie doar să cădem de acord asupra cheilor pe
+care le folosim (k şi k<sub>1</sub>).
+
+<P>
+Nu oricare două funcţii care satisfac cerinţele anterioare sunt
+bune pentru criptare.  Dacă fixăm cheia k şi notăm funcţia
+<IMG
+ WIDTH="56" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img10.png"
+ ALT="$E(k, \cdot)$"> cu E<sub>k</sub>, trebuie ca din cunoaşterea valorii lui
+y = E<sub>k</sub>(x) (cifrul) să fie practic imposibil de calculat x.
+Din cauza asta funcţiile de criptare se numesc (nu foarte precis)
+``neinversabile'' sau ``greu inversabile'' (one-way functions).
+
+<P>
+Ce înseamnă de fapt ``imposibil de calculat''?  Pentru a răspunde
+la această întrebare ne trebuie ceva cunoştinţe de teoria
+complexităţii, pe care o să le omitem din prezentarea de faţă.
+În principiu asta înseamnă că orice algoritm care ar calcula cheia
+k ştiind y, D şi E trebuie să aibă o complexitate mai mare
+decît polinomială (de exemplu exponenţială).
+
+<P>
+Să observăm că există întotdeauna algoritmi care pot calcula
+inversa, pur şi simplu iterînd prin toate cheile posibile k şi
+văzînd dacă D(y,k) este un cuvînt din limbajul de intrare.  Dar
+dacă cheia are n biţi, trebuie încercate 2<sup>n</sup> combinaţii
+diferite.  Pentru un n suficient de mare sunt mult prea multe
+încercări, chiar şi pentru cel mai perfecţionat supercalculator.
+
+<P>
+De altfel unul dintre cele mai populare programe pentru ``spart''
+parole pentru Unix, Crack, se bazează pe faptul că cheile de fapt nu
+sunt egal probabile; utilizatorii vor alege cu mare probabilitate
+anumite cuvinte (pe care le vor mutila în mici feluri), pentru că
+sunt mai uşor de memorat.  ``Crack'' are la dispoziţie un dicţionar
+enorm şi o suită de reguli pentru a modifica cuvintele, şi pur şi
+simplu încearcă toate variantele; deşi asta poate părea mult, o
+limbă umană are în jur de 200 000 de cuvinte, o bagatelă pentru un
+calculator (comparaţi de pildă cu 128<sup>8</sup>=72 057 594 037 927 936,
+cît ar fi toate combinaţiile de 8 caractere ASCII).
+
+<P>
+
+<H2><A NAME="SECTION00042000000000000000">
+P = NP?</A>
+</H2>
+
+<P>
+Într-un <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#algoritmi">articol</a>
+mai vechi din PC Report despre algoritmi am prezentat felurite clase
+de complexitate, printre care şi clasele P şi NP, ale problemelor a
+căror soluţie se poate calcula în timp polinomial, cu un calculator
+determinist, respectiv nedeterminist.
+
+<P>
+Problema P=NP este probabil cea mai importantă problemă deschisă
+din informatica; de peste 25 de ani s-au depus eforturi susţinute
+pentru a vedea dacă există probleme care se pot rezolva cu maşini
+nedeterministe (care ``ghicesc'' o parte din soluţie) repede dar nu
+şi cu maşini deterministe (cum sunt toate calculatoarele reale).
+
+<P>
+Ei bine, pentru a fi rezonabilă, problema aflării cheii cu care este
+criptat un mesaj nu poate fi mai complicată decît o problemă din
+clasa NP.  Lucrurile se pot justifica perfect riguros; ideea de bază
+este că cel care cunoaşte cheia trebuie să decodifice relativ rapid
+mesajul primit (dacă decodificarea însăşi ar dura foarte mult
+metoda n-ar mai fi practică).  Un străin care posedă însă o
+maşină (deocamdată fictivă) nedeterministă ar putea folosi
+maşina pentru a ``ghici'' cheia, după care ar decodifica cu această
+cheie şi ar verifica corectitudinea ghicirii.
+
+<P>
+De aici rezultă o consecinţă foarte interesantă: dacă se va
+demonstra că P=NP <EM>nu există criptografie</EM>!  Atunci orice
+cifru cunoscut ar putea fi spart în timp polinomial!  Dacă nu aţi
+crezut pînă acum că problema P=NP merită atenţie, poate acum
+v-aţi schimbat opinia: rezolvarea ei (în sensul confirmării
+egalităţii) ar supăra o grămadă de agenţii de spionaj şi
+militare.
+
+<P>
+Desigur, cele spuse anterior consideră că orice problemă care are o
+complexitate polinomială este uşoară (chiar dacă polinomul este
+ceva de genul x<sup>10000</sup>) şi că toate problemele exponenţiale sunt
+grele.  Este adevărat că 1.0001<sup>x</sup> depăşeşte cu mult pe
+x<sup>10000</sup>, dar asta numai de la o valoare foarte mare a lui x
+încolo.
+
+<P>
+Dar să lăsăm pentru moment teoria complexităţii.  Să presupunem
+că <IMG
+ WIDTH="72" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img21.png"
+ ALT="$P \not= NP$">, căci altfel nu mai avem ce studia, şi să aruncăm
+o privire la <EM>modul</EM> în care poate fi folosită criptografia
+pentru a transmite secrete.  Treaba asta este cu mult mai grea decît
+pare.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Pericole</A>
+</H1>
+
+<P>
+Cînd se proiectează un protocol sigur (de pildă de autentificare)
+trebuie să ştim exact de ce anume vrem să ne păzim.  Un model
+răspîndit, pe care îl vom folosi şi în textul de faţă face
+următoarele presupuneri:
+
+<P>
+
+<UL>
+<LI>Agenţii finali sunt siguri: terminalul pe care lucrez eu şi
+serverele care conţin informaţiile sunt la adăpost în mod fizic
+şi nu pot fi controlate de ``duşmani'';
+
+<P>
+</LI>
+<LI>Canalul de comunicaţii între agenţii finali este complet
+nesigur;
+
+<P>
+</LI>
+<LI>Un agent străin poate intercepta absolut toate mesajele din
+reţea şi le poate studia: <EM>ascultare pasivă</EM>; (passive
+wiretapping sau eavesdropping);
+
+<P>
+</LI>
+<LI>Un agent străin poate injecta mesaje noi în reţea între
+mesajele existente (active wiretapping, tampering).  Anume inamicul
+poate modifica mesajele existente, poate şterge unele dintre ele,
+poate modifica mesajele de pe reţea sau poate stoca mesaje transmise
+şi le poate retransmite mai tîrziu.
+</LI>
+</UL>
+
+<P>
+Este de asemenea important de ştiut că uşurinţa spargerii unui
+protocol creşte cu cantitatea de mesaje avute la dispoziţie; cu cît
+mai multe cifruri sunt observate, cu atît mai mult succes pot fi
+făcute anumite atacuri statistice.
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Protocolul Kerberos</A>
+</H1>
+
+<P>
+Protocolul Kerberos a fost proiectat la Universitatea MIT
+(Massachusetts Institute of Techonology) în cadrul proiectului
+Athena, în jurul anului 1984.  Scopul protocolului Kerberos este de a
+permite unui client să-şi demonstreze identitatea unui server aflat
+la distanţă, undeva dincolo de o reţea complet nesigură.
+Protocolul garantează de asemenea că clientul nu poate conversa cu
+un calculator care se dă drept server; autentificarea se face în
+ambele direcţii.
+
+<P>
+Protocolul în sine constă dintr-un schimb de mesaje între un client
+şi o serie de servere, fiecare cu o altă misiune.  Idea de bază
+aparţine lui Needham şi Schroeder care au publicat ideea iniţială
+în 1978 în Communications of the ACM.  Descrierea detaliată a
+protocolului se găseşte în documentul numit RFC 1510, care este
+disponibil de pe Internet<A NAME="tex2html1"
+  HREF="#foot78"><SUP>1</SUP></A>.  Cei care
+administrează Kerberos pot pune întrebări pe grupul de News <TT>comp.protocols.kerberos</TT>.
+
+<P>
+Protocolul Kerberos indică de fapt o serie de mesaje care trebuie
+schimbate între părţile care doresc să comunice; unele din mesaje
+sunt criptate.  Ce funcţie de criptare/decriptare se foloseşte
+teoretic nu contează prea tare, atîta vreme cît funcţia este greu
+inversabilă.  Implementările curente folosesc un algoritm standard
+de criptare numit DES (Data Encryption Standard).
+
+<P>
+Kerberos este un protocol; pentru a fi util anumite aplicaţii (cele
+care au nevoie de comunicaţie client-server) trebuie modificate
+pentru a folosi autentificarea oferită de Kerberos.  (Aplicaţiile
+modificate sunt atunci numite ``kerberized'').  În mod normal
+într-un domeniu administrativ în care se foloseşte Kerberos
+programe ca <TT>telnet</TT>, <TT>rlogin</TT>, POP (post-office protocol),
+fişiere la distanţă (AFS), etc. trebuie rescrise în aşa fel
+încît clientul să se autentifice serverului folosind noua metodă
+(toate aceste aplicaţii sunt de tip client-server).
+
+<P>
+
+<H2><A NAME="SECTION00061000000000000000">
+Principii</A>
+</H2>
+
+<P>
+Protocolul pare destul de complicat, dar dacă aveţi răbdare o să
+înţelegeţi tot ce se întîmplă; nu e mare ştiinţă la mijloc.
+
+<P>
+Premiza iniţială este că există un server central, numit serverul
+de autentificare (AS), care cunoaşte identităţile tuturor
+clienţilor posibili.  De asemenea, fiecare client a stabilit o
+parolă secretă pe care şi acest server o ştie.  Parola ajunge la
+server printr-o cale sigură, de exemplu prin poştă sau printr-un
+mesager uman (mă rog, sigură cel puţin din punct de vedere
+software).  Parola asta nu este cunoscută de nimeni altcineva, nici
+măcar de celelalte servere cu care clientul va comunica (de la care
+va obţine serviciile care-l interesează de fapt).  Toate celelalte
+servere din domeniul administrativ sunt şi ele clienţi ai AS: au o
+parolă unică ştiută numai de AS şi de acel server.
+
+<P>
+Niciodată parola nu va circula în clar pe reţea; atunci oricine ar
+putea să o citească şi să o folosească în locul clientului de
+drept.
+
+<P>
+Pentru a se proteja împotriva duşmanilor care vor înregistra sau
+şterge mesaje, mesajele vor avea informaţii ca ora la care au fost
+trimise şi un număr de ordine (pentru a detecta omisiunile).
+
+<P>
+O altă regulă interesantă este că cheile folosite în comunicarea
+dintre client şi servere se schimbă frecvent.  Implementarea
+standard expiră o cheie după 25 de ore.  În felul acesta un atac
+criptanalitic nu va avea prea mult succes: dacă durează mai mult de
+25 de ore atunci cheia descoperită este deja inutilă (desigur,
+eventualele mesaje deja interceptate şi stocate vor putea fi citite,
+dar stricăciunile sunt limitate).  Cheia pe care un client şi un
+server o folosesc în comun se numeşte <EM>cheie de sesiune</EM> şi
+este generată aleator.
+
+<P>
+
+<H2><A NAME="SECTION00062000000000000000">
+Mesajele (protocolul Needham-Schroeder)</A>
+</H2>
+
+<P>
+Să presupunem că clientul nostru vrea să vorbească cu un server de
+disc.  Protocolul esenţial este compus din 4 mesaje (protocolul real
+este o simplă extensie a ideii pe care o prezint aici):
+
+<P>
+
+<OL>
+<LI>Un mesaj de la client spre AS, prin care se indică intenţia de
+a comunica cu serverul de disc;
+
+<P>
+</LI>
+<LI>Un mesaj de răspuns de la AS pentru client, prin care AS îi
+trimite clientului noua cheie de sesiune şi un pacheţel pentru
+serverul de disc;
+
+<P>
+</LI>
+<LI>Un mesaj de la client spre serverul de disc, în care este
+inclus pacheţelul de mai sus, pentru a garanta faptul că clientul a
+discutat cu AS (pacheţelul poate veni numai de la AS);
+
+<P>
+</LI>
+<LI>Un mesaj de răspuns de la serverul de disc prin care clientul
+este convins că serverul a putut deschide pacheţelul, deci că
+discută într-adevăr cu serverul de disc.
+</LI>
+</OL>
+
+<P>
+După acest schimb iniţial de mesaje clientul şi serverul de disc
+vor folosi cheia de sesiune generată de AS pentru a cripta cu DES
+toată comunicaţia dintre ei.
+
+<P>
+Vom vedea că mesajele sunt relativ încîlcite pentru a preveni toate
+atacurile de mai sus.  Dacă veţi încerca să simplificaţi
+protocolul aproape sigur îl veţi face vulnerabil la anumite tipuri
+de atacuri.
+
+<P>
+Să notăm cele 3 entităţi care colaborează astfel: C clientul, AS
+serverul de autentificare şi S serverul de disc (vedeţi şi
+figura&nbsp;<A HREF="kerberos-html.html#baza">1</A>).
+
+<P>
+O tehnică importantă a protocolului, care este folosită pentru a
+contraataca folosirea unor mesaje vechi înregistrate este de a
+eticheta mesajele cu ora emiterii (într-un mod care nu poate fi
+contrafăcut) şi de a verifica la recepţie dacă ora este
+rezonabilă.  Sincronizarea ceasurilor este o problema extrem de grea
+în sistemele distribuite, aşa că pentru Kerberos ``rezonabil''
+înseamnă că ceasul local la recepţie arată plus/minus 5 minute de
+ora din mesaj (ora de transmitere).
+
+<P>
+Un alt truc interesant este folosirea a ceea ce se numeşte <B>nonce</B>: un obiect care este folosit o singură dată.  Acesta este
+practic un număr aleator.  Vom vedea mai jos cum este acesta folosit.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="baza"></A><A NAME="199"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 1:</STRONG>
+Protocolul de bază (simplificat).</CAPTION>
+<TR><TD><IMG
+ WIDTH="361" HEIGHT="227" BORDER="0"
+ SRC="img22.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=8cm\epsffile{baza.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Vom mai introduce următoarele notaţii:
+
+<P>
+
+<UL>
+<LI>K<sub>a,b</sub> este cheia de sesiune pe care o folosesc pentru
+discuţie a şi b; de exemplu K<sub>C,S</sub> va fi cheia folosită
+pentru criptare/decriptare între client şi serverul de disc;
+
+<P>
+</LI>
+<LI>Cum am spus mai sus, AS este serverul de autentificare, care
+ştie parola fiecărei alte entităţi din sistem;
+
+<P>
+</LI>
+<LI>K<sub>z</sub> este cheia pe care clientul z şi AS o folosesc în
+comun (parola clientului z); de pildă K<sub>s</sub> este parola
+serverului de disc (cunoscută numai de el şi de AS);
+
+<P>
+</LI>
+<LI>Voi scrie {mesaj<sub>1</sub>, mesaj<sub>2</sub>}<sub>K</sub>
+pentru a indica faptul că mesajele 1 şi 2 sunt puse laolată într-un
+pachet care este apoi criptat cu cheia K.
+
+<P>
+</LI>
+<LI>O abreviere utilă este cea de <EM>tichet</EM> (ticket): T<sub>a,b</sub>
+= { K<sub>a,b</sub>, a, ora curenta }: un mesaj în care sunt
+împachetate 3 informaţii: o cheie de sesiune între a şi b,
+numele lui a şi ora curentă.
+</LI>
+</UL>
+
+<P>
+Cu aceste notaţii putem scrie complet ne-ambiguu toate mesajele
+schimbate între C, S şi AS.  Săgeata indică traseul fiecărui
+mesaj:
+
+<P>
+<DL COMPACT>
+<DT>C ---&gt; AS:</DT>
+<DD>C, S, ora expirare, N (nonce, aleator).
+
+<P>
+Clientul afirmă propria identitate, identitatea serverului cu care
+vrea să discute, trimite un număr aleator şi cît timp ar dori să
+converseze cu S.  Pînă aici totul e simplu.  AS va răspunde astfel:
+
+<P>
+</DD>
+<DT>AS ---&gt; C$:</DT>
+<DD>{K<sub>C,S</sub>, S, ora expirare, N}<sub>K<sub>C</sub></sub>,
+{T<sub>C,S</sub>}<sub>K<sub>S</sub></sub\> .
+
+<P>
+Acest complicat mesaj are mai două părţi mari: prima este
+destinată clientului, şi este criptată cu cheia clientului
+K<sub>C</sub>, iar a doua este un tichet pentru S, criptat cu cheia
+lui S.  Să vedem la ce folosesc feluritele părţi din mesaj:
+
+<P>
+
+<UL>
+<LI>Prima parte a mesajului este criptată cu cheia K<sub>C</sub> a lui C.
+Pentru că această cheie este secretă, nimeni altcineva nu poate
+decripta acest mesaj decît C; pentru restul lumii mesajul este gunoi.
+La fel stau lucrurile şi pentru partea a doua a mesajului, care fiind
+criptată cu K<sub>S</sub> este inteligibilă numai pentru S.
+
+<P>
+</LI>
+<LI>K<sub>C,S</sub> este un număr aleator generat de AS, care va fi
+folosit ca cheie de sesiune între C şi S.  Observaţi că cheia
+de sesiune apare în ambele părţi ale mesajului, în aşa fel
+încît va fi cunoscută atît de către C cît şi de S.
+
+<P>
+</LI>
+<LI>AS îi confirmă lui C identitatea serverului de disc S şi
+indică durata de validitate a lui K<sub>C,S</sub> (care poate fi
+diferită decît a dorit C în primul mesaj).
+
+<P>
+</LI>
+<LI>Faptul că N apare în mesajul către C garantează că acest
+mesaj a fost criptat de AS: nimeni altcineva nu putea să-l bage pe
+N înauntru.  De asemenea, acest mesaj nu putea fi un mesaj mai
+vechi dintr-o comunicaţie anterioară, pentru că N diferă.
+
+<P>
+</LI>
+<LI>Partea a doua a mesajului este opacă pentru C; tot ce poate
+face C cu ea este să o înainteze lui S.  C (sau oricine altcineva)
+nu o poate citi.  Dacă cineva ar modifica partea a doua, S nu ar mai
+putea-o decodifica şi obţine un mesaj corect, deci tichetul nu poate
+fi contrafăcut sau modificat.
+</LI>
+</UL>
+
+<P>
+</DD>
+<DT>C ---&gt; S:</DT>
+<DD>{C, ora curenta, suma de control}<sub>K<sub>C,S</sub></sub>,
+{T<sub>C,S</sub>}<sub>K<sub>S</sub></sub>. 
+
+<P>
+Mesajul are din nou două părţi.  
+
+<P>
+
+<UL>
+<LI>Partea a doua este exact partea a doua a mesajului 2, aşa cum a
+fost primită de la AS.
+
+<P>
+</LI>
+<LI>Prima parte a mesajului are scopul de a demonstra că acest
+mesaj este ``proaspăt'': S va extrage K<sub>C,S</sub> din partea a
+doua a mesajului şi o va folosi pentru a citi prima parte a mesajului.
+De acolo află ora la care a fost trimis mesajul, şi îl rejectează
+dacă ora diferă prea tare de ora locală.  (Asta ar putea să
+însemne că mesajul a fost capturat de un inamic şi re-lansat).
+Suma de control ne asigură că mesajul nu a fost modificat de nimeni;
+este practic imposibil să modifici un mesaj criptat şi să repari
+şi suma de control dacă nu ştii cheia.
+</LI>
+</UL>
+
+<P>
+</DD>
+<DT>S ---&gt; C:</DT>
+<DD>{ora curenta+1}<sub>K<sub>C,S</sub></sub>.  
+
+<P>
+Prin acest mesaj S în convinge pe C că a ajuns la destinaţia dorită:
+mesajul are ora curentă trimisă anterior de C plus 1.  Dar ora putea
+fi extrasă numai de cel care avea K<sub>C,S</sub>, care fiind o cheie
+de sesiune era ştiută numai de S.  Nu era suficient să returneze
+aceeaşi valoare, pentru că atunci acest mesaj putea fi o copie a (unei
+părţi a) mesajului anterior.
+
+<P>
+</DD>
+</DL>
+
+<P>
+La sfîrşitul acestei comunicaţii atît C cît şi S sunt siguri de
+identitatea celuilalt şi în plus au la dispoziţie o cheie de sesiune
+K<sub>C,S</sub> cu care pot cripta toate mesajele pe care le schimbă.
+Autentificarea a fost făcută.
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Implementarea Kerberos</A>
+</H1>
+
+<P>
+Între un protocol de autentificare pe hîrtie şi o implementare
+reală pe un calculator e o distanţă considerabilă.  Secţiunea
+următoare, consacrată slăbiciunilor lui Kerberos va ilustra şi mai
+pregnant acest lucru.
+
+<P>
+Implementarea lui Kerberos încearcă să mai ţină cont de anumite
+particularităţi ale lumii reale care fac realizarea protocolului mai
+dificilă.
+
+<P>
+Prima întrebare spinoasă care se iveşte este: unde este stocată parola
+fiecărui client K<sub>C</sub>, K<sub>S</sub>, etc.).  AS trebuie să fie
+o maşină foarte sigură, undeva într-un subsol ferit, dar maşinile
+client vor fi probabil peste tot la-ndemînă.  Dacă parola unui client
+este stocată pe disc atunci este mai la-ndemîna atacurilor asupra
+clientului.
+
+<P>
+Ca atare Kerberos nu memorează parola nicăieri!  Utilizatorul este
+obligat să o tasteze de fiecare dată cînd vrea să fie autentificat.
+Observaţi că K<sub>C</sub> este folosită în mesajele de mai sus numai
+pentru a decripta mesajul 2; în rest este inutilă.  Deci procedura
+este următoarea: programul kerberizat al clientului va lua legătura cu
+AS, iar cînd răspunsul soseşte utilizatorul trebuie să tasteze parola
+K<sub>C</sub>.  Parola este imediat folosită pentru a decripta mesajul
+de la AS după care este complet ştearsă din memorie.  În acest fel
+fereastra de vulnerabilitate este redusă la maximum.
+
+<P>
+Pe de altă parte asta poate fi foarte neplăcut, pentru că atunci
+utilizatorul va trebui să tasteze parola pentru fiecare nou server S
+pe care vrea să-l folosească (adică pentru fiecare nouă sesiune).
+Şi cum ştim că utilizatorii sunt leneşi, aşa ceva este
+inadmisibil.  Kerberos a introdus atunci un al doilea server central
+numit ``Serverul care dă tichete'': Ticket Granting Server, TGS.
+Ideea este TGS are de fapt toate parolele K<sub>S</sub>.  Clientul C se
+autentifică la TGS exact în acelaşi fel ca la oricare server S:
+obţinînd un tichet de la AS.  Odată autentificat la TGS şi
+folosind cheia de sesiune K<sub>C, TGS</sub> clientul poate solicita
+oricîte chei pentru alte servere S, S<sub>1</sub>, etc.
+
+<P>
+Figura&nbsp;<A HREF="kerberos-html.html#complet">2</A> şi
+tabela&nbsp;<A HREF="kerberos-html.html#mesajele">1</A> arată situaţia
+reală: mesajele 1,2 sunt schimbate numai cînd utilizatorul face
+<TT>login</TT>.  Mesajele 3,4 sunt schimbate de fiecare dată cînd 
+utilizatorul vrea să contacteze un nou server (adică să deschidă o
+nouă sesiune).  Mesajul 5 este folosit de client pentru a se
+autentifica fiecărui nou server, iar mesajul 6 este opţional,
+autentificînd serverul pentru client.  În mesajul 5 apare un element
+nou, numit K<sub>subsesiune</sub>: clientul poate alege aici o nouă
+cheie de sesiune care să fie folosită în locul cheii oferite de TGS,
+K<sub>C,S</sub>.  Asta nu schimbă prea tare natura protocolului.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="complet"></A><A NAME="205"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 2:</STRONG>
+Protocolul Kerberos complet.</CAPTION>
+<TR><TD><IMG
+ WIDTH="446" HEIGHT="274" BORDER="0"
+ SRC="img51.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=10cm\epsffile{complet.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="162"></A>
+<TABLE>
+<CAPTION><STRONG>Table 1:</STRONG>
+Schimbul complet de mesaje în protocolul Kerberos.</CAPTION>
+<TR><TD>h
+<DIV ALIGN="CENTER"><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">Nr.</TD>
+<TD ALIGN="CENTER">Între</TD>
+<TD ALIGN="LEFT">Conţinutul mesajului</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1</TD>
+<TD ALIGN="CENTER">C ---&gt; AS</TD>
+<TD ALIGN="LEFT">C, TGS, ora de expirare, N</TD>
+</TR>
+<TR><TD ALIGN="LEFT">2</TD>
+<TD ALIGN="CENTER">AS ---&gt; C</TD>
+<TD ALIGN="LEFT">K<sub>C, TGS</sub>, ora de expirare,
+N}<sub>K_C</sub>, {T<sub>C,TGS</sub>}<sub>K<sub>TGS</sub></sub></TD>
+</TR>
+<TR><TD ALIGN="LEFT">3</TD>
+<TD ALIGN="CENTER">C ---&gt; TGS</TD>
+<TD>{ora locala}<sub>K<sub>C,TGS</sub></sub>,
+{T<sub>C,TGS</sub>}<sub>K<sub>TGS</sub></sub>, S, ora de expirare,
+N<sub>1</sub></TD>
+</TR>
+<TR><TD ALIGN="LEFT">4</TD>
+<TD ALIGN="CENTER">TGS ---&gt; C</TD>
+<TD ALIGN="LEFT">{K<sub>C,S</sub>, S, ora de expirare,
+N<sub>1</sub>}<sub>K<sub>C, TGS</sub></sub>,
+{T<sub>C,S</sub>}<sub>K<sub>S</sub></sub></TD>
+</TR>
+<TR><TD ALIGN="LEFT">5</TD>
+<TD ALIGN="CENTER">C ---&gt; S</TD>
+<TD ALIGN="LEFT">{ora locala, suma de
+control,K<sub>subsesiune</sub>}<sub>K<sub>C,S</sub></sub>,
+{T<sub>C,S</sub>}<sub>K<sub>S</sub></sub></TD>
+</TR>
+<TR><TD ALIGN="LEFT">6</TD>
+<TD ALIGN="CENTER">S ---&gt; C</TD>
+<TD ALIGN="LEFT">{ora locala}<sub>K<sub>C,S</sub></sub></TD>
+</TR>
+</TABLE>
+
+<A NAME="mesajele"></A></DIV></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+Kerberos este implementat sub forma unor procese server (AS, TGS) şi
+a unor biblioteci care se pot lega în programele clienţilor şi
+serverelor.  Funcţionează sub o mare varietate de sisteme de
+operare: Unix şi Windows NT fiind cele mai notabile.  Mai are tot
+felul de zorzoane, legate de pildă de autentificarea între domenii
+administrative diferite, transmiterea tichetelor, etc.
+
+<P>
+
+<H1><A NAME="SECTION00080000000000000000">
+Slăbiciunile lui Kerberos</A>
+</H1>
+
+<P>
+Chiar dacă în teorie Kerberos este minunat, implementarea lui în
+practică este cel puţin dificilă.  Condiţiile ideale existente pe
+hîrtie sunt greu de obţinut într-o reţea de calculatoare reale.
+
+<P>
+La ora actuală nu există nici un fel de metodă complet riguroasă
+pentru a arăta ca un protocol criptografic nu scapă informaţii;
+există metode pentru a testa dacă un protocol rezistă la atacurile
+cunoscute, dar foarte adesea se publică algoritmi care mai tîrziu se
+dovedesc greşiţi.  În general, raţionamentele cu astfel de
+protocoale sunt foarte complicate.  Cercetarea în domeniu este în
+plină desfăşurare şi foloseşte tehnici foarte exotice, ca teoria
+informaţiei, teoria complexităţii, logici speciale (ex. knowledge
+theory), etc.
+
+<P>
+Voi ilustra aici numai unele dintre deficienţe, pentru a da o idee
+despre natura lor.
+
+<P>
+Să observăm că clientul trebuie să păstreze undeva cheile de
+sesiune pentru a putea conversa cu serverele: fiecare mesaj după cele
+de autentificare va fi criptat cu aceste chei.  Clientul trebuie să
+posede deci practic permanent K<sub>C, TGS</sub> şi K<sub>C,S</sub>.
+E adevărat că aceste chei expiră în 25 de ore, deci sunt mai puţin
+importante decît o parolă care teoretic este folosită luni întregi.
+Întrebarea este însă: unde sunt ţinute pe calculatorul clientului
+aceste chei?
+
+<P>
+Pe o staţie obişnuită Unix lucrează în mod normal mai mulţi
+utilizatori.  Tichetele unuia ar trebui să fie ferite de ceilalţi.
+Dar pe un sistem Unix practic nimic nu poate fi adăpostit împotriva
+administratorului (root).  Administratorul unui sistem poate citi
+orice fişier, şi poate inspecta memoria fizică a oricărui proces.
+Acesta este un călcîi al lui Ahile al lui Kerberos; toate metodele
+cunoscute pentru a penetra un sistem Unix ameninţă siguranţa
+întregului protocol.  Ori securitatea unui sistem Unix, care este
+foarte complicat, este extrem de greu de controlat; există o
+sumedenie de breşe de care un atacator ar putea profita.
+
+<P>
+O altă mare problemă este cu staţiile de lucru fără disc
+(diskless); aceste staţii de obicei importă discuri prin reţea.
+Deci de îndată ce o astfel de staţie stochează un tichet pe disc,
+tichetul va călători prin reţea, care am stabilit că este expusă
+la tot felul de atacuri!
+
+<P>
+Nici păstrarea tichetului în memorie nu este neapărat mai sigură:
+algoritmii de paginare stochează paginile pe disc (în partiţia de
+swap) atunci cînd calculatorul nu are destulă memorie, deci am
+revenit la aceeaşi problemă.
+
+<P>
+Iată încă un exemplu: am văzut că prospeţimea unui tichet este
+verificată comparînd ora locală a serverului cu ora din tichet.
+Pentru un interval de 5 minute serverul memorează toate tichetele
+primite, pentru a depista duplicate, eventual rezultate dintr-un atac
+care re-transmite pachete vechi capturate.  Un tichet mai vechi de 5
+minute este considerat expirat şi ignorat.  În felul acesta un
+server nu va primi niciodată acelaşi pachet de două ori.  Asta
+presupune că serverul şi clientul au ceasuri relativ sincronizate.
+
+<P>
+Într-o reţea mare de calculatoare sincronizarea ceasurilor se face
+automat, folosind un protocol numit NTP: Network Time Protocol.  Un
+atac foarte spectaculos este următorul: un atacator înregistrează o
+serie de mesaje de la un client care ştie că reprezintă o
+tranzacţie importantă.  Peste o săptămînă atacatorul
+infiltrează în reţea mesaje false NTP prin care setează ceasul
+unui server cu o săptămînă în urmă.  După asta atacatorul
+retransmite mesajele capturate, care vor fi re-executate, pentru că
+serverului îi par proaspete.
+
+<P>
+Asta face securitatea în calculatoare o problemă foarte spinoasă:
+adesea protocoalele propuse sunt eronate, dar nu există nici o
+metodă formală pentru a depista şi verifica asta.  Chiar dacă un
+protocol este corect formal, se poate baza pe asumpţii nerezonabile
+asupra mediului în care operează, cum ar fi ceasurile sincronizate.
+Şi chiar dacă se bazează pe asumpţii rezonabile, implementarea
+scrisă de un programator uman poate să aibă bug-uri care o fac
+vulnerabilă.
+
+<P>
+
+<H1><A NAME="SECTION00090000000000000000">
+Kerberos pentru un utilizator</A>
+</H1>
+
+<P>
+Voi încheia acest articol ilustrînd cum se manifestă Kerberos
+pentru un utilizator obişnuit.  Domeniul administrativ în care
+lucrez eu de obicei este complet kerberizat.  Programul meu <TT>login</TT> a fost modificat ca imediat ce tastez parola să discute cu AS
+şi să obţină un tichet pentru serverul care dă tichete, TGS.
+Directorul meu casă este de pe un disc din reţea, aflat undeva
+departe, pe un server de disc (protocolul folosit este AFS: Andrew
+File System).  Atunci cînd comunic prima oară cu serverul de AFS
+demonul local de pe maşina mea foloseşte tichetul obţinut de la AS
+pentru a obţine de la TGS un tichet pentru serverul de disc.  După
+aceea se autentifică serverului de disc, exact ca în schema de mai
+sus.
+
+<P>
+După autentificarea cu serverul de disc toată comunicaţia între
+maşina mea şi serverul de disc se va face folosind un alt protocol,
+numit Secure RPC (Remote Procedure Call): apel sigur de procedură la
+distanţă, care foloseşte iniţial cheia de sesiune oferită de TGS.
+
+<P>
+Pentru mine ca utilizator final totul este aproape complet
+transparent.  Singura neplăcere este că la fiecare 25 de ore
+tichetele pentru TGS expiră, şi atunci trebuie să-mi tastez din nou
+parola pentru a obţine tichete proaspete.  Asta poate fi neplăcut
+dacă vrei să rulezi o simulare mai îndelungată.
+
+<P>
+Pot să văd în orice clipă tichetele pe care le posed cu comanda
+<TT>klist</TT>:
+
+<P>
+<PRE>
+$ klist
+Ticket file:	/tkt/7108-0401-35ae552f
+Principal:	me@CS.CMU.EDU
+
+  Issued           Expires          Principal
+Jul 20 10:50:34  Jul 21 12:16:55  krbtgt.CS.CMU.EDU@CS.CMU.EDU
+Jul 20 10:50:34  Jul 21 12:16:55  afs@CS.CMU.EDU
+Jul 20 10:51:30  Jul 21 12:17:51  zephyr.zephyr@CS.CMU.EDU
+</PRE>
+
+<P>
+Tichetele sunt ţinute în fişierul <TT>/tkt/7108-0401-35ae552f</TT> pe
+discul local.  Am în clipa asta 3 tichete: unul pentru TGS, unul
+pentru serverul de disc AFS şi unul pentru sistemul de mesagerie
+zephyr (care nu ne interesează prea tare acum).
+
+<P>
+Mai am la dispoziţie următoarele comenzi:
+
+<P>
+<DL>
+<DT><STRONG>kinit</STRONG></DT>
+<DD>prin care pot să-mi schimb identitatea Kerberos (de
+pildă dacă un coleg vrea să lucreze pe calculatorul meu o să
+tasteze <TT>kinit numele-lui</TT> şi apoi parola lui personală;
+
+<P>
+</DD>
+<DT><STRONG>kdestroy</STRONG></DT>
+<DD>prin care toate tichetele de pe maşina locală sunt
+distruse; foarte util dacă plec şi nu vreau ca cineva să poată
+lucra în numele meu;
+
+<P>
+</DD>
+<DT><STRONG>kpasswd</STRONG></DT>
+<DD>prin care îmi pot schimba cheia (parola) stocată pe
+AS.  Schimbarea parolei este sigură, pentru că parola va fi trimisă
+criptat la un server special care face managementul parolelor şi
+modifică baza de date din care citeşte AS.  Autentificarea la
+managerul de parole se face tot folosind Kerberos.  Asta înseamnă
+că odată ce am o parolă Kerberos (care trebuie introdusă manual
+în baza de date a lui AS) schimbarea o pot face fără să mai bat
+vreun administrator la cap;
+
+<P>
+</DD>
+<DT><STRONG>kdb_init</STRONG></DT>
+<DD>este o comandă folosită de administrator pentru a
+crea o nouă bază de date Kerberos atunci cînd porneşte serviciul;
+
+<P>
+</DD>
+<DT><STRONG>kdb_admin</STRONG></DT>
+<DD>este comanda prin care administratorul adaugă un
+nou utilizator în baza de date;
+
+<P>
+</DD>
+<DT><STRONG>kdb_edit</STRONG></DT>
+<DD>este comanda prin care se pot adăuga noi
+administratori în baza de date AS: persoane care au dreptul să
+modifice baza de date.
+</DD>
+</DL>
+
+<P>
+În plus, în domeniul în care lucrez eu, majoritatea comenzilor care
+operează în reţea au fost kerberizate.  De pildă demonul şi
+clientul de telnet (terminal virtual): cînd eu fac <TT>telnet</TT> pe o
+maşină la distanţă clientul îmi cere parola după care obţine un
+tichet de la TGS pentru demonul <TT>telnetd</TT> de pe maşina de la
+distanţă; în acest fel parola mea nu circulă niciodată prin
+reţea (cum ar fi fost cazul dacă telnet nu era kerberizat).
+
+<P>
+
+<H1><A NAME="SECTION000100000000000000000">
+Concluzie</A>
+</H1>
+
+<P>
+Securitatea în calculatoare este o problemă de mare importanţă
+economică, mai ales acum cînd tot mai multe tranzacţii se fac prin
+Internet.  Proiectarea unui protocol de securitate este o treabă
+foarte complicată, iar implementarea nu este deloc simplă.  Domeniul
+este în plină cercetare în continuare.  Dificultăţile sunt
+amplificate de faptul că lanţul este tot atît de slab cît cea mai
+slabă verigă, iar verigi sunt destul de multe.  Fiţi deci cu
+ochii-n patru.
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot78">... Internet</A><A NAME="foot78"
+HREF="kerberos-html.html#tex2html1"><SUP>1</SUP></A> <DD>Într-un
+articol <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#internet">anterior</a>
+din PC Report am arătat că standardele privitoare la Internet se
+publică în astfel de documente numite Request For Comments.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

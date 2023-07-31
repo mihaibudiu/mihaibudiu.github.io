@@ -1,0 +1,1230 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Elemente de programare în Shell-ul Unix</TITLE>
+<META NAME="description" CONTENT="Elemente de programare în Shell-ul Unix">
+<META NAME="keywords" CONTENT="shell-2-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Elemente de programare în Shell-ul Unix</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- <TT>mihaib+@cs.cmu.edu</TT> 
+<BR><TT><A NAME="tex2html2"
+  HREF="http://www.cs.cmu.edu/~mihaib/">http://www.cs.cmu.edu/~mihaib/</A></TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>noiembrie 2000</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>programare în Bourne Shell
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>cunoştinţe elementare de programare;
+familiaritate cu Unix
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>shell, proces, variabilă, comandă, script
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Cuprins</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html32"
+  HREF="shell-2-html.html">Shell-ul: un limbaj de programare</A>
+<LI><A NAME="tex2html33"
+  HREF="#SECTION00030000000000000000">Shell-uri interactive şi neinteractive</A>
+<LI><A NAME="tex2html34"
+  HREF="#SECTION00040000000000000000">Familii de shell-uri</A>
+<LI><A NAME="tex2html35"
+  HREF="#SECTION00050000000000000000">Elemente fundamentale de programare în Shell</A>
+<UL>
+<LI><A NAME="tex2html36"
+  HREF="#SECTION00051000000000000000">Comenzi externe</A>
+<LI><A NAME="tex2html37"
+  HREF="#SECTION00052000000000000000">Variabile shell</A>
+<LI><A NAME="tex2html38"
+  HREF="#SECTION00053000000000000000">Comenzi interne importante</A>
+<LI><A NAME="tex2html39"
+  HREF="#SECTION00054000000000000000">Expansiunea expresiilor regulate</A>
+<LI><A NAME="tex2html40"
+  HREF="#SECTION00055000000000000000">Comenzi paralele</A>
+<LI><A NAME="tex2html41"
+  HREF="#SECTION00056000000000000000">Redirectare şi conducte (pipes)</A>
+<LI><A NAME="tex2html42"
+  HREF="#SECTION00057000000000000000">Accentul grav</A>
+<LI><A NAME="tex2html43"
+  HREF="#SECTION00058000000000000000">Alte comenzi</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html44"
+  HREF="#SECTION00060000000000000000">Încheiere</A>
+<LI><A NAME="tex2html45"
+  HREF="#SECTION00070000000000000000">Alte surse de informaţie</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+Aveţi adesea de manipulat multe fişiere?  Procesaţi frecvent texte?
+Sunteţi un administrator de sistem?  Dacă intraţi într-una din
+aceste categorii, atunci scula software pe care o voi descrie în
+continuare se poate dovedi exact obiectul de care aveţi nevoie.
+
+<P>
+În acest articol voi discuta despre ``shell'', într-una din
+înfăţişările pe care le are în sistemul de operare Unix.  Am mai scris
+articole despre shell în PC Report; le recomand cititorilor cărora
+articolul de faţă le stîrneşte interesul să se uite şi peste cele mai
+vechi; un <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#shell">articol</a>
+în PC Report din iunie 1997 discută despre cum este implementat un
+shell.  <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#nucleu">Articolul</a>
+meu din decembrie 1996 discută despre sistemele de operare şi
+menţionează în treacăt şi rolul shell-ului.  Dacă între timp aţi făcut
+curat în bibliotecă şi nu mai aveţi numerele vechi, puteţi găsi
+on-line articolele scrise de mine în pagina mea de web.
+
+<P>
+Chiar dacă 95% din umanitate folose'ste sistemul de operare Windows,
+de data aceasta nu mai pot fi acuzat că ignor marea audienţă cu
+bună intenţie: sistemele create de Microsoft oferă doar
+facilităţi rudimentare în această privinţă.  Există
+într-adevăr mai multe pachete software pentru Windows oferite de
+terţi care implementează funcţionalităţi de shell, dar shell-ul
+standard rămîne cel DOS.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Shell-ul: un limbaj de programare</A>
+</H1>
+
+<P>
+Dacă nu vreţi să vă osteniţi prea tare să căutaţi articolele
+mele mai vechi, voi rezuma aici cîteva din informaţiile mai
+importante de care avem nevoie.
+
+<P>
+În primul rînd, ``shell'' înseamnă cochilie sau carapace.  Numele
+acestui program vine din faptul că ``înveleşte'' nucleul sistemului
+de operare, precum cochilia miezul moale al melcului: utilizatorul nu
+are de-a face cu nucleul ci interacţionează prin intermediul
+shell-ului.  Pentru că nu îmi vine în minte nici o traducere
+potrivită, voi continua să folosesc cuvîntul englezesc.
+
+<P>
+Shell-ul este un program care permite utilizatorilor să tasteze şi
+execute comenzi.  Una din funcţiile foarte importante ale shell-ului
+este de a permite utilizatorilor să pornească în execuţie <EM>alte</EM> programe.  Numim un program în curs de execuţie <EM>proces</EM>.
+Toate procesele utilizatorilor pe un sistem Unix descind dintr-un
+shell.
+
+<P>
+În Unix shell-ul oferă mai mult decît abilitatea de a lansa procese
+în execuţie: oferă o sumedenie de comenzi şi facilităţi
+suplimentare, care-l fac un mediu ideal pentru a activităţi de
+administrare a sistemului.  Toate aceste comenzi formează un <EM>limbaj de programare</EM> deosebit de puternic; shell-ul este deci un <EM>interpretor</EM>, care citeşte şi execută comenzi.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Shell-uri interactive şi neinteractive</A>
+</H1>
+
+<P>
+Putem deci distinge două utilizări separate ale shell-ului: prima
+utilizare constă în a executa comenzi simple, în general pentru a
+lansa în execuţie alte programe.  În acest caz shell-ul prezintă
+utilizatorului un <EM>prompt</EM>, o invitaţie de a primi o comandă.
+După ce utilizatorul tastează comanda, shell-ul o execută imediat,
+iar cînd comanda îşi termină execuţia (sau chiar mai înainte,
+dacă este instruit în acest sens), shell-ul oferă din nou un
+prompt.  Acest mod de utilizare, în care fiecare comandă este
+citită de la utilizator şi executată se numeşte <EM>interactiv</EM>.
+În acest text vom folosi semnul procent <code>%</code> pentru a indica
+prompt-ul.
+
+<P>
+A doua utilizare a shell-ului este pentru execuţia unor programe mai
+complicate, scrise dinainte şi depozitate în fişiere.  Un fişier
+cu comenzi pentru shell se numeşte în engleză <EM>shell script</EM>
+(adică un ``scenariu pentru cochilie''), sau pe scurt ``script''.
+Executarea unui script se mai numeşte ``procesare în vrac'', <EM>batch processing</EM>, pentru că shell-ul nu se mai opreşte după
+fiecare comandă cu un prompt.
+
+<P>
+Ca orice alt limbaj de programare, cunoaşterea doar a unei fracţiuni
+din elementele de bază se dovedeşte perfect satisfăcătoare pentru
+nevoile de zi cu zi.  Voi ilustra aici numai comenzile cele mai
+puternice, şi pe acestea le voi descrie mai mult prin exemple decît
+riguros.  Pentru cei doritori de aprofundarea subiectului, secţiunea
+finală despre surse de informaţii suplimentare se poate dovedi un
+punct bun de plecare.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Familii de shell-uri</A>
+</H1>
+
+<P>
+Dacă Windows NT nu are un shell decent, în lumea Unix situaţia este
+chiar pe dos; un scurt istoric este necesar pentru a lămuri babilonia
+de opţiuni existente.
+
+<P>
+Primul shell tradiţional pentru Unix a fost scris în 1976 de Steve
+Bourne, care pe vremea aceea lucra la laboratoarele Bell ale companiei
+AT&amp;T.  În onoarea creatorului său, shell-ul acesta este numit
+``Bourne shell''.  Programul cu pricina se numeşte simplu ``sh'', şi
+se află de obicei în directorul <TT>/bin</TT> pe un sistem Unix
+(<TT>/bin/sh</TT>).  Să nu uităm că sistemul de operare Unix însuşi
+fusese creat cu puţin timp în urmă în acelaşi loc, inspirat de
+sistemul de operare Multics (vedeţi şi articolul meu despre istoria
+Unix-ului).  Shell-ul Bourne introducea o mulţime de concepte
+revoluţionare, care făceau viaţă utilizatorilor şi
+administratorilor mult mai simplă decît în sistemele de operare
+precedente.  Shell-ul Bourne era mai curînd proiectat pentru
+utilizarea sub formă de interpretor, şi mai puţin pentru cea
+interactivă.
+
+<P>
+Cînd la începutul anilor '80 la universitatea Berkeley din
+California a fost dezvoltată varianta locală de Unix, numită BSD,
+Bill Joy, un talentat programator, a scris un nou shell numit C Shell,
+sau <TT>csh</TT> (pronunţat de guru în engleză ``sişi'').  (Bill Joy
+este unul dintre fondatorii companiei Sun, la care actualmente este
+Chief Scientist.)  Acest shell introduce facilităţi foarte utile
+pentru execuţia interactivă, dar din păcate nu este compatibil cu
+Bourne, şi suferă de o mulţime de neajunsuri.
+
+<P>
+În 1984 David Korn, tot de la Bell Labs ale lui AT&amp;T, şi-a propus
+să modernizeze shell-ul Bourne adăugîndu-i facilităţi interactive
+a la <TT>csh</TT>.  Astfel s-a născut shell-ul Korn <TT>ksh</TT>, care
+este excelent realizat şi compatibil cu Bourne.
+
+<P>
+Din păcate <TT>ksh</TT> iniţial nu era software ``free''; aşa că unul
+din primele proiecte ale fundaţiei Free Software Foundation (vedeţi <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#open">articolul</a>
+meu despre Open Source din PC Report din iunie 1998) a fost să
+implementeze un nou shell, de data asta complet ``liber''.  Acest
+shell moşteneşte din ideile lui <TT>ksh</TT>, dar ia cîteva lucruri
+bune de la <TT>csh</TT>.  Noul shell a fost implementat original de
+Brian Fox, care era plătit de FSF; numele shell-ului este ``Bourne
+Again SHell'' (``din nou Bourne''), sau <TT>bash</TT> (citit
+aproximativ ``beş'').  Acesta este shell-ul standard pe sistemele
+GNU/Linux.
+
+<P>
+O mişcare paralelă a transformat substanţial <TT>csh</TT> în ceea ce
+a devenit <TT>tcsh</TT>, sau ``tisişel''.  <TT>tcsh</TT> este compatibil
+cu <TT>csh</TT>, dar nu cu <TT>sh</TT>.
+
+<P>
+Prin 1981 Microsoft a lansat sistemul de operare MS-DOS.  Acesta era
+echipat cu un shell foarte primitiv, numit <TT>COMMAND.COM</TT>.  Deşi
+creat ulterior Unix-ului, şi inspirat de acesta, shell-ul MS-DOS este
+extrem de primitiv, inconsistent şi greu de folosit.  Din păcate a
+rămas, cu minore îmbunătăţiri, shell-ul standard chiar şi sub
+Windows2000.
+
+<P>
+În Windows însă multe dintre funcţiunile unui shell sunt luate de
+un program grafic, numit Command Manager sub Windows 3.1.  Pentru
+utilizatori novici un shell grafic oferă o interfaţă mult mai
+simplă şi intuitivă, dar pentru un ins experimentat sau pentru un
+administrator facilităţile acestuia (şi ale altor programe de
+administrare) sunt adesea frustrante.
+
+<P>
+De aici încolo avem de a face cu o explozie de noi shell-uri, care
+aduc tot felul de înflorituri şi varietăţi; voi cita astfel: 
+<TT>ash</TT>, <TT>zsh</TT>, <TT>scsh</TT>, <TT>rc</TT>, <TT>bsh</TT>,
+<TT>pdksh</TT>, <TT>es</TT>.
+
+<P>
+În articolul de faţă voi vorbi despre Bourne Shell; acest shell a
+evoluat şi el de-a lungul timpului, şi a fost şi standardizat de
+comitetul POSIX, care a standardizat Unix.  De aceea, <TT>sh</TT> este de
+departe alternativa cea mai sigură: chiar dacă nu aveţi alte
+shell-uri la dispoziţie, <TT>sh</TT> este sigur disponibil (pe sisteme
+gen GNU/Linux se află <TT>bash</TT>, care are un mod de funcţionare în
+compatibilitate 100% cu <TT>sh</TT>).
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Elemente fundamentale de programare în Shell</A>
+</H1>
+
+<P>
+În restul acestui articol voi discuta doar despre programarea în
+shell.  Elementele shell-ului legate de utilizarea interactivă vor fi
+trecute sub totală tăcere (cum ar fi editorul liniilor de comandă,
+mecanismul de re-execuţie a comenzilor (history), controlul
+job-urilor lansate în execuţie).
+
+<P>
+
+<H2><A NAME="SECTION00051000000000000000">
+Comenzi externe</A>
+</H2>
+
+<P>
+Shell-ul este un program ale cărui capacităţi pot fi înzecite de
+faptul că poate controla toate celelalte programe.  Am spus deja că
+shell-ul poate porni în execuţie orice alt program; în plus,
+shell-ul poate influenţa în mai multe moduri mediul în care
+programul respectiv este executat.  Vom vedea mai jos cîteva exemple.
+
+<P>
+Cel mai important de ştiut pentru moment este faptul numele oricărui
+fişier executabil (adică un fişier care conţine o aplicaţie) este
+o comandă shell.  Astfel, fişierul ``netscape'' conţine imaginea
+executabilă a browser-ului Internet; cînd shell-ului îi este
+oferită spre execuţie comanda <TT>netscape</TT>, el va lansa în
+execuţie programul acesta.  Un fişier executabil mai este de aceea
+numit ``comandă externă''.
+
+<P>
+Capacitatea de a controla alte programe dă shell-ului alura unui
+limbaj extensibil; creind noi programe de fapt creăm noi ``comenzi''
+pentru shell.  Shell-ul poate combina execuţia mai multor programe
+controlînd comunicaţia dintre ele, creînd astfel cu uşurinţă
+programe mai complicate din bucăţi simple.
+
+<P>
+Pentru ilustraţie vom folosi în acest text cu precădere cîteva
+comenzi externe simple; iată-le rezumate aici:
+
+<P>
+<DL>
+<DT><STRONG>ls:</STRONG></DT>
+<DD>Programul <TT>ls</TT> se citeşte ``list'', şi este
+echivalentul lui ``dir'' din DOS.  Este urmat de o listă de nume de
+fişiere, iar efectul lui este de a afişa chiar numele acestor
+fişiere.  Urmat de un director, afişează fişierele din acel
+director.  (Fără argumente operează pe directorul ``curent''.)
+Iată un exemplu:
+
+<P>
+<PRE>
+% ls
+Mail  bin  data  lib  man  src  tmp
+% ls src
+Makefile  hello.c   
+%
+</PRE>
+
+<P>
+Am ilustrat aici funcţionarea interactivă a shell-ului, pe care o
+vom folosi pînă avem destule elemente pentru a scrie programe mai
+mari.  Caracterul <code>%</code> a fost scris de shell, fiind prompt-ul.
+utilizatorul a tastat apoi <TT>ls</TT>; shell-ul a identificat acest şir
+de caractere ca fiind numele unui fişier executabil, care a executat.
+Cînd se execută, <TT>ls</TT> afişează conţinutul directorului curent
+(<TT>Mail</TT>, <TT>bin</TT>, etc.).  După ce <TT>ls</TT> s-a terminat,
+shell-ul afişează din nou prompt-ul, cu promptitudine.
+
+<P>
+</DD>
+<DT><STRONG>wc:</STRONG></DT>
+<DD>Programul Word Count număra liniile, cuvintele şi
+caracterele din fişierele care-i sunt date ca argumente.  Iată un
+exemplu:
+
+<P>
+<PRE>
+% wc src/hello.c
+      6      9     74 src/hello.c
+%
+</PRE>
+
+<P>
+Vedem mai sus că fişierul <TT>hello.c</TT> din directorul <TT>src</TT>
+are 6 linii, 9 cuvinte şi 74 caractere.
+
+<P>
+</DD>
+<DT><STRONG>cat:</STRONG></DT>
+<DD>deşi înseamnă ``pisică'', programul <TT>cat</TT> de fapt
+tipăreşte conţinutul fişierelor care-i sunt oferite drept argument
+(echivalent cu <TT>type</TT> din DOS).  Numele lui vine de la
+``CATalogue''.
+
+<P>
+<PRE>
+% cat src/hello.c
+#include &lt;stdio.h&gt;
+
+main() {
+    printf("Hello world\n");
+    return 0;
+}
+%
+</PRE>
+
+<P>
+</DD>
+</DL>
+
+<P>
+
+<H3><A NAME="SECTION00051100000000000000">
+Succes şi eroare</A>
+</H3>
+
+<P>
+În Unix, cînd un proces se termină returnează procesului său
+părinte<A NAME="tex2html3"
+  HREF="#foot115"><SUP>1</SUP></A> un cod de eroare, care permite
+părintelui să detecteze dacă odrasla-i s-a executat cu succes sau a
+întîmpinat nişte probleme.
+
+<P>
+În mod surprinzător, cel puţin pentru un programator C, 0 este
+codul pentru succes, şi orice valoare nenulă indică o eroare.  Vom
+vedea mai încolo cum aceste valori pot fi folosite de shell pentru a
+crea programe complicate.
+
+<P>
+
+<H2><A NAME="SECTION00052000000000000000">
+Variabile shell</A>
+</H2>
+
+<P>
+Ca orice limbaj de programare, limbajul shell-ului conţine
+variabile.  În mod tradiţional, variabilele shell sunt scrise numai
+cu majuscule, pentru că în Unix programele executabile au nume
+scrise cu minuscule; în felul acesta se evită confuziile.  Valoarea
+unei variabile shell este un şir arbitrar de caractere.  Numele
+variabilelor sunt aceleaşi ca în limbajul C: o literă urmată de
+litere, cifre şi semnul ``subliniat'' <code>_</code>.
+
+<P>
+Principala limitare a shell-ului, care îl face nepractic pentru
+scrierea de programe mari, constă în sărăcia tipurilor de date
+disponibile: există un singur tip de date, şirul de caractere.  Nu
+există numere, structuri, matrici, liste, arbori, etc.  Pentru a
+scrie programe mai complicate, aceste structuri de date trebuie
+implementate pornind de la şiruri, ceea ce e complicat şi adesea
+ineficient.  Dar asta nu ne va îndepărta de la scopul de a vedea ce
+putem face totuşi folosind shell-ul.
+
+<P>
+
+<H3><A NAME="SECTION00052100000000000000">
+Atribuiri</A>
+</H3>
+
+<P>
+Cea mai simplă comandă a shell-ului este cea de atribuire; ea are
+forma:
+
+<P>
+<PRE>
+variabila=valoare
+</PRE>
+
+<P>
+Efectul acestei comenzi este de a atribui valoarea din dreapta
+variabilei din stînga.  <B>Atenţie:</B> nu puteţi pune spaţii la
+stînga şi la dreapta semnului egal.
+
+<P>
+
+<H3><A NAME="SECTION00052200000000000000">
+Valoarea unei variabile</A>
+</H3>
+
+<P>
+<TT>sh</TT> este un limbaj straniu prin faptul că pentru a accesa
+valoarea unei variabile trebuie s-o prefixăm cu semnul dolar.  Deci
+atribuirea şi citirea folosesc nume diferite!  O eroare comună este
+de a folosi dolar la atribuire sau de a uita dolarul la citire.
+Atenţie, deci:
+
+<P>
+<PRE>
+[1] % DIR=src
+[2] % ls $DIR
+[3] Makefile  hello.c
+[4] % ls DIR
+ls: DIR: No such file or directory
+[5] % $DIR=bin
+sh: src=bin: command not found
+[6] % DIR=ls
+[7] % $DIR src
+Makefile  hello.c
+[8] % DIR=$DIR$DIR
+[9] % ls $DIR
+ls: lsls: No such file or directory
+[10] % DIR=src/
+[11] % ls ${DIR}Makefile
+Makefile
+</PRE> 
+<P>
+În linia [2] variabila <TT>DIR</TT> este substituita cu valoarea sa,
+<TT>src</TT>.  În linia [4], <TT>DIR</TT> este chiar numele directorului
+căutat.  Iar în linia [5], în loc să se facă o atribuire
+variabilei <TT>DIR</TT>, valoarea acesteia este substituită, generînd
+comanda <TT>src=bin</TT>, care <EM>nu</EM> este interpretată la rîndul ei
+ca o atribuire, ci este direct executată, şi care, fiind
+inexistentă, generează un mesaj de eroare.  Dacă atribuim lui
+<TT>DIR</TT> valoarea <TT>ls</TT>, ca în linia [6], executînd linia [7]
+executăm de fapt <TT>ls&nbsp;src</TT>.  În linia [8] observăm cum putem
+concatena valoarea a două variabile juxtapunîndu-le.  În fine,
+linia [11] arată cum procedăm dacă vrem să concatenăm valoarea
+unei variabile <TT>DIR</TT> cu un alt şir de caractere: trebuie să
+folosim acolade pentru a delimita numele variabilei.
+
+<P>
+
+<H3><A NAME="SECTION00052300000000000000">
+Ghilimele</A>
+</H3>
+
+<P>
+Shell-ul permite construirea de şiruri de caractere folosind două
+tipuri de ghilimele: apostroful&nbsp;(<TT>&#8217;</TT>)
+şi ghilimelele duble&nbsp;(<code>"</code>).
+Diferenţa între cele două tipuri este că între apostrofuri
+valorile variabilelor <EM>nu</EM> sunt substituite, pe cînd între
+ghilimele sunt.  (La fel şi pentru expresiile regulate, despre care
+nu am vorbit încă).  Ghilimelele sunt utile cînd vrem să includem
+spaţii în valorile variabilelor.
+
+<P>
+
+<H3><A NAME="SECTION00052400000000000000">
+Variabile interne</A>
+</H3>
+
+<P>
+Shell-ul însuşi foloseşte unele variabile pentru nevoile sale
+interne.  Schimbînd valoarea acestor variabile putem afecta
+comportarea sa.  De exemplu, variabila numită <TT>PS1</TT> este chiar
+prompt-ul.  Variabila internă <TT>PWD</TT> este directorul curent.
+
+<P>
+<PRE>
+% PS1="ordonati, stapine: "
+ordonati, stapine: ls
+Mail  bin  data  lib  man  src  tmp
+ordonati, stapine:
+</PRE>
+
+<P>
+Unele din variabilele interne nu pot fi atribuite, ci pot fi doar
+citite.  Unele din acestea au nume stranii, formate din alte caractere
+decît litere şi cifre; de exemplu variabila <code>$?</code> conţine
+rezultatul cu care s-a terminat ultima comandă (0 pentru succes).
+<P>
+
+<H2><A NAME="SECTION00053000000000000000">
+Comenzi interne importante</A>
+</H2>
+
+<P>
+Unele comenzi ar putea fi implementate atît sub formă de comenzi
+interne cît şi externe.  Dar altele trebuie neapărat să fie
+implementate de către shell.  De exemplu comanda <TT>cd</TT>, care
+schimbă directorul curent: aceasta nu poate fi o comandă externă;
+dacă <TT>cd</TT> ar fi implementată de un program separat, atunci cînd
+shell-ul ar porni programul numit <TT>cd</TT>, acesta s-ar executa, ar
+schimbă directorul său curent după care s-ar termină.  Dar
+schimbările făcute de un proces fiu nu se propagă la părinţii lui
+(ci doar invers), deci shell-ul rămîne în directorul iniţial.
+
+<P>
+În această secţiune vom vedea alte cîteva comenzi interne
+importante.
+
+<P>
+<DL>
+<DT><STRONG>cd:</STRONG></DT>
+<DD>(change directory) este urmată de numele unui director şi
+schimbă directorul curent în acel director;
+
+<P>
+</DD>
+<DT><STRONG>exit:</STRONG></DT>
+<DD>este urmată de o valoare numerică; shell-ul îşi
+termină execuţia cu valoarea indicată.  Deci <TT>exit&nbsp;0</TT>
+înseamnă ``succes''.  Adesea programatorii utilizeaza acest cod
+pentru a transmite procesului-părinte informaţii despre eroarea
+petrecută;
+
+<P>
+</DD>
+<DT><STRONG>echo:</STRONG></DT>
+<DD>(ecou) îşi tipăreşte argumentele.  Este o comandă
+deosebit de utilă:
+
+<P>
+<PRE>
+[1] % DIR=src
+[2] % echo DIR $DIR
+DIR src
+[3] % echo DIR         DIR
+DIR DIR
+[4] % echo "DIR         DIR"
+DIR         DIR
+[5] % echo "$DIR         $DIR"
+src         src
+[6] % echo '$DIR         $DIR'
+$DIR         $DIR
+</PRE>
+ 
+<P>
+Observaţi diferenţa între liniile [3] şi [4]; în linia [3]
+<TT>echo</TT> primeşte două argumente, iar în linia [4] primeşte
+unul singur, un şir care conţine şi spaţii.
+
+<P>
+</DD>
+<DT><STRONG>eval:</STRONG></DT>
+<DD>Aceasta este o comandă extrem de puternică.  Argumentul
+ei este un şir de caractere, care este executat ca şi cum ar fi o
+comandă shell.
+
+<P>
+<PRE>
+[1] % DIR=src
+[2] % COMANDA=ls
+[3] % echo "$COMANDA $DIR"
+ls src
+[4] % eval "$COMANDA $DIR"
+Makefile  hello.c
+</PRE>
+
+<P>
+</DD>
+<DT><STRONG>test:</STRONG></DT>
+<DD>e foarte utilă pentru a evalua expresii boolene (care
+adică generează un rezultat ``adevărat'' sau ``fals'').  Ca şi
+codurile de eroare ale proceselor, ``adevărat'' este 0, iar fals este
+orice valoare diferită de 0.  
+
+<P>
+<TT>test</TT> poate face patru feluri de teste diferite:
+
+<P>
+
+<UL>
+<LI>Teste asupra fişierelor; de exemplu:
+
+<P>
+
+<UL>
+<LI><TT>test -f fisier</TT> returnează ``adevărat'', adică 0
+(zero), dacă fişierul indicat există şi este un fişier ordinar
+(adică nu un director).
+</LI>
+<LI><TT>test -d director</TT> testează existenţa unui director
+</LI>
+<LI><TT>test -r fisier</TT> vede dacă fişierul poate fi citit
+(permisiunile de citire dau dreptul acestui utilizator)
+</LI>
+<LI><TT>fisier1 -nt fisier2</TT> e adevărat dacă primul fişier este
+mai nou decît al doilea (newer than).
+</LI>
+</UL>
+
+<P>
+</LI>
+<LI>Teste pentru şiruri de caractere:
+
+<UL>
+<LI><TT>test -z sir</TT> testează dacă şirul conţine vreun
+caracter (e nenul)
+</LI>
+<LI><TT>test sir1 = sir2</TT> testează dacă cele două şiruri sunt
+egale
+</LI>
+<LI><TT>test sir1 != sir2</TT> testează dacă şirurile sunt diferite
+</LI>
+</UL>
+
+<P>
+</LI>
+<LI>Teste pentru valori numerice: se pot folosi operaţiile
+<TT>-eq,-ne,-le,-lt,-gt,-ge</TT> pentru egal (equal), inegal (not equal),
+mai mic sau egal (less or equal), mai mic (less than), mai mare
+(greater than) sau mai mare sau egal (greater or equal), respectiv.
+
+<P>
+Nu folosiţi <TT>=</TT> sau <TT>==</TT> pentru a compara numere!
+
+<P>
+</LI>
+<LI>Teste pentru valori boolene: puteţi folosi <TT>-a</TT> pentru
+``şi'' (and), <TT>-o</TT> pentru ``sau'' (or) şi <TT>!</TT> pentru
+negaţie.
+
+<P>
+Din păcate nu puteţi folosi paranteze; pentru expresii mai
+complicate vedeţi mai jos comanda <TT>expr</TT>.
+</LI>
+</UL>
+
+<P>
+<PRE>
+% DIR=src; FILE=Makefile
+% test -f $DIR/$FILE
+% echo $?
+0
+%
+</PRE>
+
+<P>
+În exemplul anterior ilustrăm mai multe concepte noi: în prima
+linie punem două comenzi pe aceeaşi linie, separîndu-le cu
+punct-şi-virgulă.  În linia a doua testăm existenţa unui
+fişier.  În linia a treia tipărim rezultatul testului anterior
+(vă amintiţi că variabila <code>$?</code> conţine rezultatul ultimei
+comenzi executate, şi că 0 reprezintă succes). 
+<P>
+Pentru convenienţa utilizatorului, există o comandă cu numele
+<TT>[</TT> (paranteză dreaptă deschisă), care este echivalentă cu
+<TT>test</TT>.  Astfel în loc de: <TT>test&nbsp;-f&nbsp;fisier</TT> putem scrie:
+<TT>[&nbsp;-f&nbsp;fisier&nbsp;]</TT>.  Observaţi că paranteza trebuie închisă, şi
+în plus <EM>trebuie lăsate spaţii în jurul parantezelor</EM>.
+
+<P>
+</DD>
+<DT><STRONG>if:</STRONG></DT>
+<DD>Putem face tot felul de teste, dar cum putem beneficia de
+rezultatul lor?  Folosind instrucţiunea de execuţie condiţională,
+ca în următorul exemplu:
+
+<P>
+<PRE>
+% DIR=src; FILE=Makefile
+% if [ -f $DIR/$FILE ]; then echo "Exista"; else echo "Nu exista"; fi
+Exista
+%
+</PRE>
+
+<P>
+Aici am combinat două comenzi: <TT>if</TT> şi <TT>test</TT>.  Comanda
+internă <TT>if</TT> este urmată de o altă comandă.  Dacă cea din
+urmă se termină cu succes (returnează 0), atunci comanda de după
+<TT>then</TT> este executată; altfel ramura de după <TT>else</TT>.  Nu-l
+uitaţi pe <TT>fi</TT> la sfîrşit.
+
+<P>
+Cînd compunem un script putem separa părţile unui <TT>if</TT> pe mai
+multe linii.  Iată un exemplu de script:
+
+<P>
+<PRE>
+#!/bin/sh
+
+# acest script tipareste fisierul argument, sau un mesaj de 
+# eroare daca acesta nu exista
+
+if [ $# != 1 ]; then
+        echo "Imi trebuie un argument"
+        exit 1
+elif [ -f $1 ]; then
+        cat $1
+else
+        echo "$1 nu exista"
+fi
+</PRE>
+
+<P>
+Acesta este deja un script interesant, care introduce cîteva elemente
+noi:
+
+<P>
+
+<UL>
+<LI>Comentariile în shell sunt introduse de semnul diez (<code>#</code>)
+şi se termină odată cu linia;
+</LI>
+<LI>Prima linie este o convenţie Unix: dacă un fişier începe cu
+semnele <code>#!/</code>, atunci urmează numele unui interpretor care
+trebuie să execute acest program;
+</LI>
+<LI>Variabila internă <code>$#</code> conţine numărul de argumente
+primite de shell în linia de comandă; </LI>
+<LI>Observaţi folosirea lui <TT>elif</TT> în loc de <TT>else&nbsp;if</TT>;
+</LI>
+<LI>Variabilele <code>$1</code>, <code>$2</code>, ..., <code>$9</code> conţin
+argumentele însele. </LI>
+</UL>
+
+<P>
+Dacă punem script-ul anterior în fişierul numit ``arata.sh'', putem
+să-l executăm cu secvenţa de comenzi:
+
+<P>
+<PRE>
+% chmod a+x arata.sh
+% ./arata.sh
+Imi trebuie un argument
+% ./arata.sh bibi
+bibi nu exista
+% ./arata.sh src/hello.c
+#include &lt;stdio.h&gt;
+
+main() {
+    printf("Hello world\n");
+    return 0;
+}
+%
+</PRE>
+
+<P>
+Comanda <TT>chmod a+x arata.sh</TT> are drept efect de a face fişierul
+<TT>arata.sh</TT> executabil în aşa fel încît oricine să-l poată executa
+(CHange the MODe for All to add (+) eXecutable).
+
+<P>
+Observaţi că pornim script-ul în execuţie indicînd directorul
+unde se află (<TT>./arata.sh</TT>).  Dacă un program nu este indicat
+exact prin directorul său, shell-ul foloseşte o variabilă numită
+<TT>PATH</TT> care indică o serie de directoare (separate cu semnul
+două puncte) unde acest script trebuie căutat.  Încercaţi şi
+<code>echo $PATH</code>. 
+<P>
+</DD>
+<DT></DT>
+<DD>read: citeşte cuvinte într-una sau mai multe variabile:
+
+<P>
+<PRE>
+% read a b c
+tastez multe cuvinte sa vedem cum merg
+% echo ":$a:$b:$c:"
+:tastez:multe:cuvinte sa vedem cum merg:
+%
+</PRE>
+ 
+<P>
+Read citeşte de la intrare o linie (linia care apare după comandă a
+fost introdusă de la tastatură, şi nu tipărită de shell); apoi
+<TT>read</TT> sparge linia în cuvinte separate de spaţii, şi fiecare
+cuvînt este atribuit unei variabile; ultima variabilă primeşte
+restul liniei pînă la sfîrşit.
+
+<P>
+</DD>
+<DT><STRONG>for:</STRONG></DT>
+<DD>permite să executăm un ciclu într-o listă de cuvinte,
+astfel:
+
+<P>
+<PRE>
+for i in hello goodbye ok; do
+    for j in .o .c~; do
+        if [ -f $i$j ]; then 
+            echo "Sterg $i$j"
+            rm $i$j
+        fi
+    done
+done
+</PRE>
+
+<P>
+Acest program caută fişierele <TT>hello</TT>, <TT>goodbye</TT> sau
+<TT>ok</TT> urmate de sufixul <TT>.o</TT> sau <code>.c~</code> (ceea ce în
+genere înseamnă fişier obiect, respectiv o versiune veche a unui
+fişier C) şi le şterge.  Observaţi două bucle imbricate.
+</DD>
+</DL>
+
+<P>
+Înainte de a prezenta alte cîteva comenzi interne foarte utile, vom
+discuta sumar despre alte funcţiuni foarte importante ale shell-ului.
+
+<P>
+
+<H2><A NAME="SECTION00054000000000000000">
+Expansiunea expresiilor regulate</A>
+</H2>
+
+<P>
+O trăsătură extrem de puternică a shell-ului este că poate expanda
+<EM>expresii regulate</EM> care descriu succint nume de fişiere.
+Pentru că am scris de curînd un <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#regex">articol</a>
+despre acest subiect (în PC Report din aprilie 2000), voi fi foarte
+sumar aici, prezentînd doar cîteva exemple:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT"><B>Expresie</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=340><B>Semnificaţie</B></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>a*</code></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=340>Toate fişierele al căror nume începe cu <TT>a</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>*.c</code></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=340>Toate fişierele al căror nume se termină cu <TT>.c</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>.??*</code></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=340>Toate fişierele al căror nume începe cu punct şi
+               conţine cel puţin 3 caractere</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>*/src/*.c</code></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=340>Toate fişierele terminate cu <TT>.c</TT> aflate în
+	           subdirectorul <TT>src</TT> al oricărui director din
+		   directorul curent.</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>*[0-3]*</code></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=340>Toate fişierele care conţin una din cifrele 0,1,2 sau 3
+                 în nume</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>{ab,cd}.{c,h}</code></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=340>fişierele existente în mulţimea
+		       <TT>ab.c</TT>, <TT>ab.h</TT>, <TT>cd.c</TT>,
+	               <TT>cd.h</TT></TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Iată şi un program care foloseşte expresiile regulate:
+
+<P>
+<PRE>
+#!/bin/sh
+
+ACEST_SCRIPT=$0
+
+for i in *.c; do
+        if [ -f $i ]; then echo $i; fi
+done
+
+for i in *; do
+        if [ -d $i ]; then 
+                cd $i; $ACEST_SCRIPT; cd ..
+        fi
+done
+</PRE>
+
+<P>
+Dacă script-ul anterior este în undeva într-un director indicat de
+variabila <TT>PATH</TT>, atunci execuţia lui va cauza tipărirea
+tuturor fişierelor C dintr-o ierarhie de directoare.  Observaţi cum
+script-ul foloseşte variabila <code>$0</code>, care conţine propriul lui
+nume, pentru a se auto-executa în toate sub-directoarele. 
+<P>
+
+<H2><A NAME="SECTION00055000000000000000">
+Comenzi paralele</A>
+</H2>
+
+<P>
+Am văzut că putem folosi semnul punct-şi-virgulă pentru a lansa
+în execuţie mai multe comenzi succesiv.  Dacă vrem să lansăm în
+execuţie două comenzi simultan, punem între ele semnul <code>&amp;</code>:
+
+<P>
+<PRE>
+% netscape &amp; xterm &amp;
+%
+</PRE>
+
+<P>
+Această comandă va lansa în execuţie programul netscape, şi
+fără a aştepta terminarea sa va lansa şi programul xterm.  Semnul
+<code>&amp;</code> de la sfîrşit îi spune shell-ului să nu aştepte nici
+terminarea lui xterm, ci să ofere un nou prompt.
+
+<P>
+Se pot de asemenea folosi semnele <code>&amp;&amp;</code> şi <code>||</code>.  Dacă
+scriem <TT>c1&nbsp;&amp;&amp;&nbsp;c2</TT>, înseamnă că vrem ca <TT>c2</TT> să se
+execute dacă şi numai dacă <TT>c1</TT> se termină cu succes.
+Dimpotrivă, <code>c1 || c2</code> înseamnă că <TT>c2</TT> se execută dacă
+şi numai dacă <TT>c1</TT> a eşuat.
+
+<P>
+
+<H2><A NAME="SECTION00056000000000000000">
+Redirectare şi conducte (pipes)</A>
+</H2>
+
+<P>
+Cînd shell-ul lansează un proces are posibilitatea de a cupla
+intrarea şi ieşirea acestuia în diferite moduri.  În Unix fiecare
+proces la pornire are 3 canale de comunicaţie deschise: un canal de
+la care primeşte date (intrarea), unul la care scrie date (ieşirea)
+şi unul la care scrie erori.  Pentru shell în mod normal aceste
+canale sunt cuplate la tastatura şi respectiv ecran.  Ele pot fi
+însă redirecţionate spre fişiere foarte simplu:
+
+<P>
+<PRE>
+% ls &gt;lista
+% cat lista
+Mail  bin  data  lib  man  src  tmp
+% 
+</PRE>
+
+<P>
+Semnul <code>&gt;</code> este urmat de un fişier; ieşirea comenzii executate
+este ``depusă'' atunci în acel fişier.
+
+<P>
+Mai spectaculos este că putem cupla ieşirea unui proces la intrarea
+altuia folosind un singur caracter, scris <code>|</code> şi citit
+``ţeavă'' (pipe).  Pentru a afla de exemplu cîte fişiere sunt în
+directorul curent, putem folosi:
+
+<P>
+<PRE>
+% ls | wc -w
+7
+% ls &gt;lista
+% wc -w lista
+7
+% rm lista
+</PRE>
+
+<P>
+<TT>wc -w</TT> număra doar cuvintele (words).  Pentru a număra
+fişierele putem fie trimite rezultatul lui <TT>ls</TT> într-un fişier
+<TT>lista</TT> folosind redirectare, după care putem număra cuvintele,
+sau, mult mai eficient şi rapid, putem cupla ieşirea lui <TT>ls</TT> la
+intrarea lui <TT>wc</TT> cu o ţeavă, ca în prima linie.
+
+<P>
+Un idiom ades folosit este de a redirecta erorile spre un dispozitiv
+fictiv numit <TT>/dev/null</TT>, care este găleata de gunoi pe un
+sistem Unix:
+
+<P>
+<PRE>
+% wc -l *.c */*.c 2&gt;/dev/null
+</PRE>
+
+<P>
+Această comandă numără liniile din toate fişierele care se
+termină cu <TT>.c</TT> în directorul curent şi în toate
+subdirectoarele sale.  Dacă unele din fişiere sunt însă ilizibile
+(de exemplu pentru că avem directoare al căror nume se termină cu
+<TT>.c</TT>), atunci <TT>wc</TT> va tipări nişte erori, care însă vor fi
+trimise spre ``null'' datorită redirectării canalului de eroare,
+designat de <code>2&gt;</code>.
+
+<P>
+
+<H2><A NAME="SECTION00057000000000000000">
+Accentul grav</A>
+</H2>
+
+<P>
+O facilitate extrem de puternică a shell-ului este oferită de
+semnele de accent grav <code>`</code>.  Orice este cuprins între semne de
+accent grav este executat ca o comandă; rezultatul acelei comenzi
+devine un şir de caractere, care înlocuieşte comanda între accente
+grave.
+
+<P>
+<PRE>
+% wc -w src/hello.c
+9 src/hello.c
+% a=`wc -w src/hello.c`
+% echo $a
+9 src/hello.c
+%
+</PRE> 
+<P>
+
+<H2><A NAME="SECTION00058000000000000000">
+Alte comenzi</A>
+</H2>
+
+<P>
+<DL>
+<DT><STRONG>while:</STRONG></DT>
+<DD>ne permite să ciclăm în mod repetat.  În script-ul
+de mai jos, <TT>while</TT> se execută atîta timp cît comanda
+<TT>read</TT> funcţionează cu succes; astfel citim fiecare linie din
+fişierul <TT>text-de-prelucrat</TT>.  Tipărim apoi numai liniile care
+au mai mult de 10 cuvinte.
+
+<P>
+<PRE>
+#!/bin/sh
+
+cat text-de-prelucrat | while read linie; do
+    cuvinte=`echo $linie | wc -w`
+    if [ $cuvinte -ge 10 ]; then
+        echo $linie
+    fi
+done
+</PRE> 
+<P>
+</DD>
+<DT><STRONG>expr:</STRONG></DT>
+<DD>permite shell-ului să opereze şi cu numere.  Am văzut
+că singurul tip de date al shell-ului sunt şirurile de caractere.
+Cum putem atunci face ceva aritmetică?  Comanda <TT>expr</TT> este
+urmată de o expresie aritmetica a cărei valoare o tipăreşte la
+ieşire.  E o metodă un pic cam complicată pentru a evalua simple
+expresii aritmetice, dar dacă faceţi puţine calcule, e foarte
+practică.  Trebuie să fiţi atenţi să separaţi <EM>toate</EM>
+argumentele lui <TT>expr</TT> cu spaţii.
+
+<P>
+<PRE>
+#!/bin/sh
+
+contor=0
+while [ $contor -le 100 ]; do
+        echo $contor
+        contor=`expr $contor + 1`
+done
+</PRE>
+</DD>
+</DL>
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Încheiere</A>
+</H1>
+
+<P>
+Aici pun capăt acestei incursiuni blitz în programarea în shell.
+Sper să vă fi pus la-ndemînă suficiente scule ca să puteţi să
+scrieţi programe utile.  Shell-urile moderne sunt foarte sofisticate,
+oferă o sumedenie de facilităţi suplimentare, şi pot fi
+configurate şi adaptate în mii de moduri.  Dar 90% din problemele
+întîlnite în practică pot fi rezolvate folosind cele 10% din
+limbaj pe care le-am prezentat.
+
+<P>
+Oricum, nu puteţi să vă perfecţionaţi decît folosind limbajul;
+m-aş bucura dacă v-am dat motive să încercaţi.
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Alte surse de informaţie</A>
+</H1>
+
+<P>
+
+<UL>
+<LI>S-au publicat o mulţime de cărţi despre programarea în
+shell; din cauză ca eu însumi nu am citit nici una, mă voi feri să
+recomand ceva; un manual tipărit de referinţă cu exemple bune este
+însă foarte util;
+
+<P>
+</LI>
+<LI>În general pe grupurile de discuţii Usenet se vehiculează
+multe gunoaie; de departe însă cel mai bun grup la care am fost
+vreodată abonat este <TT><A NAME="tex2html4"
+  HREF="news:comp.unix.shell">news:comp.unix.shell</A></TT>.  O sumedenie de
+experţi vor răspunde imediat la orice întrebare legată de shell
+aţi avea; în plus discuţiile sunt uneori foarte interesante;
+
+<P>
+</LI>
+<LI>Foarte multe informaţii interesante sunt în fişiere de tip
+FAQ: Frequently Asked Questions, arhivate în multe locuri pe
+Internet, de pildă la <TT><A NAME="tex2html5"
+  HREF="faqs.org">faqs.org</A></TT>.  Recomand următoarele
+fişiere:
+
+<P>
+
+<UL>
+<LI><TT><A NAME="tex2html6"
+  HREF="http://www.faqs.org/faqs/unix-faq/shell/bash">http://www.faqs.org/faqs/unix-faq/shell/bash</A></TT>:
+întrebări frecvente despre Bash;
+
+<P>
+</LI>
+<LI><TT><A NAME="tex2html7"
+  HREF="http://www.faqs.org/faqs/unix-faq/faq/part5">http://www.faqs.org/faqs/unix-faq/faq/part5</A></TT>:
+partea a cincea a acestei ``Unix FAQ'' discută în mod special despre
+shell-uri;
+
+<P>
+</LI>
+<LI><TT><A NAME="tex2html8"
+  HREF="http://www.faqs.org/faqs/unix-faq/shell/shell-differences">http://www.faqs.org/faqs/unix-faq/shell/shell-differences</A></TT> 
+discută despre istoricul shell-ului şi despre diferenţele între shell-uri.
+</LI>
+</UL>
+
+<P>
+</LI>
+<LI>O pagină interesantă aflată la
+<TT><A NAME="tex2html9"
+  HREF="http://www.fi.uib.no/~btk/data/shell-100.BetaA.html">http://www.fi.uib.no/~btk/data/shell-100.BetaA.html</A></TT> discută
+echivalenţele comenzilor din diferitele shell-uri;
+
+<P>
+</LI>
+<LI>Dacă aveţi un sistem Linux, atunci paginile de manual
+<TT>man&nbsp;bash</TT> şi <TT>man&nbsp;tcsh</TT> sunt probabil instalate.  Am
+apelat la ele adesea în cursul scrierii acestui articol;
+
+<P>
+</LI>
+<LI>Pagina shell-ului <TT>bash</TT> la <TT><A NAME="tex2html10"
+  HREF="http://www.gnu.org/software/bash/bash.html">http://www.gnu.org/software/bash/bash.html</A></TT>;
+
+<P>
+</LI>
+<LI>Tcsh este disponibil (cod şi manuale) la <TT><A NAME="tex2html11"
+  HREF="ftp://ftp.gw.com/pub/unix/tcsh">ftp://ftp.gw.com/pub/unix/tcsh</A></TT>.
+</LI>
+</UL>
+
+<P>
+<BR><HR><H4>Note</H4>
+<DL>
+<DT><A NAME="foot115">... părinte</A><A NAME="foot115"
+ HREF="shell-2-html.html#tex2html3"><SUP>1</SUP></A>
+<DD>Acesta este procesul care l-a pornit în execuţie, în
+cazul nostru shell-ul însuşi.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

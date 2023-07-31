@@ -1,0 +1,1028 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Scalabilitatea în reţele de comunicaţii de date</TITLE>
+<META NAME="description" CONTENT="Scalabilitatea în reţele de comunicaţii de date">
+<META NAME="keywords" CONTENT="csfq-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+<body>
+
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Scalabilitatea în reţele de comunicaţii de date</H1>
+<P ALIGN="CENTER"><STRONG>Ion Stoica, Mihai Budiu -- <TT>istoica+@cs.cmu.edu, mihaib+@cs.cmu.edu</TT> 
+<BR><TT><a
+href="http://www.cs.cmu.edu/~istoica/">http://www.cs.cmu.edu/~istoica</a>,
+<a
+href="http://www.cs.cmu.edu/~mihaib">http://www.cs.cmu.edu/~mihaib</a></TT></STRONG></P> 
+<P ALIGN="CENTER"><STRONG>18 aprilie 1999</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>Un algoritm scalabil pentru alocarea echitabilă a
+traficului în Internet
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>Cunoştinţe elementare despre
+funcţionarea reţelelor de calculatoare, răbdare
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>ruter, flux, rată de transmisie, disciplinele
+cozilor, FIFO, fair queuing, core-stateless fair queuing,
+scalabilitate
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html19"
+  HREF="csfq-html.html">Rutere şi fluxuri</A>
+<UL>
+<LI><A NAME="tex2html20"
+  HREF="#SECTION00021000000000000000">Rutere</A>
+<LI><A NAME="tex2html21"
+  HREF="#SECTION00022000000000000000">Transmiterea pachetelor</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html22"
+  HREF="#SECTION00030000000000000000">Congestie şi controlul fluxului</A>
+<UL>
+<LI><A NAME="tex2html23"
+  HREF="#SECTION00031000000000000000">Soluţia TCP</A>
+<LI><A NAME="tex2html24"
+  HREF="#SECTION00032000000000000000">Problemele soluţiei TCP</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html25"
+  HREF="#SECTION00040000000000000000">Fair queuing: o disciplină echitabilă</A>
+<LI><A NAME="tex2html26"
+  HREF="#SECTION00050000000000000000">Scalabilitatea</A>
+<LI><A NAME="tex2html27"
+  HREF="#SECTION00060000000000000000">O soluţie scalabilă pentru fair queuing: CSFQ</A>
+<LI><A NAME="tex2html28"
+  HREF="#SECTION00070000000000000000">Concluzii</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+În acest articol ilustrăm una dintre direcţiile cercetării
+contemporane în domeniul Internetului: căutarea de algoritmi
+practici pentru a rezolva felurite probleme; problema pe care o
+ilustrăm este cea a alocării echitabile a traficului pe legăturile
+dintre calculatoare, în aşa fel încît toţi participanţii la
+trafic să primească aceeaşi cantitate.  Deşi infrastructura
+curentă a Internetului nu permite acest lucru, implementarea acestui
+gen de algoritmi va fi necesară pentru a transforma Internetul
+într-o reţea care poate garanta calitatea serviciilor pe care le
+oferă.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Rutere şi fluxuri</A>
+</H1>
+
+<P>
+
+<H2><A NAME="SECTION00021000000000000000">
+Rutere</A>
+</H2>
+
+<P>
+Internetul este o reţea compusă din agregarea unui mare număr de
+reţele diferite într-o construcţie unică.  Dacă două
+organizaţii au reţelele lor proprii, folosind tehnologii eventual
+diferite, aceste două reţele pot fi conectate între ele cu ajutorul
+unui calculator special, care este cuplat la ambele reţele.  Rolul
+acestui calculator este de a prelua dintr-o reţea datele care sunt
+destinate cuiva din cealaltă reţea şi de a le retransmite dincolo.
+Această funcţiune se numeşte <EM>rutare</EM>, iar calculatorul
+însuşi se numeşte <EM>ruter</EM>.
+
+<P>
+Un ruter are deci două funcţiuni:
+
+<P>
+<DL COMPACT>
+<DT>(a)</DT>
+<DD>De a discuta cu celelalte rutere pentru a descoperi
+topologia reţelei.
+
+<P>
+</DD>
+<DT>(b)</DT>
+<DD>De a folosi informaţiile despre topologie pentru a trimite
+fiecare pachet primit spre destinaţia lui.
+</DD>
+</DL>
+
+<P>
+Într-un <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#internet">articol</a>
+anterior din PC Report, Mihai a prezentat (a), rutarea în Internet<A
+NAME="tex2html1" HREF="#foot60"><SUP>1</SUP></A>.  Subiectul acelui
+articol era modul în care ruterele învaţă încotro trebuie trimis
+fiecare pachet primit, şi modul în care ruterele schimbă între ele
+informaţii despre structura reţelei.
+
+<P>
+În textul de faţă vom complementa informaţiile oferite cu acea
+ocazie, discutînd despre (b), modul în care ruterele transmit
+pachete.
+
+<P>
+
+<H2><A NAME="SECTION00022000000000000000">
+Transmiterea pachetelor</A>
+</H2>
+
+<P>
+Un ruter este legat la fiecare reţea pe care o deserveşte printr-o
+<EM>interfaţă</EM>.  Un ruter va avea deci cel puţin două interfeţe.
+Cînd un pachet apare prin una din interfeţe, ruterul pune acel
+pachet într-o memorie internă.  După aceea ruterul prelucrează
+pachetul şi decide în ce direcţie trebuie să-l trimită.  Această
+informaţie este obţinută din adresa destinaţie, care se află în
+interiorul pachetului, şi din tabela de rutare, care conţine
+informaţii despre forma reţelei, şi pe care ruterul a construit-o
+conversînd cu vecinii săi.  După ce decide încotro trebuie trimis
+pachetul, ruterul îl trimite pe interfaţa care este cea mai
+potrivită pentru destinaţie.
+
+<P>
+Figura&nbsp;<A HREF="csfq-html.html#rutare">1</A> ilustrează arhitectura internă a unui ruter.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="rutare"></A><A NAME="147"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 1:</STRONG>
+Operaţia de ``înaintare'' (forwarding) a unui
+ruter: un pachet este primit pe o interfaţă, este clasificat în
+funcţie de destinaţie, şi este înaintat pe interfaţa de ieşire.
+Pachetele adesea trebuie să aştepte în cozi prelucrarea pachetelor
+anterioare.</CAPTION>
+<TR><TD><IMG
+ WIDTH="449" HEIGHT="342" BORDER="0"
+ SRC="img1.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=10cm\epsffile{rutare.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Aparent nimic nu este mai simplu: iei pachetul, cauţi destinaţia în
+tabelă, şi îl trimiţi mai departe.  O astfel de operaţie se
+numeşte <EM>stochează şi transmite</EM> (<EM>store and forward</EM>),
+din motive evidente.  Ce mai e de discutat aici?
+
+<P>
+Dacă veţi încerca însă să construiţi un ruter, veţi vedea că
+există o sumedenie de întrebări la care răspunsul nu este de loc
+evident.  Iată unele din dificultăţile care se pot ivi:
+
+<P>
+<DL>
+<DT><STRONG>Capacitate de prelucrare:</STRONG></DT>
+<DD>O parte din probleme provin din
+faptul că viteza de prelucrare a unui ruter este finită: de exemplu
+se poate întîmpla ca mai multe intrări simultan să aducă pachete
+cu o viteză mai mare decît ruterul poate prelucra.  Din cauza asta
+anumite pachete pot fi pur şi simplu pierdute, pentru că ruterul nu
+poate ţine pasul cu rata de transmisiune.  (Astfel de pachete vor fi
+probabil retransmise de către sursă mai tîrziu.)
+
+<P>
+</DD>
+<DT><STRONG>Capacitatea legăturilor:</STRONG></DT>
+<DD>Dar, chiar presupunînd că ruterul
+poate clasifica pachete infinit de rapid, se pot ivi probleme: de
+exemplu imaginaţi-vă o reţea în care pachetele care vin pe două
+intrări sunt destinate pentru o singură ieşire; dacă cele trei
+reţele au aceeaşi capacitate, atunci în mod clar ruterul nu va
+putea trimite toate pachetele pe care le primeşte.  Ce trebuie să
+facă cu pachetele pe care le primeşte şi nu le poate transmite?
+
+<P>
+Din cauza aceasta, ruterele conţin memorii, numite <EM>buffere</EM>, în
+care stochează pachetele pe care nu le pot prelucra.  Pachetele se
+aşează în <EM>cozi</EM>, de unde sunt extrase unul cîte unul.  Este
+clar însă că, oricît de multe buffere am avea, rafale mari de
+pachete pentru aceeaşi destinaţie pot umple cozile, cauzînd din nou
+pierderea pachetelor.
+
+<P>
+</DD>
+<DT><STRONG>Calitate:</STRONG></DT>
+<DD>Chiar presupunînd că avem o memorie infinită în
+ruter, timpul de aşteptare în cozi se poate dovedi inacceptabil
+pentru anumite aplicaţii.  De exemplu, dacă avem o aplicaţie de
+telefonie prin Internet, dacă datele ajung după mai mult de 150ms de
+la un capăt la altul, se crează pauze neplăcute în conversaţie.
+Chiar mai rău este fenomenul care se petrece atunci cînd cozile
+variază în lungime: anumite pachete vor veni mai repede şi altele
+mai lent, distorsionînd vorbirea la receptor.  Asta ne sugerează că
+anumitor pachete trebuie să li se dea prioritate.  De asemenea,
+anumite pachete pot fi preferate pentru a fi ``distruse'' (de exemplu
+pachetele de voce care au întîrziat deja prea mult), pentru că nu
+mai sunt utile.
+</DD>
+</DL>
+
+<P>
+Una peste alta, un ruter trebuie să ia următoarele decizii:
+
+<UL>
+<LI>Care pachete şi cînd pot fi aruncate;
+</LI>
+<LI>În ce ordine deserveşte pachetele din cozi.
+</LI>
+</UL>
+
+<P>
+Modul în care ia aceste decizii are consecinţe foarte importante
+pentru comportarea reţelei.  În acest articol vom vedea cîteva
+posibilităţi şi vom explora consecinţele lor, care sunt adesea
+foarte diferite.
+
+<P>
+Trebuie spus însă că majoritatea covîrşitoare a disciplinelor
+studiate <EM>nu</EM> sunt implementate în sisteme reale, fiind
+deocamdată doar un subiect de cercetare.  Practic toate ruterele
+operaţionale astăzi în lume folosesc o disciplină foarte simplă:
+au o singură coadă pentru fiecare interfaţă, în care pun toate
+pachetele.  Cînd coada este plină, noile pachete venite sunt
+pierdute.  Această disciplină se numeşte FIFO: First In First Out,
+primul venit, primul plecat.
+
+<P>
+Din nefericire, deşi extrem de simplu de implementat, FIFO are nişte
+proprietăţi indezirabile, despre care vom discuta puţin mai jos,
+în secţiunea despre Fair Queuing, unde ilustrăm şi o alternativă.
+FIFO este inadecvată din multe puncte de vedere, aşa că multe
+eforturi în cercetare sunt acum îndreptate spre studiul altor
+discipline.
+
+<P>
+Însă, înainte de a vedea exemple de alte discipline, vom pune sub
+reflector o proprietate extrem de importantă a reţelei, care este
+influenţată de modul în care ruterele şi punctele terminale
+operează.  Este vorba despre congestie.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Congestie şi controlul fluxului</A>
+</H1>
+
+<P>
+Atunci cînd un segment al reţelei este înecat cu pachete pe care nu
+le poate transmite se produce un fenomen de <EM>congestie</EM>.
+Congestia este extrem de periculoasă, pentru că dacă nu este
+tratată corect poate periclita funcţionarea întregii reţele pentru
+o perioadă nedeterminată.
+
+<P>
+Scenariul cel mai sumbru arată astfel: o anumită legătură
+primeşte mai multe pachete decît capacitatea ei de transport.  Ca
+atare, după ce cozile se umplu, inevitabil ruterul care deserveşte
+acea legătură începe să piardă pachete.  După o vreme sursele
+care au trimis acele pachete încep să dea semne de îngrijorare,
+pentru că nu primesc confirmarea de primire; ca atare încep să
+retransmită pachetele pierdute.  Acestea vor cauza creşterea mai
+mare a congestiei, pentru că folosesc acelaşi traseu.  Cu cît
+reţeaua este mai blocată, cu atît mai multe pachete duplicate vor
+apărea (din cauza retransmisiilor), şi cu atît mai blocată va fi.
+Din această situaţie nu există ieşire, dacă nu se intervine
+imediat; reţeaua devine rapid nefuncţională.
+
+<P>
+Observaţi că acest lucru se poate petrece chiar dacă fiecare
+calculator terminal nu emite prea multe date; efectul se produce
+datorită <EM>agregării</EM> traficului de la mai multe conexiuni pe o
+legătură fizică comună.  De exemplu, în figura&nbsp;<A HREF="csfq-html.html#rutare">1</A>,
+traficul între calculatoare din stînga şi oricare calculator din
+dreapta trebuie să treacă pe linia dintre cele două rutere.
+
+<P>
+În teoria reţelelor de transmisiuni de date se face distincţie
+între două clase de algoritmi:
+
+<P>
+
+<UL>
+<LI>Algoritmi care controlează traficul între cele două puncte
+terminale ale comunicaţiei, asigurînd faptul că un calculator mai
+rapid nu îneacă o destinaţie lentă cu pachete pe care nu le poate
+primi.  O legătură creată între două puncte pentru a transmite
+date se numeşte <EM>flux</EM> (<EM>flow</EM>).  Algoritmii care
+păstrează fluxul între limite admisibile pentru ambii participanţi
+se numesc <EM>algoritmi de control al fluxului</EM> (flow-control).
+
+<P>
+</LI>
+<LI>Algoritmi care controlează traficul pe legături din interiorul
+reţelei; aceştia sunt algoritmi de control al congestiei (congestion
+control).
+</LI>
+</UL>
+
+<P>
+Între aceste două clase există o suprapunere, pentru că o reducere
+a fluxului în mod implicit va reduce şi congestia.  De fapt
+secţiunea următoare discută singura soluţie actualmente
+implementată pe scară largă în Internet, folosită de protocolul
+TCP, care administrează fluxuri între două calculatoare.
+
+<P>
+
+<H2><A NAME="SECTION00031000000000000000">
+Soluţia TCP</A>
+</H2>
+
+<P>
+Soluţia folosită la ora actuală de majoritatea implementărilor
+existente ale protocolului TCP a fost propusă de van Jacobson în
+1988.  Pentru a o înţelege ar trebui să studiem un tip special de
+protocol, numit protocolul cu <EM>fereastră glisantă</EM> (<EM>sliding
+window</EM>).  Subiectul este deosebit de interesant, dar prea generos
+pentru acest articol, care are are un alt subiect.  Sperăm să putem
+trata acest subiect într-un alt articol; pentru cititorul impacient
+trimitem la cartea lui Tanenbaum publicată de editura Agora,
+``Reţele de Calculatoare''.
+
+<P>
+Din protocolul cu fereastră glisantă vom reţine numai însuşirile
+care ne interesează.
+
+<P>
+TCP este un protocol care garantează trimiterea cu succes a tuturor
+pachetelor.  Pentru asta, toate pachetele care nu au fost confirmate
+la primire de către capătul celălalt sunt păstrate de emiţător,
+chiar şi după ce au fost deja transmise.  Pentru că între
+trimiterea unui pachet şi recepţia confirmării se poate scurge mult
+timp, emiţătorul este gata să emită mai multe pachete la rînd,
+chiar dacă nu a primit confirmări pentru nici unul.  Numărul de
+pachete care se pot afla în tranzit fără confirmare se numeşte
+<EM>fereastră</EM> (window).
+
+<P>
+Fereastra glisantă este folosită de TCP cu succes şi pentru
+controlul fluxului.  Iată cum:
+
+<P>
+
+<OL>
+<LI>Să zicem că la un moment dat un flux TCP are o fereastră de
+30 de pachete.
+
+<P>
+</LI>
+<LI>Să ne imaginăm că subit apare o congestie în reţea, pe o
+linie folosită şi de fluxul nostru.  Din cauza asta un ruter va
+pierde pachete ale acestui flux.
+
+<P>
+</LI>
+<LI>După o vreme TCP observă ca nu a primit confirmările pentru
+pachetele trimise.  Atunci, în loc să le retrimită pe toate, TCP
+reduce fereastra curentă la un pachet (primul trimis care nu a primit
+confirmare).
+
+<P>
+</LI>
+<LI>TCP retransmite apoi pachetul din fereastră.
+
+<P>
+</LI>
+<LI>După o vreme toate fluxurile care foloseau linia congestionată
+au pierdut pachete şi şi-au redus ferestrele.  În reţea au
+început să intre din ce în ce mai puţine pachete noi, deci linia
+cu probleme s-a decongestionat.
+
+<P>
+</LI>
+<LI>Acum fluxurile TCP încep să primească confirmări, deci
+încep încet-încet să-şi mărească ferestrele la loc.
+
+<P>
+</LI>
+<LI>Acest proces se repetă permanent.  Traficul pe acea legătură
+va oscila uşor în jurul valorii maxime posibile, fiind automat
+ajustat de către participanţii la trafic.
+</LI>
+</OL>
+
+<P>
+Soluţia aceasta este deosebit de elegantă.  Principala ei calitate
+este că nu implică de loc reţeaua: numai nodurile terminale
+rulează acest algoritm, fără nici un fel de informaţii de la
+rutere.  În plus, această soluţie funcţionează indiferent de
+politica după care ruterele din reţea aruncă pachete.
+
+<P>
+
+<H2><A NAME="SECTION00032000000000000000">
+Problemele soluţiei TCP</A>
+</H2>
+
+<P>
+Controlul congestiei prin variaţia ferestrei are mai multe
+dezavantaje, dar noi aici ne vom opri asupra unuia singur dintre ele.
+Să ne imaginăm că avem cinci fluxuri printr-o legătură
+congestionată.  Să ne mai imaginăm că 4 dintre ele sunt
+implementări ``normale'' ale TCP, dar că unul dintre ele este o
+implementare foarte agresivă, care în loc să-şi reducă traficul,
+îl păstrează neschimbat.  
+
+<P>
+Ce se va întîmpla este uşor de imaginat: cele patru fluxuri
+civilizate vor reduce traficul aşa cum trebuie, iar cel agresiv va
+folosi toată capacitatea posibilă a reţelei.  În măsura în care
+acest flux de unul singur nu congestionează reţeaua, va funcţiona
+bine-mersi, furînd din porţia tuturor celorlalţi.
+
+<P>
+Dacă toate fluxurile ar fi lacome reţeaua s-ar congestiona
+iremediabil, şi nimeni n-ar primi nimic.  Deci schema aceasta
+funcţionează numai dacă aproape toată lumea este rezonabilă.
+
+<P>
+Partea neplăcută este că această situaţie este deja întîlnită,
+într-o formă sau alta, în Internet:
+
+<P>
+
+<UL>
+<LI>Anumiţi programatori lipsiţi de scrupule pot să facă
+această modificare pe maşinile lor, pentru a beneficia de mai multe
+resurse;
+
+<P>
+</LI>
+<LI>O cantitate din ce în ce mai mare de aplicaţii de fapt nu
+folosesc protocolul TCP pentru transmisiune.  TCP este un protocol
+care garantează zero pierderi, cu costul eventual al multor
+retransmiteri.  Pentru aplicaţii ca audio, video, jocurile în
+reţea, etc. aceste trăsături sunt indezirabile: mai bine pierzi un
+pachet din cînd în cînd şi le aduci pe celelalte la timp, decît
+să întîrzii atît de mult.
+</LI>
+</UL>
+
+<P>
+Aplicaţiile de genul celor de mai sus folosesc protocolul UDP pentru
+transmisiune, care nu este fiabil, şi nu face nici un fel de control
+al fluxului sau congestiei.
+
+<P>
+De altfel puteţi face chiar dumneavoastră un experiment simplu dacă
+aveţi acces la două calculatoare legate în reţea, oarecare
+cunoştinţe de programare de reţea şi o oră liberă:
+
+<P>
+
+<OL>
+<LI>Deschideţi între aceste calculatoare nişte legături TCP pe
+care transmiteţi date fictive; măsuraţi cîte pachete primiţi în
+fiecare secundă avînd 1, 2, 3, etc. legături în paralel.  În mod
+normal, datorită metodei de control a fluxului, aceste fluxuri vor
+oscila simultan între valorile maximă şi minimă, oferind aceeaşi
+rată medie de transmisiune pe o perioadă mai mare de timp (cîteva
+secunde).
+
+<P>
+</LI>
+<LI>Pentru ca acest experiment să funcţioneze trebuie să
+reuşiţi să congestionaţi reţeaua.  Dacă limita de transmisiune
+va fi impusă nu de reţea, ci de hardware-ul sau software-ul pe care
+îl posedaţi, acest experiment probabil nu va funcţiona întocmai.
+Din momentul în care aţi congestionat reţeaua, suma ratelor medii
+de transport ale legăturilor TCP va trebui să fie constantă (adică
+fie că aveţi 5, fie 10, rata<A NAME="tex2html3"
+  HREF="#foot96"><SUP>2</SUP></A> totală de
+transport va fi egală cu capacitatea legăturii dintre cele două
+calculatoare).
+
+<P>
+</LI>
+<LI>Deschideţi apoi o legătură UDP între cele două
+calculatoare, păstrînd legăturile TCP deschise.  Pompaţi date în
+toate cu viteza maximă.  Măsuraţi din nou traficul.  Rata fiecărui
+flux va arăta ca în figura&nbsp;<A HREF="csfq-html.html#fifo">2</A>.
+</LI>
+</OL>
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="fifo"></A><A NAME="153"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 2:</STRONG>
+Acest grafic arată rata a 32 de fluxuri -- un
+flux UDP (numărul 1) şi 31 de fluxuri TCP -- pe o legătură
+Ethernet de 10 Mbps.  Observaţi că fluxurile TCP nici nu se văd,
+iar UDP consumă aproape toată capacitatea canalului, cu circa 8
+Mbps.</CAPTION>
+<TR><TD><IMG
+ WIDTH="267" HEIGHT="195" BORDER="0"
+ SRC="img2.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=6cm\epsffile{fifo.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Veţi observa că legătura UDP obligă toate legăturile TCP să-şi
+reducă traficul, folosind de una singură toată capacitatea
+reţelei.  Suma dintre UDP şi toate TCP-urile va fi constantă,
+TCP-urile vor fi aproximativ egale între ele, dar la o valoare mult
+mai scăzută decît legătura UDP.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Fair queuing: o disciplină echitabilă</A>
+</H1>
+
+<P>
+De fapt, dacă ruterele tratează pachetele în ordinea sosirii
+(FIFO), şi le aruncă pe cele de la coadă, nici nu putem face mare
+lucru.  O disciplină simplă ca FIFO nu poate asigura o distribuţie
+echitabilă a capacităţii în caz de congestie.
+
+<P>
+O soluţie, propusă în literatură, pentru aceasta problema este
+utilizarea de discipline mai ``inteligente'' în rutere.  O astfel de
+disciplină este <EM>Fair Queueing</EM> (``cozi echitabile'', FQ).  În
+continuare vom descrie FQ şi vom arăta că, spre deosebire de FIFO,
+această disciplină asigură o distribuţie echitabilă a
+capacităţii, independent de algoritmii de adaptare folosiţi de
+surse.
+
+<P>
+FQ este definit în contextul unui sistem ideal, în care traficul
+este transmis la nivel de biţi, şi nu de pachete.  FQ se aplică la
+fiecare coadă de ieşire separat: fiecare interfaţă a ruterului va
+calcula pentru propriul ei canal.  Într-un astfel de sistem, FQ se
+reduce la tratarea fluxurilor în mod circular (<EM>round-robin</EM>: în
+ordine fluxul 1, 2, 3, ..., n, 1, 2, 3, etc.).  Mai precis, în
+cadrul fiecărei runde, FQ transmite un bit de la fiecare flux care
+este activ.
+
+<P>
+Spre deosebire de FIFO, FQ asigură alocarea echitabilă a
+capacităţii.  În particular, capacitatea alocată unui flux <EM>nu</EM>
+depinde de rata fluxului.  De exemplu, dacă avem o conexiune de 1 
+Mbps şi două fluxuri, unul cu rata de 0.5 Mbps şi altul de 2 Mbps,
+atunci fiecare flux va primi 0.5 Mbps.  Aceasta se întîmplă
+deoarece atîta timp cît cele două fluxuri sunt active, fiecare va
+avea exact un bit transmis în cadrul fiecărei runde.
+
+<P>
+Evident, într-un ruter real în care transmisia se face la nivel de
+pachete şi nu de biţi, FQ nu poate fi implementată exact.  O primă
+idee pentru implementarea FQ la nivel de pachet ar fi să utilizăm
+din nou round-robin.  Din păcate, un moment de reflexie ne spune că
+această soluţie nu este cea mai potrivită.  Următorul exemplu
+ilustrează problema: dacă avem doua fluxuri, unul care transmite
+pachete de cîte 1000 octeţi, iar celălalt care transmite pachete de
+cîte 100 octeţi, este uşor de văzut ca aplicînd round robin la
+nivel de pachet are drept rezultat alocarea unei capacităţi de 10
+ori mai mare primului flux!  De aceea, în practică, pentru
+implementarea FQ-ului se utilizează algoritmi mai sofisticaţi.  
+
+<P>
+Un exemplu de astfel de algoritm este următorul: pentru fiecare
+pachet se calculează momentul de timp la care ultimul bit al acestuia
+ar urma să fie transmis într-un ruter ideal, în care traficul este
+transmis bit cu bit; apoi pachetele sunt transmise în ordinea
+crescătoare a acestor timpi.
+
+<P>
+Descrierea de mai sus sugerează principalul dezavantaj al disciplinei
+FQ: complexitatea.  În esenţă ruterul trebuie sa ţină evidenţa
+pentru fiecare flux şi sa execute următoarele operaţii:
+
+<P>
+
+<OL>
+<LI>Să identifice cărui flux îi aparţine fiecare pachet; 
+
+<P>
+</LI>
+<LI>Să hotărască ce pachet să elimine din memorie cînd aceasta
+este depăşită;
+
+<P>
+</LI>
+<LI>Să transmită pachetele în ordinea crescătoare a timpilor,
+aşa cum am discutat mai sus.
+</LI>
+</OL>
+
+<P>
+Deci, pe de o parte, avem FIFO, care este foarte uşor de implementat
+la viteze mari, dar nu asigură o alocare echitabilă a capacităţii,
+iar pe de alta parte avem FQ care asigură o distribuţie echitabilă a
+capacităţii, dar este mult mai complex de implementat.  O întrebare
+firească este atunci dacă există o cale de mijloc, care sa îmbine
+simplitatea FIFO cu serviciul asigurat de FQ.  Vom vedea o astfel de
+soluţie mai jos, dar înainte vom studia mai atent care este
+trăsătura indezirabilă a algoritmului FQ.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Scalabilitatea</A>
+</H1>
+
+<P>
+Care este diferenţa dintre FIFO şi FQ care face FQ mai dificil de
+implementat?  Dacă încercăm să scriem un program care să le
+implementeze, vom observa că FIFO manipulează structuri de date
+extrem de simple: de fapt o singură structură de date, care este o
+listă înlănţuită de pachete, stocate în ordinea sosirii.  Listei
+i se adaugă pachete la coadă şi i se iau pachete de la cap.  Aceste
+operaţii se pot implementa în cîteva linii de cod, deci se pot
+executa extrem de rapid.
+
+<P>
+Pe de altă parte, dacă studiem FQ, o să notăm faptul că ruterul
+trebuie să facă contabilitate pentru fiecare flux care îl
+traversează.  Asta înseamnă o sumedenie de lucruri destul de
+neplăcute:
+
+<P>
+
+<OL>
+<LI>Ruterul trebuie să se uite la fiecare pachet şi să observe
+pachetele care deschid noi conexiuni, pentru a le rezerva structuri de
+date; fiecare conexiune va avea propria ei coadă;
+
+<P>
+</LI>
+<LI>Ruterul trebuie să clasifice fiecare pachet venit în funcţie
+de conexiunea pe care circulă, şi să îl pună în coada lui;
+
+<P>
+</LI>
+<LI>Ruterul trebuie să reevalueze la trimiterea fiecărui pachet
+starea cozii sale, pentru a vedea cînd următorul are dreptul să
+plece;
+
+<P>
+</LI>
+<LI>Ruterul trebuie să ``vîneze'' pachetele care termină
+conexiunea, pentru a distruge cozile respective.
+</LI>
+</OL>
+
+<P>
+Chiar dacă operaţiile acestea sunt relativ simple, structurile
+manipulate sunt foarte complicate; avem de-a face cu cozi care cresc
+independent, deci ne trebuie un alocator de memorie destul de
+sofisticat<A NAME="tex2html5"
+  HREF="#foot112"><SUP>3</SUP></A>, care trebuie
+invocat la fiecare pachet venit sau plecat.  În plus, numărul de
+structuri de date manipulate depinde de numărul de fluxuri din ruter.
+
+<P>
+Probleme extrem de greu de rezolvat apar dacă un calculator cu o
+conexiune deschisă cade: el nu va trimite niciodată semnalul de
+închiderea conexiunii, deci ruterul va păstra o coadă care teoretic
+nu mai dispare niciodată.  Vom vedea într-un alt articol cum se
+rezolvă genul ăsta de neplăceri, folosind o tehnică numită <EM>soft state</EM>.
+
+<P>
+Cît de mare este numărul de fluxuri dintr-un ruter care operează
+în centrul reţelei?  Informaţii de la MCI, care este unul din cei
+mai mari operatori de reţea din Statele Unite, arată că numărul de
+fluxuri active simultan într-un ruter de mare capacitate se poate
+apropia de un milion!
+
+<P>
+Fiecare pachet venit trebuie deci clasificat într-unul din aproape un
+milion de fluxuri!  Asta înseamnă, chiar cu algoritmi inteligenţi,
+o prelucrare substanţială pentru fiecare pachet venit.  Asta este
+virtual imposibil pentru un ruter care deserveşte mai multe fluxuri
+de sute de megabiţi pe secundă<A NAME="tex2html6"
+  HREF="#foot114"><SUP>4</SUP></A>: pur şi simplu nu are destul timp pentru a prelucra
+pachetele!
+
+<P>
+Aceasta este diferenţa principală în ceea ce priveşte
+posibilitatea de a realiza FIFO şi FQ: FQ trebuie să facă din ce
+în ce mai multe operaţii, dacă numărul de fluxuri care
+traversează ruterul creşte.  Operaţia lui FIFO pe de altă parte
+este aceeaşi, independent de cîte fluxuri avem.
+
+<P>
+Internetul este unul dintre cele mai mari sisteme construite vreodată
+de om (şi în viitor va deveni probabil cel mai mare); ca atare
+dimensiunile cu care trebuie operat sunt uriaşe în multe
+circumstanţe (de pildă un milion de fluxuri).  Din cauza asta
+algoritmii executaţi de rutere trebuie să fie eficienţi atît la un
+număr mic de conexiuni/pachete, cît şi la valori astronomice.
+Această proprietate a unui algoritm se numeşte <EM>scalabilitate</EM>:
+capacitatea de a funcţiona eficient la valori foarte variate ale
+încărcăturii de date prelucrate.
+
+<P>
+Dacă un cercetător propune pentru managementul Internetului un
+algoritm care nu este scalabil, poate să fie absolut sigur că acel
+algoritm nu va fi folosit niciodată în afara unor sisteme mici,
+experimentale.  Din cauza asta FQ nu este un algoritm practic; ne
+trebuie o alternativă.
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+O soluţie scalabilă pentru fair queuing: CSFQ</A>
+</H1>
+
+<P>
+Aşa cum am văzut, complexitatea algoritmului FQ se datorează în
+principal faptului că ruterul trebuie să menţină starea fiecărui
+flux.  O schemă care să reducă în mod semnificativ complexitatea
+algoritmului FQ trebuie deci să reducă sau să elimine într-un mod
+sau altul această stare.  Problema este că, dacă eliminăm pur şi
+simplu starea unui flux, nu mai este posibil să ``protejăm'' acel
+flux atunci cînd linia este congestionată.  Suntem confruntaţi cu
+următoarea dilemă: pe de o parte dorim să eliminăm starea pentru a
+reduce complexitatea, dar pe de altă parte avem nevoie de această
+stare pentru a asigura protecţia fluxurilor.
+
+<P>
+Soluţia se bazează pe o idee foarte simplă: în loc să menţinem
+starea în rutere, o punem în pachete!  Fiecare pachet oricum trebuie
+prelucrat de fiecare ruter, deci complexitatea procesării creşte
+doar cu un factor constant (iar nu cu un factor depinzînd de numărul
+de fluxuri).  Algoritmul general arată atunci în felul următor:
+
+<P>
+
+<OL>
+<LI>Sursa, sau eventual primul nod în reţea, evaluează starea
+fluxului, şi o pune în pachetele acestuia.
+
+<P>
+</LI>
+<LI>Nodurile următoare tratează pachetele pe baza informaţiei
+conţinute în pachete.
+</LI>
+</OL>
+
+<P>
+În acest mod un nod interior nu are nevoie să menţină starea
+pentru fiecare flux, ceea ce face posibilă implementarea eficientă a
+algoritmului.  Pe de altă parte, sursele sau nodurile de la marginea
+reţelei, care pun starea în pachete, trebuie să menţină stare
+pentru fiecare flux, pentru a eticheta corect pachetele.  Din
+fericire, aceste noduri suportă un trafic mult mai mic decît nodurile
+interioare, şi în consecinţă nu ridică probleme de scalabilitate.
+Aceasta soluţie ``împinge'' starea din nodurile interioare la
+marginea reţelei şi apoi foloseşte pachetele pentru a transmite
+această stare.
+
+<P>
+În continuare descriem pe scurt un algoritm, numit Core-Stateless
+Fair Queueing (CSFQ), care implementează FQ în cadrul arhitecturii
+prezentate mai sus.  ``Core-stateless'' înseamnă că ruterele din
+``miezul'' reţelei nu menţin nici un fel de informaţii despre
+starea conexiunilor.  Pentru a defini algoritmul trebuie să
+precizăm:
+
+<P>
+
+<UL>
+<LI>Informaţia de stare transportată de pachete, care este
+înscrisă de ruterele de la margine;
+
+<P>
+</LI>
+<LI>Operaţiile executate de un nod interior la primirea unui
+pachet.
+</LI>
+</UL>
+
+<P>
+În CSFQ, starea înscrisă în pachete reprezintă <EM>rata fluxului</EM>;
+sursa sau primul nod din reţea calculează dinamic rata fiecărui flux
+şi o pune în pachetele acestuia.  Nodurile interioare calculează pe
+baza traficului primit şi a celui transmis <EM>rata echitabilă</EM>
+care trebuie sa fie alocată fiecărui flux.  Intuitiv, această este
+rata maximă care ar fi alocată unui flux de algoritmul FQ la ruterul
+respectiv (în exemplul dat mai sus, cu două conexiuni pe o linie de 1
+Mbps, rata echitabilă era de 0.5 Mbps).  Din lipsă de spaţiu nu
+prezentăm amănuntele calculării acestei rate.  Cititorul interesat
+poate găsi detaliile la <a
+href="http://www.cs.cmu.edu/~istoica/csfq">http://www.cs.cmu.edu/~istoica/csfq</a>.
+În continuare vom prezenta numai operaţia executată de un ruter
+interior la primirea unui pachet.
+
+<P>
+Ne vom concentra asupra unei singure ieşiri din ruter; pentru fiecare
+ieşire vom menţine o altă valoare a ratei echitabile.
+
+<P>
+Să ne uităm la un ruter pentru care rata echitabilă este r<sub>b</sub>.
+Această rată depinde numai de numărul de fluxuri şi de capacitatea
+canalului de ieşire.  Să zicem că acest ruter primeşte un pachet
+în care este înscrisă rata r.  Atunci ruterul transmite pachetul
+cu probabilitatea P = max(1, r<sub>b</sub>/r) şi îl ``aruncă'' cu
+probabilitatea 1 - P.  Se poate arăta ca aceasta operaţie foarte
+simplă duce la o buna aproximare a algoritmului FQ.  Intuitiv,
+aceasta poate fi văzut în următorul exemplu didactic:
+
+<P>
+Să presupunem că avem un flux cu pachete de lungime egală şi cu o
+rată constantă r &gt; r<sub>b</sub>, unde valoarea r este înscrisă în
+fiecare pachet de ruterele de la margine.  În acest caz P = r<sub>b</sub>/r.
+Drept urmare, din n pachete vor fi transmise în medie numai n
+r<sub>b</sub> / r pachete.  Deoarece fiecare pachet are aceeaşi 
+lungime, rata fluxului se va reduce în medie cu r<sub>b</sub> / r,
+ceea ce înseamnă ca rata finală va fi r x r<sub>b</sub> / r =
+r<sub>b</sub>.  În acest mod, fluxului îi este alocată probabilistic o
+rată de cel mult r<sub>b</sub>, rată care este egală cu rata
+echitabilă (adică cea alocată fluxului dacă FQ ar fi fost folosit)!
+În final, după ce aruncă din pachete, ruterul schimbă rata înscrisă în
+fiecare pachet cu r<sub>b</sub>.  Informaţia din pachet rămîne astfel
+consistentă cu noua rată a fluxului după ce străbate ruterul congestionat.
+
+<P>
+Astfel, CSFQ este capabil să asigure o bună aproximare a
+algoritmului FQ la nodurile interioare, fără a menţine starea
+fluxurilor.  În fapt, complexitatea acestui algoritm la nodurile
+interioare este apropiată de cea a algoritmului FIFO.  În concluzie,
+CSFQ reuşeşte să îmbine simplitatea FIFO cu funcţionalitatea
+algoritmului FQ.
+
+<P>
+Figura&nbsp;<A HREF="csfq-html.html#csfq">3</A> arată pentru comparaţi valorile fluxului obţinute
+cu un simulator, în exact condiţiile din experimentul anterior cu
+TCP.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="csfq"></A><A NAME="159"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 3:</STRONG>
+Valorile fluxurilor pentru o conexiune UDP
+(numărul 1) şi 31 de conexiuni TCP peste o reţea de 10 Mbps, atunci
+cînd disciplina de coadă a ruterelor este FQ, respectiv CSFQ.
+Observaţi că fiecare legătură primeşte cam aceeaşi valoare din
+flux, undeva în jur de 0,30 Mbps.  Între CSFQ şi FQ nu există
+diferenţe notabile, arătînd că CSFQ realizează promisiunea de a
+aproxima FQ pentru această situaţie.  Valorile sunt obţinute cu un
+simulator de reţea, care este accesibil din pagina de web a lui Ion.</CAPTION>
+<TR><TD><IMG
+ WIDTH="539" HEIGHT="191" BORDER="0"
+ SRC="img13.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{csfq.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Există o grămadă de alte detalii despre funcţionarea CSFQ,
+inclusiv simulări detaliate şi estimări analitice ale calităţii
+sale; acestea sunt toate descrise pe larg în articolul ``Core
+Stateless Fair Queueing: Achieving Approximately Fair Bandwidth
+Allocations in High Speed Networks'', de Ion Stoica, Scott Shenker şi
+Hui Zhang, prezentat în 1998 la conferinţa SIGCOMM, a cărui copie
+este disponibilă din pagina de web a lui Ion.
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Concluzii</A>
+</H1>
+
+<P>
+În acest articol ilustrăm modul în care se poate proiecta o
+soluţie pentru rezolvarea unei probleme specifice în Internet.
+Articolul însă aparent bate mult timp cîmpii, pentru că trebuie
+să construim o serie de concepte.  Iată aici o vedere de ansamblu a
+schemei articolului;
+
+<P>
+
+<OL>
+<LI>Întîi discutăm despre modul în care ruterele procesează
+pachetele pe care le înaintează în Internet.  Vedem că ruterele
+pot decide ordinea în care deservesc cozile de pachete şi ordinea
+în care aruncă pachetele pe care nu le pot deservi.
+
+<P>
+</LI>
+<LI>Apoi discutăm despre situaţiile în care ruterele <EM>trebuie</EM> să piardă pachete, pentru că reţeaua primeşte mai mult
+decît poate transmite pe anumite segmente.  Aceasta se numeşte
+congestie.
+
+<P>
+</LI>
+<LI>Petrecem puţin timp pentru a vedea cum algoritmii contemporani
+(TCP) rezolvă problema congestiei fără a avea nici un fel de ajutor
+din partea reţelei.  Detecţia congestiei se bazează pe observaţia
+că anumite pachete nu primesc confirmări.
+
+<P>
+</LI>
+<LI>Vedem apoi că o astfel de soluţie se bazează implicit pe
+buna-credinţă a tuturor participanţilor, şi că nu este deloc
+protejată împotriva unor indivizi malefici, care în cazul
+congestiei în loc să reducă rata de transmisiune o măresc,
+beneficiind de reducerea făcută de toţi ceilalţi.
+
+<P>
+</LI>
+<LI>Discutăm apoi o soluţie pentru această problemă, care are
+nevoie de cooperarea ruterelor din reţea: fair queuing.  Ruterele
+procesează pachetele nu în ordinea primirii, ci pe rînd, cîte unul
+de la fiecare sursă.  Asta înseamnă că sursele care emit prea mult
+sunt penalizate mai mult.
+
+<P>
+</LI>
+<LI>Vedem apoi că fair queuing, deşi foarte dezirabil, suferă de
+problema <EM>scalabilităţii</EM>.
+
+<P>
+</LI>
+<LI>Discutăm apoi problema scalabilităţii pe scurt: modul în
+care complexitatea unui algoritm creşte în funcţie de datele de
+intrare.  Observăm că în Internet avem de-a face adesea cu probleme
+extrem de mari (milioane de date de intrare), deci algoritmii
+ineficienţi sunt ne-practici.
+
+<P>
+</LI>
+<LI>În fine, vedem o soluţie de compromis, care este scalabilă
+şi <EM>aproximează</EM> fair queuing suficient de bine.
+</LI>
+</OL>
+
+<P>
+Cred că e cinstit să stăvilim aici fluxul de informaţii pe care le
+transportă acest articol.  Vom reveni.
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot60">... Internet</A><A NAME="foot60"
+ HREF="csfq-html.html#tex2html1"><SUP>1</SUP></A>
+<DD>Acest articol este disponibil din pagina
+sa de web.
+
+<DT><A NAME="foot96">... rata</A><A NAME="foot96"
+ HREF="csfq-html.html#tex2html3"><SUP>2</SUP></A>
+<DD>Rata unui flux este definită
+ca numărul de biţi transmişi în unitatea de timp.
+
+<DT><A NAME="foot112">...  sofisticat</A><A NAME="foot112"
+HREF="csfq-html.html#tex2html5"><SUP>3</SUP></A> <DD>Vedeţi şi <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#mem">articolul</a>
+lui Mihai publicat cu ceva timp în urmă în PC Report despre alocarea
+memoriei.
+
+<DT><A NAME="foot114">... a</A><A NAME="foot114"
+ HREF="csfq-html.html#tex2html6"><SUP>4</SUP></A>
+<DD>Cel puţin pentru rutere
+comerciale obişnuite; inginerii care construiesc supercalculatoare au
+mai multe tehnologii în mînecă pentru a rezolva astfel de
+probleme.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

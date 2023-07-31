@@ -1,0 +1,1071 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Internet şi poşta electronică</TITLE>
+<META NAME="description" CONTENT="Internet şi poşta electronică">
+<META NAME="keywords" CONTENT="e-mail-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+<body>
+
+<P>
+
+<H1 ALIGN="CENTER">Internet şi poşta electronică</H1>
+<P ALIGN="CENTER"><STRONG>Mihai BUDIU</STRONG></P>
+<P ALIGN="CENTER"><STRONG>aprilie 1995</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>Poşta electronică (electronic mail)
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>reţea de calculatoare, protocol, Internet,
+e-mail nod, domeniu, subdomeniu, adresă 
+</DD>
+<DT><STRONG>Nivelul tehnic:</STRONG></DT>
+<DD>introducere
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html13"
+  HREF="e-mail-html.html">Calculatoare şi reţele</A>
+<LI><A NAME="tex2html14"
+  HREF="#SECTION00030000000000000000">Internet</A>
+<LI><A NAME="tex2html15"
+  HREF="#SECTION00040000000000000000">Adresele în Internet</A>
+<LI><A NAME="tex2html16"
+  HREF="#SECTION00050000000000000000">Un exemplu: poşta electronică</A>
+<LI><A NAME="tex2html17"
+  HREF="#SECTION00060000000000000000">Trimiterea de scrisori cu <TT>mail</TT></A>
+<LI><A NAME="tex2html18"
+  HREF="#SECTION00070000000000000000">Citirea unei scrisori cu <TT>mail</TT></A>
+<LI><A NAME="tex2html19"
+  HREF="#SECTION00080000000000000000">Alte operaţii cu <TT>mail</TT></A>
+<LI><A NAME="tex2html20"
+  HREF="#SECTION00090000000000000000">Alte surse de informaţie despre <TT>mail</TT></A>
+<LI><A NAME="tex2html21"
+  HREF="#SECTION000100000000000000000">Alte lucruri importante despre poşta electronică</A>
+<LI><A NAME="tex2html22"
+  HREF="#SECTION000110000000000000000">Înafara Internetului</A>
+<LI><A NAME="tex2html23"
+  HREF="#SECTION000120000000000000000">Concluzii</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Calculatoare şi reţele</A>
+</H1>
+
+<P>
+Misiunea principală a unui calculator este prelucrarea şi
+stocarea informaţiei.  Această propoziţie pînă prin anii '70 ar
+fi fost un grosolan truism, dar astăzi se dovedeşte incompletă.
+Din ce în ce mai mult una din sarcinile calculatoarelor este <EM>transimisiunea</EM> informaţiei.  Unele calculatoare nu au alt rol decît
+acesta.  Centralele telefonice digitale nu sunt în realitate decît
+nişte mari calculatoare specializate.  Cum se realizează acest
+lucru?  Prin <EM>reţelele</EM> de calculatoare.
+
+<P>
+Ce e o reţea de calculatoare?  Aparent banală întrebarea se
+dovedeşte a nu avea un răspuns prea simplu.  
+
+<P>
+Pentru ca două sau mai multe calculatoare să poate comunica
+între ele fără obligatorie intervenţie umană (adică cineva care
+să care dischete de la unul la altul) ele trebuie să fie conectate
+într-un anumit fel, printr-un mediu care să permită transmiterea
+unor semnale.  Cel mai adesea conexiunea se face printr-o sîrmă,
+semnalul fiind un curent electric.  Există însă şi alte variante --
+fibra de sticlă prin care se transmite lumină (laser), ``eterul''
+prin care se propagă undele radio sau chiar un satelit.  O sîrmă
+(vom folosi acest nume generic pentru mediul de legătură) între
+două calculatoare nu ajunge pentru a le transforma într-o reţea.
+Ceea ce trebuie este ca un calculator să poată pune într-o oarecare
+formă informaţii pe acest mediu iar celălalt (celelalte) calculator
+să le recepteze, de preferinţă aşa cum le-a trimis primul.
+
+<P>
+Din păcate nici asta nu rezolvă toate problemele. Mai
+trebuie căzut de acord şi asupra a ce <EM>înseamnă</EM> fiecare din
+semnele transmise.  Degeaba pui să zicem zero volţi ca să
+transmiţi ``1'' cînd celălalt se aşteaptă ca asta să însemne
+``0''.  Ceea ce trebuie este un set (care se dovedeşte în realitate
+a fi foarte elaborat) de reguli care să pună de acord participanţii
+(fie ei doi sau mai mulţi) asupra a cum se transmite ceva şi ce
+înseamnă ceea ce este transmis.  Un astfel de set de reguli se
+numeşte <EM>protocol</EM>.
+
+<P>
+Vom folosi o comparaţie din perimetrul activităţilor
+omeneşti pentru a face mai clare felurite aspecte mai complicate ale
+reţelelor.  Este tot din domeniul transmisiunilor de date: poşta.
+(Plic, hîrtie, timbre, ş.a.m.d).  Există o sumedenie de protocoale
+ascunse în poşta odinară: de exemplu faptul că se folosesc
+plicuri, timbre, că adresa se scrie într-un anumit loc şi într-o
+anumită formă.  Despre aceste reguli au căzut de acord de multă
+vreme toţi cei care se doresc implicaţi în transmiterea de
+scrisori.  Dacă nu respectaţi aceste reguli, scrisorile nu vor
+ajunge la destinaţie.  Cam aşa stau lucrurile şi cu calculatoarele.
+
+<P>
+Grosso modo o reţea de calculatoare este formată dintr-un
+număr de calculatoare conectate între ele printr-un mediu de
+transmitere a informaţiei şi care folosesc un acelaşi protocol.
+
+<P>
+Există însă o mare dificultate: deşi există pentru
+majoritatea ţărilor lumii nişte reglementări foarte precise pentru
+poşta scrisă, în domeniul reţelelor de calculatoare concordia este
+departe de a fi realizată.  Există zeci de protocoale diferite,
+fiecare elaborat de o altă organizaţie, fiecare avînd propriile
+sale avantaje şi dezavantaje, propria sa arie de răspîndire.
+
+<P>
+Pe de altă parte un calculator poate să fie simultan
+conectat la mai multe reţele diferite, în acest caz putînd să
+acţioneze fie ca două calculatoare independente, fiecare pe reţeaua
+lui, fie ca o ``poartă'' (``gateway'' în engleză) între cele două
+reţele, permiţînd transferul de mesaje de la una la alta.  Sperăm
+să revenim asupra acestor detalii extrem de interesante într-un alt
+articol.  Subiectul ar depăşi cu mult ceea ce ne-am propus pentru
+cel de faţă.
+
+<P>
+De aceea există şi sute (mii, zeci de mii ?) de reţele de
+  calculatoare distincte.  Multe din aceste reţele folosesc protocoale
+identice, dar nu sunt nicicum legate între ele.  Însă şi în
+această privinţă lucrurile tind să se schimbe.
+
+<P>
+Cîteva reţele de calculatoare au avut un asemenea succes
+încît s-au întins, s-au întins (adică s-au legat la ele noi şi
+noi calculatoare tot mai îndepărtate) pînă au făcut ocolul lumii,
+sau măcar pe-al cîte unui continent.
+
+<P>
+Multe din reţele au fost iniţial mici grupări de
+calculatoare din vreun laborator al unei universităţi pentru a se
+întinde apoi peste continente întregi.
+
+<P>
+Fiecare astfel de reţea are un nume.  Printre cele mai
+faimoase sunt: Internet, USENET, BitNet.  ``Net'' de la coadă este
+prescurtarea cuvîntului englezesc ``network'' -- ``reţea''.  Noi
+vom vorbi cel mai adesea despre Internet.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Internet</A>
+</H1>
+
+<P>
+Internet este probabil reţeaua cu cele mai vechi rădăcini.
+Ea a şi-a început existenţa în 1969 printr-un proiect sponsorizat
+de DARPA -- (Defense Advanced Research Projects Agency = Agenţia
+proiectelor avansate de cercetare pentru apărare a Statelor Unite).
+Atunci era o reţea experimentală, numită ARPANET, gîndită --
+printre altele -- şi pentru comunicaţii militare.  Protocoalele
+folosite au fost concepute pentru a fi foarte robuste, pentru a
+funcţiona chiar şi în condiţii vitrege (de război).  (Acesta este probabil
+unul dintre motivele longevităţii acestei reţele).  În 1975
+reţeaua a devenit operaţională şi a început să crească.
+
+<P>
+În 1983 protocolul (sau mai exact o colecţie întreagă de
+protocoale) numită TCP/IP a fost adoptată ca standard şi impusă
+tuturor calculatoarelor care vroiau să comunice prin această reţea.
+Pe atunci reţeaua era destinată în principal universităţilor şi
+institutelor de cercetare.
+
+<P>
+Internet s-a format legînd multe reţele diferite într-una
+singură şi mare.  Numele ei vine din ``inter-net'' = ``legătură
+între reţele'', şi ea este o creştere nemăsurată a nucleului
+iniţial ARPANET.  Ea reuşeşte să pună de acord o sumedenie de
+reţele eterogene, care folosesc medii foarte diferite pentru
+comunicaţie, impunînd folosirea unor protocoale unice peste cele de
+``nivel jos'', care asigură conexiunea fizică (electrică, radio,
+etc).
+
+<P>
+Astăzi Internet-ul acoperă America, Europa, Japonia, Africa,
+Australia, printr-o mare varietate de medii de transmsiune (de la
+fibră optică şi sateliţi la legături prin reţeaua telefonică).
+Are peste 30 de milioane de utilizatori, număr care creşte <EM>lunar</EM> cu 2 milioane! Explozia este în plină desfăşurare după
+căderea cortinei de fier, de cînd toate statele estice şi central
+europene au putut căpăta acces la informaţie.  (Probabil că
+cifrele mele sunt deja cu mult depăşite la data apariţiei
+articolului).
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Adresele în Internet</A>
+</H1>
+
+<P>
+Despre Internet se scriu zeci de cărţi în fiecare an, şi
+mereu se pot spune mai multe.  Numai ce se poate face cu informaţia
+accesibilă la distanţă este de neînchipuit (baze de date despre
+orice domeniu, transmiterea de texte, cărţi, imagini, sunete, etc.),
+şi în fiecare zi se scorneşte o nouă aplicaţie.  Sperăm că
+despre cele mai importante să putem vorbi în alte articole dedicate
+Internet-ului.  Acum o să atacăm un subiect care este foarte
+important, deşi poate mai abstract şi arid.  Cum arată adresele în
+Internet ?
+
+<P>
+Ca să trimit o scrisoare trebuie să spun organizaţiei
+poştale internaţionale cui aş dori să o înmîneze.  La fel stau
+lucrurile şi cu calculatoarele: deşi poate calculatorul meu este
+conectat numai la unul, două, acestea sunt conectate la altele, care
+la rîndul lor, şi tot aşa pînă în America (sau te miri unde).
+Internet-ul este organizat în aşa fel încît eu nu trebuie să spun
+<EM>pe unde</EM> trebuie să călătorească o informaţie ci numai <EM>unde</EM> trebuie să ajungă.  Este treaba protocoalelor să rezolve
+sarcina găsirii unui traseu.  Pe de altă parte trebuie să pot
+specifica în mod unic destinaţia, pentru a nu se ivi confuzii.
+
+<P>
+Ca să simplificăm puţin discuţia mai introducem nişte
+termeni cu iz tehnic.
+
+<P>
+Orice element de pe reţea care poate fi implicat în
+transmiterea sau/şi recepţionarea informaţiei se numeşte <EM>nod</EM>.  Alegem acest cuvînt pentru englezescul <EM>host</EM>.  De obicei
+el este un calculator, dar poate fi şi altceva -- o imprimantă, un
+terminal (un aparat care ştie doar să afişeze texte şi să
+citească taste).
+
+<P>
+Fiecare nod are un nume al lui, nu neapărat unic pe glob,
+aşa cum pot exista şi doi Popescu Gheorghe (orice asemănare cu
+personaje reale este pur întîmplătoare).  Acest nume este format
+din litere şi cifre, şi poate şi alte semne, dar este preferabil
+să conţină numai din acestea.  În principiu nu contează dacă
+numele este scris cu litere mari sau mici, dar iarăşi, se recomandă
+folosirea constantă a unei singure scrieri.  Adică pentru un nod
+numit <B>superstar</B> putem scrie <B>SUPERstar</B>.
+
+<P>
+Nodurile sunt grupate în <EM>domenii</EM>, care formează o
+ierarhie.  Aceasta seamănă destul de tare cu adresa de pe o
+scrisoare:
+<BR>
+<BR>
+
+<P>
+<DIV ALIGN="CENTER">
+Popescu Gheorghe, 
+<BR>
+Strada Splendidă, Nr 324232342 
+<BR>
+Capetown 
+<BR>
+Africa de Sud (South-Africa) 
+<BR>
+AFRICA 
+
+</DIV>
+
+<P>
+Aceasta este o ierarhie cu vîrful scris în jos, pentru că
+în Africa există mai multe ţări, dar una singură se numeşte
+Africa de Sud, în Africa de Sud sunt mai multe oraşe, dar unul
+singur Capetown ş.a.m.d.  Cam aşa:
+
+<P>
+
+<PRE>
+                                AFRICA
+                                 /|\ \ \...
+                                / | \  
+                               /  |  Egipt
+                    Africa de Sud  .....
+                         /|\ \ \....
+                        / | \  ....
+                Capetown  | Pretoria
+                /|\ \ ... ...  /|\
+               / | \          ... \  
+ Str. Splendida  .....            Str Oribila
+     /      | \ \ ...                   /\ \...
+Popescu Gh  ....                    ...  Nr 3, Popescu Gheorghe
+</PRE>
+
+<P>
+Cei doi Popescu Gh. din desenul de mai sus nu se confundă 
+pentru că au adrese
+diferite (în puncte superioare ale ierarhiei).
+
+<P>
+Exact aşa stau lucrurile şi cu adresele de pe Internet, doar
+că nu întotdeauna ierarhia se bazează pe poziţia geografică.
+
+<P>
+Internet-ul este împărţit în <EM>domenii</EM>. Există un
+domeniu care este vîrful ierarhiei sîcare se notează cu punct (.).
+(Acesta ar corespunde pe o scrisoare cuvîntului ``TERRA'' scris după
+AFRICA -- e un domeniu care le cuprinde pe toate celelalte).  El are
+subdomenii, fiecare cu un nume diferit.  Subdomeniile existente ale
+domeniului punct sunt nu prea numeroase.  Există subdomenii pentru
+instituţii din Statele Unite, împărţite după profil:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT"><B>Domeniu</B></TD>
+<TD ALIGN="LEFT"><B>Semnificaţie</B></TD>
+</TR>
+<TR><TD ALIGN="LEFT">org</TD>
+<TD ALIGN="LEFT">organizaţii necomerciale</TD>
+</TR>
+<TR><TD ALIGN="LEFT">edu</TD>
+<TD ALIGN="LEFT">organizaţii educaţionale (toate universităţile)</TD>
+</TR>
+<TR><TD ALIGN="LEFT">com</TD>
+<TD ALIGN="LEFT">organizaţii comerciale</TD>
+</TR>
+<TR><TD ALIGN="LEFT">mil</TD>
+<TD ALIGN="LEFT">organizaţii militare</TD>
+</TR>
+<TR><TD ALIGN="LEFT">gov</TD>
+<TD ALIGN="LEFT">agenţii guvernamentale</TD>
+</TR>
+<TR><TD ALIGN="LEFT">net</TD>
+<TD ALIGN="LEFT">administrarea reţelei</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Pe deasupra există domenii pentru fiecare ţară de pe glob.  Exemple:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT"><B>Domeniu</B></TD>
+<TD ALIGN="LEFT"><B>Ţară</B></TD>
+</TR>
+<TR><TD ALIGN="LEFT">fr</TD>
+<TD ALIGN="LEFT">Franţa</TD>
+</TR>
+<TR><TD ALIGN="LEFT">au</TD>
+<TD ALIGN="LEFT">Australia</TD>
+</TR>
+<TR><TD ALIGN="LEFT">ro</TD>
+<TD ALIGN="LEFT">România</TD>
+</TR>
+<TR><TD ALIGN="LEFT">de</TD>
+<TD ALIGN="LEFT">Germania</TD>
+</TR>
+<TR><TD ALIGN="LEFT">dk</TD>
+<TD ALIGN="LEFT">Danemarca</TD>
+</TR>
+<TR><TD ALIGN="LEFT">jp</TD>
+<TD ALIGN="LEFT">Japonia</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Mai departe fiecare domeniu este împărţit (dacă este nevoie) în
+<EM>subdomenii</EM>.  Fiecare după necesităţi.  De exemplu la noi
+există (printre altele) subdomeniile
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER" COLSPAN=2><B>Subdomenii ale ro</B></TD>
+</TR>
+<TR><TD ALIGN="LEFT">pub</TD>
+<TD ALIGN="LEFT">Universitatea Politehnica din Bucureşti</TD>
+</TR>
+<TR><TD ALIGN="LEFT">ici</TD>
+<TD ALIGN="LEFT">Institutul Central de Informatică</TD>
+</TR>
+<TR><TD ALIGN="LEFT">sfos</TD>
+<TD ALIGN="LEFT">Fundaţia Soros pentru o Societate Deschisă</TD>
+</TR>
+<TR><TD ALIGN="LEFT">...</TD>
+<TD ALIGN="LEFT">&nbsp;</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Ca să indic faptul că un domeniu este subdomeniul altuia, scriu
+subdomeniul, separat cu punct de domeniul de care aparţine.
+
+<P>
+Avem astfel domeniile:
+
+<P>
+
+<UL>
+<LI>pub.ro  (sau pub.ro.  dacă adăugăm punctul pentru domeniul vîrf)
+</LI>
+<LI>ici.ro
+</LI>
+<LI>sfos.ro
+</LI>
+</UL>
+
+<P>
+Împărţirea domeniilor continuă tot aşa pînă cînd ajungem la
+domenii prea mici pentru a fi împărţite mai departe.  pub.ro de
+pildă este împărţit în domenii pentru fiecare facultate, după
+care domeniile rezultate conţin numai calculatoare.
+
+<P>
+Avem 
+<DL COMPACT>
+<DT>cs.pub.ro</DT>
+<DD>-- domeniul facultăţii de calculatoare din pub.ro
+</DD>
+<DT>dsp.pub.ro</DT>
+<DD>-- catedra de prelucrare de semnal din pub.ro
+</DD>
+</DL>
+
+<P>
+fiecare cu mai multe calculatoare.  În <TT>cs.pub.ro</TT> există un
+calculator (host) pe care îl cheamă <TT>ulise</TT>.  Adresa sa
+completă de Internet este
+
+<P>
+<TT>ulise.cs.pub.ro</TT> (sau <TT>ulise.cs.pub.ro.</TT>, cu punct la sfîrşit).
+
+<P>
+Pe de altă parte nu toate ramurile trebuie să aibă aceeaşi
+adîncime: domeniul <TT>pub.ro</TT> conţine mai multe subdomenii, dar şi un
+host numit la rîndul său <TT>pub</TT>.  Adresa sa este: <TT>pub.pub.ro</TT>.
+
+<P>
+Să facem un desen recapitulativ
+
+<P>
+
+<PRE>
+                                  .
+                                 /|\ \\ ...
+                                / | \
+                            com  fr   ro
+                        .. /|\   /\   /|\ \...
+                        ibm ... ...  / | \
+                        /         pub ici sfos
+                     ...        //|\  .|..  \...
+                                / | \ 
+                             PUB  cs dsp
+                                 /|\   \...
+                                / | \
+                            ULISE .. APOLLO
+</PRE>
+
+<P>
+(am scris pentru claritate numele de noduri cu majuscule, iar pe
+cele de domenii cu minuscule).
+
+<P>
+Deci <EM>adresa</EM> calculatorului <TT>ULISE</TT> din domeniul <TT>cs</TT> al
+domeniului <TT>pub</TT> al domeniului <TT>ro</TT> este
+
+<P>
+<TT>ulise.cs.pub.ro.</TT>
+
+<P>
+Comparaţi asta cu adresa domnului Popescu de mai sus.  Similitudinea
+este perfectă!
+
+<P>
+Ar mai fi multe de spus despre adresele de acest fel.  Un
+calculator poate avea mai multe nume simultan; adresele pot fi scrise
+cîteodată prescurtat (aşa cu atunci cînd trimitem o scrisoare în
+ţară nu mai specificăm continentul), cîteodată se poate folosi o
+adresă de domeniu, fără a specifica vreunul din calculatoarele din
+interiorul acestuia, ş.a.m.d.  Principiile esenţiale însă acestea
+sunt, iar celelalte sunt variaţiuni pe o aceeaşi temă.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Un exemplu: poşta electronică</A>
+</H1>
+
+<P>
+O reţea de calculatoare este destinată transferului de
+informaţie.  Ce e interesant este varietatea uriaşă în care se
+poate prezenta/folosi informaţia însăşi.  Există zeci de servicii
+diferite pe care Internet-ul le face posibile.  Cel mai popular este
+probabil <EM>poşta electronică</EM>, numită în engleză <EM>electronic mail</EM>, sau prescurtat e-mail.
+
+<P>
+Poşta electronică îşi propune să fie o alternativă la
+cea scrisă (pe hîrtie) cu toate avantajele (şi dezavantajele)
+transmisiunii printr-un mediu electronic.  În principiu folosind
+e-mail poţi trimite un text de la o persoană la o alta, cu condiţia
+ca amîndouă să aibă acces imediat la cîte un host.
+
+<P>
+Obiceiul este din vremuri străvechi ca un calculator să fie
+utilizat în comun de mai multe persoane (cele personale puternice
+sunt o invenţie relativ recentă).  Din această cauză atunci cînd
+destinaţia este o persoană (un utilizator al unui calculator)
+trebuie specificat pe lînga adresa calculatorului şi destinatarul.
+De obicei utilizatorii unui calculator sunt identificaţi de acesta
+printr-un nume (unic pentru un sistem dat), care le-a fost atribuit de
+persoana care administrează acel calculator.  Acest nume, numit
+cîteodată ``user name'' (nume de utilizator) sau ``login name''
+(numele cu care mă prezint calculatorului) trebuie să fie cunoscut
+de trimiţătorul unei scrisori.  De obicei el sugerează numele real
+al persoanei, fiind însă mai scurt (uzual între 6 şi 8 caractere).
+Dacă pentru adrese scrierea cu majuscule sau minuscule nu contează,
+numele utilizatorului trebuie scris întotdeauna în acelaşi fel.
+
+<P>
+Pentru exemplificare să presupunem că domnul Popescu
+Gheorghe are ``cont'' pe un calculator (este utilizator al unui
+calculator) numit ``bigpc'', în domeniul <TT>cs.uct.sa</TT>.  Fie pgheo
+numele său de utilizator.  Atunci adresa sa de e-mail se scrie
+astfel:
+
+<P>
+<TT>pgheo@bigpc.cs.uct.sa</TT>
+
+<P>
+Cu alte cuvinte ea este în ordine formată din:
+
+<P>
+
+<OL>
+<LI>numele de utilizator (<TT>pgheo</TT>)
+</LI>
+<LI>semnul numit ``coadă de maimuţă'' <TT>@</TT>
+</LI>
+<LI>numele calculatorului (<TT>bigpc</TT>)
+</LI>
+<LI>domeniul calculatorului (<TT>cs.uct.sa</TT>)
+</LI>
+</OL>
+
+<P>
+Cîmpurile 3-4 formează de fapt adresa de Internet a nodului pe care
+pgheo are un cont.  Simplu ca bună ziua! (În orice caz mult mai
+simplu decît adresa de pe plic!).
+
+<P>
+(În caz că nu cunoaşteţi numele de utilizator al unei
+persoane, ci doar adresa unde are un cont, puteţi -- adesea -- afla
+prin felurite mijloace numele de login.  În cazuri fericite, dacă
+aveţi destulă răbdare puteţi afla chiar şi adresa, cînd ea vă
+este necunoscută.  Aceasta se face cu ajutorul unor alte programe
+despre care sperăm să vorbim vreodată.)
+
+<P>
+Ştiu cui vreau să trimit.  Sper că ştiu ce vreau să
+scriu.  Acum mai trebuie să aflu cum.
+
+<P>
+În această privinţă lucrurile se diversifică foarte tare.
+În funcţie de sistemul de operare pe care îl foloseşte
+calculatorul dumneavoastră puteţi avea foarte multe metode pentru a
+trimite o scrisoare electronică.  Această sarcină cade întotdeauna
+în cîrca unui program specializat, care adesea pe lînga trimiterea
+poştei vă permite să citiţi mesajele trimise, să compuneţi unele
+noi (deci contine un editor de texte), să catalogaţi mesajele
+primite, să le puneţi la păstrare, să le re-trimiteţi şi să le
+răspundeţi, şi cîte şi mai cîte.
+
+<P>
+Tocmai datorită acestei diversităţi nu există o soluţie
+universală.  Acest articol va descrie o posibilitate, cea mai simplă
+şi mai răspîndită probabil, dar nu neapărat cea care vă este cel
+mai la-ndemînă.  De exemplu pentru sistemul de operare UNIX (sau
+rudele sale) există de obicei următoarele programe pentru manipulat
+poşta electronică:
+
+<P>
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">mail (sau Mail)</TD>
+</TR>
+<TR><TD ALIGN="LEFT">mailx</TD>
+</TR>
+<TR><TD ALIGN="LEFT">elm</TD>
+</TR>
+<TR><TD ALIGN="LEFT">pine</TD>
+</TR>
+<TR><TD ALIGN="LEFT">emacs (în modul mail/rmail)</TD>
+</TR>
+<TR><TD ALIGN="LEFT">mailtool</TD>
+</TR>
+<TR><TD ALIGN="LEFT">mime</TD>
+</TR>
+<TR><TD ALIGN="LEFT">mh</TD>
+</TR>
+</TABLE>
+
+<P>
+Unele sunt prietenoase (pentru cei care ştiu engleza tehnică a
+calculatoarelor), altele sunt criptice, unele sunt elegante în
+prezentare, altele sunt sobre, fiecăruia după gust şi puteri.
+
+<P>
+Din păcate nu putem descrie pe fiecare (şi nici asta s-ar
+putea să nu vă ajute dacă aveţi un altul).  Vom lua pe cel mai
+simplu -- probabil -- şi anume <TT>mail</TT> (sau <TT>mailx</TT> --
+seamănă).  De asemenea recomandăm începătorilor <TT>elm</TT>, care e
+mai prietenos.
+
+<P>
+Programul <TT>mail</TT> se poate folosi atît pentru a citi poşta
+primită cît şi pentru a trimite cuiva scrisori.  Vom exemplifica
+ambele utilizări.  Pentru a avea ce să citesc îmi voi trimite
+singur o scrisoare, pe care apoi o voi citi.
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Trimiterea de scrisori cu <TT>mail</TT></A>
+</H1>
+
+<P>
+Pentru a trimite o scrisoare tastez <TT>mail</TT> (cu litere mici!)
+urmat de un spaţiu, urmat de numele utilizatorului căruia vreau
+să-i scriu.  Dacă utilizatorul este pe aproape pot specifica adresa
+incomplet.  Cel mai sigur este însă să o scriu în întregime.
+Numele meu de utilizator pot să-l aflu în UNIX cu comanda <TT>whoami</TT> (cine sunt eu).  Iată o posibilă interacţiune cu terminalul
+calculatorului ($ este promptul):
+
+<P>
+<PRE>
+$ whoami
+bmihai
+$ mail bmihai
+</PRE>
+
+<P>
+(Am aflat cine sunt eu, şi acum îmi trimit o scrisoare.  Adresa este
+incompletă: am specificat numai numele utilizatorului, nu şi
+calculatorul şi domeniul.  Implicit este vorba de o persoană de pe
+aceeaşi maşină.  Acum sunt rugat sa scriu un titlu pentru
+scrisoare:)
+
+<P>
+<PRE>
+$ mail bmihai
+Subject: Scrisoare de test
+CC:
+</PRE>
+
+<P>
+(Am ales titlul ``Scrisoare de test''.  Acum sunt întrebat cui vreau
+să-i trimit copii cc = carbon copy = copie la indigo.  Apăs pe
+ENTER, indicînd că nimănui).
+
+<P>
+<PRE>
+CC:
+</PRE>
+
+<P>
+Acum pot începe să scriu orice.  Editorul pe care îl folosesc poate
+fi ales, dar cel implicit folosit nu este foarte prietenos.  De
+exemplu nu pot folosi săgeţile ca să corectez.  De asemenea o linie
+introdusă şi terminată cu ENTER nu mai poate fi modificată.
+Contactaţi administratorul dumneavoastră pentru a putea să
+folosiţi editorul dumneavoastră preferat.  Termin de scris scrisoarea
+scriind în prima coloană fie un punct fie tastînd control-D (două
+taste simultan).
+
+<P>
+<PRE>
+CC:
+Draga mihai, iti trimit o scrisoare
+ca sa vad cum merge posta. 
+.
+EOT
+</PRE>
+
+<P>
+Ei, cam asta a fost tot.  <TT>EOT</TT> a scris calculatorul,
+pentru End of Text - sfîrşit de text.  Scrisoarea acum s-a dus.
+Acum nimic nu mai poate fi făcut pentru a o opri: s-a dus pe reţea.
+În realitate această scrisoare nu merge prea departe, avînd
+destinatarul pe acelaşi calculator.  De aceea în curînd voi fi
+probabil avertizat cu un mesaj:
+
+<P>
+<PRE>
+$
+You have new mail!
+$
+</PRE>
+
+<P>
+Editorul (programul care îmi permite să scriu scrisoarea)
+lui mail este el însuşi destul de inteligent, permiţîndu-mi să
+fac unele prelucrări asupra textului scrisorii.  Dacă tastaţi
+semnul <code>~</code> la începutul unei linii în timp ce scrieţi
+scrisoarea, atunci mail se aşteaptă să urmeze o comandă specială.
+Exemple de comenzi ale editorului:
+
+<P>
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><code>~p</code></TD>
+<TD ALIGN="LEFT">arată-mi ce am scris pînă acum</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>~q</code></TD>
+<TD ALIGN="LEFT">renunţă la acest mesaj</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>~r</code>fisier</TD>
+<TD ALIGN="LEFT">citeşte fişierul indicat şi bagă-l în acest mesaj</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>~s</code>subiect</TD>
+<TD ALIGN="LEFT">schimbă subiectul scrisorii cu cel indicat</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>~w</code>fisier</TD>
+<TD ALIGN="LEFT">scrie scrisoarea în fişierul indicat</TD>
+</TR>
+</TABLE>
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Citirea unei scrisori cu <TT>mail</TT></A>
+</H1>
+
+<P>
+Ca să citesc o scrisoare este şi mai simplu.  Ajunge să
+tastez <TT>mail</TT> şi o listă a tuturor scrisorilor primite în ultima
+vreme îmi este arătată.  Fiecare este descrisă (de obicei) prin:
+
+<P>
+
+<UL>
+<LI>starea mesajului (citit, nou, etc.)
+</LI>
+<LI>un număr de ordine
+</LI>
+<LI>adresa trimiţătorului
+</LI>
+<LI>data trimiterii
+</LI>
+<LI>subiectul scrisorii (ce a scris el la Subject:)
+</LI>
+</UL>
+
+<P>
+Ceva de genul:
+
+<P>
+<PRE>
+&gt;N      1 mihaib    Mon Apr  3 20:40  10/276 "Scrisoare de test"
+</PRE>
+
+<P>
+Asta înseamnă că am primit de la mihaib (tot eu) o
+scrisoare trimisă pe 3 aprilie, cu subiectul indicat.  Scrisoarea are
+10 linii şi 276 de caractere.  Acum mail îmi oferă o sumedenie de
+comenzi pe care le pot invoca tastînd ceva urmat de ENTER la
+promptul nou apărut.  O listă şi o scurtă descriere a fiecărei
+comenzi se poate obţine prin apăsarea ``?'' - semnului de
+întrebare.  Comenzile se pot introduce şi prescurtat, doar prin
+cîteva litere.  Nu toate programele <TT>mail</TT> au aceleaşi variante
+de comenzi, aşa că vom vedea cum lucrează doar cele mai comune.
+Programul mail ne arată că aşteaptă ceva de la noi prin semnul
+``SPMamp;'' (promptul său).
+
+<P>
+Una dintre posibilităţi este de a tastă ``p'' şi un număr
+de scrisoare.  Atunci acea scrisoare devine cea curentă, iar
+conţinutul ei ne este arătat pe ecran.  (p = ``print'' = scrie).
+
+<P>
+<PRE>
+&amp; p 1
+Message: 1
+From mihaib Mon Apr 3 20:40:50 1995
+Return-Path: &lt;mihaib&gt;
+Date: Mon, 3 Apr 1995 20:41:00
+To: &lt;mihaib&gt; Mihai Budiu
+Subject: Mesaj de test
+Message-ID: &lt;mail.3.89.9504100959.B625-g70000@lbi.lbi.sfos.ro&gt;
+
+Draga mihai, iti trimit o scrisoare
+ca sa vad cum merge posta. 
+&amp;
+</PRE>
+
+<P>
+Asta este exact scrisoarea pe care am trimis-o.  De fapt ceva
+mai mult.  Ea are acum două părţi: un antet (``header'' pe
+engleză) despărţit de restul scrisorii printr-o linie liberă.
+Antetul poate fi destul de stufos.  El indică multe lucruri, printre
+care: trimiţătorul, data trimiterii, data recepţiei, traseul urmat
+de scrisoare, subiectul, cui au fost trimise copii, etc.
+
+<P>
+
+<H1><A NAME="SECTION00080000000000000000">
+Alte operaţii cu <TT>mail</TT></A>
+</H1>
+
+<P>
+Programul <TT>mail</TT> este foarte versatil, permiţîndu-mi o
+sumedenie de operaţii cu scrisori.  Acestea lucrează de obicei pe
+scrisoarea curentă, indicată prin semnul <TT>&gt;</TT> de către mail.
+Nişte exemple comune:
+
+<P>
+Acum că am primit o scrisoare pot de exemplu să o pun
+într-un fişier pe disc.  Asta se face răspunzînd la promptul &amp; cu
+comanda <code>s &lt;nume fisier&gt;</code>.  Scrisoarea este adăugată la
+sfîrşitul acelui fişier, cu tot cu antet.  (s = <EM>save</EM> =
+``salvează'').
+
+<P>
+Dacă tocmai am citit o scrisoare pot să o şterg definitiv
+cu comanda ``d'' (d = <EM>delete</EM> = şterge).  Ea va fi marcată pe listă
+titlurilor cu ``D'' şi va fi ştearsă după ce termin de lucrat cu
+<TT>mail</TT>.
+
+<P>
+O scrisoare poate fi ``des-ştearsă'' tastînd ``u'' (u =
+<EM>undelete</EM> = des-şterge).
+
+<P>
+Dacă în timp ce citesc scrisori mi se face poftă să scriu
+cuiva (de exemplu pentru a-i răspunde) pot tasta comanda ``m'' urmată
+de adresa destinatarului şi apoi ca de obicei de corpul scrisorii. (m
+= <EM>mail</EM> = scrisoreşte).
+
+<P>
+Pot revedea lista scrisorilor primite prin comanda ``h''.  (h
+= <EM>headers</EM>).
+
+<P>
+Pot răspunde scrisorii curente cu ``r'' (<EM>reply</EM> =
+răspunde).
+
+<P>
+În fine, cînd m-am săturat pot termina lucrul cu <TT>mail</TT>
+prin comanda ``q'' (q = <EM>quit</EM> = gata).
+
+<P>
+Multe din comenzile anterioare pot fi urmate de un număr de
+ordine, caz în care ele acţionează asupra scrisorii indicate.  Sunt
+admise sîintervale de numere, scriind cele două capete separate
+prin liniuţa minus. (De exemplu
+
+<P>
+<PRE>
+&amp; d 3-20
+</PRE>
+
+<P>
+este o comandă care şterge scrisorile 3-20).
+
+<P>
+Rezumat al unor comenzi ale programului <TT>mail</TT>:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">h</TD>
+<TD ALIGN="LEFT">lista scrisorilor</TD>
+</TR>
+<TR><TD ALIGN="LEFT">p</TD>
+<TD ALIGN="LEFT">arată scrisori</TD>
+</TR>
+<TR><TD ALIGN="LEFT">m</TD>
+<TD ALIGN="LEFT">scriu cuiva</TD>
+</TR>
+<TR><TD ALIGN="LEFT">d</TD>
+<TD ALIGN="LEFT">şterge scrisori</TD>
+</TR>
+<TR><TD ALIGN="LEFT">u</TD>
+<TD ALIGN="LEFT">de-şterge scrisori</TD>
+</TR>
+<TR><TD ALIGN="LEFT">s</TD>
+<TD ALIGN="LEFT">salvează scrisori</TD>
+</TR>
+<TR><TD ALIGN="LEFT">r</TD>
+<TD ALIGN="LEFT">răspunde la scrisoare</TD>
+</TR>
+<TR><TD ALIGN="LEFT">q</TD>
+<TD ALIGN="LEFT">termina de lucrat cu mail</TD>
+</TR>
+<TR><TD ALIGN="LEFT">+</TD>
+<TD ALIGN="LEFT">mesajul următor devine curent</TD>
+</TR>
+<TR><TD ALIGN="LEFT">-</TD>
+<TD ALIGN="LEFT">mesajul anterior</TD>
+</TR>
+<TR><TD ALIGN="LEFT">număr</TD>
+<TD ALIGN="LEFT">mesajul cu numărul indicat</TD>
+</TR>
+<TR><TD ALIGN="LEFT">?</TD>
+<TD ALIGN="LEFT">un scurt sumar al comenzilor</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Scrisorile pe care eu le primesc mă aşteaptă cuminţi în
+ceea ce se numeşte ``cutia mea poştală''.  Aceasta este de fapt un
+fişier ordinar pe disc, dar la care pot avea acces numai eu (nu şi
+alţi utilizatori de pe aceeaşi maşină) -- deh, secretul
+corespondenţei.  Cutia aceasta este citită de fiecare dată cînd eu
+pornesc programul <TT>mail</TT> fără alte argumente.  (Se poate aranja
+ca mail să folosească alt fişier pentru cutia poştală decît cel
+obişnuit, de exemplu unul în care am salvat scrisorile altă dată
+cu comanda ``s''.  Asta se face invocînd mail astfel 
+
+<P>
+<PRE>
+$ mail -f cutia_noua
+</PRE>
+
+<P>
+După cum vedeţi lucrurile nu sunt foarte simple, dar în
+nici un caz ezoterice.
+
+<P>
+
+<H1><A NAME="SECTION00090000000000000000">
+Alte surse de informaţie despre <TT>mail</TT></A>
+</H1>
+
+<P>
+Pentru a şti mai mult şi mai în detaliu despre programele
+pe care le folosiţi pentru a scrie scrisori aveţi mai multe
+variante.  Dacă aţi cumpărat programele ele trebuie să aibă
+documentaţii însoţitoare.  Dacă lucraţi pe o maşină UNIX
+probabil că ştiţi deja să folosiţi manualul interactiv <TT>man</TT>.
+Tastaţi <TT>man mail</TT> şi veţi afla mai multe lucruri.  Vorbiţi
+şi cu administratorul de sistem, sau cu o persoană mai
+experimentată.
+
+<P>
+Problema cea mare este varietatea enormă de posibilităţi.
+Programe pentru transmis poştă electronică apar în fiecare zi, din
+ce în ce mai complexe şi mai exotice.  Probabil că o carte ar fi
+necesară pentru a acoperi acest subiect în detaliu (dacă există
+cineva care să cunoască toate posibilităţile!)
+
+<P>
+
+<H1><A NAME="SECTION000100000000000000000">
+Alte lucruri importante despre poşta electronică</A>
+</H1>
+
+<P>
+Pe Internet în principiu poşta electronică este fiabilă.
+Asta înseamnă că în prezenţa unor condiţii oricît de vitrege
+(căderi de tensiune, întreruperi ale reţelei, etc.) o scrisoare nu
+se poate pierde.  Acest lucru este adevărat mai ales dacă
+calculatoarele participante la trafic sunt corect configurate de
+administratorii lor (ceea ce nu este intotdeauna adevărat...).  De
+aceea o scrisoare care nu poate atinge destinatarul încearcă cîtva
+timp după care se întoarce la trimiţător.
+
+<P>
+Scrisorile acestea revin trimise de ``oficiul poştal'':
+trimiţătorul lor este indicat ``Mailer daemon''.  Nu este o
+creatură malefică ci un program care se execută pe fiecare maşină
+ce poate manipula poştă.  Numele de ``daemon'' este în UNIX asociat
+tuturor programelor care lucrează ``în umbră''.  În antetul
+scrisorii returnate puteţi găsi informaţii despre motivele care au
+făcut scrisoarea de netrimis: adresant necunoscut, reţeaua
+întreruptă, etc.
+
+<P>
+Cele mai comune motive sunt:
+
+<P>
+
+<UL>
+<LI>host unknown -- nod necunoscut -- adresa de internet data nu este
+corectă;
+
+<P>
+</LI>
+<LI>user unknown -- utilizator necunoscut -- pe maşina a cărei
+adresă aţi indicat-o nu există nici o persoană cu acel nume de
+login;
+
+<P>
+</LI>
+<LI>host unreachable -- nod de neatins -- nu se poate ajunge prin
+metode cunoscute la acest calculator.
+</LI>
+</UL>
+
+<P>
+
+<H1><A NAME="SECTION000110000000000000000">
+Înafara Internetului</A>
+</H1>
+
+<P>
+După cum am spus există foarte multe reţele diferite de
+calculatoare.  Dacă persoana căreia vreţi să-i trimiteţi nu are
+un calculator conectat direct la Internet, este totuşi adesea posibil
+să fie adresantul unor scrisori, insă adresarea se schimbă.  Nu
+există o regulă: fiecare reţea îşi identifică altfel
+utilizatorii.  Dacă scrisoarea trebuie să traverseze mai multe
+reţele diferite s-ar putea să fie nevoie să indicaţi traseul
+precis pe care trebuie să-l urmeze.
+
+<P>
+În acest caz fie obţineţi de la acea persoană adresa, fie
+contactaţi un specialist.  Un loc bun de pornire este chiar
+administratorul dumneavoastră de sistem.
+
+<P>
+
+<H1><A NAME="SECTION000120000000000000000">
+Concluzii</A>
+</H1>
+
+<P>
+Poşta electronică este rapidă. (Cîteva minute pînă în
+celălalt capăt al lumii).  Poşta electronică este fiabilă.
+Poşta electronică este din ce în ce mai accesibilă.  Poşta
+electronică este -- pentru majoritatea utilizatorilor -- foarte
+ieftină (vom vorbi poate odată despre cum se plăteşte
+comunicaţia în Internet).  Poşta electronică este simplu de
+folosit.  (Nu foarte, dar încercînd veţi vedea că totuşi aşa e).
+
+<P>
+Poşta electronică este mare lucru!
+
+<P>
+<BR><HR>
+
+</BODY>
+</HTML>

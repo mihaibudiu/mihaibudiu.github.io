@@ -1,0 +1,1380 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Open-source: o revoluţie în software?</TITLE>
+<META NAME="description" CONTENT="Open-source: o revoluţie în software?">
+<META NAME="keywords" CONTENT="open-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+ <H1 ALIGN="CENTER">Open-source: o revoluţie în software?</H1>
+<P ALIGN="CENTER"><STRONG>(C) Mihai Budiu -- mihaib+ at cs.cmu.edu,
+http://www.cs.cmu.edu/~mihaib</STRONG></P>
+<P ALIGN="CENTER"><STRONG>mai 1996, revizuit mai 1998</STRONG></P>
+
+<P>
+Nota: de la publicarea articolului denumirile de &quot;Open
+Software&quot; si &quot;Free Software&quot; s-au rafinat si
+diferentiat intre ele.
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>publicarea codului sursa al programelor
+</DD>
+<DT><STRONG>Cuvinte Cheie:</STRONG></DT>
+<DD>Free Software, Proiectul GNU, Linux
+</DD>
+<DT><STRONG>Nivel Tehnic:</STRONG></DT>
+<DD>divertisment
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>programare de orice fel
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION01000000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html29"
+  HREF="open-html.html">Despre drept</A>
+<UL>
+<LI><A NAME="tex2html30"
+  HREF="#SECTION02010000000000000000">Copyright, licenţe, patente şi secrete comerciale</A>
+<UL>
+<LI><A NAME="tex2html31"
+  HREF="#SECTION02011000000000000000">Patente</A>
+<LI><A NAME="tex2html32"
+  HREF="#SECTION02012000000000000000">Copyright</A>
+<LI><A NAME="tex2html33"
+  HREF="#SECTION02013000000000000000">Domeniul public</A>
+<LI><A NAME="tex2html34"
+  HREF="#SECTION02014000000000000000">Licenţe</A>
+<LI><A NAME="tex2html35"
+  HREF="#SECTION02015000000000000000">Secrete comerciale</A>
+</UL>
+<LI><A NAME="tex2html36"
+  HREF="#SECTION02020000000000000000">Situaţia în software</A>
+<UL>
+<LI><A NAME="tex2html37"
+  HREF="#SECTION02021000000000000000">Tipuri de protecţie legală a creatorilor de software</A>
+<LI><A NAME="tex2html38"
+  HREF="#SECTION02022000000000000000">Garanţiile software-ului</A>
+</UL>
+</UL>
+<BR>
+<LI><A NAME="tex2html39"
+  HREF="#SECTION03000000000000000000">Free Software</A>
+<UL>
+<LI><A NAME="tex2html40"
+  HREF="#SECTION03010000000000000000">Apariţia valorii în software</A>
+<LI><A NAME="tex2html41"
+  HREF="#SECTION03020000000000000000">Contracurentul: Richard Stallman şi proiectul GNU</A>
+<UL>
+<LI><A NAME="tex2html42"
+  HREF="#SECTION03021000000000000000">GNU Public License (GPL)</A>
+</UL>
+<LI><A NAME="tex2html43"
+  HREF="#SECTION03030000000000000000">Linux</A>
+<UL>
+<LI><A NAME="tex2html44"
+  HREF="#SECTION03031000000000000000">Geneza</A>
+<LI><A NAME="tex2html45"
+  HREF="#SECTION03032000000000000000">Explozia</A>
+</UL>
+<LI><A NAME="tex2html46"
+  HREF="#SECTION03040000000000000000">Modelul Open-Source</A>
+<UL>
+<LI><A NAME="tex2html47"
+  HREF="#SECTION03041000000000000000">Meritele ``open-software''</A>
+</UL></UL></UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+Calculatoarele sunt o apariţie relativ recentă pe scena
+tehnologiilor; cu toate acestea, au devenit o componentă din ce în ce
+mai importantă a societăţii.  Anul acesta se estimează că
+aproximativ 40% din produsul intern brut al Statelor Unite ale
+Americii provine din tehnologii înalte, ceea ce înseamnă mai ales
+hardware, software şi telecomunicaţii.
+
+<P>
+Importanţa fenomenului economic reprezentat de calculatoare este şi
+mai recentă: companiile de gen au căpătat greutate mare la bursă
+abia la sfîrşitul anilor '70.  Cel mai bogat om din lume este Bill
+Gates, patronul companiei Microsoft, al cărei capital s-a clădit cu
+precădere din comercializarea de software.
+
+<P>
+Programele calculatoarelor (software) reprezintă din ce în ce mai
+multă valoare.  Dar programele sunt totodată foarte diferite de
+majoritatea celorlalte creaţii ale umanităţii.  ``Cum trebuie
+privite software-ul de către societate'' este o întrebare al cărei
+răspuns nu este încă pe deplin formulat (în pofida importanţei
+economice fenomenale pe care o are deja!).  Ca dovadă fenomenele de
+neimaginat în urmă cu cîţiva ani cărora le suntem martori, şi
+care sunt subiectul acestui articol.  Mă refer cu precădere la
+răspîndirea paradigmei software-ului ``liber'', care nu are
+restricţii de acces, copiere şi citire, cel mai faimos reprezentant
+al categoriei fiind sistemul de operare Linux împreună cu
+utilitarele aferente.
+
+<P>
+
+<H1><A NAME="SECTION02000000000000000000">
+Despre drept</A>
+</H1>
+
+<P>
+
+<H1><A NAME="SECTION02010000000000000000">
+Copyright, licenţe, patente şi secrete comerciale</A>
+</H1>
+
+<P>
+Mecanismele juridice cu care societatea protejează software-ul sunt
+cu precădere adaptate de la mecanismele dezvoltate pentru a proteja
+alte creaţii ale spiritului uman (prin opoziţie cu bunurile
+materiale).  De aceea vom arunca întîi o privire asupra acestor
+mecanisme, ca să înţelegem mai bine unele dintre dilemele
+contemporane legate de software.  Probabil că inadecvarea acestor
+mecanisme ``improvizate'' este o cauză a tranziţiei căreia îi
+facem faţă.
+
+<P>
+Noţiunile pe care le discut în secţiunile următoare sunt
+prezentate aşa cum sunt formulate de legislaţia Statelor Unite ale
+Americii.  Cu certitudine, această ţară este cel mai important
+jucător din domeniu la ora actuală, după volumul veniturilor,
+numărul de indivizi angrenaţi sau aproape orice altă metrică.  Nu
+ştiu în ce măsură legislaţia din România este similară, dar
+cred că este oricum instructiv să aruncăm o privire la formulele
+americane.
+
+<P>
+
+<H2><A NAME="SECTION02011000000000000000">
+Patente</A>
+</H2>
+
+<P>
+Patentul este un contract între societate şi un inventator privitor
+la o invenţie a acestuia: 
+
+<P>
+
+<UL>
+<LI>Din partea sa, inventatorul dă societăţii toate informaţiile
+despre o invenţie a sa, suficient de amănunţite încît societatea
+să poată folosi invenţia într-o utilizare concretă.
+
+<P>
+</LI>
+<LI>În schimb societatea conferă inventatorului un monopol asupra
+utilizării ideii: nimeni altcineva decît inventatorul nu are dreptul
+să aplice ideea pentru o anumită perioadă de timp; legislaţia
+americană garantează 17 ani de independenţă inventatorului.
+</LI>
+</UL>
+
+<P>
+Ideea este destul de naturală: dacă inventatorul nu ar fi protejat
+în vreun fel, ar putea veni un altcineva mai puternic, care să
+beneficieze de truda inventatorului, să aplice invenţia şi să
+strîngă toţi banii.  Inventatorul are prin patent o perioadă de
+autonomie în care să-şi fructifice ideea, fără frica unei astfel
+de concurenţe.
+
+<P>
+Societatea este cîştigată, la rîndul ei, în două forme:
+
+<P>
+
+<UL>
+<LI>După 17 ani invenţia poate fi folosită de către oricine;
+</LI>
+<LI>Ideea este imediat vizibilă, putînd deveni un punct de plecare
+pentru alte idei mai avansate.
+</LI>
+</UL>
+
+<P>
+Inventatorul are toate drepturile asupra ideii sale pentru perioada
+acoperită de patent; el poate decide să nu facă absolut nimic cu
+ideea, să încerce să o fructifice de unul singur, sau să facă o
+asociere cu alţi indivizi prin care să o exploateze.  De pildă
+poate face un contract cu o firmă, prin care-şi <EM>vinde</EM>
+drepturile exclusive asupra ideii.
+
+<P>
+Societatea, prin biroul de patente, oferă inventatorului care şi-a
+descris ideea o dovadă de întîietate.  Dacă cineva încalcă
+drepturile inventatorului (de pildă o firmă fabrică nişte aparate
+bazate pe ideea patentată), inventatorul poate da în judecată
+firma, iar tribunalul îi poate acorda despăgubiri proporţionale cu
+daunele suferite de lipsa exclusivităţii.
+
+<P>
+Primul individ care depune o înscriere la patent obţine dreptul
+exclusiv de folosire, chiar dacă altcineva inventează acelaşi
+lucru, fără a avea cunoştinţă de invenţia anterioară.
+
+<P>
+Nu orice lucru se poate patenta.  De exemplu în Statele Unite nu se
+pot patenta idei care erau în circulaţie cu mai mult de un an de la
+depunerea înscrierii la patent.  Nu mă pot deci trezi mîine şi
+patenta motorul Carnot; e prea tîrziu.  Nu se pot de asemenea patenta
+formulele matematice sau procesele cognitive.
+
+<P>
+
+<H2><A NAME="SECTION02012000000000000000">
+Copyright</A>
+</H2>
+
+<P>
+Copyright-ul este o altă formă de protecţie a unei creaţii
+intelectuale.  Copyright, literal ``drept de copiere'', stabileşte
+că numai autorul unei creaţii are dreptul să multiplice şi
+distribuie acea creaţie.  Drepturile acestea, în sistemul american,
+durează pînă la moartea autorului plus 50 de ani.
+
+<P>
+Spre deosebire de patente, copyright-ul nu protejează <EM>o idee</EM>,
+ci <EM>modul de exprimare</EM> al ideii.  Cu alte cuvinte nu pot proteja
+la copiere idila între Romeo şi Julieta, dar Shakespeare ar fi putut
+proteja piesa cu pricina.  Scenariul unui film despre Romeo şi
+Julieta este o cu totul altă creaţie decît piesa, şi autorul
+scenariului are drepturi exclusive de copiere asupra sa.
+
+<P>
+Iarăşi, spre deosebire de patente, copyright-ul apare automat.  De
+îndată ce am fixat într-un mediu permanent expresia mea, am drept
+de copyright asupra ei, fie că este vorba de un text literar, un
+manual şcolar, o simfonie sau o pictură.
+
+<P>
+Drept de copiere exclusiv am asupra creaţiilor mele; problema este
+cum pot să dovedesc în faţa instanţei acest lucru, la nevoie,
+dacă altcineva îmi ia manuscrisele, le multiplică şi le vinde?
+Pentru a beneficia de astfel de protecţie pot să-mi <EM>înregistrez</EM> creaţia la un organism oficial; ştampila lor este
+dovada de care am nevoie.
+
+<P>
+Faptul că un obiect este protejat de copyright este indicat de obicei
+de semnul (C) (c într-un cerculeţ).  Pentru înregistrările
+muzicale avem de-a face cu fonograme în loc de litere (phonograms),
+aşa că semnul folosit este (P).
+
+<P>
+Copyright-ul este mai puţin restrictiv decît patentele: alţi
+indivizi au dreptul să folosească fragmente din creaţia mea dacă o
+fac în scopuri dezinteresate şi nu îmi cauzează daune.  Aceasta
+este aşa numita clauză <EM>fair use</EM>.
+
+<P>
+De exemplu un autor poate fi citat, fără ca prin asta să se
+încalce copyright-ul.  Care este limita între ``fair use'' şi
+încalcare, tribunalele stabilesc de la caz la caz, în funcţie de
+circumstanţe.
+
+<P>
+Ca şi în cazul patentelor, un autor poate decide să vîndă altora
+o parte din drepturile sale exclusive asupra obiectului în schimbul
+unor compensaţii.
+
+<P>
+Anumite lucruri nu pot fi protejate de copyright; în pofida
+aparenţelor, titlurile (cărţilor, filmelor, produselor) <EM>nu</EM>
+pot intra în această categorie.  Sloganuri, obiecte de uz general
+(forma lor mai exact), cărţile de telefon nu pot fi protejate de
+copyright.  Obiectele protejate trebuie să fie într-o oarecare
+măsură originale.  (Un slogan sau un simbol pot fi protejate însă
+printr-o <EM>marcă comercială</EM>, dar asta e altă poveste care ne
+interesează mai puţin.)
+
+<P>
+
+<H2><A NAME="SECTION02013000000000000000">
+Domeniul public</A>
+</H2>
+
+<P>
+Ce se întîmplă după expirarea perioadei de validitate a unui
+patent sau copyright?  Bunurile protejate intră în <EM>domeniul
+public</EM>: oricine are voie să le folosească fără a fi îndatorat
+cuiva.  Sunt bunuri ale întregii societăţi.
+
+<P>
+Astfel, piesele lui Shakespeare pot fi jucate pe scenă de către
+oricine, fără ca prin aceasta să fie încălcate drepturile sale de
+copyright.
+
+<P>
+
+<H2><A NAME="SECTION02014000000000000000">
+Licenţe</A>
+</H2>
+
+<P>
+Licenţa este un contract prin care posesorul unor drepturi exclusive
+vinde o parte din aceste drepturi altcuiva.  Cele două părţi în
+mod normal semnează un contract, prin care se specifică întinderea
+transferului (de exemplu un autor poate licenţia o carte pentru a se
+face o piesă după ea, dar nu pentru un film).
+
+<P>
+
+<H2><A NAME="SECTION02015000000000000000">
+Secrete comerciale</A>
+</H2>
+
+<P>
+Cînd ai pus mîna pe o găselniţă cu potenţial ai două
+posibilităţi:
+
+<P>
+
+<UL>
+<LI>O patentezi şi eşti apărat de lege în monopolul tău;
+</LI>
+<LI>Ţii ideea secretă şi o ``storci'' cît poţi.  Ideea devine
+atunci un <EM>secret comercial</EM>.
+</LI>
+</UL>
+
+<P>
+Secretele comerciale au avantaje şi dezavantaje faţă de patente.
+Un avantaj este că atîta vreme cît reuşeşti să păstrezi
+secretul, beneficiezi singur de el, pe cînd un patent expiră după o
+vreme; de pildă compoziţia băuturii ``Coca-Cola'' este un secret
+comercial păzit cu grijă de mai bine de un secol.
+
+<P>
+Un dezavantaj este că oricine poate -- teoretic -- avea aceeaşi
+idee şi o poate patenta.  Atunci adio avantaje, ba chiar dimpotrivă.
+
+<P>
+Legea apără într-o oarecare măsură secretele comerciale.  Anumite
+activităţi, ca spionajul, sunt ilegale tocmai din astfel de motive.
+Companiile care au secrete comerciale se apără de proprii lor
+angajaţi folosind contracte speciale numite <EM>Non-Disclosure
+Agreements, NDA</EM>: înţelegeri de ne-divulgare.  Practic angajatul
+semnează cu compania un act cum că nu va divulga nimănui
+informaţiile secrete, etc., iar compania îl poate da în judecată
+pentru încălcarea contractului dacă o face.  (Pe de altă parte
+odată secretul divulgat e bun dus; ``trădătorul'' va plăti atunci
+daune.)
+
+<P>
+
+<H1><A NAME="SECTION02020000000000000000">
+Situaţia în software</A>
+</H1>
+
+<P>
+După atîtea ocolişuri ``legale'' să vedem care este situaţia în
+domeniul care ne interesează -- în software.
+
+<P>
+Ei bine, toate ingredientele de mai sus apar şi în software.
+Astfel:
+
+<P>
+
+<UL>
+<LI>Algoritmii se pot patenta (dar nu programele!); un exemplu este
+algoritmul de criptografie RSA, care este patentat de autorii săi; ei
+sunt singurii care au dreptul să-l implementeze (patentul va expira
+în curînd);
+</LI>
+<LI>Programele sunt protejate prin copyright;
+</LI>
+<LI>Multe firme decid să facă tehnologiile folosite secrete
+comerciale (atît programele cît şi algoritmii); astfel de firme
+semnează cu angajaţii lor NDA-uri foarte stricte;
+</LI>
+<LI>Algoritmi şi programe pot fi licenţiate (între creatorii lor
+şi firme); de exemplu sistemul de operare Unix a fost licenţiat
+multor firme de către AT&amp;T; cea mai notabilă este Sun Microsystems,
+al cărei sistem de operare Solaris este construit pe baza unor
+bucăţi de cod licenţiate de la AT&amp;T (între timp AT&amp;T a vîndut
+drepturile sale exclusive şi marca comercială Unix lui Novell, care
+le-a vîndut apoi lui SCO).
+</LI>
+</UL>
+
+<P>
+Să observăm că (lucru valabil şi pentru patente şi copyright în
+general) o firmă poate angaja indivizi care să inventeze/creeze
+pentru ea, iar produsele devin posesiunea firmei, şi nu a indivizilor
+care le-au creat.  Acest lucru este de obicei specificat în
+contractele de muncă ale inşilor.  Majoritatea firmelor software
+aplică acest model.
+
+<P>
+
+<H2><A NAME="SECTION02021000000000000000">
+Tipuri de protecţie legală a creatorilor de software</A>
+</H2>
+
+<P>
+Varietatea de protecţii aplicate în software este însă foarte
+mare, în parte şi pentru că un program poate fi văzut la două
+nivele: al codului sursă, în limbajul în care este scris (C,
+Pascal, Java, etc.), sau la nivelul programului <EM>obiect,
+executabil</EM>, aşa cum iese dintr-un compilator.  Iată unele dintre
+categoriile cele mai răspîndite de software<A NAME="tex2html1"
+  HREF="#foot153"><SUP>1</SUP></A>:
+
+<P>
+<DL>
+<DT><STRONG>Public domain:</STRONG></DT>
+<DD>sunt programe care nu sunt supuse nici unei
+protecţii, pentru că autorii lor nu au luat măsurile necesare de
+protecţie.  Oricine poate folosi aceste programe în orice fel,
+inclusiv le poate include în programe mai mari care sunt secrete sau
+sunt protejate de copyright.
+
+<P>
+</DD>
+<DT><STRONG>Proprietary:</STRONG></DT>
+<DD>(în proprietatea cuiva) sunt programe a căror
+modificare, folosire şi redistribuire sunt supuse la restricţii de
+către posesorii lor.  Semi-free software, de mai jos, intră în
+această categorie.
+
+<P>
+</DD>
+<DT><STRONG>Semi-free:</STRONG></DT>
+<DD>anumite programe sunt disponibile fără
+constrîngeri dacă sunt folosite în scopuri non-profit, dar sunt
+supuse la restricţii pentru alte utilizări.  Un exemplu este
+pachetul PGP (Pretty Good Privacy).
+
+<P>
+</DD>
+<DT><STRONG>Shareware:</STRONG></DT>
+<DD>shareware este un tip de program care se poate
+folosi într-o formă restrînsă (fără funcţionalitate completă,
+sau doar pentru o anumită vreme) gratuit, dar care trebuie cumpărat
+în versiunea completă.  Practic un fel de software cu mostre
+gratuite pentru a momi cumpărătorii.  În general ``shareware'' este
+o formă de software ``proprietary''.
+
+<P>
+</DD>
+<DT><STRONG>Freeware:</STRONG></DT>
+<DD>acest termen este ambiguu şi nu se bucură de o
+interpretare unanim acceptată.
+
+<P>
+</DD>
+<DT><STRONG>Comercial:</STRONG></DT>
+<DD>software-ul comercial este vîndut de o companie
+pentru bani.  În mod paradoxal, software-ul comercial nu este
+acelaşi lucru cu software-ul ``proprietary''!  Poate exista software
+comercial free, cum explică următoarea categorie!
+
+<P>
+</DD>
+<DT><STRONG>Free/Open Source:</STRONG></DT>
+<DD>aceasta este de fapt creatura cea mai
+interesantă, care este scopul central al acestui articol.  Software
+free este orice software care:
+
+<P>
+
+<UL>
+<LI>Este distribuit fără restricţii de copiere sau utilizare
+pentru oricine;
+</LI>
+<LI>Este întotdeauna distribuit (şi) în limbajul sursă;
+</LI>
+<LI>A cărui <EM>modificare</EM> şi distribuire sunt permise oricui.
+</LI>
+</UL>
+
+<P>
+Termenii ``open source'' şi ``free software'' sunt sinonimi.  Cel
+de-al doilea este mai tradiţional, dar puţin mai confuz, pentru că
+``free'' înseamnă în engleză atît ``liber'' (de restricţii) cît
+şi ``gratuit''.  Free software <EM>nu</EM> înseamnă gratuit, ci
+``liber de restricţii''.
+</DD>
+</DL>
+
+<P>
+
+<H2><A NAME="SECTION02022000000000000000">
+Garanţiile software-ului</A>
+</H2>
+
+<P>
+E interesant de văzut ce fel de garanţii oferă firmele în general
+atunci cînd livrează programe, cel puţin în cazul consumului de
+masă (ce se întîmplă cu software-ul scris pentru a monitoriza
+centrale nucleare este o altă poveste).
+
+<P>
+Cînd cumperi soft de la Microsoft (sau orice alt mare producător)
+vei avea surpriza să observi că <EM>nu ţi se oferă nici o
+garanţie</EM> asupra calităţii sale!  Dacă aţi avut răbdarea să
+citiţi un astfel de contract, care de obicei apare cînd porneşti
+prima oară un program, aţi observat că firma producătoare nu
+promite că programul face ceva bine cu siguranţă 100%.  
+
+<P>
+Desigur, programele nu sunt în realitate inutile, pentru că nu le-ar
+cumpăra nimeni.  Ele nu sunt însă nici complet fiabile.  În
+general merg, însă producătorul nu este răspunzător de nici o
+malfuncţie.
+
+<P>
+Situaţia programelor este complet diferită de cea a tuturor
+celorlalte bunuri de larg consum; o fabrică de maşini este <EM>obligată</EM> să garanteze ca motorul nu poate lua foc (desigur, în
+condiţii rezonabile).
+
+<P>
+Această diferenţă de atitudine este posibilă pentru că în
+general software-ul nu are un impact imediat asupra lumii materiale:
+ţi se blochează calculatorul, îl scoţi din priză, îi dai drumul,
+poate ai pierdut ceva din munca ta, dar merge din nou.  Complexitatea
+programelor a ajuns atît de mare încît este virtual imposibil să
+fie garantată corectitudinea lor, nici măcar din punct de vedere
+statistic.  O viaţă de om nu ajunge pentru a citi toate cele 20 de
+milioane de linii sursă ale sistemului de operare Windows NT, cu
+atît mai puţin pentru a garanta corectitudinea lor.
+
+<P>
+Este pe deplin acceptat că fiabilitatea unui program este funcţie
+(crescătoare) de vechimea lui: cu cît un program a fost folosit mai
+mult şi peticit mai tare, cu atît este mai sigur.  Din această
+cauză marile bănci rulează în continuare software scris prin anii
+'70, scris în Cobol: riscul unei pierderi este prea mare pentru a
+încerca o altă soluţie.
+
+<P>
+
+<H1><A NAME="SECTION03000000000000000000">
+Free Software</A>
+</H1>
+
+<P>
+Noţiunea de free-software (sau open-source) este aparent paradoxală:
+dacă oricine poate lua un program şi-l poate multiplica, cum poate
+acel program să mai poarte valoare pentru cel care l-a creat?  Cum se
+pot face bani scriind program pe care apoi oricine le poate folosi?
+
+<P>
+Orice economist o să exclame: ``nu se poate''!  Absurd!  Aşa ceva nu
+există.
+
+<P>
+Bine, dar atunci cum explicăm cele 7 milioane de servere din lume pe
+care sunt instalate Linux?
+
+<P>
+Pentru a vedea geneza acestui fenomen misterios trebuie să facem un
+pic de istorie.
+
+<P>
+
+<H1><A NAME="SECTION03010000000000000000">
+Apariţia valorii în software</A>
+</H1>
+
+<P>
+La început a existat numai hardware.  La începutul anilor '60
+calculatoarele erau mari, puţine şi extrem de scumpe (milioane de
+dolari).  Timpul lor era foarte preţios, şi cei care ştiau să le
+``descînte'' erau puţini.
+
+<P>
+Cu vremea hardware-ul a devenit din ce în ce mai ieftin;
+``încrucişarea'' s-a produs undeva la începutul anilor '70, cînd
+oamenii au realizat că programele care se execută pe computere sunt
+cel puţin la fel de importante economic ca şi computerele însele.
+
+<P>
+Dacă programele au valoare economică atunci ele trebuie protejate,
+nu?  Cum?  Făcîndu-le secrete comerciale.  Practica ne-publicării
+surselor programelor şi interzicerii multiplicării datează din
+această perioadă.
+
+<P>
+Aparent modelul funcţionează de minune: companiile care scriu
+software fac o grămadă de bani din asta; programatorii sunt în mare
+cerere şi salariile lor sunt impresionante.  Costul de producţie al
+software-ului nu este deloc scăzut: randamentul unui programator este
+destul de mic.  Cea mai mare parte a efortului este cheltuită în
+<EM>întreţinerea</EM> şi <EM>depanarea</EM> programelor.  Microsoft are
+pentru fiecare programator doi indivizi care testează!  Ceea ce face
+software-ul profitabil este uşurinţa cu care este multiplicat.  Un
+program popular este scris o singură dată (şi întreţinut cu un
+efort continuu), dar este vîndut în milioane de copii.
+
+<P>
+O altă mare sursă de venit al companiilor de software este
+``customer support''.  Compania oferă o formă limitată de
+asistenţă tehnică utilizatorilor săi, răspunzînd la întrebări
+şi ajutîndu-i în anumite proceduri (service).  Compania nu promite,
+dar încearcă, să corecteze malfuncţiile programelor.
+
+<P>
+Deşi acest statut juridic/economic al software-ului funcţionează de
+minune, poate de fapt nu este cel mai potrivit.  Obiecţii pertinente
+se ivesc una cîte una.
+
+<P>
+
+<H1><A NAME="SECTION03020000000000000000">
+Contracurentul: Richard Stallman şi proiectul GNU</A>
+</H1>
+
+<P>
+Cea mai importantă figură a opoziţiei noţiunii de ``proprietary
+software'' (software secret, cu restricţii de publicare şi copiere)
+este cu certitudine Richard Stallman.  Dacă nu este cea mai
+importantă figură, Stallman este cu siguranţă cea mai pitorescă.
+
+<P>
+Stallman este un ``hacker'' cu o experienţă impresionantă: a
+început să programeze încă din anii '60.  Stallman a lucrat o
+vreme îndelungată la Universitatea MIT (Massachusetts Institute of
+Technology<A NAME="tex2html2"
+  HREF="#foot92"><SUP>2</SUP></A>) ca programator de sistem
+în laboratorul de Inteligenţă Artificială.  După aceea şi-a dat
+demisia ca să se consacre în întregime proiectului său GNU despre
+care o să vorbesc ceva mai jos.
+
+<P>
+Cea mai răspîndită creaţie a lui este editorul de texte Emacs, pe care
+l-a conceput cît timp era la MIT.  Astăzi Emacs este probabil unealta
+preferată pentru interacţiunea cu calculatorul a majorităţii
+profesioniştilor din calculatoare din lume.  (Un <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#emacs">articol
+despre Emacs</a> am publicat în PC Report din mai 1997; articolul este
+disponibil din pagina mea de web.)
+
+<P>
+De asemenea Stallman este arhitectul şi realizatorul excelentului
+compilator de C numit GNU C Compiler, pe scurt GCC.  Este
+singurul compilator care, ca şi Emacs dealtfel, funcţionează pe
+cîteva zeci de maşini diferite arhitectural (de la PC-uri şi
+staţii de lucru la supercalculatoare).
+
+<P>
+Stallman este însă extraordinar prin proiectul său GNU, şi prin
+fundaţia pe care a creat-o pentru a-l duce la capăt.  Despre
+proiectul GNU puteţi afla o sumedenie de lucruri din pagina sa de web
+de la <a href="http://www.gnu.org">http://www.gnu.org</a>.
+
+<P>
+Stallman este cel puţin un excentric.  Cei care l-au văzut cu ocazia
+vizitei sale la Bucureşti în 1994, la conferinţa ROSE, nu-l vor
+uita prea curînd.  Despre raţiunile sale şi concepţia sa despre
+programare puteţi afla din paginile mai sus citate; excelent
+reprezentativ este textul unei conferinţe ţinute în 1986 la
+Institutul Regal de Tehnologie din Stockholm.
+
+<P>
+Pe scurt, Stallman crede că a face software-ul secret şi a împiedica
+diseminarea sa este imoral, pentru că privează societatea de accesul
+la valoare.  Mai mult decît atît, acest lucru înseamnă risipă: pentru
+că nu poţi copia (şi îmbunătăţi) software, trebuie să-l rescrii.  Asta
+se vede destul de clar în sumedenia de sisteme de tip Unix care
+există: fiecare firmă mare a dezvoltat propria ei versiune, uşor
+incompatibilă cu toate celelalte.  (Un <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#unix-2">articol
+despre istoria sistemului de operare Unix</a> şi variantele sale am
+publicat în BYTE din august 1996.)
+
+<P>
+Stallman spunea:
+
+<P>
+<BLOCKQUOTE>
+Pentru ca astfel de lucruri să nu se mai poată întîmpla m-am
+hotărît să scriu un set complet de software de sistem, pe care să
+îl pot da oricui îl vrea să îl folosească.  [Pachetul ăsta de
+programe poartă denumirea de GNU].  Odată ce GNU va fi scris,
+oricine va fi capabil să obţină software de sistem de calitate,
+fără a face vreun efort.
+
+</BLOCKQUOTE>
+
+<P>
+Nu-i aşa că sună nebuneşte?
+
+<P>
+Proiectul GNU a debutat în 1984.  GNU urma să fie un set complet de
+programe necesare pentru a utiliza un sistem de tip Unix, plus un
+nucleu de sistem de operare stil Unix.  Iar totul urma să fie ``free
+software'', spre deosebire de Unix, care este o marcă comercială.
+
+<P>
+Numele este o abreviere recursivă, (Stallman este un mare programator
+în Lisp): GNU = Gnu is Not Unix (G este prescurtare la rîndul său
+de la Gnu).
+
+<P>
+Programele din sistemul GNU însă încearcă să remedieze unele din
+deficienţele tradiţionale de implementare a UNIX-ului (în
+multiplele variante ale diferitelor firme), păstrînd multele sale
+calităţi.  
+
+<P>
+Stallman a înfiinţat o societate non-profit, Free Software
+Foundation (FSF), pentru a duce la bun sfîrşit proiectul GNU.
+
+<P>
+Primele programe scrise de Stallman pentru proiectul GNU au fost GCC,
+o implementare complet ``free'' a editorului Emacs, şi un generator
+de parsere Bison.  În timp proiectul GNU a dezvoltat majoritatea
+utilitarelor necesare oricărui sistem Unix tradiţional.  Şi
+într-adevăr, acestea sunt excelent implementate, cu mai puţine
+bug-uri şi eficienţă mai mare decît cele pe care se dau bani grei.
+Toate aceste programe pot fi copiate gratuit prin Internet sau pot fi
+cumpărate de la FSF.
+
+<P>
+În 1996 a fost lansată şi prima versiune a nucleului sistemului de
+operare GNU, numit ``The Herd'' (ciurda).  Din raţiuni pe care le vom
+evidenţia mai jos (recte popularitatea Linux), The Herd nu este
+încă foarte populară.
+
+<P>
+FSF angajează programatori care scriu pentru proiectul GNU.  Cele mai
+multe din programele GNU însă sunt rodul muncii unor entuziaşti din
+întreaga lume, care scriu programe pe care le pun la dispoziţia
+fundaţiei, sau care contribuie cu optimizări sau indicaţii de
+bug-uri la programele existente.  Fundaţia scrie şi documentaţii
+şi manuale pentru produsele ei, pe care le tipăreşte şi le vinde.
+Periodic face CD-ROM-uri pe care ultimele versiuni ale programelor GNU
+se află în totalitate, şi care pot fi cumpărate la preţuri
+derizorii.  Fundaţia mai trimite cui vrea contra cost benzi cu
+programe.  Acestea sunt în principiu mijloacele ei de subzistenţă.
+
+<P>
+Stallman s-a aşteptat şi la suport financiar din partea unor
+corporaţii mari care dezvoltă soft pentru Unix:
+
+<P>
+<BLOCKQUOTE>
+Mă aşteptam ca toţi să mă sponzorizeze pentru ca eu să le fac
+soft de excelentă calitate pe care să-l folosească toţi, iar ei
+să se poată ocupa de lucruri mai serioase, decît să refacă
+fiecare acelaşi lucru în felul lui.
+
+</BLOCKQUOTE>
+
+<P>
+În viziunea lui Stallman, cea mai importantă calitate a
+software-ului este că poate fi citit de oricine şi îmbunătăţit
+de oricine.  Or asta se poate numai dacă software-ul este ``free''.
+
+<P>
+Free înseamnă două lucruri esenţiale independente:
+
+<P>
+
+<UL>
+<LI>Programele pot fi copiate de către oricine şi distribuite;
+</LI>
+<LI>Programele pot fi citite de către oricine şi modificate.
+</LI>
+</UL>
+
+<P>
+Desigur, acestea sunt atribute adevărate ale oricărei creaţii care
+este în domeniul public: oricine o poate copia, modifica şi
+distribui.  Dar asta nu e suficient pentru a o face utilă: ce folos
+dacă cineva ia un program public, îl îmbunătăţeşte şi apoi îl
+face secret?
+
+<P>
+Acesta este pericolul de care trebuie să ne apărăm.  Dar cum?
+
+<P>
+
+<H2><A NAME="SECTION03021000000000000000">
+GNU Public License (GPL)</A>
+</H2>
+
+<P>
+Pentru a proteja soft-ul pe care FSF îl scrie, acesta nu este pus pur
+şi simplu în domeniul public, unde oricine şi l-ar putea însuşi
+pentru scopuri personale.  Soft-ul GNU este protejat de exact mijlocul
+pe care marile firme îl folosesc pentru a-şi apăra produsele
+împotriva copierii: copyright-ul şi licenţele.
+
+<P>
+Stallman e elaborat celebra GPL, ``General Public License'', care se
+aplică programelor GNU.  Programele GNU sunt deci protejate de
+copyright, dar licenţa GPL dă următoarele drepturi utilizatorilor:
+
+<P>
+
+<UL>
+<LI>Oricine are voie să folosească, copieze, modifice şi
+distribuie (eventual pentru bani) soft GNU;
+
+<P>
+</LI>
+<LI>Oricine construieşte programe folosind bucăţi din programe
+GNU <EM>trebuie</EM> să ofere aceleaşi drepturi tuturor celorlalţi
+(copiere, distribuire, etc.).
+</LI>
+</UL>
+
+<P>
+Pentru Stallman, a face cunoştinţele ``secrete'' este profund
+imoral.  El observa, corect, că existentă suportului tehnic şi a
+garanţiilor nu are absolut nici o legătură cu proprietatea
+software-ului de a fi secret sau ``free'':
+
+<P>
+<BLOCKQUOTE>
+Utilizatorii cumpără software de firmă pentru că li se spune că
+vor căpăta asistenţă tehnică şi garanţii.  Este desigur un
+lucru foarte util, dar dacă se vor gîndi ce legătura poate să
+aibă asta cu vînzarea de soft, sau cu interdicţia de a-l studia,
+vor realiza că nu e prea clar.  Nu există nici o garanţie ca
+soft-ul de firmă va primi suport tehnic bun.
+</BLOCKQUOTE>
+<P>
+<BLOCKQUOTE>[...] În realitate lumea crede că GNU Emacs este mai bine
+întreţinut decît variante comerciale ale programului.  Unul dintre
+motive este eu că sunt un hacker mai bun decît cei care scriu
+celelalte Emacs-uri, dar celălalt motiv este că toată lumea are
+sursele şi sunt aşa de mulţi interesaţi să-l folosească la tot
+felul de lucruri încît de fapt nu trebuie să fie întreţinut de
+mine.
+
+</BLOCKQUOTE>
+
+<P>
+Acesta este un lucru deosebit de interesant, asupra căruia o să
+revenim mai jos, în secţiunea consacrată modelului ``open-source''.
+
+<P>
+
+<H1><A NAME="SECTION03030000000000000000">
+Linux</A>
+</H1>
+
+<P>
+
+<H2><A NAME="SECTION03031000000000000000">
+Geneza</A>
+</H2>
+
+<P>
+În 1987 un profesor de la Universitatea Vrije din Amsterdam, pe nume
+Andrew S. Tanenbaum,<A NAME="tex2html3"
+  HREF="#foot108"><SUP>3</SUP></A> scrisese o carte excelentă despre arhitectura
+sistemelor de operare, care era însoţită de codul unui nucleu
+complet, numit Minix.  Minix arăta pentru un utilizator ca un Unix
+foarte mic (de aici şi numele), dar era construit folosind o
+arhitectură complet deosebită de cea a Unix-ului tradiţional (Minix
+era un micro-nucleu).
+
+<P>
+Minix era distribuit în categoria ``semi-free'' de mai sus, adică
+fără restricţii pentru cei care-l foloseau non-profit.  Codul era
+folosit pentru instruirea în sisteme de operare în universităţile
+din întreaga lume.  Grupurile de discuţii pe Internet (news) despre
+arhitectura nucleului, unde lumea sugera variante şi
+îmbunătăţiri, se bucurau de un interes crescînd.
+
+<P>
+În 1991 proiectul GNU pornise deja de 6 ani şi dezvoltase toate
+utilitarele necesare, mai puţin nucleul unui sistem de operare.
+Utilitarele GNU erau folosite de multă lume, dar nimeni nu avea
+încă la dispoziţie ceea ce Stallman îşi dorise: un sistem complet
+free, de la un cap la altul.
+
+<P>
+Sudura s-a produs datorită unui student finlandez de la universitatea
+din Helsinki.  Linus Torvalds a adăugat iniţial un modul de memorie
+virtuală la Minix şi şi-a făcut publică creaţia.  Foarte mulţi
+entuziaşti au început să folosească îmbunătăţirile aduse de
+Linus.
+
+<P>
+Linus a început încetul cu încetul şi a rescris feluritele părţi
+din Minix folosind o arhitectură monolitică<A NAME="tex2html4"
+  HREF="#foot109"><SUP>4</SUP></A>.  Noul sistem era dezvoltat iniţial
+folosind Minix (compilatoarele, utilitarele pentru scrierea sistemului
+se executau pe Minix).  A urmat o ceartă publică (pe Internet)
+între Linus şi Tanenbaum, care era nemulţumit de evoluţia
+arhitecturii nucleului său.  Tanenbaum este un cercetător renumit
+în sistemele de operare distribuite, şi crede că arhitectura
+micro-nucleu este mai potrivită pentru evoluţia sistemelor viitoare.
+Linus pe de altă parte s-a bazat foarte mult pe arhitectura Unix-ului
+tradiţional (despre care s-a publicat foarte mult, şi care este
+relativ bine înţeleasă; trebuie reţinut că design-ul Unix-ului
+tradiţional nu este patentat; codul său este sub copyright, dar asta
+nu înseamnă deloc că altcineva nu poate scrie noi sisteme care să
+arate ca Unix).  În momente de înfierbîntare Tanenbaum a declarat
+că Linus ar pica dacă ar fi student la cursul său de sisteme de
+operare.
+
+<P>
+Linus atunci şi-a luat jucăriile şi a plecat, redenumind propriul
+lui nucleu Linux<A NAME="tex2html5"
+  HREF="#foot110"><SUP>5</SUP></A>.  După o vreme Linux
+avea un nucleu suficient de complet încît să nu mai fie nevoie de
+mediul de dezvoltare oferit de Minix.  În locul utilitarelor de pe
+Minix, Linus a ales să folosească sculele de dezvoltare de software
+de la GNU.  De asemenea, Linus a pus codul Linux sub protecţia
+licenţei GPL, făcînd codul ``free''.
+
+<P>
+Aşa a început ceea ce ar putea fi ``noua revoluţie în
+software''...
+
+<P>
+
+<H2><A NAME="SECTION03032000000000000000">
+Explozia</A>
+</H2>
+
+<P>
+Linux a început să strîngă tot mai mult aderenţi, în dauna
+Minix-ului.  Unul dintre motive era entuziasmul cu care Linus accepta
+modificările sugerate de alţii şi le introducea în codul lui
+(Tanenbaum era mult mai conservator).  Un alt motiv era faptul că
+Linus a implementat anumite trăsături foarte utile unui sistem de
+operare, cum ar fi memoria virtuală.  (Tanenbaum a spus că
+aşteaptă vremea cînd RAM-ul o să fie atît de ieftin încît nu va
+mai fi nevoie de memorie virtuală.)
+
+<P>
+Cert este că evoluţia numărului de utilizatori a fost explozivă,
+exponenţială.  În 1995 cînd Linus a fost la Bucureşti la
+conferinţa ROSE a prezentat un grafic care arăta cam aşa:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">An</TD>
+<TD ALIGN="RIGHT">Număr de utilizatori Linux</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1991</TD>
+<TD ALIGN="RIGHT">50</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1992</TD>
+<TD ALIGN="RIGHT">500</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1993</TD>
+<TD ALIGN="RIGHT">5.000</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1994</TD>
+<TD ALIGN="RIGHT">50.000</TD>
+</TR>
+<TR><TD ALIGN="LEFT">1995</TD>
+<TD ALIGN="RIGHT">500.000</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+De atunci încoace numărul de utilizatori a continuat să crească
+spectaculos.  Cifra actuală (1998) este estimată undeva între 4
+milioane şi 24 de milioane, dar este imposibil de afirmat cu precizie
+cîţi.  Unul dintre motive este că Linux este distribuit ``free'',
+şi oricine poate să-l citească de pe Internet, fără a da
+socoteală cuiva.  Nu se pot deci contabiliza încasările pentru a
+afla popularitatea sa.
+
+<P>
+Sistemul a crescut din ce în ce mai mult, şi a căpătat din ce în
+ce mai multă funcţionalitate.  Modelul de dezvoltare este în
+esenţă acelaşi ca cel din urmă cu 7 ani: Linus menţine un control
+relativ strîns al arhitecturii interne a sistemului şi proiectează
+interfeţele.  Contribuţiile unor programatori din întreaga lume
+sunt înglobate în nucleu şi rapoartele despre erori ale celor care
+testează sunt imediat luate în considerare.
+
+<P>
+În clipa asta Linux este pe locul doi în lume ca număr de sisteme
+de operare multi-utilizator instalate (nu socotim Windows95, DOS şi
+alte sisteme mono-utilizator), după Windows NT al lui
+Microsoft<A NAME="tex2html6"
+  HREF="#foot117"><SUP>6</SUP></A>.  Linux a
+bătut toate Unix-urile comerciale ca popularitate (care există de 25
+de ani)!  E natural la preţul pe care îl are...o distribuţie
+Unix de firmă costă între cîteva sute şi cîteva zeci de mii de
+dolari, depinzînd de utilitarele livrate.
+
+<P>
+Linux mai deţine şi alte recorduri interesante: este cel mai
+portabil nucleu de tip Unix, care rulează nu numai pe PC-uri cu
+procesoare din familia Intel Pentium, ci şi pe calculatoare 
+Sun cu procesoare SPARC, calculatoare Digital cu procesoare Alpha,
+pe procesoare PowerPC de la IBM şi Motorola, Motorola m68k, MIPS de
+la Silicon Graphics, ARM de la Intel (fost la Digital), etc.
+
+<P>
+Linux a devenit un sistem de operare redutabil, înzestrat cu toată
+funcţionalitatea necesară dezvoltării de software, rulării de
+programe pentru servicii Internet (servere Web, de poştă
+electronică, etc.), cercetare, etc.  Nucleul este în întregime
+supus licenţei GPL, ca şi majoritatea utilitarelor sistemului.
+
+<P>
+Pe de altă parte din ce în ce mai multe firme încep să dezvolte
+software care merge (şi) pe Linux; grupul de discuţii
+<TT>comp.os.linux.announce</TT> este foarte populat cu noi anunţuri
+de software, cel mai adesea software free.  Anumite programe
+esenţiale folosite nu sunt neapărat supuse licenţei GPL, cum ar fi
+sistemul grafic de ferestre X Windows.  Acesta este ``aproape free'':
+cei care l-au scris îl oferă gratuit în surse, însă oferă
+posibilitatea dezvoltării de versiuni ``proprietary'' (şi există
+astfel de versiuni).
+
+<P>
+Din ce în ce mai multe companii adoptă Linux pentru a rula servicii
+care au nevoie de fiabilitate (Windows NT este din punctul ăsta de
+vedere mult inferior).  Soluţia server-ului de Web Apache peste un
+nucleu Linux este ideală din punctul de vedere al unui administrator
+de sistem.  Multă publicitate s-a făcut în jurul folosirii
+sistemului Linux de către compania Digital Domain pentru a realiza
+efectele speciale din filmul Titanic.  Avînd de ales între Windows
+NT, IRIX (de la Silicon Graphics) şi Linux a fost preferat cel din
+urmă.  NASA plăteşte programatori care dezvoltă software pentru a
+transforma Linux într-un mediu pentru programare distribuită
+(proiectul Beowulf).  Poşta Americană foloseşte 900 de staţii cu
+Linux pentru a face recunoaşterea scrisului de pe plicuri şi
+cartarea automată.  Şi exemplele de aplicaţii ``serioase'' ar putea
+continua.  Universităţile găsesc Linux un sistem din ce în ce mai
+tentant: e ieftin, e public, e bine întreţinut, este răspîndit şi
+are o bază largă de aplicaţii.  Plus faptul că sursele sunt
+complet disponibile îl face un vehicul ideal pentru cercetare: cînd
+faci cercetare pe nuclee obţinute semnînd NDA (non-disclosure
+agreements) anumite rezultate nu pot fi publicate.
+
+<P>
+
+<H1><A NAME="SECTION03040000000000000000">
+Modelul Open-Source</A>
+</H1>
+
+<P>
+Aşa ceva este imposibil, ştie toată lumea.  Microsoft este o firmă
+cu un buget uriaş, mii de programatori şi testeri, care investeşte
+enorm în dezvoltarea de software şi cercetare, cu o experienţă
+remarcabilă în domeniu, care angajează oameni plătiţi full-time
+pentru a scrie programe, şi nu a fost în stare să producă un
+sistem de aceeaşi calitate.  De unde atunci valoarea din Linux?  Cine
+produce valoare dacă recompensa este aparent imposibilă datorită
+modelului de distribuţie liber, şi dacă restricţiile la copiere nu
+împiedică ``furturile''?
+
+<P>
+Sau poate software-ul are o natură complet diferită, şi criteriile
+despre conservarea valorii din alte domenii nu i se aplică?
+
+<P>
+De fapt Linux nu este decît exemplul cel mai evident dintr-o suită
+întreagă de alte exemple.  Modelul acesta de dezvoltare este mai
+răspîndit decît pare.
+
+<P>
+Unul dintre dezvoltatorii de software ``free'', Eric Raymond a
+încercat să explice modelul de supravieţuire şi înflorire al
+Linux-ului dintr-o perspectivă cît mai largă: economică, tehnică,
+socială.  Un articol de-al său pe această temă a devenit faimos:
+``Catedrala şi Bazarul''.  Dl. Raymond contrapune în acest text (<a
+href="http://www.earthspace.net/~esr/writings/cathedral-bazaar">http://www.earthspace.net/~esr/writings/cathedral-bazaar</a>)
+modelul de dezvoltare ``tradiţional'' (catedrala) cu modelul Linux
+(bazarul) şi încearcă să explice meritele celui din urmă.  Acest
+articol a fost foarte important pentru a conceptualiza fenomenul.
+
+<P>
+Pe data de 6 martie 1998 s-au întîlnit în Silicon Valley cîţiva dintre
+cei mai importanţi actori din arena software-ului ``free''.  S-a putut
+observa cu această ocazie că o mare parte din software-ul care
+constituie <EM>infrastructura</EM> Internet-ului este de fapt free!
+(Conferinţa de presă era disponibilă la <a
+href="http://www.news.com/News/Item/0,4,20913,00.html?st.ne.fd.mdh">http://www.news.com/News/Item/0,4,20913,00.html?st.ne.fd.mdh</a>.)
+Iată cei mai importanţi participanţi:
+
+<P>
+<DL>
+<DT><STRONG>Linus Torvalds,</STRONG></DT>
+<DD>creatorul <B>Linux</B>;
+</DD>
+<DT><STRONG>Larry Wall,</STRONG></DT>
+<DD>creatorul limbajului <B>Perl</B>, folosit în
+majoritatea serverelor de Web din lume;
+</DD>
+<DT><STRONG>Brian Behlendorf,</STRONG></DT>
+<DD>fondator al grupului <B>Apache</B>, al căror
+server web free rulează pe mai mult din 50% din serverele din
+Internet;
+</DD>
+<DT><STRONG>Eric Allman,</STRONG></DT>
+<DD>creatorul programului <B>sendmail</B> care asigură
+livrarea poştei electronice în mai mult de 70% din Internet;
+</DD>
+<DT><STRONG>Paul Vixie,</STRONG></DT>
+<DD>creator al programului <B>bind</B> (Berkeley
+Internet Name Daemon), piesa centrală din managementul numelor din
+Internet;
+</DD>
+<DT><STRONG>Phil Zimmermann,</STRONG></DT>
+<DD>creatorul pachetului de criptografie Pretty
+Good Privacy <B>PGP</B>;
+</DD>
+<DT><STRONG>John Gilmore,</STRONG></DT>
+<DD>întemeietor al firmei <B>Cygnus Solutions</B>,
+prima companie care trăieşte exclusiv din întreţinerea şi
+vînzarea de software ``free'';
+</DD>
+<DT><STRONG>Guido van Rossum,</STRONG></DT>
+<DD>creator al limbajului <B>Python</B>;
+</DD>
+<DT><STRONG>John Ousterhout,</STRONG></DT>
+<DD>creator al interpretorului <B>Tcl</B> folosit
+pentru dezvoltarea rapidă de interfeţe cu utilizatorii şi generarea
+de pagini de web;
+</DD>
+<DT><STRONG>Tim O'Reilly,</STRONG></DT>
+<DD>patron la editura <B>O'Reilly &amp; Associates</B>,
+care nu scrie software free, dar face bani grei publicînd cărţi
+despre software free;
+</DD>
+<DT><STRONG>Tom Paquin şi Jamie Zawinski,</STRONG></DT>
+<DD>reprezentînd site-ul <a
+href="http://www.mozilla.org">mozilla.org</a> al companiei
+<B>Netscape</B><A NAME="tex2html7" HREF="#foot136"><SUP>7</SUP></A>.
+</DD>
+</DL>
+
+<P>
+Unul dintre rezultatele întîlnirii a fost propunerea de a schimba
+numele ambiguu de ``free'' software (care poate sugera ``gratuit'',
+ceea ce am văzut că nu e adevărat) cu ``open-source''.  Eric Raymond a
+înregistrat marca comercială <B>Opensource</B> şi a înfiinţat un
+``site'' web consacrat acestui subiect; îl puteţi vizita la <a
+href="http://www.opensource.org">http://www.opensource.org</a>.  Acest
+nume a fost ales pentru că cea mai importantă caracteristică a
+software-ului de acest gen este că trebuie publicat în ``surse'' (în
+limbajul în care a fost scris).
+
+<P>
+În acest ``site'' Eric Raymond expune o serie de motive foarte
+convingătoare care încearcă să explice succesul modelului de
+dezvoltare open-source.  Argumentele încearcă să fie justificate
+din cît mai multe puncte de vedere (în contrast cu viziunea lui
+Stallman, pentru care prerogativele morale erau dominante: ``nu e
+cinstit să ascunzi software'', spunea el).
+
+<P>
+O să trec în revistă argumentaţia sa pe scurt; pentru detalii
+parcurgeţi paginile de web indicate.
+
+<P>
+
+<H2><A NAME="SECTION03041000000000000000">
+Meritele ``open-software''</A>
+</H2>
+
+<P>
+Iată o serie de motive pentru care software-ul poate fi dezvoltat
+(mai bine) în stil ``liber'' decît ca secret comercial.  Care dintre
+ingrediente este majoritar, rămîne de văzut.
+
+<P>
+
+<OL>
+<LI>``Dacă ai destui ochi, orice ``bug'' devine evident''.  Altă
+formulare a acestui dicton este ``depanarea se poate face în
+paralel''.  Cu cît mai mulţi inşi utilizează un program cu atît e
+mai simplu de depistat ce nu merge bine.  Atunci cînd utilizatorii au
+la dispoziţie sursele programului pot investiga cauzele reale ale
+erorii, şi adesea le pot înlătura fără intervenţia autorului
+programului. 
+
+<P>
+</LI>
+<LI>Linux a introdus un model de dezvoltare software cu reacţie
+extrem de rapidă; Linus pune în circulaţie o versiune nouă de
+nucleu odată la 2-3 zile (cîteodată apar două nuclee pe zi!).  În
+felul acesta reparaţiile şi sugestiile sunt foarte rapid
+implementate.
+
+<P>
+</LI>
+<LI>Fiabilitatea programelor free este mult mai bună decît a celor
+comerciale, datorită faptului că practic oricine poate căuta şi
+depana bug-uri.  Două studii prezentat la conferinţa ``Usenix'' a
+dezvoltatorilor de Unix din 1990, respectiv 1995<A NAME="tex2html8"
+  HREF="#foot142"><SUP>8</SUP></A>, comparau
+cantitativ robusteţea utilitarelor din mai multe sisteme de operare
+comerciale, a celor produse de GNU şi a celor folosite cu Linux (cele
+din urmă se suprapun).  Studiile observa două lucruri oarecum
+surprinzătoare:
+
+<UL>
+<LI>Robusteţea programelor ``free'' era mult mai mare: cînd erau
+``stresate'' cu date de intrare incorecte, în medie 9% din programele
+de pe Linux şi 6% din utilitarele GNU manifestau erori.  Sistemele
+Unix comerciale se plasau între 12% (IRIX) 'si 43% (NeXT)!
+
+<P>
+</LI>
+<LI>Anumite bug-uri erau prezente atît în versiunile din 1990 cît
+şi din 1995 ale programelor comerciale, în pofida raportării lor
+(publice!) de către primul studiu!
+</LI>
+</UL>
+
+<P>
+Asta demonstrează că firmele nu sunt de fapt cu adevărat capabile
+sau interesate să înglobeze reparaţiile sugerate de utilizatori,
+lucru mai puţin adevărat în cazul programelor ``free''.  Atunci
+cînd codul este secret <EM>numai</EM> firma care îl posedă îl poate
+repară; un program public poate fi reparat de către oricine se
+pricepe.
+
+<P>
+</LI>
+<LI>Contrar aparenţelor, se pot cîştiga bani din dezvoltarea de
+software ``open''.  Există mai multe companii de succes care
+manipulează numai software ``free''; pe piaţa Linux una dintre cele
+mai celebre este RedHat software, care vinde CD-ROM-uri, documentaţie
+şi asistenţă tehnică cu o cantitate mare de software pentru Linux.
+Deşi produsele software RedHat pot fi copiate direct de pe reţea de
+către oricine, gratuit, compania a vîndut peste 400.000 de
+CD-ROM-uri cu Linux, pentru mai multe platforme.
+
+<P>
+</LI>
+<LI>O observaţie foarte interesantă se impune despre natura
+creaţiei de software: mai mult (cel puţin pe scara temporală)
+decît activitate creatoare, scrierea de software este întreţinere
+şi depanare!  Cu alte cuvinte, a livra software de calitate seamănă
+mai mult cu prestarea de servicii pentru clientul tău.  Dar aceste
+din urmă activităţi sunt cu siguranţă ajutate de prezenţa
+codului sursă şi de o bază largă de utilizatori (care sunt atraşi
+de disponibilitatea software-ului).
+
+<P>
+</LI>
+<LI>Rata de inovare este mult sporită de prezenţa software-ului
+free; o soluţie odată descoperită este disponibilă tuturor, şi pe
+baza ei se poate construi o alta şi mai eficace.
+
+<P>
+</LI>
+<LI>O motivaţie de natură socială: scriind software ``free''
+poţi deveni faimos.  Cîtă lume ştie numele arhitectului şef al
+sistemului de operare NT (David Cutler)?  Şi cîtă lume a auzit de
+Linus?  O companie mare ``înghite'' individualităţile angajaţilor
+ei.
+
+<P>
+</LI>
+</OL>
+
+<P>
+Ce ne rezervă viitorul în privinţa modelelor de dezvoltare software
+este foarte greu de prevăzut.  Tot ce putem face este să aşteptăm
+şi să vedem.  
+
+<P>
+Ah, şi să contribuim la îmbunătăţirea unor programe ``free'' pe
+care le folosim!
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot153">... software</A><A NAME="foot153"
+ HREF="open-html.html#tex2html1"><SUP>1</SUP></A> <DD>Descrierile de
+ aici sunt adaptate din pagina de web a proiectului GNU, despre care
+ voi vorbi mai jos: <a
+ href="http://www.gnu.org">http://www.gnu.org</a>; reproducerea este
+ permisă de copyright-ul din acea pagină.
+
+<DT><A NAME="foot92">...
+Technology</A><A NAME="foot92"
+ HREF="open-html.html#tex2html2"><SUP>2</SUP></A>
+<DD>MIT este considerată liderul universităţilor
+americane în cercetare în calculatoare.
+
+<DT><A NAME="foot108">... Tanenbaum,</A><A NAME="foot108"
+ HREF="open-html.html#tex2html3"><SUP>3</SUP></A>
+<DD>Da, este acelaşi Tanenbaum care a scris
+cartea de Reţele de Calculatoare publicată de Editura Agora în
+limba română.
+
+<DT><A NAME="foot109">... a</A><A NAME="foot109"
+HREF="open-html.html#tex2html4"><SUP>4</SUP></A> <DD>Am publicat un
+întreg <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#micron">articol
+despre lupta dintre micronuclee şi monoliţi</a> într-un PC Report din
+septembrie 1997.
+
+<DT><A NAME="foot110">... Linux</A><A NAME="foot110"
+ HREF="open-html.html#tex2html5"><SUP>5</SUP></A>
+<DD>Cronologia mea este puţin imprecisă
+privitor la aceste evenimente ``primordiale''; ele s-au petrecut cu
+siguranţă, dar nu sunt sigur de ordinea lor.
+
+<DT><A NAME="foot117">...
+Microsoft</A><A NAME="foot117"
+ HREF="open-html.html#tex2html6"><SUP>6</SUP></A>
+<DD>Cineva observa că cifrele lui Microsoft pentru NT
+includ toate PCurile care sunt vîndute cu NT, chiar dacă după aceea
+utilizatorii aleg să şteargă NT şi să pună Linux.
+
+<DT><A NAME="foot136">...<B>Netscape</B></A><A NAME="foot136"
+ HREF="open-html.html#tex2html7"><SUP>7</SUP></A>
+<DD>Ca urmare a
+lobby-ului dl-ui Raymond în sprijinul software-ului ``free'', compania
+Netscape a decis să facă publice sursele celebrului lor browser de
+web, devenind astfel cel mai important (din punct de vedere economic)
+susţinător al modelului open-source.
+
+<DT><A NAME="foot142">... 1995</A><A NAME="foot142"
+ HREF="open-html.html#tex2html8"><SUP>8</SUP></A>
+<DD>Studiul din
+1995 este disponibil din pagina de web de la GNU.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

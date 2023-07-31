@@ -1,0 +1,1869 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Algoritmi</TITLE>
+<META NAME="description" CONTENT="Algoritmi">
+<META NAME="keywords" CONTENT="algoritmi-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+<body>
+
+<P>
+<H1 ALIGN="CENTER">Algoritmi</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- mihaib+@cs.cmu.edu, <TT>http://www.cs.cmu.edu/~mihaib/</TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>1 iunie 1997</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>Noi direcţii în cercetări legate de algoritmi
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>Cunoştinţe elementare despre
+algoritmi, analiză matematică elementară, teoria grafurilor
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>algoritm, invariant, complexitate, aproximaţie,
+aleator, on-line.
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html30"
+  HREF="algoritmi-html.html">Algoritmi; complexitate</A>
+<UL>
+<LI><A NAME="tex2html31"
+  HREF="#SECTION00021000000000000000">Limbajul de descriere</A>
+<LI><A NAME="tex2html32"
+  HREF="#SECTION00022000000000000000">Instanţe şi probleme</A>
+<LI><A NAME="tex2html33"
+  HREF="#SECTION00023000000000000000">Complexitate asimptotică</A>
+<LI><A NAME="tex2html34"
+  HREF="#SECTION00024000000000000000">Complexitatea revizuită</A>
+<LI><A NAME="tex2html35"
+  HREF="#SECTION00025000000000000000">Complexitatea unei probleme</A>
+<LI><A NAME="tex2html36"
+  HREF="#SECTION00026000000000000000">Clasa P; alte clase deterministe</A>
+<LI><A NAME="tex2html37"
+  HREF="#SECTION00027000000000000000">Clasa NP; algoritmi nedeterminişti; NP-completitudine</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html38"
+  HREF="#SECTION00030000000000000000">Algoritmi aproximativi</A>
+<UL>
+<LI><A NAME="tex2html39"
+  HREF="#SECTION00031000000000000000">Optim şi aproximare</A>
+<LI><A NAME="tex2html40"
+  HREF="#SECTION00032000000000000000">Problema rucsacului</A>
+<LI><A NAME="tex2html41"
+  HREF="#SECTION00033000000000000000">Performanţa absolută; un rezultat negativ</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html42"
+  HREF="#SECTION00040000000000000000">Algoritmi Monte Carlo</A>
+<LI><A NAME="tex2html43"
+  HREF="#SECTION00050000000000000000">Algoritmi Las Vegas</A>
+<UL>
+<LI><A NAME="tex2html44"
+  HREF="#SECTION00051000000000000000">Rădăcinile unui polinom</A>
+<LI><A NAME="tex2html45"
+  HREF="#SECTION00052000000000000000">Izomorfismul arborilor</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html46"
+  HREF="#SECTION00060000000000000000">Algoritmi on-line</A>
+<UL>
+<LI><A NAME="tex2html47"
+  HREF="#SECTION00061000000000000000">Problema schiorului</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html48"
+  HREF="#SECTION00070000000000000000">Rezumat</A>
+</UL>
+<!--End of Table of Contents-->
+<BR>
+<BR>
+
+<P>
+În ultimii ani cercetarea în domeniul algoritmilor a apucat pe
+nişte căi extrem de interesante şi foarte deosebite de cele
+tradiţionale.  Unele dintre aceste căi erau prefigurate de
+descoperiri făcute cu multă vreme în urmă, dar nu fuseseră urmate
+sistematic.  Altele sunt de dată recentă.  Metodele noi încearcă
+să depăşească criza în care intraseră metodele de rezolvare a
+anumitor clase de probleme (cum ar fi cele NP-complete), sau să facă
+faţă unor probleme de naturi diferită: informaţie incompletă (de
+exemplu cînd trebuie luate decizii fără a cunoaşte cererile
+ulterioare), informaţie distribuită (într-o reţea de
+calculatoare), informaţie ascunsă (în criptografie), etc.  Acest
+articol îşi propune să ilustreze foarte sumar cîteva dintre noile
+direcţii de acţiune.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Algoritmi; complexitate</A>
+</H1>
+
+<P>
+În această secţiune vom face o scurtă recapitulare a principalelor
+noţiuni care ne sunt necesare în înţelegerea celorlalte părţi.
+Acestea sunt bine-cunoscute din studiul algoritmilor clasici, astfel
+încît cititorul informat le poate sări fără pierderi de
+informaţie.  Tratarea va fi desigur sumară; cititorul ne-informat
+este invitat să parcurgă cărţi clasice în domeniu pentru o
+discuţie mai amplă.  Pe de altă parte aceste noţiuni nu sunt
+simple, şi foarte arar sunt tratate într-adevăr riguros.  Deşi
+expunerea de faţă va fi sumară, sper că nu va păcătui şi prin
+lipsă de corectitudine.
+
+<P>
+
+<H2><A NAME="SECTION00021000000000000000">
+Limbajul de descriere</A>
+</H2>
+
+<P>
+Un algoritm este o descriere a unui proces de calcul, care din
+nişte date iniţiale produce nişte rezultate interesante.
+Descrierea se face în termenii unor <EM>operaţii elementare</EM>
+(operaţii aritmetice, comparaţii, decizii, etc.).
+
+<P>
+Aparent modul în care rezolvăm problemele depinde de operaţiile pe
+care le avem la-ndemînă.  În cazul acesta se iveşte natural
+întrebarea dacă anumite operaţii nu sunt mai expresive decît
+altele.  Acest lucru este adevărat, după cum se vede şi din
+proliferarea limbajelor de programare; un astfel de limbaj defineşte
+practic o colecţie de operaţii elementare.
+
+<P>
+Se poate demonstra absolut riguros, că în oarecare măsură alegerea
+limbajului este irelevantă, pentru că, din momentul în care avem un
+limbaj suficient de expresiv, putem simula cu ajutorul lui operaţiile
+care se fac în toate celelalte limbaje cunoscute.  Astfel, toate
+formalismele care exprimă procese de calcul au fost demonstrate ca
+fiind echivalente ca putere expresivă (limbajele de programare,
+lambda calculul, funcţiile recursive, gramaticile de tip 0, maşinile
+Turing: toate aceste metode de calcul pînă la urmă sunt
+echivalente).
+
+<P>
+Din acest motiv ne putem fixa asupra unui limbaj anume, fără a
+pierde nimic din generalitatea expunerii.  Voi folosi pentru exemplele
+din acest articol un limbaj foarte simplu, asemănător cu limbajele
+obişnuite de programare.  Limbajul (``guarded command language'') a
+fost introdus de Dijkstra, şi se bazează pe folosirea <EM>gărzilor</EM>, care sunt nişte simple expresii booleene.  Gărzile sunt
+folosite pentru a descrie două construcţii: bucla <TT>do</TT> şi
+instrucţiunea <TT>if</TT>.  Astfel:
+
+<P>
+<PRE>
+do garda_1 -&gt; instructiune_1
+[] garda_2 -&gt; instructiune_2
+...
+[] garda_n -&gt; instructiune_n
+od
+</PRE>
+
+<P>
+funcţionează astfel: gărzile se evaluează; dacă:
+
+<P>
+
+<UL>
+<LI>toate sunt false, atunci ciclul <TT>do</TT> se termină.  
+</LI>
+<LI>dacă cel puţin o gardă este adevărată, atunci instrucţiunea
+corespunzătoare se execută, după care bucla se reia.  
+</LI>
+<LI>în caz că mai multe gărzi sunt adevărate, atunci una dintre
+instrucţiuni se va executa, dar care, nu se ştie.
+</LI>
+</UL>
+
+<P>
+Dacă programatorul vrea să fie sigur ce instrucţiune se execută,
+nu are decît să construiască programul în aşa fel încît două
+gărzi sa nu fie adevărate simultan.
+
+<P>
+Construcţia <TT>do</TT> este asemănătoare cu un <TT>while</TT> urmat de
+un <TT>switch</TT> din C, dar este mai uşor de folosit.  Oricum, este
+evident că este la fel de expresivă.
+
+<P>
+Folosim apoi construcţia <TT>if</TT> pe post de <TT>switch</TT> (<TT>case</TT>
+din Pascal):
+
+<P>
+<PRE>
+if garda_1 -&gt; instructiune_1
+[] garda_2 -&gt; instructiune_2
+...
+[] garda_n -&gt; instructiune_n
+fi
+</PRE>
+
+<P>
+Semnificaţia este foarte asemănătoare cu a lui <TT>do</TT>.  Astfel:
+
+<P>
+
+<UL>
+<LI>Dacă nici o gardă nu este adevărată programul se termină
+imediat (eroare);
+</LI>
+<LI>Dacă o gardă este adevărată instrucţiunea corespunzătoare
+se execută;
+</LI>
+<LI>Cînd mai multe gărzi sunt adevărate, una dintre
+instrucţiunile care le corespund este executată, dar nu se
+precizează care.
+</LI>
+</UL>
+
+<P>
+Mai folosim şi atribuirea paralelă:
+
+<P>
+<PRE>
+v_1, v_2, ..., v_n := e_1, e_2, ..., e_n
+</PRE>
+
+<P>
+Prin care expresiile din dreapta sunt toate evaluate şi atribuite
+simultan variabilelor din stînga.  Din cauza asta schimbul valorilor
+a două variabile se poate face cu 
+
+<P>
+<PRE>
+x, y := y, x
+</PRE>
+
+<P>
+care operaţie nu este echivalentă nici cu 
+
+<P>
+<PRE>
+x := y 
+y := x
+</PRE>
+
+<P>
+şi nici cu
+
+<P>
+<PRE>
+y := x
+x := y
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION00021100000000000000">
+Un exemplu</A>
+</H3>
+
+<P>
+Ca să ne familiarizăm cu limbajul, să scriem un mic algoritm, care,
+dîndu-se o valoare <TT>x</TT> şi un vector <TT>a</TT> cu <TT>n</TT> elemente,
+partiţionează vectorul în aşa fel încît valorile mai mici ca
+<TT>x</TT> ajung în stînga, cele mai mari în dreapta, iar toate cele
+egale cu <TT>x</TT> sunt contigue, undeva între celelalte două (acesta
+este un fragment din quicksort):
+
+<P>
+<PRE>
+l, r, m := 1, n, 1
+do a[m] = x -&gt; m := m+1
+[] a[m] &lt; x -&gt; a[l], a[m], l, m := a[m], a[l], l+1, m+1
+[] (a[m] &gt; x) and (m &lt; r) -&gt; a[r], a[m], r := a[m], a[r], r-1
+[] a[r] &gt; x -&gt; r := r-1
+od
+</PRE>
+
+<P>
+Acest algoritm operează asupra vectorului <TT>a</TT> menţinînd
+următorul <EM>invariant</EM> (o relaţie care este întotdeauna
+adevărată):
+
+<P>
+<PRE>
+|     &lt;     |        =      |         ?       |      &gt;    | a
+-----------------------------------------------------------
+ 1           ^               ^                 ^         n
+             l               m                 r
+</PRE>
+
+<P>
+Variabilele <TT>l</TT>, <TT>m</TT> şi <TT>r</TT> sunt indici în vectorul <TT>a</TT>.  Tot ce e la stînga lui <TT>l</TT> e mai mic decît <TT>x</TT>, tot ce
+este cuprins între <TT>l</TT> (inclusiv) şi <TT>m</TT> (exclusiv) este
+egal cu <TT>x</TT>, iar tot ce se află la dreapta lui <TT>r</TT> este mai
+mare ca <TT>x</TT>.  Elementele dintre <TT>m</TT> şi <TT>r</TT> sunt încă
+ne-explorate.  Această relaţie este adevărată atunci cînd
+algoritmul începe, din modul în care se iniţializează variabilele,
+şi rămîne adevărată la fiecare parcurgere a buclei <TT>do</TT>,
+după cum se poate verifica.  Bucla se termină cînd toate gărzile
+sunt adevărate, ceea ce se poate doar dacă <TT>m = r</TT>, deci dacă
+zona ne-explorată s-a redus la 0.
+
+<P>
+Limbajul acesta nu este foarte eficace pentru a scrie sisteme de
+operare, dar pentru a exprima algoritmi este foarte succint şi
+elegant.  Invariantul anterior se reduce, în cazul terminării, deci
+cînd <TT>m = r</TT> la
+
+<P>
+<PRE>
+|     &lt;          |        =         |      &gt;              | a
+-----------------------------------------------------------
+ 1                ^                  ^                   n
+                  l                  m=r
+</PRE>
+
+<P>
+ceea ce implică şi corectitudinea algoritmului, pentru că
+acesta este rezultatul pe care trebuia să-l obţinem.
+
+<P>
+Ca să demonstrăm ca algoritmul se termină întotdeauna, independent
+de valorile lui <TT>x</TT>, <TT>n</TT> şi <TT>a</TT>, observaţi că ori toate
+gărzile sunt false (şi atunci gata), ori cel puţin o gardă este
+adevărată, şi atunci fie <TT>m</TT> creşte, fie <TT>r</TT> scade.  Cum
+întotdeauna trebuie să avem <TT>m &lt; r</TT>, bucla se poate parcurge de
+cel mult <TT>n</TT> ori înainte de terminare.
+
+<P>
+Observaţi că acest algoritm <EM>este</EM> nedeterminist, pentru că
+dacă <TT>a[r] &gt; x</TT> poate face două alegeri.  Interesant este că
+rezultatul final nu depinde de care operaţie este făcută, pentru
+că ambele operaţii păstrează invariantul indicat şi reprezintă
+un progres.  De asemenea, observaţi că algoritmul rămîne corect
+dacă eliminăm ultima linie din <TT>do</TT>, şi în acest caz devine
+şi determinist!
+
+<P>
+
+<H2><A NAME="SECTION00022000000000000000">
+Instanţe şi probleme</A>
+</H2>
+
+<P>
+O distincţie foarte importantă pe care trebuie s-o facem este între
+<EM>clasa</EM> de probleme pe care o rezolvă un algoritm, şi <EM>instanţele</EM> specifice ale acelei probleme.  De exemplu, algoritmul
+descris mai sus rezolva <TT>toate</TT> problemele care conţin un vector
+de <TT>n</TT> elemente şi o valoare <TT>x</TT>, aducînd vectorul la forma
+indicată.  Cînd rulăm acest algoritm însă, o facem cu o
+instanţă particulară a problemei: de exemplu vectorul cu <TT>n=5</TT>
+elemente <TT>a = [1, 2, 5, 3, 2]</TT>, şi cu <TT>x = 2</TT>.
+
+<P>
+Distincţia este esenţială, mai ales cînd vrem să evaluăm
+eficacitatea unui algoritm.  Măsurarea performanţei unui algoritm cu
+ceasul în mînă nu este o operaţie foarte semnificativă, dacă
+algoritmul va rezolva şi alte instanţe ale problemei decît cea
+măsurată.  Dacă algoritmul de mai sus, implementat pe un anumit
+calculator, rezolvă instanţa indicată în 5 milisecunde, asta nu
+spune absolut nimic despre viteza lui pentru o cu totul altă
+instanţă.  Dacă vrem să evaluăm calitatea algoritmilor trebuie
+să găsim o metodă care nu depinde de instanţe, ci de problema
+însăşi.
+
+<P>
+
+<H2><A NAME="SECTION00023000000000000000">
+Complexitate asimptotică</A>
+</H2>
+
+<P>
+O întrebare pe care ne-o putem imediat pune este: cît de bun este un
+algoritm?  Nu se poate scrie un altul mai bun (care să rezolve
+aceeaşi problemă, fireşte)?  Pentru a putea răspunde, trebuie să
+cădem de acord asupra unei metode prin care măsurăm calităţile
+unui algoritm; putem măsura timpul lui de execuţie pentru o anumită
+problemă, sau cantitatea de memorie folosită, sau numărul de
+instrucţiuni care descriu programul, sau poate o altă dimensiune.
+
+<P>
+Dacă am doi algoritmi pentru aceeaşi problemă, atunci poate pentru
+anumite <EM>instanţe</EM> ale problemei unul este mai rapid, iar pentru
+alte instanţe celălalt.  Dintre algoritmii de sortare sortarea prin
+selecţie este preferată pentru vectori mici, iar quicksort sau
+heapsort pentru vectori mari.  Dacă valorile din vector sunt mici,
+atunci le bate pe amîndouă radixsort.  Şi atunci, cum comparăm doi
+algoritmi?
+
+<P>
+Există un răspuns relativ unanim acceptat la această întrebare,
+dar, înainte de a-l prezenta, trebuie încă odată să spunem că
+acesta este doar un punct de vedere în comparaţie, şi că în
+practică se pot prefera algoritmii şi din alte motive.  Cel mai
+interesant atribut al performanţei a fost judecat a fi <EM>timpul</EM>
+de execuţie al unui algoritm.  Timpul este apoi asimilat cu <EM>numărul de operaţii elementare</EM> pe care le efectuează un algoritm
+pentru a rezolva o problemă.
+
+<P>
+Din păcate, chiar pentru o instanţă fixată a unei probleme,
+numărarea instrucţiunilor executate este o sarcină foarte
+dificilă.  Din această cauză se socoteşte suficient a se măsura
+de cîte ori se repetă instrucţiunea care se execută <EM>cel mai
+mult</EM>.  Aceasta este instrucţiunea dominantă, şi se găseşte de
+regulă în interiorul tuturor buclelor.  Numărul de repetiţii al
+instrucţiunii dominante este o aproximaţie rezonabilă pentru
+numărul total de instrucţiuni executat de algoritm.  Oricum, din
+moment ce nici o instrucţiune nu se mai execută atît de mult, dacă
+înmulţim lungimea programului cu numărul de repetiţii al
+instrucţiunii dominante avem imediat o margine superioară pentru
+timpul de execuţie.  Vom vedea mai jos că folosirea pentru a indica
+complexitatea a ordinului de mărime a unei funcţii face neimportant
+un factor multiplicativ (anume lungimea programului).
+
+<P>
+Observaţi că pentru instanţe diferite ale unei aceleiaşi probleme,
+numărul de instrucţiuni executat este în general diferit.  De
+exemplu, acest scurt program, care caută un număr <TT>x</TT> în
+vectorul <TT>a</TT>:
+
+<P>
+<PRE>
+i = 1
+do (i &lt;= n) and not (a[i] = x) -&gt; i := i + 1
+od
+</PRE>
+
+<P>
+va avea un timp de execuţie egal cu 1 dacă <TT>x = a[1]</TT>
+sau cu <TT>n</TT> dacă <TT>x</TT> nici nu apare în vector.
+
+<P>
+Este de asemenea evident că timpul de execuţie depinde adesea de
+cantitatea datelor de intrare; în exemplele date mai sus el depinde
+de numărul de elemente din vectorul <TT>a</TT>.
+
+<P>
+Să recapitulăm deci: avem un algoritm care rezolvă o clasă de
+probleme.  Pentru fiecare instanţă, complexitatea algoritmului se
+măsoară în numărul de instrucţiuni executate pentru a rezolva
+acea instanţă.
+
+<P>
+Noi ne dorim însă o măsură <EM>unică, globală</EM> a unui algoritm,
+care să-l caracterizeze, şi nu complexitatea pentru fiecare
+instanţă.  Atunci procedăm astfel: alegem o valoare <EM>arbitrară</EM> care o numim <EM>mărimea datelor de intrare</EM>.  Cînd
+algoritmul lucrează pe un vector (ca în exemplul de mai sus), o
+alegere posibilă este numărul de elemente.  În general valoarea
+care caracterizează mărimea datelor de intrare arată cît de
+multă informaţie este prezentă în datele de intrare.  Acesta este
+un lucru normal, pentru că ne putem aştepta ca atunci cînd avem mai
+multe date la intrare algoritmul să lucreze mai multă vreme.
+
+<P>
+În acest fel partiţionăm mulţimea intrărilor în mulţimi
+(disjuncte) de ``mărimi'' egale.  Pentru algoritmul precedent vom
+avea astfel probleme de ``mărime 1'': cele care au vectorul dintr-un
+singur element.  Vom avea probleme de ``mărime k'', cu vectori de
+lungime k, ş.a.m.d.  Fireşte, există mai multe instanţe cu
+mărimea k.
+
+<P>
+Mai departe există două metode răspîndite pentru a decide
+complexitatea unui algoritm pentru date de mărime fixată.  Cea mai
+comună se cheamă: ``cel mai rău caz'' (worst-case complexity).  Pe
+scurt: fixăm mărimea, măsurăm numărul de instrucţiuni pentru
+fiecare instanţă de această mărime, şi apoi luăm maximumul.
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER">
+T(n) = max<sub>marime(P) = n</sub> timp(P)
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+
+<P>
+Complexitatea T pentru mărimea fixată n este maximumul timpilor
+pentru toate problemele de mărime n.
+
+<P>
+De exemplu, pentru algoritmul de căutare expus mai sus, complexitatea
+pentru vectori de mărime n este n, pentru instanţele în care x nu se
+regăseşte în vector.
+
+<P>
+În acest fel complexitatea unei probleme se exprimă ca <EM>o
+funcţie de mărimea problemei</EM>.
+
+<P>
+<PRE>
+   date de intrare P
+------------------------
+| instante de marime 1 |     -&gt; max timp(P) = T(1)
+------------------------ 
+| instante de marime 2 |     -&gt; max timp(P) = T(2)    
+------------------------
+....
+------------------------
+| instante de marime n |     -&gt; max timp(P) = T(n)
+------------------------
+....
+</PRE>
+
+<P>
+A doua metodă de a evalua complexitatea problemelor pentru o mărime
+fixată este de a pune o distribuţie de probabilitate peste
+instanţele de o anumită mărime (de exemplu toate pot fi egal
+probabile) şi de a evalua apoi valoarea medie a variabilei aleatoare
+care descrie timpul de rulare.  Considerînd numai problemele de
+mărime n, dacă rezolvarea problemei x va dura un timp t(x) iar
+problema se va ivi cu probabilitatea p(x), atunci complexitatea
+algoritmului va fi <BR><P></P>
+<DIV ALIGN="CENTER">
+<!-- MATH
+ \begin{displaymath}
+T(n) = \sum_{marime(x) = N} t(x) p(x).
+\end{displaymath}
+ -->
+
+<IMG
+ WIDTH="218" HEIGHT="55" BORDER="0"
+ SRC="img7.png"
+ ALT="\begin{displaymath}T(n) = \sum_{marime(x) = N} t(x) p(x).\end{displaymath}">
+</DIV>
+<BR CLEAR="ALL">
+<P></P>
+O astfel
+de evaluare se numeşte ``cazul mediu'': ``average case complexity''.
+
+<P>
+Această tehnică este mult mai rar folosită, pentru că:
+
+<P>
+
+<UL>
+<LI>Este greu de argumentat o distribuţie de probabilitate pentru
+un set de date de intrare (practic distribuţia afirmă ce şansă are
+fiecare instanţă de a fi întîlnită cînd se rulează algoritmul).
+De exemplu, pentru un algoritm pe grafuri, care este probabilitatea de
+a primi un arbore?  Nu există un răspuns natural la această
+întrebare.
+</LI>
+<LI>În general este mult mai greu de evaluat analitic formula
+obţinută decît în cazul folosirii maximumului.
+</LI>
+</UL>
+
+<P>
+Metoda cu distribuţia de probabilitate a fost în general aplicată
+la algoritmi de căutare şi sortare, dar chiar şi în aceste cazuri
+simple rezultatele nu sunt întotdeauna facile.
+
+<P>
+De aici înainte vom presupune că folosim complexitate ``worst
+case''.  
+
+<P>
+Cînd cineva spune ``acesta este un algoritm de complexitate
+n<sup>2</sup>, de fapt vrea să spună: ``pentru anumite de intrare de
+mărime n algoritmul execută instrucţiunea dominantă de cel mult
+n<sup>2</sup> ori.''  Acest n este implicit deci dimensiunea datelor
+de intrare.  Vom folosi şi noi această literă liber, fără a mai indica
+sursa ei de provenienţă.
+
+<P>
+
+<H3><A NAME="SECTION00023100000000000000">
+Simbolul lui Landau</A>
+</H3>
+
+<P>
+Pentru că de fapt noi socotim numai numărul de repetiţii al
+instrucţiunii dominante, şi nu toate instrucţiunile executate, nu are
+foarte mult sens să comparăm între un algoritm cu complexitatea n şi
+unul cu complexitate n+1.  Toate instrucţiunile care nu au fost
+măsurate au o contribuţie care să facă algoritmul cu n să dureze în
+realitate mai mult decît cel cu n+1.  Ceea ce trebuie să comparăm de
+fapt este <EM>ordinul de mărime</EM> al complexităţii, care pune în
+evidenţă creşteri substanţial diferite.  Pentru a face evident acest
+lucru se foloseşte o notaţie pentru ordinul de mărime al unei funcţii,
+introdus de fizicianul Lev Davidovich Landau.  Notaţia foloseşte
+simbolul O (``o mare'') pentru a indica mulţimea funcţiilor care cresc
+mai repede decît o funcţie dată.  Această notaţie compară numai
+funcţii <EM>la limită</EM>, în creşterea lor spre infinit.  <EM>Pentru
+a putea compara complexitatea a doi algoritmi care rezolvă o aceeaşi
+problemă în acest fel, trebuie ca ei să poată lucra cu probleme de
+mărimi arbitrar de mari!</EM>
+
+<P>
+<B>Definiţie:</B> fie dată o funcţie f : <B>N</B> --&gt; <B>N</B>,
+astfel încît de la un rang încolo f(n) &gt; 0; atunci mulţimea
+funcţiilor <EM>dominate</EM> de f se notează cu O(f) şi se defineşte
+astfel: <BR><P></P>
+<DIV ALIGN="CENTER">
+<!-- MATH
+ \begin{displaymath}
+O(f) = \left\{ g : {\bf N} \rightarrow {\bf N}
+\,|\, \exists N_0, \exists c < \infty \; \forall n > N_0, \,
+\frac{g(n)}{f(n)} < c \right\}.
+\end{displaymath}
+ -->
+<IMG
+ WIDTH="430" HEIGHT="51" BORDER="0"
+ SRC="img13.png"
+ ALT="O(f) definit">
+</DIV>
+<BR CLEAR="ALL">
+<P></P> În cuvinte, o funcţie este în
+mulţimea O(f) dacă la ``creşte mai încet'' decît f la
+infinit.  De exemplu, funcţia g(n) = n este în mulţimea O(n<sup>2</sup>),
+pentru că <!-- MATH
+ $g(n)/n^2 \rightarrow 0$
+ -->
+<IMG
+ WIDTH="101" HEIGHT="40" ALIGN="MIDDLE" BORDER="0"
+ SRC="img16.png"
+ ALT="$g(n)/n^2 \rightarrow 0$">.  În general, un polinom de grad
+mai mic decit k este în mulţimea O(n^k).
+
+<P>
+Din păcate notaţia se foloseşte în uzajul comun în mod greşit,
+scriindu-se f = O(g) în loc de <IMG
+ WIDTH="74" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img20.png"
+ ALT="$f \in O(g)$">: O(g) este o <EM>mulţime de funcţii</EM>, toate
+ dominate de g. 
+
+<P>
+Din considerentele indicate, metoda preferată pentru a indica
+complexitatea unui algoritm este de a o face prin ordinul de mărime
+al funcţiei sale de complexitate.  Din cauza că analizează această
+comportare spre infinit complexitatea algoritmilor se numeşte
+``complexitate asimptotică''.
+
+<P>
+Ce înseamnă deci că un algoritm ``are o complexitate O(n log
+n)''?  Înseamnă că pe măsură ce datele de intrare cresc în
+mărime ca n, numărul de operaţii făcut de algoritm în raport cu
+mărimea datelor de intrare este <EM>mai mică</EM> de n log n ori.
+
+<P>
+Astfel complexitatea asimptotică exprimă concis o limită
+superioară a timpului de execuţie a unui algoritm.  O grămadă de
+informaţie se pierde din descrierea complexităţii unui algoritm
+dînd numai ordinul de mărime:
+
+<P>
+
+<UL>
+<LI>În primul rînd funcţia al cărei ordin de mărime este
+evaluată era obţinută luînd maximumul peste toate instanţele de o
+anumită mărime.
+
+<P>
+</LI>
+<LI>În al doilea rînd, dacă <IMG
+ WIDTH="74" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img20.png"
+ ALT="$f \in O(g)$"> asta înseamnă numai
+că <EM>de la un rang încolo</EM> f e ``mai mică'' decît g; rangul
+acesta ar putea foarte bine fi mai mare decît numărul de atomi din
+univers, deci mai mare decît al oricărei probleme practice pe care
+vrem s-o rezolvăm.
+
+<P>
+</LI>
+<LI>Notaţia cu O indică numai <EM>limita superioară</EM> a unei
+funcţii; observaţi că atît <!-- MATH
+ $f(n) = n \in O(n^2)$
+ -->
+<IMG
+ WIDTH="141" HEIGHT="40" ALIGN="MIDDLE" BORDER="0"
+ SRC="img26.png"
+ ALT="$f(n) = n \in O(n^2)$"> cît şi <!-- MATH
+ $g(n) =
+n^2 \in O(n^2)$
+ -->
+<IMG
+ WIDTH="147" HEIGHT="40" ALIGN="MIDDLE" BORDER="0"
+ SRC="img27.png"
+ ALT="$g(n) =
+n^2 \in O(n^2)$">.  Numai informaţia că f şi g sunt în aceeaşi
+clasă nu ne permite de fapt să le comparăm între ele.  Pentru a
+indica şi faptul că limita se atinge, se foloseşte o altă
+notaţie, cu <IMG
+ WIDTH="18" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="img28.png"
+ ALT="$\Omega$"><A NAME="tex2html1"
+  HREF="#foot170"><SUP>1</SUP></A>.  De exemplu, dacă
+ştiu despre un algoritm doar că este O(n<sup>2</sup>, asta spune ceva.  Dar
+dacă mi se spune şi că există o serie de instanţe, crescătoare
+în mărime, pe care algoritmul face c n<sup>2</sup> + ..., atunci
+ştiu mult mai mult; ştiu de exemplu că algoritmul este ``mai
+prost'' decît un algoritm O(n), iar complexitatea lui poate fi
+indicată cu semnul <IMG
+ WIDTH="50" HEIGHT="40" ALIGN="MIDDLE" BORDER="0"
+ SRC="img32.png"
+ ALT="$\Omega(n^2)$">.
+</LI>
+</UL>
+
+<P>
+Cu toate aceste dezavantaje, notaţia cu O s-a impus, şi s-a
+dovedit în general destul de eficace pentru a caracteriza algoritmii.
+Proprietăţile notaţiei O sunt foarte interesante, dar depăşesc
+cadrul acestui articol; în general sunt destul de intuitive (de
+exemplu: dacă f = O(g) şi g = O(h), atunci f = O(h)$, etc.
+
+<P>
+În final, reluînd o observaţie de la începutul secţiunii, să
+observăm că într-adevăr n = O(n+1) şi n+1 = O(n), aşa că
+într-adevăr notaţia cu O aruncă termenii nesemnificativi, şi
+faptul că am numărat numai instrucţiuni dominante nu are nici o
+importanţă.  Mai exact, este foarte uşor de arătat că timpul real
+de execuţie a unui algoritm este O(numărul de repetiţii al
+instrucţiunii dominante).
+
+<P>
+
+<H2><A NAME="SECTION00024000000000000000">
+Complexitatea revizuită</A>
+</H2>
+
+<P>
+Am admis tacit că toate operaţiile elementare se pot efectua în
+timp unitar, dar acest lucru poate adesea să ne inducă în eroare.
+De exemplu, atunci următorul algoritm, care calculează numărul
+2<sup>2<sup>...<sup>2</sup></sup></sup>, funcţionează în n
+paşi:
+
+<P>
+<PRE>
+x, i := 2, 1
+do i &lt;= n -&gt; x, i := x * x, i+1
+od
+</PRE>
+
+<P>
+Numărul care se obţine în acest fel este extrem de lung, şi este
+mult mai rezonabil să presupunem că operaţiile cu numere iau un
+timp care depinde de lungimea numărului în biţi.
+
+<P>
+Vom ignora însă aceste considerente uşor ezoterice, şi ne vom
+mulţumi să presupunem că în algoritmii noştri toate operaţiile
+pot fi făcute în timp constant.
+
+<P>
+
+<H2><A NAME="SECTION00025000000000000000">
+Complexitatea unei probleme</A>
+</H2>
+
+<P>
+Un algoritm rezolvă o problemă.  Adesea pentru a rezolva o aceeaşi
+problemă putem folosi mai mulţi algoritmi, poate cu complexităţi
+diferite.  Există cel puţin 30 de metode de a sorta un şir de
+valori, de exemplu!  Putem vorbi deci de complexitatea unui algoritm,
+dar şi de <EM>complexitatea unei probleme</EM>.  Complexitatea unei
+probleme este complexitatea celui mai ``rapid'' algoritm care o poate
+rezolva.  Complexitatea unei probleme este deci o limită inferioară
+a eficacităţii cu care putem rezolva o problemă: orice algoritm
+care va rezolva acea problemă va fi mai complex decît complexitatea
+problemei.
+
+<P>
+În general este extrem de dificil de evaluat complexitatea unei
+probleme, pentru că rareori putem demonstra că un algoritm este cel
+mai bun posibil.  Tabloul arată cam aşa:
+
+<P>
+<PRE>
+limita inferioara          complexitatea          cel mai bun 
+      dovedita             problemei              algoritm cunoscut
+---------|------------------?----------------------|----------------
+         f                                         g
+</PRE>
+
+<P>
+Cu alte cuvinte, putem spune: ``problema asta nu se poate face mai
+repede de f, şi noi ştim s-o rezolvăm în g''.  Dar care este
+complexitatea reală, şi care este algoritmul care rezolvă problema
+<EM>optim</EM>, asta foarte rar se poate spune.
+
+<P>
+Pentru o problemă atît de banală ca înmulţirea a două numere,
+considerînd numerele scrise în baza 2, iar mărimea lor numărul
+total de biţi n, complexitatea celui mai bun algoritm de
+înmulţire cunoscut este de O(n log n log log n), dar limita
+inferioară dovedită este de n.  Sau pentru înmulţirea a două
+matrici de n*n elemente: se găsesc încontinuu algoritmi
+din ce în ce mai buni (asimptotic vorbind), dar limita inferioară de
+n<sup>2</sup> este încă departe de cel mai bun (şi foarte sofisticat
+algoritm), care este aproximativ O(n<sup>2,3</sup>) (comparaţi cu
+algoritmul ``naiv'' imediat, care este O(n<sup>3</sup>)).
+
+<P>
+
+<H2><A NAME="SECTION00026000000000000000">
+Clasa P; alte clase deterministe</A>
+</H2>
+
+<P>
+Unele probleme se pot rezolva, altele nu.  De exemplu, o problemă
+notorie, a cărei imposibilitate este riguros demonstrată în anii
+'30 de către matematicianul englez Alan Turing, este de a decide
+dacă un program se va opri vreodată pentru o anumită instanţă a
+datelor de intrare.
+
+<P>
+Pe de altă parte, chiar între problemele care pot fi rezolvate,
+teoreticienii trag o linie imaginară între problemele care au
+rezolvări ``rezonabil'' de rapide, şi restul problemelor, care se
+numesc ``intratabile''.
+
+<P>
+În mod arbitrar, dar nu ne-justificabil, o problemă se numeşte
+``intratabilă'' dacă complexitatea ei este exponenţială în
+mărimea datelor de intrare.  (Nu uitaţi, este vorba de complexitate
+``worst-case'' asimptotică.)  O problemă este ``tratabilă'' dacă
+putem scrie complexitatea ei sub forma unui polinom, de un grad
+oricît de mare.  
+
+<P>
+Mulţimea tuturor problemelor de decizie (adică a problemelor la care
+răspunsul este <EM>da</EM> sau <EM>nu</EM>) cu complexitate polinomială
+se notează cu P (de la polinom).  De exemplu, problema de a găsi
+dacă o valoare se află într-un vector este în clasa P; algoritmul
+exhibat mai sus este un algoritm în timp linear (O(n)) pentru a
+răspunde la această întrebare.
+
+<P>
+Un exemplu de problemă cu complexitate exponenţială
+(ne-polinomială)?  Iată unul: dacă se dă o formulă logică peste
+numerele reale, cu cuantificatori existenţiali (<IMG
+ WIDTH="16" HEIGHT="20" ALIGN="BOTTOM" BORDER="0"
+ SRC="img45.png"
+ ALT="$\exists$">) şi
+universali (<IMG
+ WIDTH="16" HEIGHT="20" ALIGN="BOTTOM" BORDER="0"
+ SRC="img46.png"
+ ALT="$\forall$">), care foloseşte numai operaţii de adunare,
+comparaţii cu &lt; şi conectori logici (<!-- MATH
+ $\land, \lor, \Rightarrow,
+\ldots$
+ -->
+<IMG
+ WIDTH="90" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="img48.png"
+ ALT="$\land, \lor, \Rightarrow,
+\ldots$">), este formula adevărată?  (Un exemplu de formulă:
+``<!-- MATH
+ $\forall x \exists y \forall z \; (x + z < y) \land (2x - z >
+y)$
+ -->
+<IMG
+ WIDTH="268" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img49.png"
+ ALT="$\forall x \exists y \forall z \; (x + z &lt; y) \land (2x - z &gt;
+y)$">'').  Decizia se poate face numai într-un timp exponenţial în
+lungimea formulei (pentru anumite instanţe), dar demonstraţia nu
+este de loc simplă.
+
+<P>
+(Ca o curiozitate: există şi probleme cu o complexitate
+``ne-elementară'', care este mai mare decît complexitatea oricărei
+probleme exponenţiale.  O astfel de problemă este cea de decizie a
+adevărului unei formule în teoria numită S1S, sau ``teoria
+monadică a succesorilor de ordinul 2''.  Nu vă lăsaţi intimidaţi
+de terminologie: aceasta este practic o teorie logică peste numerele
+naturale, în care avem voie să scriem formule cu cuantificatori şi
+conectori logici, ca mai sus, dar avem şi dreptul să cuantificăm
+peste mulţimi.  Complexitatea deciziei unei formule logice într-o
+astfel de teorie este mai mare decît
+<!-- MATH
+ $\underbrace{2^{2^{\ldots^n}}}_k$
+ -->
+<IMG
+ WIDTH="42" HEIGHT="60" ALIGN="MIDDLE" BORDER="0"
+ SRC="img50.png"
+ ALT="$\underbrace{2^{2^{\ldots^n}}}_k$"> pentru orice k natural!)
+
+<P>
+
+<H2><A NAME="SECTION00027000000000000000">
+Clasa NP; algoritmi nedeterminişti; NP-completitudine</A>
+</H2>
+
+<P>
+Algoritmii cu care suntem obişnuiţi să lucrăm zi de zi sunt <EM>determinişti</EM>.  Asta înseamnă că la un moment dat evoluţia
+algoritmului este unic determinată, şi ca instrucţiunea care
+urmează să se execute este unic precizată în fiecare moment.  Am
+văzut însă că limbajul pe care l-am folosit ne permite scrierea
+unor algoritmi care au mai multe posibilităţi la un moment dat;
+construcţia <TT>if</TT> din limbajul cu gărzi permite evaluarea
+oricărei instrucţiuni care are garda adevărată.
+
+<P>
+Acest tip de algoritmi este surprinzător de bogat în consecinţe cu
+valoare teoretică.  Aceşti algoritmi nu sunt direct aplicabili,
+însă studiul lor dă naştere unor concepte foarte importante.
+
+<P>
+Surprinzătoare este şi definiţia corectitudinii unui astfel de
+algoritm.  Un algoritm nedeterminist este corect dacă <EM>există</EM> o
+posibilitate de executare a sa care găseşte răspunsul corect.  Pe
+măsură ce un algoritm nedeterminist se execută, la anumiţi paşi
+se confruntă cu alegeri nedeterministe.  Ei bine, dacă la fiecare
+pas există o alegere, care făcută să ducă la găsirea soluţiei,
+atunci algoritmul este numit corect.
+
+<P>
+Astfel, un algoritm nedeterminist care caută ieşirea dintr-un
+labirint ar arăta cam aşa:
+
+<P>
+<PRE>
+do not iesire(pozitie_curenta) -&gt;
+    if not perete(nord(pozitie_curenta)) -&gt; 
+            pozitie_curenta := nord(pozitie_curenta)
+    [] not perete(est(pozitie_curenta)) -&gt; 
+            pozitie_curenta := est(pozitie_curenta)
+    [] not perete(sud(pozitie_curenta)) -&gt; 
+            pozitie_curenta := sud(pozitie_curenta)
+    [] not perete(vest(pozitie_curenta)) -&gt; 
+            pozitie_curenta := vest(pozitie_curenta)
+    fi
+od
+</PRE>
+
+<P>
+Pe scurt algoritmul se comportă aşa: dacă la nord nu e perete mergi
+încolo, sau, poate, dacă la sud e liber, mergi încolo, sau la est,
+sau la vest.  În care dintre direcţii, nu se precizează (este
+ne-determinat).  Este clar că dacă există o ieşire la care se
+poate ajunge, există şi o suită de aplicări ale acestor reguli
+care duce la ieşire.
+
+<P>
+Utilitatea practică a unui astfel de algoritm nu este imediat
+aparentă: în definitiv pare să nu spună nimic util: soluţia este
+fie spre sud, fie spre nord, fie spre este, fie spre vest.  Ei şi?
+Este clar că aceşti algoritmi nu sunt direct implementabili pe un
+calculator real.
+
+<P>
+În realitate existenţa un astfel de algoritm deja înseamnă destul
+de mult.  Înseamnă în primul rînd că problema se poate rezolva
+algoritmic; vă reamintesc că există probleme care nu se pot rezolva
+deloc.
+
+<P>
+În al doilea rînd, se poate arăta că fiecare algoritm
+nedeterminist se poate transforma într-unul determinist într-un mod
+automat.  Deci de îndată ce ştim să rezolvăm o problemă într-un
+mod nedeterminist, putem să o rezolvăm şi determinist!
+Transformarea este relativ simplă: încercăm să mergem pe <EM>toate</EM> drumurile posibile în paralel, pe fiecare cîte un pas.  (O
+astfel de tehnică aplicată în cazul labirintului se transformă în
+ceea ce se cheamă ``flood fill'': evoluez radial de la poziţia de
+plecare în toate direcţiile).
+
+<P>
+Clasa tuturor problemelor care se pot rezolva cu algoritmi
+nedeterminişti într-un timp polinomial se notează cu NP
+(Nedeterminist Polinomial).  Este clar că orice problemă care se
+află în P se află şi în NP, pentru că algoritmii determinişti
+sunt doar un caz extrem al celor determinişti: în fiecare moment au
+o singură alegere posibilă.
+
+<P>
+Din păcate transformarea într-un algoritm determinist se face
+pierzînd din eficienţă.  În general un algoritm care operează în
+timp nedeterminist polinomial (NP) poate fi transformat cu uşurinţă
+într-un algoritm care merge în timp exponenţial (EXP).  Avem deci o
+incluziune de mulţimi între problemele de decizie: P <IMG
+ WIDTH="19" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="img52.png"
+ ALT="$\subseteq$"> NP
+<IMG
+ WIDTH="19" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="img52.png"
+ ALT="$\subseteq$"> EXP.
+
+<P>
+Partea cea mai interesantă este următoarea: ştim cu certitudine că
+P <IMG
+ WIDTH="19" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img53.png"
+ ALT="$\not=$"> EXP.  Însă nu avem <EM>nici o idee</EM> despre relaţia de
+egalitate între NP şi P sau între NP şi EXP.  <EM>Nu există nici
+o demonstraţie care să infirme că problemele din NP au algoritmi
+eficienţi, determinist polinomiali!</EM>  Problema P=NP este cea mai
+importantă problemă din teoria calculatoarelor, pentru că de
+soluţionarea ei se leagă o grămadă de consecinţe importante.
+
+<P>
+Problema aceasta este extrem de importantă pentru întreaga
+matematică, pentru că însăşi demonstrarea teoremelor este un
+proces care încearcă să verifice algoritmic o formulă logică (cum
+am văzut mai sus de pildă); teoremele la care există demonstraţii
+``scurte'' pot fi asimilate cu problemele din mulţimea NP (la fiecare
+pas dintr-o demonstraţie putem aplica mai multe metode de
+inferenţă, în mod nedeterminist; un algoritm trebuie să ghicească
+înşiruirea de metode aplicate pentru demonstrarea enunţului); dacă
+orice problemă din NP este şi în P, atunci putem automatiza o mare
+parte din demonstrarea de teoreme în mod eficient!
+
+<P>
+Problema P=NP este foarte importantă pentru criptografie: decriptarea
+este o problemă din NP (cel care ştie cheia ştie un algoritm
+determinist polinomial de decriptare, dar cel care nu o ştie are în
+faţa o problemă pe care nedeterminist o poate rezolva în timp
+polinomial).  Dacă s-ar demonstra că P=NP acest lucru ar avea
+consecinţe extrem de importante, iar CIA si KGB ar fi într-o
+situaţie destul de proastă, pentru că toate schemele lor de
+criptare ar putea fi sparte în timp polinomial (asta nu înseamnă
+neapărat foarte repede, dar oricum, mult mai repede decît timp
+exponenţial)!
+
+<P>
+Mai mult, în 1971 Cook a demonstrat că există o problemă specială
+în NP (adică pentru care se poate da un algoritm eficient
+nedeterminist), numită <EM>problema satisfiabilităţii</EM> (notată cu
+SAT).  Problema este foarte simplă: dacă se dă o formulă booleană
+care cuprinde mai multe variabile, poate fi formula făcută
+adevărată dînd anumite valori variabilelor?  De pildă formula
+<!-- MATH
+ $(x_1 \land x_2) \lor (x_1 \land \lnot x_2)$
+ -->
+<IMG
+ WIDTH="173" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img54.png"
+ ALT="$(x_1 \land x_2) \lor (x_1 \land \lnot x_2)$"> devine adevărată
+ pentru x<sub>1</sub>=adevărat şi x<sub>2</sub> arbitrar.  SAT este
+ foarte importantă, pentru că Cook a demonstrat că dacă SAT poate fi
+ rezolvată în P (adică folosind un algoritm determinist polinomial),
+ atunci <EM>orice</EM> problemă din NP poate fi rezolvată în timp
+ polinomial! Problema satisfiabilităţii este cumva ``cea mai grea
+ problemă'' din NP, pentru că rezolvarea oricărei alte probleme din NP
+ se poate face ``mai repede'' decît a ei.  Din cauza asta SAT se
+ numeşte o problemă <EM>NP-completă</EM>.
+
+<P>
+De la Cook încoace s-au mai descoperit cîteva sute de probleme
+NP-complete.  Unele probleme care se ivesc foarte adesea în practică
+s-au dovedit NP-complete!  Acesta este un alt motiv pentru care clasa
+atît de abstractă NP a problemelor cu algoritmi nedeterminişti este
+atît de importantă: foarte multe probleme practice au algoritmi
+polinomiali nedeterminişti, dar cei mai buni algoritmi determinişti
+iau un timp exponenţial!
+
+<P>
+Iată cîteva exemple de probleme NP-complete:
+
+<P>
+
+<UL>
+<LI>Problema comis-voiajorului (turneu Hamiltonian de cost minim):
+dîndu-se o reţea de oraşe, o reţea de drumuri între oraşe şi o
+lungime k, există un traseu de cost mai mic decît k trecînd
+prin fiecare oraş o singură dată şi revenind la punctul de
+plecare?
+
+<P>
+</LI>
+<LI>Dîndu-se o mulţime de numere naturale, se poate împărţi în
+două mulţimi de numere de sume egale<A NAME="tex2html2"
+HREF="#foot261"><SUP>2</SUP></A>?
+
+<P>
+</LI>
+<LI>``Clica'': dîndu-se un graf G şi un număr k, are G un
+subgraf complet cu k vîrfuri (adică o mulţime de k vîrfuri
+unite fiecare cu fiecare)?
+
+<P>
+</LI>
+<LI>``Acoperire'': dîndu-se un graf G şi un număr k, pot
+alege k vîrfuri în aşa fel încît toate muchiile din G au un
+capăt ales?
+</LI>
+</UL>
+
+<P>
+O cantitate enormă de efort şi ingeniozitate a fost risipită pentru
+a încerca să se demonstreze că P=NP sau opusul acestei afirmaţii,
+dar nici un rezultat concret nu a fost obţinut.  Credinţa
+cvasi-unanimă este că P<IMG
+ WIDTH="19" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img53.png"
+ ALT="$\not=$">NP, dar numai matematica poate oferi
+vreo certitudine...
+
+<P>
+Din cauză că foarte multe probleme practice sunt în NP, şi ca
+aparent nu putem avea algoritmi determinişti eficace pentru ele,
+cercetătorii şi-au îndreptat atenţia asupra unor clase noi de
+algoritmi, care vor face obiectul secţiunilor următoare.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Algoritmi aproximativi</A>
+</H1>
+
+<P>
+În secţiunile care urmează folosim tot timpul premiza <EM>nedemonstrată</EM> că P<IMG
+ WIDTH="19" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img53.png"
+ ALT="$\not=$">NP.  Dacă P=NP, atunci problemele pe care
+ne batem capul să le rezolvăm prin metode ciudate pot fi de fapt
+rezolvate exact şi eficient, aşa că restul articolului cade şi nu
+se mai ridică.
+
+<P>
+
+<H2><A NAME="SECTION00031000000000000000">
+Optim şi aproximare</A>
+</H2>
+
+<P>
+Foarte multe probleme de optimizare se dovedesc a fi
+NP-complete<A NAME="tex2html3"
+  HREF="#foot204"><SUP>3</SUP></A>: probleme în care vrem să
+calculăm maximumul sau minimumul a ceva.  Bine, dar dacă de fapt mă
+mulţumesc să obţin o valoare care nu este chiar optimă, dar este
+``suficient de aproape''?  Poate în acest caz complexitatea problemei
+poate fi redusă, şi sunt în stare să scriu un algoritm
+eficient... (polinomial).  Avem deci de a face cu un compromis:
+
+<P>
+<PRE>
+solutie optima;                         solutie sub-optima:
+                      &lt;--------------&gt;
+algoritm NP sau                         algoritm polinomial
+algoritm exponential
+</PRE>
+
+<P>
+Într-adevăr, această metodă se bucură de un oarecare succes, dar
+nu de unul general.  Algoritmii care rezolvă o problemă de
+optimizare în speranţa unui rezultat sub-optimal se numesc
+``algoritmi aproximativi''.
+
+<P>
+Există o sumedenie de rezultate în ceea ce priveşte problemele de
+optimizare şi aproximările lor.  Se demonstrează că unele probleme
+pot fi foarte bine aproximate (putem obţine soluţii cît dorim de
+aproape de optim în timp polinomial), altele pot fi aproximate numai
+în anumite limite (de exemplu putem obţine soluţii de 2 ori mai
+slabe, dar deloc mai bune), sau altele nu pot fi aproximate deloc (în
+ipoteza că P<IMG
+ WIDTH="19" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img53.png"
+ ALT="$\not=$">NP).
+
+<P>
+Teoria algoritmilor aproximativi este relativ recentă (deşi ideea
+există de multă vreme), iar unele rezultate sunt extrem de
+complicate.  Ne vom mulţumi să dăm nişte exemple pentru a ilustra
+algoritmi aproximativi în acţiune, şi tipul de rezultate care se
+pot obţine.
+
+<P>
+Vom ilustra două rezultate diferite din teoria algoritmilor
+aproximativi: algoritmi de aproximare <EM>relativă</EM>, algoritmi de
+aproximare <EM>absolută</EM> a soluţiei (lămurim terminologia
+imediat).
+
+<P>
+Să notăm o instanţă a unei probleme cu I.  Fie OPT(I) valoarea
+soluţiei optime pentru acea instanţă (care <EM>există</EM>, dar pe
+care nu ştim s-o calculăm eficient), şi fie A(I) valoarea
+calculată de algoritmul nostru aproximativ.  Numim aproximaţia
+<EM>absolută</EM> dacă există un număr K, independent de instanţa I,
+care are proprietatea că |OPT(I) - A(I)| &lt; K.  Numim aproximaţia
+<EM>relativă</EM> dacă există un R (numit ``performanţă'') astfel
+ca pentru orice instanţă I avem (A(I) / OPT(I)) &lt; R (dacă
+problema caută un maximum, atunci fracţia din definiţie trebuie
+inversată).
+
+<P>
+
+<H2><A NAME="SECTION00032000000000000000">
+Problema rucsacului</A>
+</H2>
+
+<P>
+Iată o variantă a problemei rucsacului care este NP-completă (nu am
+discutat deloc în acest articol despre cum se demonstrează aşa
+ceva, aşa că trebuie să mă credeţi pe cuvînt), dar pentru care
+se poate obţine cu foarte mare uşurinţă un algoritm aproximativ
+relativ eficient.
+
+<P>
+Se dau o mulţime (mare) de rucsaci de capacitate egală (cunoscută,
+un număr natural).  Se mai dă o mulţime finită de obiecte, fiecare
+de un volum cunoscut (număr natural).  Întrebarea este: care este
+numărul minim de rucsaci necesari pentru a împacheta toate
+obiectele?
+
+<P>
+Problema rucsacului are un algoritm de aproximare relativă cu
+performanţă 2.
+
+<P>
+Algoritmul este banal: metoda ``greedy'': pune de la stînga fiecare
+greutate în primul rucsac liber:
+
+<P>
+<PRE>
+Date de intrare: nrobiecte, capacitate, marime[1..nrobiecte]
+
+Initializari:
+o, folositi := 1, 0
+do o &lt;= nrobiecte -&gt; liber[o] := capacitate od
+
+Algoritm:
+o := 1
+do o &lt;= nrobiecte -&gt; 
+    r := 1
+    do (liber[r] &lt; marime[o]) -&gt; r := r+1
+    od
+    folositi, liber[r], o := 
+        max(r, folositi), liber[r] - marime[o], o+1
+od
+</PRE>
+
+<P>
+Cum demonstrăm că performanţa relativă este 2?  Foarte simplu: să
+observăm că la sfîrşitul algoritmului nu pot exista doi rucsaci
+folosiţi pe mai puţin de jumătate amîndoi, pentru că atunci
+conţinutul celui de-al doilea ar fi fost vărsat în primul.  Cu alte
+cuvinte, la terminare avem: liber[r] &lt; 1/2 capacitate.  Dar dacă
+însumăm pentru toţi rucsacii, vom avea că spaţiul liber este mai
+puţin de jumătate din cel disponibil, deci cel ocupat este mai mult
+de jumătate.  Dar dacă obiectele au mărime totală M, atunci
+orice-am face nu putem folosi mai puţin de M spaţiu total pentru a
+le împacheta.  Dar noi am folosit mai puţin de M + M = 2M, deci
+algoritmul are performanţă 2.  QED.
+
+<P>
+
+<H2><A NAME="SECTION00033000000000000000">
+Performanţa absolută; un rezultat negativ</A>
+</H2>
+
+<P>
+Vom folosi o altă problemă NP-completă, pentru care avem imediat un
+algoritm de aproximare relativă de performanţă 2, dar pentru care
+vom demonstra că nu există nici un algoritm de aproximare absolută.
+
+<P>
+Problema este cea a acoperirii unui graf, enunţată mai sus.  Ca
+problemă de optimizare, ea se enunţă astfel: ``care este numărul
+minim de vîrfuri care trebuie ``acoperite'' astfel ca toate muchiile
+dintr-un graf să fie atinse?''
+
+<P>
+Pentru această problemă algoritmul greedy nu face multe parale ca
+algoritm de aproximare.  Există însă un algoritm relativ simplu, cu
+performanţă 2, care se foloseşte însă de un alt algoritm clasic,
+cel al ``cuplării'' (matching).  Fără a intra în detalii, există
+un algoritm polinomial relativ sofisticat pentru a calcula cuplări
+maximale pe grafuri<A NAME="tex2html4"
+  HREF="#foot216"><SUP>4</SUP></A>.  Calculăm o cuplare maximală, după care luăm
+capetele tuturor muchiilor care o formează: astfel obţinem o
+acoperire (uşor de demonstrat) care e cel mult dublă ca mărime
+faţă de optim (pentru că în optim trebuie să se găsească cel
+puţin cîte un vîrf pentru fiecare muchie din cuplare, iar noi am
+luat cîte două).
+
+<P>
+Iată şi un rezultat negativ interesant: pentru orice K fixat, nu
+există nici un algoritm care să dea pentru problema acoperirii o
+soluţie aproximativă absolută la distanţa K de cea optimă
+pentru orice instanţă.  Demonstraţia este foarte simplă, odată ce
+ai văzut ideea, şi se bazează pe ``tehnica amplificării''.  Iată
+cum se face, prin reducere la absurd:
+
+<P>
+Să presupunem că avem un algoritm A care calculează pentru orice
+graf o acoperire care este cu cel mult K noduri mai mare ca cea
+optimă (K e fixat).  Cu alte cuvinte |OPT(G) - A(G)| &lt; K.  Să
+luăm o instanţă arbitrară a problemei cuplării, G.  Formăm un
+nou graf G<sub>1</sub> din G, care nu este conex, şi care constă din
+K+1 copii ale lui G, alăturate.  Aceasta este o instanţă perfect
+corectă a problemei acoperirii, aşa că rulăm pe ea algoritmul
+nostru A.  Acesta va oferi o acoperire care are cel mult cu K noduri
+mai mult decît acoperirea optimă.  (Vă reamintesc notaţiile:
+OPT(G) este valoarea optimă: numărul minim de noduri pentru a
+acoperi muchiile, iar A(G) este valoarea calculată de algoritmul
+nostru.
+
+<P>
+Datorită faptului că cele K+1 copii ale lui G sunt neconectate,
+optimumul pentru G<sub>1</sub> este reuniunea a K+1 optimumuri pentru
+G.  Din cauza asta avem relaţia OPT(G<sub>1</sub>) = (K+1) OPT(G).
+Fie acum H copia lui G pe care A a marcat cele mai multe vîrfuri;
+atunci A(G<sub>1</sub>) &lt;= (K+1) A(H).  Dar din proprietăţile lui A
+avem: |OPT(G<sub>1</sub>) - A(G<sub>1</sub>)| &lt; K, sau |(K+1)
+OPT(H) - (K+1) A(H)| < K, ori |OPT(H) - A(H)| < K/(K+1) &lt; 1.  Însă
+ştim că OPT(H) şi A(H) sunt numere naturale, deci am obţinut OPT(H) =
+A(H)!
+
+<P>
+Asta înseamnă că dacă avem un algoritm aproximativ absolut pentru
+problema acoperirii, putem imediat construi un algoritm exact la fel
+de rapid.  Ori asta ar însemna că P=NP, ceea ce am presupus fals.
+
+<P>
+Exemplele pe care le-am ales sunt în mod deliberat simple; teoria
+algoritmilor aproximativi este în plină dezvoltare şi are rezultate
+foarte spectaculoase şi în general complicate.  În orice caz,
+aplicabilitatea ei este imediată, pentru că multe probleme practice
+care nu pot aştepta au numai rezolvări aproximative.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Algoritmi Monte Carlo</A>
+</H1>
+
+<P>
+O tehnică foarte spectaculoasă pentru rezolvarea problemelor este
+cea a folosiri numerelor aleatoare.  Practic algoritmii aleatori sunt
+identici cu cei obişnuiţi, dar folosesc în plus o nouă
+instrucţiune, care s-ar putea chema ``dă cu banul''.  Această
+instrucţiune generează un bit arbitrar ca valoare.
+
+<P>
+În mod paradoxal, incertitudinea ne poate oferi mai multă putere...
+
+<P>
+La ce se foloseşte aleatorismul?  Să ne amintim că în general
+complexitatea unei probleme este definită luînd în considerare cea
+mai defavorabilă instanţă.  De exemplu, pentru problema comis
+voiajorului, faptul că această problemă este NP-completă nu
+înseamnă că nu putem rezolva nici o instanţă a ei, ci că există
+instanţe pentru care algoritmii cunoscuţi nu au prea multe şanse
+să termine în curînd.
+
+<P>
+Acest lucru este adevărat şi pentru alte clase de algoritmi; de pildă
+algoritmul quicksort are pentru majoritatea vectorilor de intrare o
+comportare O(n log n).  Dacă însă datele de intrare sunt prost
+distribuite, atunci quicksort poate face n<sup>2</sup> comparaţii.
+Pentru n=100 asta înseamnă de 10 ori mai mult!  Numărul de instanţe
+pentru care quicksort este slab este mult mai mic decît numărul de
+instanţe pentru care merge bine.  Ce te faci însă dacă într-un anumit
+context lui quicksort i se dau numai date rele?  (Datele preluate din
+măsurători reale sunt foarte rar complet uniform distribuite).  O
+soluţie paradoxală constă în a <EM>amesteca</EM> aleator vectorul
+înainte de a-l sorta.
+
+<P>
+Complexitatea <EM>medie</EM> (average case) a lui quicksort este O(n
+log n).  Complexitatea în cazul cel mai rău (worst case) este
+O(n<sup>2</sup>).  Dacă datele vin distribuite cu probabilitate mare
+în zona ``rea'', atunci amestecîndu-le putem transforma instanţe care
+pică în zona ``worst-case'' în instanţe de tip ``average-case''.
+Fireşte, asta nu înseamnă ca nu putem avea ghinion, şi ca amestecarea
+să producă tot o instanţă ``rea'', dar <EM>probabilitatea</EM> ca
+acest lucru să se întîmple este foarte mică, pentru că quicksort are
+puţine instanţe rele<A NAME="tex2html5"
+HREF="#foot221"><SUP>5</SUP></A>.
+
+<P>
+Acesta este un caz de folosire a aleatorului pentru a îmbunătăţi
+performanţa medie a unui algoritm.
+
+<P>
+Cîteodată cîştigul este şi mai mare, pentru că putem rezolva
+probleme NP-complete foarte rapid folosind aleatorismul.  De obicei
+avem însă un preţ de plătit.  Cînd folosim algoritmi din clasa
+prezentată mai jos, putem risca să nu primim răspunsul corect.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Algoritmi Las Vegas</A>
+</H1>
+
+<P>
+Evoluţia unui algoritm care foloseşte numere aleatoare nu mai
+depinde numai de datele de intrare, ci şi de numerele aleatoare pe
+care le generează.  Dacă are ``noroc'' algoritmul poate termina
+repede şi bine; dacă dă prost cu zarul, ar putea eventual chiar
+trage o concluzie greşită.  (În cazul quicksort de mai sus
+răspunsul este întotdeauna corect, dar cîteodată vine mai greu.
+Aceasta este diferenţa dintre algoritmii Monte Carlo, mereu corecţi,
+şi cei Las Vegas, care pot uneori, rar, greşi.)
+
+<P>
+Vom defini acum algoritmii probabilişti pentru probleme de decizie
+(ţineţi minte, la care răspunsul este Da sau Nu).  Majoritatea
+problemelor pot fi exprimate în forma unor probleme de decizie, deci
+simplificarea nu este prea drastică.
+
+<P>
+Există două clase de algoritmi probabilişti, dar ne vom concentra
+atenţia numai asupra uneia dintre ele, pentru care vom da şi două
+exemple simple şi spectaculoase.  Vom defini totodată clasa
+problemelor care pot fi rezolvate probabilist în timp polinomial,
+numită RP (Random Polinomial).
+
+<P>
+Observaţi că dacă indicăm de la început care sunt numerele
+aleatoare care vor fi generate, evoluţia algoritmului este perfect
+precizată.
+
+<P>
+<B>Definiţie:</B> O problemă de decizie este în RP dacă există un
+algoritm aleator A care rulează într-un timp polinomial în lungimea
+instanţei (n<sup>c</sup> pentru un c oarecare), şi care are
+următoarele proprietăţi:
+
+<P>
+
+<UL>
+<LI>Dacă răspunsul la o instanţă I este ``Da'', atunci cu o
+probabilitate mai mare de 1/2 algoritmul va răspunde ``Da''.
+
+<P>
+</LI>
+<LI>Dacă răspunsul la o instanţă I este ``Nu'', atunci cu
+probabilitate 1 algoritmul va răspunde ``Nu''.
+</LI>
+</UL>
+
+<P>
+De cine este dată ``probabilitatea'' de mai sus?  De numărul de şiruri
+aleatoare.  Cînd rulăm un algoritm aleator pentru o instanţă I avem la
+dispoziţie 2<sup>n<sup>c</sup></sup> şiruri aleatoare de biţi; pentru
+unele dintre ele algoritmul răspunde ``Da'', pentru celelalte răspunde
+``Nu''.  Ceea ce facem este să numărăm pentru cîte şiruri algoritmul
+ar răspunde ``da'' şi să facem raportul cu 2<sup>n<sup>c</sup></sup>.
+Aceasta este probabilitatea ca algoritmul să răspundă ``da''.  Opusul
+ei este probabilitatea să răspundă ``nu''.
+
+<P>
+O tehnică foarte simplă de amplificare poate creşte nedefinit această
+probabilitate: dacă executăm algoritmul de 2 ori pe aceleaşi date de
+intrare, probabilitatea de a greşi pentru răspunsuri ``nu'' rămîne 0.
+Pe de altă parte, ajunge ca algoritmul să răspundă măcar odată ``da''
+pentru a şti că răspunsul este ``da'' cu siguranţă!  Din cauza asta,
+dacă probabilitatea de eroare este p pentru algoritm, executînd de k
+ori probabilitatea coboară la p<sup>k</sup> (nu uitaţi ca p este
+subunitar, ba chiar sub 1/2).  Această metodă se numeşte ``boost'' în
+engleză, şi face dintr-un algoritm probabilist slab ca discriminare o
+sculă extrem de puternică!
+
+<P>
+Pentru a scădea probabilitatea de eroare a unui algoritm care poate
+greşi cu probabilitatea <TT>p</TT> pînă sub o limită dorită
+<TT>siguranta</TT>, se procedează astfel:
+
+<P>
+<PRE>
+raspuns, probabilitate = nu, 1
+do (raspuns = nu) and (probabilitate &gt; siguranta) -&gt;
+        raspuns, probabilitate := executa(algoritm), probabilitate * p
+od
+</PRE>
+
+<P>
+Iată un exemplu şi o aplicaţie al algoritmilor aproximativi.
+
+<P>
+
+<H2><A NAME="SECTION00051000000000000000">
+Rădăcinile unui polinom</A>
+</H2>
+
+<P>
+Fie un polinom de mai multe variabile, x<sub>1</sub>, x<sub>2</sub>,
+... x<sub>n</sub>.  Acest polinom poate fi descris printr-o formulă
+aritmetică, de pildă: 
+(x<sub>1</sub> + 1) (x<sub>2</sub> + 1) ... (x<sub>n</sub> + 1).
+Întrebarea este: este acest polinom identic nul sau nu?
+
+<P>
+Desigur, o posibilitate este de a ``expanda'' acest polinom în formă
+canonică (sumă de produse), şi de a compara fiecare coeficient cu
+0.  Dar în general această operaţie poate lua un timp exponenţial!
+(De exemplu polinomul anterior generează 2<sup>n</sup> termeni!).
+
+<P>
+Soluţia este să ne bazăm pe două proprietăţi elementare ale
+polinoamelor:
+
+<P>
+
+<UL>
+<LI>Un polinom identic nul este 0 pentru orice combinaţie de valori
+a variabilelor;
+</LI>
+<LI>Un polinom ne-nul are ``puţine'' rădăcini într-un
+corp<A NAME="tex2html6"
+  HREF="#foot262"><SUP>6</SUP></A>.
+</LI>
+</UL>
+
+<P>
+De aici rezultă că:
+
+<P>
+
+<UL>
+<LI>Dacă polinomul este nul, atunci evaluarea lui în orice punct
+va da 0;
+</LI>
+<LI>Dacă polinomul este ne-nul, atunci probabilitatea de a obţine
+valoarea 0 într-un punct (v<sub>1</sub>, v<sub>2</sub>,
+... v<sub>n</sub>) ales arbitrar din S<sup>n</sup> este &lt; d/|S|.
+</LI>
+</UL>
+
+<P>
+Pentru polinomul de mai sus gradul este n, şi putem alege pentru
+K de exemplu Z<sub>p</sub>, unde p este un număr prim relativ mare în
+raport cu n (de două ori mai mare ajunge!).
+
+<P>
+Alegînd arbitrar numerele v<sub>1</sub>, v<sub>2</sub>, ...,
+v<sub>n</sub> în Z<sub>p</sub> şi evaluînd q(v<sub>1</sub>,
+v<sub>2</sub>, ..., v<sub>n</sub>) mod p, putem imediat afirma cu 
+probabilitate mare &gt; 1 - n/p despre q dacă este nul sau nu!
+Observaţi că evaluarea polinomului nu este prea costisitoare,
+putîndu-se face în timp polinomial în lungimea expresiei care
+descrie polinomul.
+
+<P>
+Folosind metoda de ``boost'' putem creşte rapid siguranţa noastră
+despre rezultatul algoritmului.
+
+<P>
+
+<H2><A NAME="SECTION00052000000000000000">
+Izomorfismul arborilor</A>
+</H2>
+
+<P>
+Iată şi o aplicaţie imediată a acestei proprietăţi.
+
+<P>
+Se dau doi arbori, cu rădăcina precizată.  Sunt aceşti doi arbori
+``izomorfi'' (identici prin re-ordonarea fiilor)?  Această problemă
+este surprinzător de dificilă pentru un algoritm determinist (am
+impresia chiar că este NP-completă).  Iată însă o soluţie
+aproape imediată: construim pentru fiecare arbore cîte un polinom
+care nu depinde de ordinea fiilor unui nod, în aşa fel încît dacă
+şi numai dacă arborii sunt izomorfi polinoamele sunt egale.  Apoi
+pur şi simplu testăm ca mai sus dacă polinomul diferenţă este
+nul.
+
+<P>
+O metodă de a asocia recursiv un polinom unui arbore este de pildă
+următoarea: fiecărui nod îi asociem o variabilă x<sub>k</sub>, unde k
+este <EM>înălţimea</EM> nodului (distanţa pînă la cea mai
+depărtată frunză).  Frunzele vor avea toate asociate variabila
+x<sub>0</sub>.  Apoi asociem nodului v de înălţime k cu fii v<sub>1</sub>,
+... v<sub>l</sub> polinomul f<sub>v</sub> = (x<sub>k</sub> -
+f<sub>v<sub>1</sub></sub>) (x<sub>k</sub> - f<sub>v<sub>2</sub></sub>)
+... (x<sub>k</sub> - f<sub>v<sub>l</sub></sub>).  Se arată uşor că
+polinoamele sunt egale pentru arbori izomorfi, bazîndu-ne pe
+unicitatea descompunerii în factori a unui polinom.  Gradul
+polinomului asociat unui nod este egal cu suma gradelor fiilor, care
+la rîndul ei este egală cu numărul de frunze care se află sub acel nod
+(cum se demonstrează imediat prin inducţie după înălţime).  Şi asta-i tot!
+
+<P>
+Pentru a încheia secţiunea, să observăm că singurul algoritm
+eficient cunoscut pentru a verifica primalitatea unui număr este tot
+probabilist<A NAME="tex2html7"
+  HREF="#foot245"><SUP>7</SUP></A>!  Pentru că numerele prime mari stau la baza criptografiei
+cu cheie publică în sistemul RSA (probabil cel mai răspîndit la
+ora actuală), iată că unele dintre cele mai importante aplicaţii
+se bazează indirect pe algoritmi probabilişti.  Nimeni nu va putea
+obiecta asupra utilităţii lor!
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Algoritmi on-line</A>
+</H1>
+
+<P>
+Adesea trebuie luate decizii cu informaţii incomplete.  Un caz
+particular este luarea de decizii pe măsură ce datele devin
+disponibile.  Deciziile afectează viitorul, dar sunt luate fără a
+avea cunoştinţe despre datele viitoare.  Sa vedem în acţiune un
+exemplu foarte simplu:
+
+<P>
+
+<H2><A NAME="SECTION00061000000000000000">
+Problema schiorului</A>
+</H2>
+
+<P>
+Se pune problema: ce este mai bine: să închiriezi sau să cumperi
+schiuri?  (Vom presupune că preţul schiurilor este constant de-a
+lungul timpului, ca să simplificăm problema).  Dilema constă din
+faptul că în fiecare sezon, nu ştii dacă te vei mai duce odată.
+Dacă le cumperi şi nu te mai duci, ai dat banii degeaba.  Dacă le
+tot închiriezi şi te duci des, s-ar putea să le plăteşti de mai
+multe ori.  Totuşi, trebuie să iei o decizie.  Pe care?
+
+<P>
+Există un răspuns foarte simplu, care promite nu că dă rezultatul
+cel mai ieftin în orice circumstanţă, ci doar că nu vei cheltui de
+două ori mai mult decît în cazul în care ai face decizia perfectă
+(decizia perfectă este cea care ştie precis dacă te vei mai duce,
+şi de cîte ori; ea nu este accesibilă decît ``post-factum'', deci
+este pur teoretică).
+
+<P>
+Algoritmul este: închiriezi schiuri pînă ai dat pe chirie costul
+schiurilor.  După aceea dacă mai vrei să mergi le cumperi.  Voi
+demonstra rapid că în felul ăsta orice s-ar întîmpla nu pierzi
+mai mult de jumate din banii pe care i-ai fi cheltuit în cazul ideal.
+
+<P>
+Avem 3 posibilităţi:
+
+<P>
+
+<OL>
+<LI>Te opreşti înainte de a le cumpăra: în cazul ăsta ai jucat
+perfect, pentru că ai schiat şi nu puteai ieşi mai ieftin nicicum;
+
+<P>
+</LI>
+<LI>Te opreşti imediat după ce le-ai cumpărat.  În cazul ăsta ai
+dat de două ori preţul (odată pe închirieri, şi odată pe
+cumpărare), dar ai schiat cît ai fi putut schia dînd numai odată
+preţul (mai ieftin de odată nu puteai ieşi);
+
+<P>
+</LI>
+<LI>Te opreşti mai tîrziu: în cazul ăsta cel mai ieftin era tot
+să le cumperi din prima zi, deci iar ai cheltuit dublu.
+</LI>
+</OL>
+
+<P>
+Orice altă schemă foloseşti pentru a decide cumpărarea, există un
+scenariu în care poţi cheltui mai mult de dublu faţă de optim.  
+
+<P>
+Algoritmii on-line apar foarte natural într-o mulţime de situaţii:
+de exemplu în reţele de calculatoare, algoritmii care decid traseul
+unui pachet cu informaţii sunt algoritmi on-line; dacă decid trasee
+proaste, reţeaua poate deveni supra-aglomerată în viitor; astfel de
+algoritmi nu au idee despre cererile viitoare, aşa că acţionează
+cu informaţie incompletă.
+
+<P>
+Un alt exemplu este în sistemele de operare: algoritmii după care
+cache-urile (sau sistemele de memorie virtuală) aleg paginile care
+trebuie înlocuite.  Alegerea aceasta nu poate fi optimă în absenţa
+informaţiilor despre viitoarele cereri.  Cu toate acestea, anumite
+alegeri sunt mai bune decît altele.
+
+<P>
+Un al treilea exemplu, tot din contextul sistemelor de operare, este
+al algoritmilor de planificare, care trebuie să stabilească în ce
+moment se execută fiecare proces pe un calculator (paralel).  Acolo
+unde minutul de rulare costă o grămadă de bani, deciziile trebuie
+să risipească cît mai puţin timp.  Însă job-uri pentru
+prelucrare sosesc dinamic, aşa că algoritmii trebuie să facă
+faţă unui mediu în continuă schimbare.
+
+<P>
+Algoritmii on-line sunt în general analizaţi comparîndu-i cu
+algoritmii off-line, care ar avea înainte de a face deciziile
+informaţii perfecte despre toate cererile viitoare.  Este clar că
+informaţia aceasta este un mare avantaj, aşa că în general 
+algoritmii on-line au performanţe mult mai proaste decît cei
+corespunzători off-line.
+
+<P>
+Cercetările în acest domeniu sunt doar la început; se explorează
+şi variante de algoritmi hibrizi on/off-line, în care algoritmul are
+o idee despre viitor, dar nu neapărat o vedere completă.  Asta nu
+face întotdeauna sarcina algoritmului mai simplă, pentru că adesea
+problema cu informaţie completă este NP-completă...
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Rezumat</A>
+</H1>
+
+<P>
+În acest articol am trecut razant printr-o grămadă de probleme
+fascinante.  Iată recapitulate sumar conceptele esenţiale
+întîlnite:
+
+<P>
+
+<UL>
+<LI>Orice algoritm se exprimă folosind un set de operaţiuni
+elementare;
+</LI>
+<LI>Un algoritm poate rezolva o instanţă a unei probleme dintr-o
+clasă întreagă;
+</LI>
+<LI>Complexitatea algoritmilor este o funcţie de mărimea
+instanţei şi măsoară operaţiile efectuate pentru a rezolva
+cel mai nefavorabil caz;
+</LI>
+<LI>Complexitatea se exprimă concis prin ordinul de mărime al
+funcţiei complexitate spre infinit;
+</LI>
+<LI>Invarianţii sunt o metodă foarte utilă pentru a demonstra
+corectitudinea unui algoritm;
+</LI>
+<LI>Complexitatea unei probleme este complexitatea celui mai rapid
+algoritm care o poate rezolva;
+</LI>
+<LI>Există probleme care au nevoie de un timp exponenţial (în
+mărimea problemei) sau chiar mai mult pentru a fi rezolvate; există
+probleme care nu se pot rezolva deloc cu algoritmi;
+</LI>
+<LI>Clasa problemelor care au algoritmi nedeterminişti polinomiali
+include foarte multe probleme practice; nimeni nu ştie cum să
+rezolve aceste probleme în mod eficient;
+</LI>
+<LI>Clasa problemelor NP-complete este un set de probleme care se
+rezolvă toate la fel de repede; un algoritm care ar rezolva
+deterministic polinomial una din ele ar cauza rezolvarea tuturor
+problemelor din NP rapid;
+</LI>
+<LI>Algoritmii aproximativi încearcă să găsească mai repede
+soluţii sub-optimale la probleme grele;
+</LI>
+<LI>Algoritmii aleatori folosesc aleatorismul pentru a forţa
+comportarea unor probleme mai curînd ca în cazul mediu decît ca în
+cazul cel mai rău;
+</LI>
+<LI>Algoritmii probabilişti găsesc soluţiile cu mare
+probabilitate, dar nu întotdeauna, însă o fac repede;
+</LI>
+<LI>Algoritmii on-line trebuie să ia decizii înainte de a avea
+toate informaţiile disponibile;
+</LI>
+<LI>Multe domenii practice beneficiază masiv de noile tehnici, cea
+mai notabilă fiind criptografia.
+</LI>
+</UL>
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot170">...<IMG
+ WIDTH="18" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="img28.png"
+ ALT="$\Omega$"></A><A NAME="foot170"
+ HREF="algoritmi-html.html#tex2html1"><SUP>1</SUP></A>
+<DD>Mai exact <!-- MATH
+ $f \in \Omega(g)
+\Leftrightarrow f \in O(g) \land g \in O(f)$
+ -->
+<IMG
+ WIDTH="255" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img29.png"
+ ALT="$f \in \Omega(g)
+\Leftrightarrow f \in O(g) \land g \in O(f)$">.
+
+<DT><A NAME="foot261">... egale</A><A NAME="foot261"
+ HREF="algoritmi-html.html#tex2html2"><SUP>2</SUP></A>
+<DD>Problema este
+într-adevăr NP-completă, dacă socotim ca mărime de intrare
+ <EM>lungimea</EM> tuturor numerelor în biţi; altfel există un
+ algoritm de programare dinamică de complexitate S n, unde S este suma 
+numerelor, iar n este numărul de numere.  Observaţi însă că S
+este exponenţială în lungimea numerelor.
+
+<DT><A NAME="foot204">...
+NP-complete</A><A NAME="foot204"
+ HREF="algoritmi-html.html#tex2html3"><SUP>3</SUP></A>
+<DD>Cititorul atent va observa că noţiunea de
+NP-completitudine a fost definită numai pentru probleme de decizie:
+cu răspuns Da/Nu, pe cînd problemele de optimizare au în general un
+răspuns numeric; cititorul poate însă să fie liniştit, pentru că
+putem re-formula o problemă de optimizare ca o problemă de decizie:
+în loc de ``care este drumul minim?'', întrebăm ``nu-i aşa că
+există un drum mai scurt de 100?''.
+
+<DT><A NAME="foot216">... grafuri</A><A NAME="foot216"
+ HREF="algoritmi-html.html#tex2html4"><SUP>4</SUP></A>
+<DD>O cuplare este un set de muchii care nu are
+vîrfuri comune, iar o cuplare maximală este una care are un număr
+maxim de muchii.
+
+<DT><A NAME="foot221">... rele</A><A NAME="foot221"
+ HREF="algoritmi-html.html#tex2html5"><SUP>5</SUP></A>
+<DD>Numărul de
+instanţe rele poate fi estimat din distribuţia variabilei aleatoare
+complexitate, şi este într-adevăr mic.
+
+<DT><A NAME="foot262">...
+corp</A><A NAME="foot262"
+ HREF="algoritmi-html.html#tex2html6"><SUP>6</SUP></A>
+<DD>Aceasta este Teorema Lipton-Schwartz-Zippel: fie <IMG
+ WIDTH="57" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img90.png"
+ ALT="$S
+\subseteq K$"> o submulţime a unui corp K, iar <!-- MATH
+ $q(\overline{x})$
+ -->
+<IMG
+ WIDTH="38" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img91.png"
+ ALT="$q(\overline{x})$"> un
+polinom de n variabile de grad d cu coeficienţi în K.  Atunci
+ecuaţia <!-- MATH
+ $q(\overline{x}) = 0$
+ -->
+<IMG
+ WIDTH="70" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img93.png"
+ ALT="$q(\overline{x}) = 0$"> are cel mult d |S|<sup>n-1</sup> soluţii în
+S.
+
+<DT><A NAME="foot245">...
+probabilist</A><A NAME="foot245"
+ HREF="algoritmi-html.html#tex2html7"><SUP>7</SUP></A>
+<DD>Aşa se generează numere prime: se generează un
+număr aleator şi se verifică primalitatea cu un astfel de
+algoritm.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

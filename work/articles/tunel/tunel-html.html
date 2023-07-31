@@ -1,0 +1,873 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Tuneluri (tunneling)</TITLE>
+<META NAME="description" CONTENT="Tuneluri (tunneling)">
+<META NAME="keywords" CONTENT="tunel-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Tuneluri (tunneling)</H1> <P
+ALIGN="CENTER"><STRONG>Mihai Budiu -- <TT>mihaib+@cs.cmu.edu</TT>
+<BR><TT><a
+href="http://www.cs.cmu.edu/~mihaib">http://www.cs.cmu.edu/~mihaib</a></TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>11 martie 1999</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>conceptul de tunel şi aplicaţiile lui
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>cunoştinţe elementare despre
+funcţionarea reţelelor de calculatoare
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>protocol, ruter, tunel, TCP/IP, firewall, reţea
+privată virtuală, mbone, difuzare, mobile-IP
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html18"
+  HREF="tunel-html.html">Internetul: o reţea paradoxală</A>
+<UL>
+<LI><A NAME="tex2html19"
+  HREF="#SECTION00021000000000000000">Serviciul oferit de Internet</A>
+<LI><A NAME="tex2html20"
+  HREF="#SECTION00022000000000000000">Protocolul de transport</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html21"
+  HREF="#SECTION00030000000000000000">Conceptul de tunel</A>
+<LI><A NAME="tex2html22"
+  HREF="#SECTION00040000000000000000">Aplicaţii</A>
+<UL>
+<LI><A NAME="tex2html23"
+  HREF="#SECTION00041000000000000000">Subreţele speciale</A>
+<LI><A NAME="tex2html24"
+  HREF="#SECTION00042000000000000000">Reţele private virtuale</A>
+<LI><A NAME="tex2html25"
+  HREF="#SECTION00043000000000000000">MBONE: reţeaua de difuzare</A>
+<LI><A NAME="tex2html26"
+  HREF="#SECTION00044000000000000000">Mobile-IP: calculatoare mobile</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html27"
+  HREF="#SECTION00050000000000000000">Concluzii</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Internetul: o reţea paradoxală</A>
+</H1>
+
+<P>
+În urmă cu cîteva luni am avut privilegiul de a asista la o
+prelegere deosebit de interesantă despre evoluţia Internetului.
+Vorbitorul era un ``guru'', unul dintre cei care au contribuit în mod
+esenţial la crearea şi dezvoltarea acestei ultime revoluţii
+tehnologice: David Clark, cercetător la Massachussets Institute of
+Technology, cea mai prestigioasă universitate tehnică din Statele
+Unite, şi probabil şi din lume.
+
+<P>
+David Clark a primit doctoratul tot la MIT in 1973.  După primirea
+doctoratului a lucrat în dezvoltarea reţelei militare ARPANET, care
+va deveni mai tîrziu Internetul.  Dl. Clark a fost unul dintre
+proiectanţii reţelelor token-ring, despre care am vorbit pe scurt
+într-un articol anterior.  De la mijlocul anilor 1970 Dl. Clark a
+lucrat la dezvoltarea Internetului.  Intre 1981 şi 1989 a fost
+arhitectul şet al dezvoltării de protocoale pentru Internet.
+Dl. Clark a fost şi unul dintre proiectanţii sistemului de operare
+Multics, după care s-au inspirat cei care au creat sistemul de
+operare Unix.  Cercetarea sa curentă este în domeniul protocoalelor
+şi arhitecturilor pentru reţele de date de foarte mare viteză; în
+speţă extinderea Internetului pentru a suporta trafic de timp real,
+alocarea de resurse şi tarifare.
+
+<P>
+Expunerea domnului Clark despre Internet a fost extrem de
+concentrată; aşa cum numai un individ cu o experienţă uriaşă
+acumulată poate să o facă, Clark a desluşit trăsăturile
+esenţiale ale reţelei, reuşind să facă, aşa cum a spus chiar
+dumnealui, o ``introducere în Internet în 15 minute'' (restul
+expunerii a fost consacrat discuţiilor despre evoluţia ulterioară a
+reţelei).  Voi încerca să prezint în introducerea acestui text
+unele dintre ideile domnului Clark.  Voi reproduce din memorie spusele
+dînsului; sper să nu fiu o sursă prea mare de distorsiuni.  Despre
+Internet şi istoricul său am mai scris şi cu alte prilejuri în PC
+Report, iar copiile articolelor cu pricina sunt disponibile din pagina
+mea de web; nu o să mă repet aici.
+
+<P>
+<BLOCKQUOTE>
+Pe la începutul anilor '70, în timp ce lucram la construirea
+Internetului -- spunea David Clark -- am discutat cu un inginer de
+la AT&amp;T<A NAME="tex2html1"
+  HREF="#foot52"><SUP>1</SUP></A>.  Insul mi-a
+împărtăşit la un pahar impresia lui despre strădania noastră:
+``eu cred că sunteţi ţicniţi; o reţea de felul ăsta nu poate să
+funcţioneze.''
+
+</BLOCKQUOTE>
+
+<P>
+Din punctul de vedere al unei companii de telefoane, într-adevăr,
+Internetul este o reţea complet paradoxală; totul este cu susul în
+jos, cu totul altfel decît în reţeaua de telefonie.
+
+<P>
+De exemplu, în reţeaua telefonică toată ``inteligenţa'' se află
+în interiorul reţelei: centralele telefonice, releele, centralele
+interurbane, sunt mecanisme extraordinar de complicate, care
+controlează fiecare detaliu al funcţionării reţelei: gestiunea
+apelurilor, formarea circuitelor între sursă şi destinaţie,
+rezervarea de resurse (circuite) în toate centralele, semnalizarea,
+multiplexarea convorbirilor pe trunchiurile dintre centrale, controlul
+accesului la reţea (semnalizat prin tonul de ocupat), tarifarea,
+etc., sunt toate făcute în interiorul reţelei.  Prin comparaţie,
+telefoanele, de la capătul sîrmei, sunt nişte dispozitive complet
+inepte, incapabile de altceva decît de a codifica şi decodifica
+vocea, şi de o semnalizare primitivă (ex. sonerie, ton de ocupat,
+etc.).
+
+<P>
+Dimpotrivă, în Internet miezul reţelei este practic tembel, şi
+oferă un serviciu aproape inexistent nodurilor externe; prin contrast
+toată inteligenţa se află în entităţile de la extremităţi
+(calculatoarele), care comunică între ele.  Internetul nu interzice
+nimănui accesul, nu rezervă nici un fel de resurse pentru nimeni, nu
+tarifează nimic, şi în general, nu oferă nici un fel de garanţii.
+
+<P>
+
+<UL>
+<LI>O companie de genul AT&amp;T garantează fiecărui utilizator că
+nu va avea de a face decît într-o proporţie minusculă cu refuzul
+accesului la reţea (adică ton de ocupat) din lipsa de circuite din
+centrale; Internetul nu promite nimic; 
+
+<P>
+</LI>
+<LI>AT&amp;T garantează că, o dată stabilită o conexiune între doi
+convorbitori ea nu va fi desfăcută decît cînd unul dintre ei
+închide; Internetul nu oferă nici un fel de garanţie cu privire la
+cîte dintre datele transmise vor ajunge la celălalt capăt;
+
+<P>
+</LI>
+<LI>AT&amp;T garantează securitatea convorbirilor telefonice, pe cînd
+în Internet e posibil ca sute de urechi să intercepteze şi modifice
+datele care circulă;
+
+<P>
+</LI>
+<LI>AT&amp;T garantează că după un anumit număr de milisecunde
+fiecare apel telefonic este fie conectat fie oferă ton de ocupat; în
+Internet timpul de stabilire a unei conexiuni este nelimitat;
+
+<P>
+</LI>
+<LI>AT&amp;T promite că tot ce unul dintre vorbitori pronunţă în
+microfon ajunge la capătul celălalt; în Internet un bit sau un
+megaoctet din datele pe care le trimiteţi pot dispărea pentru
+totdeauna;
+
+<P>
+</LI>
+<LI>AT&amp;T promite că (în măsura în care viteza luminii permite),
+cei doi vorbitori vor purta o conversaţie interactivă, în care
+spusele unuia ajung cît se poate de repede la celălalt; în Internet
+ceea ce trimiteţi astăzi poate apărea undeva, în altă parte,
+teoretic chiar şi peste zile întregi;
+
+<P>
+</LI>
+<LI>AT&amp;T înregistrează şi tarifează fiecare secundă de
+convorbire telefonică în funcţie de plasamentul celor care
+conversează, ora convorbirii, abonamentul plătit, tarife speciale,
+etc.; în Internet nu există nici un fel de contabilizare a cine cu
+cine, cînd, cît şi pe unde comunică;
+
+<P>
+</LI>
+<LI>AT&amp;T este o corporaţie unică, care administrează întreaga
+reţea pe care o are în posesiune şi controlează fiecare aspect al
+funcţionării ei; Internetul este o federaţie de reţele de
+dimensiuni foarte diferite, din toate ţările globului, administrată
+de indivizi pricepuţi şi nepricepuţi, fiecare după cum îl ţin
+puterile;
+
+<P>
+</LI>
+<LI>AT&amp;T face cu alte companii telefonice contracte prin care-şi
+interconectează reţelele, stipulînd fiecare detaliu de
+responsabilitate a părţilor; în Internet datele oricui pot traversa
+practic orice parte a reţelei, fără ca trimiţătorul, destinatarul
+sau cei care posedă acele părţi ale reţelei să afle vreodată;
+
+<P>
+</LI>
+<LI>Telefonia mondială se sprijină pe un set relativ mic de
+standarde, care indică exact fiecare amănunt, de la mufele pe care
+le pot avea cablurile, pînă la felul în care se transmite fiecare
+bit de informaţie; Internetul leagă laolaltă zeci de feluri de
+reţele diferite, şi poate acomoda fără nici un fel de efort
+tehnologii de care nu a auzit nimeni în momentul în care a fost
+proiectat.
+</LI>
+</UL>
+
+<P>
+
+<H2><A NAME="SECTION00021000000000000000">
+Serviciul oferit de Internet</A>
+</H2>
+
+<P>
+Dacă studiem cu atenţie unicul serviciu oferit de Internet o să
+observăm că el sună cam aşa: ``utilizatorul dă nişte date
+reţelei, cu indicaţia de a le trimite undeva.  Reţeaua ar putea să
+transporte unele dintre date, la un moment dat, pînă la capătul
+celălalt.''
+
+<P>
+Dacă vi se pare o exagerare, studiaţi din nou specificaţiile
+protocolului numit IP, (Internet Protocol), care este executat de
+toate calculatoarele din interiorul reţelei (numite rutere), şi o
+să observaţi că nu puteţi descrie deloc mai precis
+funcţionalitatea acestuia.
+
+<P>
+Acesta este paradoxul Internetului: o construcţie atît de
+fenomenală (cum poate mărturisi oricine a folosit serviciile sale,
+de e-mail, ftp, web, telnet, telefonie, jocuri, şi atîtea altele)
+este înălţată pe un eşafodaj atît de ``şubred'' ca IP.
+
+<P>
+Cînd inginerul de la AT&amp;T l-a întrebat pe David Clark: ``noi am
+proiectat reţeaua de telefoane pentru convorbiri telefonice, şi am
+optimizat-o la maximum pentru asta; Internetul vostru pentru ce e
+bun?'', David Clark i-a răspuns: ``nu am nici cea mai mică idee la
+ce e bun Internetul; noi am optimizat Internetul pentru...
+schimbare.  Internetul trebuie să acomodeze orice fel de aplicaţie
+ne-ar trece prin minte, şi ca atare trebuie să fie extrem de
+flexibil''.
+
+<P>
+În retrospectivă putem spune că proiectarea Internetului a fost un
+succes ingineresc fenomenal; majoritatea aplicaţiilor care se
+folosesc de Internet astăzi nici nu puteau fi imaginate în urmă cu
+douăzeci de ani, şi suntem abia la început, credeţi-mă.
+
+<P>
+
+<H2><A NAME="SECTION00022000000000000000">
+Protocolul de transport</A>
+</H2>
+
+<P>
+Una dintre cheile funcţionării unui sistem atît de ``fragil'' este
+protocolul TCP, Transport Control Protocol.  Dacă două calculatoare
+conversează între ele prin Internet, numai ele două folosesc TCP,
+şi nu şi toate nodurile aflate pe traseul dintre ele.  TCP repară
+toate slăbiciunile protocolului IP, transformînd Internetul într-un
+mediu predictibil şi fiabil.  Dacă reţeaua dintre calculatoare
+funcţionează cîtuşi de puţin, în sensul că livrează ceva din
+datele care i se dau, TCP îşi face treaba:
+
+<P>
+
+<UL>
+<LI>TCP garantează că datele trimise de un capăt ajung în partea
+cealaltă în exact aceeaşi ordine în care au fost trimise,
+indiferent de comportarea reţelei;
+
+<P>
+</LI>
+<LI>TCP garantează că datele trimise ajung exact o dată;
+
+<P>
+</LI>
+<LI>TCP garantează şi că datele din conversaţii diferite (ale
+altor calculatoare, sau ale aceloraşi două calculatoare din trecut)
+nu sunt niciodată amestecate;
+
+<P>
+</LI>
+<LI>TCP garantează că reţeaua <EM>nu se congestionează</EM>; acesta
+este poate cel mai paradoxal aspect al funcţionării Internetului:
+dacă telefoanele ar funcţiona în acest fel, e ca şi cum telefonul
+dumneavoastră de acasă are grijă de toate centralele telefonice
+urbane, interurbane şi internaţionale prin care trece convorbirea
+dumneavoastră!  Dacă TCP nu ar face acest lucru, reţeaua nu ar
+funcţiona de loc.  Nodurile terminale ale reţelei au grijă de o
+entitate extrem de complexă, despre care de fapt nici nu ştiu mare
+lucru (nu e de mirare ca tehnicianul de la AT&amp;T nu înţelegea cum se
+poate aşa ceva).  TCP face treaba asta însă fără a şti mare
+lucru despre cum arată reţeaua; despre asta însă vom vorbi altă
+dată.
+</LI>
+</UL>
+
+<P>
+Mă voi opri aici din rememorarea conferinţei domnului Clark, pentru
+a ataca subiectul de fond al acestui articol.  Şi anume voi ilustra
+cum pe baza protocolului IP au fost construite alte servicii
+sofisticate, care dau reţelei înfăţişări foarte diferite.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Conceptul de tunel</A>
+</H1>
+
+<P>
+Conceptul central al acestui articol este <EM>tunelul</EM>.  Este un
+concept deosebit de simplu, dar cu aplicaţii uluitoare.  Voi ilustra
+noţiunea printr-o analogie.
+
+<P>
+Într-un articol anterior, despre rutarea din Internet, comparam
+transmisiunea datelor prin Internet cu funcţionarea sistemului
+poştal; analogia este destul de precisă, şi o voi refolosi şi
+aici.  
+
+<P>
+Calculatoarele care comunică sunt doi cetăţeni, iar Internetul este
+sistemul poştal.  Unitatea de transmisiune este scrisoarea (pachetul
+de date).  Un ins pune scrisoarea la poşta, iar apoi o armată de
+poştaşi, şoferi, aviatori, hamali, etc. mută scrisoarea la
+destinatar.  Scrisorile se pierd uneori, iar poşta nu garantează că
+ele vor ajunge la destinaţie; la fel se petrec lucrurile şi în
+Internet.
+
+<P>
+Să ne imaginăm acum că avem de a face cu o ţară care nu vrea să
+adere la convenţiile poştale internaţionale, care nu recunoaşte
+timbrele, care trimite scrisorile în pungi în loc de plicuri şi la
+care plata se face direct funcţionarilor.  Să ne mai imaginăm că,
+din anumite motive, scrisorile noastre trebuie să traverseze această
+ţară bizară (şi nu avem un avion la dispoziţie).  Ce ne facem?
+
+<P>
+Sistemul poştal internaţional ar putea crea în acest scop o
+organizaţie specială, cu filiale la două graniţe ale acestei
+ţări.  Atunci cînd un plic trebuie să traverseze această ţară,
+acesta este livrat la graniţă, este băgat într-o pungă şi plata
+este făcută unui funcţionar, cu rugămintea de a trimite punga la
+cealaltă graniţă.  Cînd punga ajunge dincolo, cealaltă filială
+extrage din pungă plicul, după care îl re-inserează în circuitul
+poştal normal.  Traseul poştal între cele două filiale se numeşte
+în terminologia Internetului ``un tunel''.  Numele este destul de
+natural, pentru că obiectul de transportat (plicul) intră într-o
+zonă întunecoasă (punga) şi iese abia la capătul celălalt la
+lumină, netulburat.
+
+<P>
+În general, avem de a face cu un tunel cînd datele (plicurile)
+trimise cu un anumit protocol sunt ``împachetate'' folosind un alt
+protocol de transmisiune (pungile), şi sunt despachetate apoi la
+celălalt capăt.  Împachetarea pachetelor se mai numeşte <EM>încapsulare</EM>.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Aplicaţii</A>
+</H1>
+
+<P>
+
+<H2><A NAME="SECTION00041000000000000000">
+Subreţele speciale</A>
+</H2>
+
+<P>
+Pentru o vreme în arena reţelelor de comunicaţii s-a dus o luptă
+acerbă între protocoalele folosite în Internet, bazate pe IP şi
+TCP, şi o serie de protocoale standardizate de organizaţia mondială
+a telecomunicaţiilor.  Lupta a fost incertă pînă în urmă cu
+doi-trei ani; pentru o vreme balanţa a înclinat în sprijinul
+reţelelor de tip OSI (Open System Interconnection: denumirea
+standardelor organizaţiei sus-menţionate); de curînd a devenit
+însă evident că Internetul este, cel puţin pentru următorii ani,
+tehnologia învingătoare.
+
+<P>
+În afară de TCP/IP şi reţelele de tip OSI, există o sumedenie de
+alte feluri de reţele de calculatoare, în general dezvoltate de
+marile companii de calculatoare, toate incompatibile între ele.  De
+pildă IBM are propriul model, numit SNA, Digital (acum Compaq) are
+DecNet, Apple are Appletalk, etc.  Din cauza asta, la ora actuală în
+lume există o bază mare instalată de reţele care funcţionează cu
+protocoale diferite.
+
+<P>
+Dar aceste reţele nu sunt sortite să rămînă izolate; ele pot fi
+folosite ca punţi de legătură în Internet folosind conceptul de
+tunel.  Figura&nbsp;<A HREF="tunel-html.html#x25">1</A> ilustrează acest fenomen cu un caz real.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="x25"></A><A NAME="124"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 1:</STRONG>
+Un tunel X25 între reţeaua universităţii
+Politehnica din Bucureşti şi reţeaua Universităţii din
+Bucureşti.  Pachetele IP de la Poli sunt ``împachetate'' de către
+un ruter multiprotocol (care ştie atît IP cît şi X25) ca date în
+pachetele X25, şi sunt despachetate de ruterul de la Universitate şi
+transmise apoi în reţeaua locală.</CAPTION>
+<TR><TD><IMG
+ WIDTH="541" HEIGHT="244" BORDER="0"
+ SRC="img1.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{x25.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Din motive tehnice, la începutul formării reţelei universitare
+române, acum numită RoEduNet, cîteva reţele erau conectate între
+ele folosind un protocol de comunicaţii numit X25, care este un
+protocol OSI.  Legătura la Internetul mondial era oferită de
+Politehnica din Bucureşti (PUB: ``Politehnica'' University of
+Bucharest, <TT>pub.ro</TT>; între Pub şi alte cîteva universităţi
+era însă instalată o reţea X25; la Pub se afla un switch X25 (un
+switch este un ruter, în terminologia X25), la care se cuplau mai
+multe linii telefonice închiriate, care veneau de la alte
+universităţi.  Şi la ora actuală, Universitatea din Bucureşti
+(<TT>unibuc.ro</TT>) este cuplată în acest fel.  Legătura între
+reţeaua IP (Internet) şi cea X25 este făcută cu două cutii care
+sunt numite <EM>rutere multiprotocol</EM>.  Aceste cutii ştiu să
+converseze protocoale diferite pe interfeţe diferite; ruterul de la
+poli vorbea IP cu lumea exterioară şi X25 cu switch-ul.  Cele două
+rutere de la extremităţile reţelei X25 deschideau între ele un
+circuit X25, prin care apoi transmiteau de la unul la altul pachetele
+IP; acestea deveneau date ordinare pentru protocolul X25.  Acesta nu
+este altceva decît un tunel, care transportă IP prin X25.
+
+<P>
+Din punct de vedere al restului lumii, reţeaua X25 nici nu există;
+toate celelalte calculatoare au impresia că ruterul de la Pub este
+cuplat direct printr-o sîrmă cu ruterul de la UniBuc; toată
+reţeaua X25 este complet transparentă (invizibilă).
+
+<P>
+Acest fenomen se întîlneşte foarte des; de exemplu în Statele
+Unite compania de telecomunicaţii Sprint, care posedă o mare parte
+din coloana vertebrală a Internetului, foloseşte pentru asta
+reţeaua proprie care rulează protocolul ATM; la capetele reţelei
+ATM se află rutere multiprotocol IP/ATM, care formează tunele prin
+reţeaua ATM pentru a transporta traficul Internet.
+
+<P>
+
+<H2><A NAME="SECTION00042000000000000000">
+Reţele private virtuale</A>
+</H2>
+
+<P>
+O altă aplicaţie interesantă a tunelelor este folosită de
+corporaţiile multi-naţionale.  O firmă ca IBM are reţele pe tot
+cuprinsul globului, aşa că nu poate folosi o singură sub-reţea
+pentru a-şi lega toate departamentele.  IBM însă poate crea ceea ce
+se numeşte <EM>o reţea privată virtuală</EM> (Virtual Private
+Network, VPN), cum ilustrăm în figura&nbsp;<A HREF="tunel-html.html#privata">2</A>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="privata"></A><A NAME="130"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 2:</STRONG>
+O reţea privată virtuală.  Cele două
+sedii ale unei companii, pe două continente diferite, sunt fiecare
+separate de Internet cu cîte un firewall.  Cele două reţele sunt
+legate între ele printr-un tunel care trece tot prin Internet, ceea
+ce permite calculatoarelor din aceste două reţele să comunice
+între ele nestingherite.</CAPTION>
+<TR><TD><IMG
+ WIDTH="540" HEIGHT="193" BORDER="0"
+ SRC="img2.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{privata.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+IBM asignează adrese<A NAME="tex2html4"
+  HREF="#foot81"><SUP>2</SUP></A> şi construieşte toate
+reţelele ca şi cum ar fi legate direct între ele.  Să presupunem
+că toate reţelele de la IBM folosesc IP.  Apoi, pentru fiecare
+reţea, ruterele de la margine construiesc tunele.  Ruterul din
+New-York deschide o legătură la ruterul din Delhi, formînd un
+tunel.  De aici înainte toate pachetele trimise de la New-York la
+Delhi sunt împachetate în pachete IP şi trimise prin tunel în
+Delhi.  Ruterul din Delhi le despachetează, după care le pune în
+reţeaua locală, ca şi cum le-ar fi primit de la vecinul imediat.
+
+<P>
+Acesta este un fenomen foarte interesant, în care date ale unui
+protocol sunt împachetate în pachete ale aceluiaşi protocol!  În
+analogia noastră anterioară, e ca şi cum am de trimis cinci vederi
+din America în România, dar pentru a nu plăti cinci timbre, le pun
+într-un plic pe toate, le trimit cu poşta unui amic din România, pe
+care îl rog să le pună la Poşta Română, cu timbre mai ieftine.
+Protocolul folosit în ambele cazuri e acelaşi, al sistemului
+poştal, dar cîteodată transport scrisori în scrisori!
+
+<P>
+Un motiv pentru care corporaţiile folosesc această metodă, în loc
+de a lega direct cele două reţele prin Internet, este <EM>securitatea</EM>.  Adesea companiile restrîng dramatic accesul la
+informaţiile din interior, mai ales pentru a preveni pirateria
+informatică.  Accesul din exterior în reţeaua IBM se poate face
+numai prin nişte puncte înguste (ca punctul de vamă de la
+frontieră), numite ``pereţi de foc'' (<EM>firewall</EM>).  Un
+administrator permite un acces extrem de limitat printr-un firewall,
+de pildă doar poştă electronică, dar nu şi web sau ftp.  Cu toate
+că accesul din exterior (sau chiar din interior spre înafară) este
+strict limitat, datorită reţelei private virtuale, calculatoarele
+din centrele IBM de pe cele două continente pot comunica între ele
+nestingherite, fără nici un fel de limitări cauzate de firewalls.
+
+<P>
+
+<H2><A NAME="SECTION00043000000000000000">
+MBONE: reţeaua de difuzare</A>
+</H2>
+
+<P>
+O altă aplicaţie extrem de interesantă a conceptului de tunel a
+fost construită prin teza de doctorat a lui Steve Deering, la
+Universitatea Stanford.  Este vorba de difuzare.
+
+<P>
+Reţeaua de televiziune funcţionează prin difuzare (<EM>broadcast</EM>): un post emite şi toată lumea receptează.  În cazul
+calculatoarelor comunicaţia este <EM>punct-la-punct</EM>: unul vorbeşte
+şi unul singur ascultă.  Dar există aplicaţii ale calculatoarelor
+care ar beneficia de difuzare; de exemplu teleconferinţele între mai
+mulţi participanţi.  În engleză se face distincţie între
+difuzarea pe care o primeşte toată lumea (broadcast) şi difuzarea
+pe care o primeşte doar o submulţime dintre posibilii ascultători,
+de pildă doar cei interesaţi.  Ultima se numeşte <EM>multicast</EM>.
+
+<P>
+Implementarea difuzării în sine nu este o treabă deosebit de grea
+(vom vedea mai jos cum este ea realizată); problema cea mai
+complicată este cum poate fi implementată difuzarea în Internet,
+care este deja construit şi nu a fost conceput pentru a suporta aşa
+ceva.  Asta este o adevărată problemă inginerească, pe care Deering
+a rezolvat-o cu mult succes.
+
+<P>
+Soluţia lui Deering cere cooperarea unora din ruterele din Internet,
+pentru a fi eficace.  Pentru că nimeni nu poate schimba toate ruterele
+dintr-o reţea cu 100 de milioane de calculatoare, care se întinde pe
+tot globul, soluţia trebuie să funcţioneze chiar dacă numai cîteva
+rutere sunt de acord să colaboreze, iar toate celelalte nu ştiu nimic
+despre difuzare.  Vom numi ruterele care participă la mbone <EM>rutere
+multicast</EM>.  Aceste rutere sunt relativ puţine, răspîndite în
+toată lumea; sunt nişte dispozitive experimentale.  Totalitatea
+ruterelor multicast se numeşte ``coloana vertebrală de difuzare'', sau
+Multicast backBONE, <EM>Mbone</EM>.  Mbone este operaţională din 1988
+(<a href="http://www.mbone.com">http://www.mbone.com</a>).  Harta
+curentă a reţelei este disponibilă la <a
+href="http://www.cs.berkeley.edu/~elan/mbone.html">http://www.cs.berkeley.edu/~elan/mbone.html</a>.
+
+<P>
+Aţi ghicit care este tehnologia folosită?  Cum se numeşte acest
+articol?  Figura&nbsp;<A HREF="tunel-html.html#mbone">3</A> ilustrează modul în care funcţionează
+MBone.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="mbone"></A><A NAME="136"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 3:</STRONG>
+Reţeaua virtuală de difuzare Multicast
+BackBone.  Ruterele care înţeleg protocolul de rutare special
+folosit în Mbone crează între ele tunele prin care-şi trimit
+pachetele de difuzare.  Un ruter din reţeaua de difuzare multiplică
+un pachet destinat mai multor calculatoare pentru fiecare vecin.
+Tunelurile (ilustrate cu linii groase) formează o reţea virtuală,
+numită Mbone.</CAPTION>
+<TR><TD><IMG
+ WIDTH="541" HEIGHT="349" BORDER="0"
+ SRC="img3.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{mbone.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Ruterele multicast sunt configurate de administratori să ştie despre
+alte rutere multicast.  Fiecare ruter multicast este configurat să
+comunice cu un anumit set de alte rutere multicast, ``vecinii'' săi
+(de care se poate afla la distanţă foarte mare, de altfel).  Un
+ruter multicast construieşte cîte o legătură virtuală cu fiecare
+vecin, un tunel folosind protocolul IP.  De aici înainte ruterele
+multicast transmit pachetele de difuzare numai prin aceste tunele.
+Ele au impresia că sunt direct conectate unul cu altul, ca şi cum
+restul Internetului nu ar mai exista!
+
+<P>
+Din cauza aceasta reţeaua MBone este o reţea <EM>virtuală</EM>.  Ca
+şi reţelele private virtuale, în MBone doi vecini aparenţi pot fi
+de fapt la distanţe foarte mari, dar sunt legaţi de un tunel care le
+dă iluzia de vecinătate fizică.
+
+<P>
+Deşi este extrem de interesant, nu voi mai intra în amănunte prea
+multe despre funcţionarea Mbone; voi ilustra doar principiile
+generate, printr-un exemplu:
+
+<P>
+
+<OL>
+<LI>Un anumit set de adrese din Internet, numite ``adrese de clasă
+D'' sunt rezervate pentru difuzare.  Fiecare adresă de difuzare
+reprezintă un grup de ascultători ai unei singure transmisiuni.
+
+<P>
+</LI>
+<LI>Dacă un calculator vrea să asculte o anumită emisiune, tot ce
+are de făcut este să-şi atribuie o astfel de adresă şi să
+anunţe ruterul cel mai apropiat din Mbone.
+
+<P>
+</LI>
+<LI>Ruterele din Mbone îşi transmit unul altuia informaţii despre
+unde se află calculatoare cu fiecare adresă.  În
+figura&nbsp;<A HREF="tunel-html.html#mbone">3</A>, toate ruterele vor afla despre cele trei
+calculatoare cu adresa Y.
+
+<P>
+</LI>
+<LI>Să presupunem că calculatorul A vrea să trimită o
+conferinţă video pentru adresa Y.  Atunci el trimite ruterului cel
+mai apropiat (R1) din Mbone pachetele de transmis, folosind un tunel.
+
+<P>
+</LI>
+<LI>Acest ruter ştie care din vecinii lui au ascultători
+interesaţi de emisiune.  În figura noastră aceştia vor fi R2 şi
+R3.  R1 ca atare face <EM>două</EM> copii ale pachetului iniţial, şi
+trimite cîte una fiecăruia dintre vecini, prin tunelul stabilit.
+
+<P>
+</LI>
+<LI>Fiecare ruter procedează mai departe, transmiţînd atîtea
+copii cîte tuneluri are, spre rutere interesate de pachet.  Dacă unul
+din vecinii unui ruter nu deserveşte nici un calculator cu adresa Y
+(ca R4 din figură), atunci acel ruter nici nu primeşte o copie.
+
+<P>
+</LI>
+<LI>Procesul se repetă pînă pachetele ajung la toate
+destinaţiile.
+</LI>
+</OL>
+
+<P>
+Metoda aceasta este deosebit de elegantă, pentru că rezolvă
+problema <EM>scalabilităţii</EM>.  Observaţi că efortul fiecărui
+participant pentru transmisiune este relativ mic pentru fiecare
+pachet; în nici un caz nu depinde de numărul de recipienţi (ci doar
+de numărul de vecini).
+
+<P>
+Prin contrast, să ne imaginăm cum am fi rezolvat această problemă
+dacă nu aveam deloc rutere multicast la dispoziţie.  Ei bine, atunci
+sursa trebuia să ştie care sunt toţi receptorii, şi să deschidă
+cîte o legătură pentru fiecare.  Apoi sursa trebuia să transmită
+fiecare pachet de atîtea ori cîţi receptori avea.  Asta este clar o
+risipă, pentru că cele mai multe pachete (identice) vor traversa
+aceleaşi legături în mod inutil.  Dacă sunt 10 000 de consumatori,
+aceasta ar depăşi capacităţile atît ale sursei, cît şi probabil
+ale legăturii sursei la reţea.
+
+<P>
+
+<H2><A NAME="SECTION00044000000000000000">
+Mobile-IP: calculatoare mobile</A>
+</H2>
+
+<P>
+În fine, vom ilustra o ultimă tehnologie spectaculoasă al
+tunelelor, cu o altă aplicaţie care funcţionează în Internet şi
+este în curs de aprobare de către corpul de standardizare al
+Internetului, IETF (Internet Engineering Task Force).
+
+<P>
+Problema are de-a face cu calculatoarele care ``se plimbă'', care nu
+au o poziţie fixă.  De pildă, dacă zburăm cu avionul cu un
+laptop, acest calculator ar putea fi într-o zi în Europa, iar în
+alta în Japonia.  Cum poate comunica acest calculator în Internet ca
+şi cum ar fi tot timpul legat la aceeaşi reţea?
+
+<P>
+Problema provine din modul în care adresele sunt atribuite şi
+rutarea pachetelor este făcută în Internet; am consacrat un întreg
+articol în trecut acestui subiect, aşa încît nu o să mă repet
+aici.
+
+<P>
+Ideea este că adresa unui calculator indică aproximativ şi locul
+geografic în care acesta se află; astfel, dacă un calculator îşi
+schimbă poziţia, pachetele care-i sunt destinate nu îl mai pot
+găsi.  (Un calculator nu-şi poate schimba adresa, pentru că asta
+este identitatea lui, după care ceilalţi îl recunosc.)  Soluţia
+există, este implementată, funcţionează, şi este ilustrată în
+figura&nbsp;<A HREF="tunel-html.html#mobile">4</A>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="mobile"></A><A NAME="142"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 4:</STRONG>
+Funcţionarea protocolului IP mobil: un
+calculator migrator primeşte de la reţeaua în care a poposit o
+adresă nouă; ruterul de la reţeaua lui de baştină şi de la
+reţeaua gazdă crează un tunel prin care îi trimit pachetele care i
+se cuveneau.</CAPTION>
+<TR><TD><IMG
+ WIDTH="543" HEIGHT="243" BORDER="0"
+ SRC="img4.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{mobile.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Pentru a realiza comunicarea în mod transparent cu un calculator
+mobil, ne trebuie colaborarea a două rutere: unul în reţeaua unde
+calculatorul se află de obicei (reţeaua-casă) şi unul în reţeaua
+unde calculatorul se plimbă (reţeaua-gazdă).  Iată cum
+funcţionează protocolul, în linii mari:
+
+<P>
+
+<OL>
+<LI>Calculatorul coboară din avion în Japonia.  El emite un pachet
+radio, zicînd ``cucu, am venit în vizită din Europa; e cineva
+acasă?'';
+
+<P>
+</LI>
+<LI>Un ruter gazdă aude acest pachet.  Prin anumite metode
+criptografice, acest ruter se convinge că, într-adevăr, acest
+calculator nu este un impostor, ci chiar calculatorul european în
+vizită;
+
+<P>
+</LI>
+<LI>Ruterul-gazdă ia legătura cu ruterul-casă: ``hai salut; un
+laptop de-al tău e pe la mine prin zonă; mă ocup eu de el''; prin
+anumite metode criptografice ruterul casă se convinge într-adevăr
+că nu vorbeşte nici el cu un impostor;
+
+<P>
+</LI>
+<LI>Ruterul gazdă îi răspunde calculatorului mobil: ``s-a
+aranjat: de acum înainte poţi folosi adresa asta din Japonia, ca să
+primeşti corespondenţa'';
+
+<P>
+</LI>
+<LI>Ruterul-gazdă şi ruterul-casă construiesc un tunel între
+ele;
+
+<P>
+</LI>
+<LI>De fiecare dată cînd ruterul-casă vede un pachet pentru
+laptop-ul plecat, în loc să-l trimită în reţeaua locală, unde
+laptop-ul se afla iniţial, îl bagă în tunel, pentru ruterul
+Japonez;
+
+<P>
+</LI>
+<LI>Ruterul japonez extrage din tunel pachetele pentru vizitator şi
+i le înmînează la noua adresă.
+</LI>
+</OL>
+
+<P>
+Din nou, analogia cu sistemul poştal este perfectă; este ca şi cum
+vecinul de bloc are cheia dvs. de la cutia poştală, ia toate
+scrisorile pe care le primiţi, le bagă într-un plic cu timbru de
+Japonia şi le pune din nou la poştă.
+
+<P>
+Foarte elegant, nu?
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Concluzii</A>
+</H1>
+
+<P>
+Am văzut în acest text cum un mecanism extrem de simplu IP, care
+transferă în mod ne-fiabil date între două calculatoare, poate fi
+extins în felurite moduri, pentru a construi mecanisme din ce în ce
+mai sofisticate.  Am văzut cum TCP oferă fiabilitate, tunelele
+oferă legături virtuale între calculatoare distante, Mbone oferă
+difuzare cu cost redus, iar protocolul Mobile-IP oferă independenţă
+de poziţie.
+
+<P>
+Sper ca de acum înainte să nu mai treceţi printr-un tunel fără o
+umbră de admiraţie.
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot52">... AT&T</A><A NAME="foot52"
+ HREF="tunel-html.html#tex2html1"><SUP>1</SUP></A>
+<DD>AT&amp;T a fost timp de 60 de ani cea mai mare companie
+de telecomunicaţii din lume, avînd, pînă în 1984, un monopol
+practic complet asupra telefoniei în Statele Unite; în 1984 AT&amp;T a
+fost sfărîmată de guvernul american în mai multe companii care se
+concurează una pe alta.  AT&amp;T derivă direct din compania fondată
+de Alexander Graham Bell, inventatorul telefonului.
+
+<DT><A NAME="foot81">... adrese</A><A NAME="foot81"
+ HREF="tunel-html.html#tex2html4"><SUP>2</SUP></A>
+<DD>Acest exemplu este pedagogic (dar
+plauzibil); nu ştiu dacă într-adevăr IBM foloseşte această
+schemă la nivelul întregii corporaţii.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

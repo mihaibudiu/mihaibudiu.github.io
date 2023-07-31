@@ -1,0 +1,1914 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Expresii Regulate</TITLE>
+<META NAME="description" CONTENT="Expresii Regulate">
+<META NAME="keywords" CONTENT="regex-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Expresii Regulate</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- <TT>mihaib+@cs.cmu.edu</TT> 
+<BR><TT><A NAME="tex2html2"
+  HREF="http://www.cs.cmu.edu/~mihaib/">http://www.cs.cmu.edu/~mihaib/</A></TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>martie 2000</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>expresii regulate şi aplicaţiile lor
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>cunoştinţe elementare de programare a
+calculatoarelor
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>expresie regulată, automat finit, analiză
+lexicală
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Cuprins</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html38"
+  HREF="regex-html.html">Limbaje şi calculatoare</A>
+<LI><A NAME="tex2html39"
+  HREF="#SECTION00030000000000000000">Analiza lexicală</A>
+<LI><A NAME="tex2html40"
+  HREF="#SECTION00040000000000000000">Expresiile regulate: un limbaj pentru a descrie limbaje</A>
+<UL>
+<LI><A NAME="tex2html41"
+  HREF="#SECTION00041000000000000000">Exemple de ER</A>
+<LI><A NAME="tex2html42"
+  HREF="#SECTION00042000000000000000">Limbaje regulate şi limbaje neregulate</A>
+<LI><A NAME="tex2html43"
+  HREF="#SECTION00043000000000000000">Aplicaţii ale limbajelor regulate</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html44"
+  HREF="#SECTION00050000000000000000">Automate finite</A>
+<LI><A NAME="tex2html45"
+  HREF="#SECTION00060000000000000000">Programe care manipulează ER</A>
+<UL>
+<LI><A NAME="tex2html46"
+  HREF="#SECTION00061000000000000000">Shell-ul Unix</A>
+<LI><A NAME="tex2html47"
+  HREF="#SECTION00062000000000000000"><TT>grep</TT></A>
+<LI><A NAME="tex2html48"
+  HREF="#SECTION00063000000000000000"><TT>awk</TT></A>
+<LI><A NAME="tex2html49"
+  HREF="#SECTION00064000000000000000"><TT>sed</TT></A>
+<LI><A NAME="tex2html50"
+  HREF="#SECTION00065000000000000000"><TT>vi</TT></A>
+<LI><A NAME="tex2html51"
+  HREF="#SECTION00066000000000000000"><TT>emacs</TT></A>
+<LI><A NAME="tex2html52"
+  HREF="#SECTION00067000000000000000"><TT>f?lex</TT></A>
+<LI><A NAME="tex2html53"
+  HREF="#SECTION00068000000000000000">Perl</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html54"
+  HREF="#SECTION00070000000000000000">Alte surse de informaţie</A>
+<LI><A NAME="tex2html55"
+  HREF="#SECTION00080000000000000000">Concluzii</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+De la prima întîlnire cu calculatoarele am fost fascinat de ele.
+Pentru mine întîlnirea asta s-a produs destul de tîrziu, după
+standardele generaţiei actuale de elevi, prin clasa a opta.
+Fireşte, primul lucru pe care l-am văzut a fost un joc; calculatorul
+cu pricina este o specie deja dispărută, numit Sinclair Spectrum ZX,
+după care românii au făcut o copie destul de reuşită, numită HC
+85 (de fapt a existat o a doua copie, TIM-S, dar care s-a bucurat de
+mai puţin succes).  Am avut imediat dorinţa de a construi şi eu un
+joc.
+
+<P>
+Realizez că începutul ăsta poate induce în eroare cititorul,
+pentru că nu despre jocuri vreau să vorbesc aici.  De fapt, dacă
+aţi trecut peste dezamăgirea produsă de titlul anost, cred că
+veţi rezista şi la restul textului.
+
+<P>
+De la început am fost fascinat de calculatoare, şi fascinaţia mea a
+rămas neschimbată, chiar dacă unele dintre motivele fascinaţiei
+s-au modificat cu timpul.  La început am fost entuziasmat de faptul
+că exista o mică lume asupra căruia sunt demiurg, stăpîn absolut,
+o lume care se mişcă după legile pe care i le trasez eu.  Probabil
+ca într-o oarecare măsură acest motiv este prezent şi acum în
+atracţia mea pentru calculatoare, dar într-o măsură mult
+diminuată.
+
+<P>
+Cu timpul am învăţat că demiurgul-programator nu este de fapt
+atotputernic; într-o serie de articole precedente din PC Report, am
+încercat să ilustrez unele dintre limitările calculatoarelor însele:
+de exemplu am văzut într-un <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#complex">articol</a>
+despre teoria complexităţii şi calculabilitate (PC Report din
+Decembrie 1999, o copie fiind disponibilă din pagina mea de web) că
+există lucruri pe care calculatoarele nu le pot calcula, şi în trei
+articole din octombrie, noiembrie şi februarie am încercat să <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#sat">arăt</a>
+că există probleme care se pot rezolva, dar pentru care oricît de
+multe resurse computaţionale am avea la dispoziţie, răspunsuri
+practice probabil nu vor putea fi obţinute vreodată.
+
+<P>
+Acum calculatoarele sunt profesia mea şi ca atare am de-a face cu ele
+zi de zi.  De fapt studiez calculatoarele de 13 ani, în sensul cel
+mai concret al cuvîntului: am fost elev la Liceul de Informatică din
+Bucureşti, student în calculatoare la Politehnica din Bucureşti
+pentru şase ani (din care unul de master), şi acum sunt în al
+treilea an de doctorat; cu toate acestea, mai am multe de învăţat!
+Acum ştiu că de fapt calculatoarele nu sunt un haos primitiv, în
+care eu, programatorul, atotputernic, pot face ordine, ci că există
+multe limite peste care nu pot trece, că unele lucruri se pot face
+mai bine sau mai rău, cîteodată foarte bine şi foarte rău, şi am
+mai învăţat că sunt enorm de multe lucruri pe care nimeni nu ştie
+încă să le facă.  De fapt asta e o veste bună pentru mine:
+principala mea activitate este cercetarea, deci faptul că sunt multe
+lucruri de aflat înseamnă că pentru o vreme o să am ceva pîine pe
+masă.
+
+<P>
+Am ajuns pe ocolite la ideea pe care vreau să-mi bazez introducerea.
+După cum am spus şi în alte articole, ştiinţa calculatoarelor
+(informatica în terminologie franco-română) are două ramuri mari:
+partea teoretică şi cea aplicată.  În general cercetătorii pot fi
+atribuiţi destul de clar uneia dintre ramuri.  Cei dintr-o ramură
+uneori îi privesc cu superioritate pe cei din cealaltă.  De fapt
+ambele ramuri sunt extrem de importante, şi deloc uşoare; efortul
+intelectual depus în oricare dintre ele este substanţial, şi
+există talent specific fiecăreia dintre ele.
+
+<P>
+Dar rezultatele cele mai spectaculoase se obţin atunci cînd teoria
+şi practica concură; situaţia este oarecum asemănătoare cu
+fizica, în care teoreticienii şi experimentaliştii sunt două
+triburi separate; dar revoluţiile sunt cele în care teoria şi
+practica explică un acelaşi fenomen, confirmîndu-se şi
+întărindu-se reciproc.
+
+<P>
+De fapt atunci cînd teoria concură cu practica obţinem un al
+treilea rezultat, cel mai palpabil, şi cel care de fapt schimbă
+societatea în mod dramatic: este vorba de tehnologie.  Cîţi dintre
+cei care folosesc astăzi televizoarele sunt conştienţi că
+existenţa lor se bazează pe teoria cîmpului electromagnetic a lui
+Maxwell, şi pe efectul fotoelectric descoperit experimental de Hertz
+(şi pentru a cărei explicaţie Einstein a primit premiul Nobel)?
+
+<P>
+La fel stau lucrurile şi în calculatoare: tehnologia la îndemîna
+(aproape a) fiecăruia, care acum schimbă societatea într-un mod
+fundamental (de exemplu prin Internet), nu ar fi fost posibilă fără
+rezultate atît din teorie cît şi din practică.  De fapt acest
+articol va ilustra o problemă foarte simplă, la care teoria a adus
+nişte contribuţii majore, dar care are enorm de multe aplicaţii în
+practică.  De fapt, această teorie are un succes atît de mare,
+încît probabil că nu există calculator digital care să nu o
+folosească în mai multe feluri, de la cele din PC-uri pînă la
+microcontrolerele care controlează utilaje industriale sau reglează
+injecţia automobilelor.  Din necesitate însă, prezentarea noastră
+va fi foarte sumară, şi nu va acoperi decît puţine aspecte ale
+problemei.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Limbaje şi calculatoare</A>
+</H1>
+
+<P>
+Un calculator abstractizat teoretic poate fi văzut ca un aparat care
+prelucrează limbaje.  Toate informaţiile pe care le prelucrează
+sunt exprimate în semne discrete, pe care le vom numi ``<EM>litere</EM>'' (de exemplu în biţi, în zero şi unu, sau dacă
+preferaţi în octeţi).  Astfel, datele de la intrare şi de la
+ieşire sunt toate şiruri de litere, pe care le numim ``<EM>cuvinte</EM>''.  Noţiunea aceasta de cuvînt este mai largă decît cea
+obişnuită: în româna nu numim şirul de litere ``jjj'' un cuvînt,
+dar în terminologia calculatoarelor, da.  Fiecare program procesează
+anumite cuvinte şi dă ca rezultat alte cuvinte.  Adesea, pentru un
+program nu orice cuvînt venit la intrare are sens: unele vor fi pur
+şi simplu eronate; de exemplu un program care sortează un şir de
+numere nu se aşteaptă să primească alte simboluri.  Numim o
+mulţime de cuvinte ``<EM>limbaj</EM>''.
+
+<P>
+De exemplu, limbajul Pascal constă în colecţia tuturor cuvintelor
+care reprezintă programe corecte Pascal (observaţi că un întreg
+program Pascal este deci un singur cuvînt în această
+terminologie!).  O întrebare este cum poţi descrie în mod succint
+un întreg limbaj?  De exemplu, cum poţi spune cuiva ce este un
+program Pascal corect?  Pentru asta trebuie să foloseşti reguli care
+descriu cum se pot construi programele corecte.  Regulile care descriu
+cum arată un limbaj se numesc <EM>sintaxa</EM> limbajului.
+
+<P>
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="313"></A>
+<TABLE>
+<CAPTION><STRONG>Tabela 1:</STRONG>
+Un exemplu de program Pascal şi un fragment (simplificat)
+din notaţia Backus-Naur, care descrie toate programele Pascal
+corecte.</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1" ALIGN="CENTER">
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198><B>Program Pascal</B></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198><B>Fragment din sintaxa
+Pascal</B></TD>
+</TR>
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198><PRE><TT>
+program ridicol; <BR>
+<BR>
+var a:int, i:int; <BR>
+<BR>
+begin { main } <BR>
+a = 0; <BR>
+for i:= 1 to 10 do begin <BR>
+a = a + i
+<BR>
+end;
+<BR>
+println a <BR>
+end.
+</TT></PRE></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>Program := <BR> <TT>program</TT> identificator <TT>;</TT> bloc <TT>.</TT>
+<BR>
+bloc := <BR>
+declaraţii de etichete <BR>
+declaraţii de constante <BR>
+declaraţii de tipuri <BR>
+declaraţii de variabile <BR>
+declaraţii de funcţii şi proceduri <BR> <TT>begin</TT> listă de instrucţiuni <TT>end</TT> <BR>
+listă de instrucţiuni := <BR>
+instrucţiune <BR>   <EM>sau</EM> <BR>
+instrucţiune <TT>;</TT> listă de instrucţiuni</TD>
+</TR>
+</TABLE>
+
+</DIV></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+Aceste reguli la rîndul lor trebuie scrise cumva.  Limbajul care
+descrie regulile poate fi numit ``meta-limbaj'', pentru că este un
+limbaj care descrie alte limbaje.
+
+<P>
+Desigur, ne putem pune întrebarea: cum descriem un meta-limbaj?  În
+mod tradiţional meta-limbajele erau descrise pe hîrtie, folosind o
+notaţie simbolică; prima probabil în ordine cronologică a fost
+notaţia Backus-Naur, care a fost printre altele folosită pentru a
+descrie limbajul Pascal.  Un exemplu este prezent în
+figura&nbsp;<A HREF="#sintaxa">1</A>.
+
+<P>
+Au apărut apoi programe speciale, care permit descrierea structurii
+altor limbaje; există multe astfel de scule folosite pe scară
+largă; iată cîteva dintre ele:
+
+<P>
+
+<UL>
+<LI>Una dintre scule, de apariţie recentă, este limbajul XML
+(eXtensible Meta-Language).  XML este un limbaj în care poate fi
+descrisă sintaxa altor limbaje.
+
+<P>
+</LI>
+<LI>Generatoare de parsere (ex: <TT>yacc</TT>, <TT>bison</TT>): un parser
+este un program care verifică apartenenţa unui cuvînt la un limbaj
+(de exemplu verifică dacă un text dat este un program Pascal).  Un
+generator de parsere este un program care permite descrierea unui
+parser într-un meta-limbaj.  Două programe extrem de folosite în
+lumea Unix permit descrierea de parsere arbitrare, şi generează cod
+pentru a implementa aceste parsere în C sau C++; acestea sunt
+programele <TT>yacc</TT> (Yet Another Compiler-Compiler) şi <TT>bison</TT>,
+un animal asemănător cu yak-ul<A NAME="tex2html4"
+  HREF="#foot89"><SUP>1</SUP></A>.  Figura&nbsp;<A HREF="regex-html.html#yacc">1</A> arată cum se foloseşte un
+astfel de program.
+
+<P>
+</LI>
+<LI>Chiar în acest articol vom prezenta pe scurt programul
+<TT>lex</TT>, care este folosit pentru a descrie componentele elementare
+folosite pentru a scrie programe într-un anumit limbaj.
+</LI>
+</UL>
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="yacc"></A><A NAME="356"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 1:</STRONG>
+Yacc este un generator de parsere.  Utilizatorul
+descrie sintaxa unui limbaj oarecare <I>L</I> (de exemplu Pascal), folosind
+o notaţie asemănătoare cu notaţia Backus-Naur; utilizatorul
+descrie şi o serie de proceduri în C care trebuie să fie executate
+atunci cînd o anumită construcţie sintactică este întîlnită (de
+exemplu, ce trebuie făcut cînd întîlnim un <TT>begin</TT>-<TT>end</TT>,
+ce trebuie făcut cînd întîlnim un <TT>for</TT>, etc.).  <TT>yacc</TT>
+generează un program C care poate fi compilat şi executat,
+obţinînd un parser.  Acest program apoi primeşte la intrare
+programe scrise în <I>L</I> şi execută acţiunile indicate.  Acţiunile
+pot descrie de exemplu cum se execută programul, sau cum trebuie
+construită o structură de date care reprezintă programul (care de
+obicei apoi este optimizată pentru a face programul mai rapid).
+Parserul de asemenea recunoaşte programe ilegale, în care caz
+returnează mesaje de eroare.</CAPTION>
+<TR><TD><IMG
+ WIDTH="543" HEIGHT="161" BORDER="0"
+ SRC="img3.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{yacc.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Pare complicat?  Este, cel puţin pînă vă obişnuiţi cu ideea
+programelor care prelucrează alte programe.  Despre XML au mai
+apărut articole în PC Report; poate în viitor o să scriu un
+articol despre <TT>yacc</TT> sau prietenul lui.  În textul de faţă o
+să vedem însă soluţia la o problemă mai simplă.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Analiza lexicală</A>
+</H1>
+
+<P>
+Atunci cînd eu vorbesc cu cineva, acel cineva desface textul spus de
+mine în cuvinte, pe care le analizează.  Vorbitorul unei limbi
+străine are adesea probleme în a <EM>segmenta</EM> textul auzit în
+cuvinte independente.  În scris problema este mai simplă, cel puţin
+pentru limbile moderne care folosesc alfabetul latin: prin convenţie
+punem între două cuvinte un spaţiu.
+
+<P>
+Dacă ideea vi se pare evidentă, aflaţi că lucrurile nu au stat
+întotdeauna aşa: romanii şi grecii nu foloseau spaţii (de asemenea
+foloseau extrem de multe prescurtări, pentru că hîrtia era scumpă;
+din lipsa tipografiilor, încă ne-inventate, copiştii<A NAME="tex2html6"
+  HREF="#foot103"><SUP>2</SUP></A> aveau probleme de segmentare, şi făceau
+adesea erori de interpretare a textelor cînd le copiau).  Dacă vi se
+pare floare la ureche aşa ceva,
+atunciîncercaţisăcitiţipropoziţiaastaşivedeţicîtdeuşorvăeste.
+
+<P>
+Atunci cînd unui calculator<A NAME="tex2html7"
+  HREF="#foot104"><SUP>3</SUP></A> îi este prezentat un program, el are de făcut o
+analiză similară: trebuie să despartă textul în bucăţele
+separate şi să identifice semnificaţia fiecăreia; aceasta este
+analiza lexicală; bucăţelele obţinute sunt numite <EM>lexeme</EM>.
+După aceea calculatorul verifică dacă aceste bucăţele sunt
+îmbinate corect (nu orice succesiune de cuvinte din română
+formează o propoziţie), folosind analiza sintactică.
+Figura&nbsp;<A HREF="regex-html.html#compilator">2</A> arată cum aceste faze sunt folosite în
+compilatoare.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="compilator"></A><A NAME="371"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 2:</STRONG>
+Plasamentul analizei lexicale într-un
+compilator.  Analiza lexicală este prima fază a compilării, care
+identifică componentele ``atomice'' ale programului, lexemele.
+Analiza sintactica a fost descrisă pe scurt în acest text: ea
+verifică dacă lexemele sunt îmbinate după regulile corecte ale
+programării în limbajul compilat.  Celelalte faze analizează şi
+optimizează programul, şi nu ne interesează prea mult în acest
+text.</CAPTION>
+<TR><TD><IMG
+ WIDTH="543" HEIGHT="164" BORDER="0"
+ SRC="img4.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{compilator.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Nici în calculatoare lucrurile nu au fost prea clare de la început:
+limbajele primitive, ca Fortran-ul, nu aveau reguli complet ne-ambigue
+pentru a discerne într-un text care este fiecare cuvînt.  De
+exemplu, în Fortran spaţiile nu contează (din motive pragmatice:
+aparatele de găurit cartele nu erau prea fiabile în tastatul de
+spaţii).  Folclorul spune că americanii au pierdut un satelit din
+cauza asta, pentru că compilatorul de Fortran a interpretat un
+program altfel decît utilizatorul care l-a scris.
+
+<P>
+Dacă acestea vi se par aberaţii îndepărtate, aflaţi că nici
+limbajele cele mai folosite la ora actuală pe scară largă nu sunt
+lipsite de ele: de exemplu în C++ o problemă specială apare din
+cauza construcţiei <TT>template</TT>, care se scrie astfel <TT>a&lt;b&gt;</TT>.
+Problema apare în cazul unor template imbricate (incluse una
+într-alta), ca în <TT>a&lt;b&lt;c&gt;&gt;</TT>.  Problema e cu semnele <TT>&gt;&gt;</TT>:
+reprezintă ele două template închise, sau semnul ``shift-right''?
+Analizorul lexical nu poate decide de unul singur ce înseamnă aceste
+semne, are nevoie de ajutor din partea analizorului sintactic.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Expresiile regulate: un limbaj pentru a descrie limbaje</A>
+</H1>
+
+<P>
+Am văzut deci că prima etapă în înţelegerea unui program este
+descompunerea lui în lexeme.  Atunci cînd implementăm un limbaj nou
+de programare, cum ar fi oare cel mai eficace să descriem toate
+lexemele posibile?  De exemplu, în C avem lexeme de forma <TT>for</TT>,
+<TT>while</TT>, etc., dar nu lexeme de forma <TT>%$#@</TT>.  'In plus,
+într-un program C putem întîlni lexeme de genul
+<TT>variabila_cea_mare</TT>.  Există deci un număr potenţial infinit
+de lexeme (dacă presupunem că numele de variabile nu au nici o
+limită pentru lungime).  Totalitatea tuturor lexemelor legale este la
+rîndul ei un limbaj; acesta nu trebuie confundat cu limbajul C: în
+limbajul C ``cuvintele'' sunt programele corecte, în limbajul
+lexemelor C, cuvintele legale sunt toate lexemele care pot apărea în
+vreun program C.
+
+<P>
+Teoreticienii au propus cu mult timp în urmă (în anii '60) un
+meta-limbaj extrem de concis pentru a descrie lexeme.  Limbajul acesta
+este limbajul <EM>expresiilor regulate</EM>.  O expresie regulată este
+un şir de caractere care descrie o mulţime de cuvinte posibile
+(poate chiar o mulţime infinită).  Lexemele tuturor limbajele de
+programare moderne pot fi descrise prin expresii regulate; vom folosi
+de aici înainte abrevierea ER pentru ``expresii regulate''.
+
+<P>
+Cred că cel mai simplu este să vedem nişte exemple.  Pentru
+început voi folosi notaţia cea mai economică, care este folosită
+de teoreticieni.  Vom vedea apoi tot felul de variante, folosite de
+tot felul de ``scule'' de procesare de texte.
+
+<P>
+Să zicem că vrem să descriem limbaje care folosesc litere din
+alfabetul {a,b,c,d}, pentru a simplifica lucrurile.  Perfect.  ER
+folosesc toate aceste caractere, plus o listă de caractere
+suplimentare: <!-- MATH
+ $\{a,b,c,d,*,\epsilon,\phi,|,\cdot,(,)\}$
+ -->
+<IMG
+ WIDTH="183" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img5.png"
+ ALT="$\{a,b,c,d,*,\epsilon,\phi,\vert,\cdot,(,)\}$">.  Voi explica
+prin exemple ce înseamnă fiecare.  Observaţi că scriu fiecare
+expresie regulată cu caractere cursive, iar cuvintele din limbajul pe
+care-l descriem cu caractere drepte.  Asta pentru a preveni
+confuziile, pentru că există caractere comune în cele două
+mulţimi.  (Voi abandona această convenţie în secţiunile care
+descriu ``sculele'', pentru că acestea oricum folosesc alte notaţii.)
+
+<P>
+
+<UL>
+<LI>Avem în primul rînd 4 ER extrem de simple, care constau
+dintr-un singur caracter, una din litere.  De exemplu, expresia
+regulată ``<I>a</I>''.  Aceasta este o expresie foarte simplă, care
+descrie un limbaj format dintr-un singur cuvînt, care are o singură
+literă; limbajul ``{a}''.
+
+<P>
+</LI>
+<LI>Avem apoi expresia regulată <IMG
+ WIDTH="16" HEIGHT="35" ALIGN="MIDDLE" BORDER="0"
+ SRC="img7.png"
+ ALT="$\phi$">, care descrie limbajul...
+care nu are nici un cuvînt!  Ce risipă!  Cui îi trebuie astfel de
+limbaje?  Cu toate acestea, această expresie regulată se dovedeşte
+cîteodată utilă, chiar dacă majoritatea din programele care
+manipulează ER nu o folosesc.
+
+<P>
+</LI>
+<LI>O altă expresie regulată este <IMG
+ WIDTH="13" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="img8.png"
+ ALT="$\epsilon$">.  Aceasta descrie un
+limbaj în care există un singur cuvînt, dar care cuvînt nu are
+nici o literă!  Altă prostie, nu?  Această expresie regulată este
+însă foarte utilă.
+
+<P>
+</LI>
+<LI>Parantezele le vom folosi ca în matematică, pentru a indica
+căror expresii li se aplică anumite operaţii.  Aşa cum <I>a * (b +
+c)</I> arată că întîi facem adunarea şi apoi înmulţirea, expresia
+<!-- MATH
+ $R \cdot (S | T)$
+ -->
+<IMG
+ WIDTH="75" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img10.png"
+ ALT="$R \cdot (S \vert T)$"> arată că întîi aplicăm operaţia <IMG
+ WIDTH="11" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img11.png"
+ ALT="$\vert$"> şi abia
+apoi pe <IMG
+ WIDTH="11" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="img12.png"
+ ALT="$\cdot$">.
+
+<P>
+În fine, să ne apucăm de ceva serios.  Celelalte trei semne care au
+rămas ne permit să creăm limbaje mai complicate din limbaje simple.
+Astea vor face ER o sculă foarte puternică.
+
+<P>
+</LI>
+<LI>Semnul | citit <EM>alternanţă</EM>, se pune între alte două
+ER.  Dacă <I>R</I> şi <I>S</I> sunt astfel de expresii, putem scrie
+<I>R|S</I>.
+Dacă <I>R</I> descrie un limbaj R, iar <I>S</I> descrie un limbaj S,
+atunci <I>R|S</I> descrie limbajul R <IMG
+ WIDTH="18" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="img16.png"
+ ALT="$\cup$"> S, adică limbajul format din toate
+cuvintele care sunt fie în R fie în S.
+
+<P>
+De exemplu, expresia regulată <IMG
+ WIDTH="39" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img17.png"
+ ALT="$a\vert b\vert\epsilon$"><A NAME="tex2html9"
+  HREF="#foot123"><SUP>4</SUP></A>  descrie
+un limbaj cu trei cuvinte: { , a, b }.  Primul cuvînt este
+cuvîntul fără nici o literă; mai avem apoi alte două cuvinte, de
+cîte o literă.  De îndată ce vom vedea celelalte două operaţii o
+să apreciaţi mai tare semnul |, pentru că împreună ele putem
+exprima limbaje din ce în ce mai interesante.
+
+<P>
+</LI>
+<LI>Semnul <IMG
+ WIDTH="11" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="img12.png"
+ ALT="$\cdot$">, numit <EM>concatenare</EM>, se foloseşte la fel ca
+|, între alte două ER.  Fie R limbajul descris de <I>R</I> şi S
+limbajul descris de <I>S</I>.  Atunci <IMG
+ WIDTH="44" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="img18.png"
+ ALT="$R \cdot S$"> este limbajul în care
+fiecare cuvînt este compus dintr-un cuvînt din R ataşat în faţa
+unui cuvînt din S.  Interesant, nu?
+
+<P>
+De exemplu, expresia regulată <!-- MATH
+ $(a|b) \cdot (a|c)$
+ -->
+<IMG
+ WIDTH="89" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img19.png"
+ ALT="$(a\vert b) \cdot (a\vert c)$"> descrie un limbaj
+compus din patru cuvinte: {aa, ac, ba, bc}.  Fiecare cuvînt este
+compus dintr-un cuvînt din limbajul <IMG
+ WIDTH="59" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img20.png"
+ ALT="$(a\vert b)=$">{a,b} concatenat cu un
+cuvînt din limbajul <IMG
+ WIDTH="59" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img21.png"
+ ALT="$(a\vert c)=$">{a,c}.
+
+<P>
+Deja putem folosi ER pentru a ne exprima foarte succint.  De pildă,
+dacă limbajul <I>R</I> are 2 cuvinte, atunci <!-- MATH
+ $R \cdot R \cdot R \cdot R$
+ -->
+<IMG
+ WIDTH="97" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="img22.png"
+ ALT="$R \cdot R \cdot R \cdot R$">
+are 2 x 2 x 2 x 2 = 16 cuvinte!
+
+<P>
+</LI>
+<LI>În fine, semnul *, numit şi operaţia ``star'', este
+singurul semn care ne permite să descriem limbaje infinite!
+Operaţia * se aplică unei singure ER, şi se scrie astfel: <IMG
+ WIDTH="27" HEIGHT="20" ALIGN="BOTTOM" BORDER="0"
+ SRC="img25.png"
+ ALT="$R^*$">.
+
+<P>
+Limbajul <IMG
+ WIDTH="27" HEIGHT="20" ALIGN="BOTTOM" BORDER="0"
+ SRC="img25.png"
+ ALT="$R^*$"> este un limbaj ale cărui cuvinte sunt formate dintr-un
+număr arbitrar (inclusiv zero!) de cuvinte din R, concatenate.  De
+exemplu, limbajul descris de <IMG
+ WIDTH="23" HEIGHT="20" ALIGN="BOTTOM" BORDER="0"
+ SRC="img26.png"
+ ALT="$a^*$"> este { , a, aa, aaa,
+aaaa,...}, care conţine cuvîntul fără nici o literă (obţinut
+din zero copii ale lui ``a''), cuvîntul a, cuvîntul aa, etc., şi nu
+vă puteţi aştepta să scriu aici toate cuvintele, pentru că sunt
+în număr infinit, şi PC Report recomandă o limită de 3500 de
+cuvinte pe articol (pe care oricum o să o depăşesc, mi-e teamă).
+</LI>
+</UL>
+
+<P>
+
+<H2><A NAME="SECTION00041000000000000000">
+Exemple de ER</A>
+</H2>
+
+<P>
+Iată deci că fiecare expresie regulată descrie un întreg limbaj,
+poate chiar infinit.  Vom vedea aici mai multe exemple de expresii
+regulate interesante.  De acum înainte voi folosi tot setul de
+caractere ASCII, şi nu mă voi mai limita la literele <I>a,b,c,d</I>.
+Pentru eficienţă voi denumi ER care apar şi pe care vreau să le
+refolosesc; voi folosi semnul egal =; acesta nu este un semn care
+poate fi folosit pentru a scrie expresii regulate.
+
+<P>
+<DL>
+<DT></DT>
+<DD><!-- MATH
+ $CF = 0|1|2|3|4|5|6|7|8|9$
+ -->
+<IMG
+ WIDTH="187" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img29.png"
+ ALT="$CF = 0\vert 1\vert 2\vert 3\vert 4\vert 5\vert 6\vert 7\vert 8\vert 9$">.  Această expresie
+regulată descrie cifrele.  Nu e mare brînză.
+</DD>
+<DT></DT>
+<DD><!-- MATH
+ $NN = CF \cdot (CF^*)$
+ -->
+<IMG
+ WIDTH="149" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img30.png"
+ ALT="$NN = CF \cdot (CF^*)$">.  Aceasta este deja o expresie mai
+interesantă, care descrie toate numerele naturale în notaţie
+zecimală: cel puţin o cifră, urmată de oricîte alte cifre.  Facem
+convenţia că operaţia <IMG
+ WIDTH="15" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="img24.png"
+ ALT="$*$"> are prioritate mai mare decît <IMG
+ WIDTH="11" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="img12.png"
+ ALT="$\cdot$">,
+aşa că putem scrie expresia precedentă şi ca <IMG
+ WIDTH="81" HEIGHT="20" ALIGN="BOTTOM" BORDER="0"
+ SRC="img31.png"
+ ALT="$CF \cdot CF^*$">.
+</DD>
+<DT></DT>
+<DD><!-- MATH
+ $NZ = (\epsilon|-) \cdot NN$
+ -->
+<IMG
+ WIDTH="142" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img32.png"
+ ALT="$NZ = (\epsilon\vert-) \cdot NN$">.  Această expresie descrie toate
+numerele întregi, pozitive sau negative: un număr precedat de nimic
+sau de semnul minus.
+</DD>
+<DT></DT>
+<DD><!-- MATH
+ $CH = CF|a|b|c|d|e|f$
+ -->
+<IMG
+ WIDTH="167" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img33.png"
+ ALT="$CH = CF\vert a\vert b\vert c\vert d\vert e\vert f$">.  Această expresie regulată
+descrie toate cifrele hexazecimale.
+</DD>
+<DT></DT>
+<DD><!-- MATH
+ $HX = 0 \cdot x \cdot CH \cdot CH^*$
+ -->
+<IMG
+ WIDTH="184" HEIGHT="20" ALIGN="BOTTOM" BORDER="0"
+ SRC="img34.png"
+ ALT="$HX = 0 \cdot x \cdot CH \cdot CH^*$">.  Acestea sunt toate
+numerele hexazecimale pozitive în notaţia acceptată de limbajul C.
+</DD>
+<DT></DT>
+<DD><!-- MATH
+ $FP = (\epsilon|-) \cdot ((CF^* \cdot (.|\epsilon) \cdot CF
+\cdot CF^*) | CF \cdot CF^* \cdot . \cdot CF^*)$
+ -->
+<IMG
+ WIDTH="445" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img35.png"
+ ALT="$FP = (\epsilon\vert-) \cdot ((CF^* \cdot (.\vert\epsilon) \cdot CF
+\cdot CF^*) \vert CF \cdot CF^* \cdot . \cdot CF^*)$"> Această expresie
+descrie toate numerele reale cu un număr finit de zecimale, (în
+limba engleză, cu punct în loc de virgulă).  Expresia a complicată
+pentru că permite ca fie partea întreagă, fie partea zecimală să
+lipsească, dar nu amîndouă.
+</DD>
+<DT></DT>
+<DD><IMG
+ WIDTH="58" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="img36.png"
+ ALT="$LIT = $">literele mari şi mici; mi-e lene să scriu expresia
+asta în detaliu, seamănă cu <IMG
+ WIDTH="33" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="img37.png"
+ ALT="$CF$">.
+</DD>
+<DT></DT>
+<DD><!-- MATH
+ $ID = LIT \cdot (LIT | CF)^*$
+ -->
+<IMG
+ WIDTH="186" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img38.png"
+ ALT="$ID = LIT \cdot (LIT \vert CF)^*$">: identificatorii (numele de
+variabile) acceptabili într-un program Pascal: o literă, urmată de
+litere şi cifre.
+</DD>
+<DT></DT>
+<DD><!-- MATH
+ $b^* \cdot a\cdot(b^* \cdot a \cdot b^* \cdot a)^*$
+ -->
+<IMG
+ WIDTH="163" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img39.png"
+ ALT="$b^* \cdot a\cdot(b^* \cdot a \cdot b^* \cdot a)^*$">: toate
+cuvintele formate din literele a şi b în care apar un număr impar
+de a-uri.  Expresia asta am format-o astfel: ceva b-uri (poate
+niciunul), cel puţin un a, apoi un număr par de a-uri, cu ceva b-uri
+între ele.
+</DD>
+</DL>
+
+<P>
+Pentru cei doritori de formalisme, există tot felul de reguli care ne
+permit să simplificăm ER complicate.  Iată cîteva dintre ele
+(semnificaţia semnului egal este: limbajul descris de expresia din
+stînga este acelaşi cu limbajul descris de expresia din dreapta):
+
+<P>
+<P></P>
+<DIV ALIGN="CENTER">
+<!-- MATH
+ \begin{eqnarray*}
+R | R &=& R \\
+R | S &=& S | R \\
+(R | S) | R &=& R | (S | T) \\
+(R \cdot S) \cdot T &=& R \cdot (S \cdot T) \\
+R \cdot \epsilon = \epsilon \cdot R &=& R \\
+R \cdot \phi = \phi \cdot R &=& \phi \\
+R | \phi &=& R \\
+R \cdot (S | T) &=& (R \cdot S) | (R \cdot T) \\
+(R | S) \cdot T &=& (R \cdot T) | (S \cdot T) \\
+\epsilon | RR^* &=& R^* \\
+RR^* &=& R^*R \\
+{R^*}^* &=& R^* \\
+R^* \cdot R^* &=& R^* \\
+R\cdot (S \cdot R)^* &=& (R \cdot S)^* \cdot R
+\end{eqnarray*}
+ -->
+<IMG
+ WIDTH="247" HEIGHT="377" BORDER="0"
+ SRC="img40.png"
+ ALT="\begin{eqnarray*}
+R \vert R &amp;=&amp; R \\
+R \vert S &amp;=&amp; S \vert R \\
+(R \vert S) \v...
+... R^* &amp;=&amp; R^* \\
+R\cdot (S \cdot R)^* &amp;=&amp; (R \cdot S)^* \cdot R
+\end{eqnarray*}">
+<BR CLEAR="ALL"></DIV><P></P>
+<BR CLEAR="ALL"><P></P>
+<BR CLEAR="ALL"><P></P>
+
+<P>
+Primele nouă din regulile acestea ne spun că mulţimea tuturor
+cuvintelor împreună cu aceste operaţiile <IMG
+ WIDTH="11" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img11.png"
+ ALT="$\vert$"> şi <IMG
+ WIDTH="11" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="img12.png"
+ ALT="$\cdot$"> este un
+semi-inel idempotent.  De aici un amator de algebră poate deriva tot
+felul de alte proprietăţi interesante, pe care acum o să le trecem
+cu vederea.
+
+<P>
+
+<H2><A NAME="SECTION00042000000000000000">
+Limbaje regulate şi limbaje neregulate</A>
+</H2>
+
+<P>
+Am văzut tot felul de ER, şi o să mai vedem şi alte cîteva.  Cu
+cîteva semne simple putem descrie într-un mod finit limbaje
+complicate infinite.  Dar nu orice limbaj se poate descrie cu ER.
+Limbajele care se pot descrie cu ER se numesc <EM>limbaje regulate</EM>.
+Puterea ER este destul de limitată, dar suficient de mare pentru a le
+face extrem de utile.  Vom vedea mai jos că sculele care folosesc ER
+adaugă o serie de abrevieri utile, şi că uneori extind ER în
+moduri care permit descrierea unor limbaje care nu sunt de fapt
+regulate.
+
+<P>
+Iată nişte exemple de limbaje care <EM>nu</EM> se pot descrie cu ER:
+
+<P>
+
+<UL>
+<LI>Limbajul ``parantezelor potrivite'', care constă din şiruri de
+caractere ``(`` şi ``)'' astfel încît parantezele se închid în
+mod legal.
+</LI>
+<LI>Limbajul tuturor programelor Pascal.
+</LI>
+<LI>Limbajele formate din cuvinte care sunt palindroame (se pot citi
+la fel de la cap la coadă şi de la coadă la cap).
+</LI>
+<LI>Limbajul cuvintelor care sunt concatenarea a două cuvinte
+identice.
+</LI>
+</UL>
+
+<P>
+
+<H2><A NAME="SECTION00043000000000000000">
+Aplicaţii ale limbajelor regulate</A>
+</H2>
+
+<P>
+Ce facem cu o expresie regulată?  Problema principală este cea de
+<EM>recunoaştere</EM>: dacă avem o expresie regulată şi un text,
+reprezintă acel text un cuvînt din limbajul descris de expresia
+regulată?  Spunem că expresia regulată <EM>acceptă</EM> acel cuvînt.
+
+<P>
+De exemplu, cuvîntul ``141231'' este în limbajul descris de expresia
+regulată <I>NZ</I> de mai sus, dar cuvîntul ``-+-+131'' nu este.
+
+<P>
+O problemă înrudită este cea a <EM>analizei lexicale</EM>, pe care am
+descris-o mai sus: dacă se dă un text (de exemplu în Pascal) şi
+mai multe ER (de exemplu <I>ID</I>, <I>NN</I>, etc.), să-l descompunem într-o
+secvenţă de cuvinte astfel încît fiecare cuvînt este acceptat de
+una din expresii.  De exemplu textul <TT>acum := 51;</TT> este compus din
+patru cuvinte: un identificator, acceptat de <I>ID</I>, semnul de
+atribuire, acceptat de expresia <IMG
+ WIDTH="39" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="img44.png"
+ ALT="$: \cdot =$">, pe care nu am descris-o,
+numărul 51, acceptat de expresia <I>NN</I> şi semnul punct-şi-virgulă,
+care este acceptat de o expresie regulată foarte simplă ``<I>;</I>''.
+
+<P>
+De fapt cele două probleme de mai sus (acceptarea şi analiza
+lexicală) se pot ambele rezolva cu aceeaşi tehnologie: dacă putem
+recunoaşte un cuvînt, atunci putem ciopîrţi şi textul în
+bucăţi, recunoscînd primul cuvînt, şi după aia continuînd
+descompunerea cu restul textului.  Vestea cea bună este că putem
+rezolva problema recunoaşterii limbajelor regulate în mod foarte
+eficient!
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Automate finite</A>
+</H1>
+
+<P>
+Aparatele care recunosc limbaje regulate se numesc <EM>automate
+finite</EM>.  Putem vedea aceste automate sub forma unor dispozitive
+fizice, reale, sau sub forma unor programe extrem de simple.
+
+<P>
+Teoreticienii arată (şi studenţii învaţă la cursurile de teoria
+limbajelor formale) că o expresie regulată se poate traduce într-un
+automat finit, care operează asupra unui cuvînt, şi care produce un
+rezultat da/nu, dacă cuvîntul este sau nu în limbajul descris de
+expresia regulată.  În acest articol nu o să ne preocupăm despre
+cum se face asta, şi nici despre tot felul de alte rafinamente, (cum
+sunt automatele finite nedeterministe).  O să vă arăt doar un
+automat finit şi să vă explic cum funcţionează el.  Vom observa
+că automatul finit se uită la fiecare literă din cuvîntul de
+recunoscut o singură dată, şi face o singură operaţie internă
+pentru fiecare literă.  Asta înseamnă că procesează fiecare
+cuvînt în <EM>timp linear</EM>, ceea ce îl face foarte eficient. 
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="finit"></A><A NAME="386"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 3:</STRONG>
+Compilarea unei ER într-un automat finit.
+Orice expresie regulată <I>E</I> poate fi transformată într-un automat
+finit care recunoaşte orice cuvînt din limbajul descris de <I>E</I>, şi
+doar acele cuvinte.  Starea 1 este starea iniţială, iar stările 1
+şi 2 sunt stări finale.</CAPTION>
+<TR><TD><IMG
+ WIDTH="582" HEIGHT="194" BORDER="0"
+ SRC="img46.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=13cm\epsffile{finit.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+De fapt aşa procedează toate sculele pe care le expun mai jos: cînd
+primesc o expresie regulată, ``compilează'' această expresie
+într-un automat finit.  Automatul este reprezentat sub forma unui
+progrămel foarte rapid.  Apoi acest progrămel primeşte cuvîntul de
+testat, îl studiază, şi produce diagnosticul.  Automatele folosite
+în analizoarele lexicale indică cum programul de la intrare poate fi
+descompus în lexeme, şi ce expresie regulată s-a potrivit cu
+fiecare lexemă.
+
+<P>
+Figura&nbsp;<A HREF="regex-html.html#finit">3</A> arată un automat finit care operează cu cuvinte
+peste alfabetul {a,b}.  Acest automat are o mulţime finită de <EM>stări</EM>, notate prin cercuri.  În fiecare clipă automatul se află
+într-o unică astfel de stare.  La începutul calculului automatul se
+află în starea marcată de o săgeată care vine ``de nicăieri''.
+
+<P>
+Între două stări există săgeţi etichetate cu litere; acestea se
+numesc <EM>tranziţii</EM>.  De exemplu, între starea 1 şi starea 2
+există o tranziţie etichetată cu a: asta înseamnă că automatul,
+dacă vede litera a la intrare şi se află în starea 1, va trece în
+starea 2.
+
+<P>
+Unele dintre stările automatului sunt marcate cu două cercuri;
+astfel de stări sunt numite <EM>stări finale</EM>.  Un cuvînt este
+prin definiţie acceptat dacă atunci cînd este prezentat la intrare
+cauzează automatul să treacă într-o stare finală atunci cînd
+cuvîntul a fost în întregime prelucrat.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="executie"></A><A NAME="392"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura:</STRONG>
+Execuţia automatului din figura&nbsp;<A HREF="regex-html.html#finit">3</A>
+cînd la intrare este prezentat cuvîntul ``abbab''.  Automatul face
+cinci paşi, cîte unul pentru fiecare literă.  Starea curentă este
+indicată cu roşu, starea anterioară cu roz, şi poziţia curentă
+în cuvîntul de la intrare printr-un dreptunghi albastru.  Săgeţile
+albastre indică cum este ``consumat'' cuvîntul de la intrare.
+Pentru că după terminarea şirului automatul nu este într-o stare
+finală, tragem concluzia că acest cuvînt nu e descris de expresia
+regulata din figura&nbsp;<A HREF="regex-html.html#finit">3</A>.</CAPTION>
+<TR><TD><IMG
+ WIDTH="586" HEIGHT="374" BORDER="0"
+ SRC="img47.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=13cm\epsffile{executie.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+De exemplu, figura&nbsp;<A HREF="regex-html.html#executie">4</A> arată evoluţia în timp a
+automatului anterior.  
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Programe care manipulează ER</A>
+</H1>
+
+<P>
+În această secţiune voi discuta pe scurt mai multe programe care
+folosesc ER.  Fiecare din ele are notaţii puţin diferite de
+celelalte, ceea ce e foarte neplăcut dacă doriţi să folosiţi mai
+multe dintre ele.
+
+<P>
+Toate aceste programe prelucrează fişiere text, adică fişiere în
+care informaţia este într-o formă citibilă de către oameni.  E o
+tradiţie în lumea Unix ca datele să fie menţinute în formă
+textuală; Microsoft aparent şi-a făcut un scop să creeze formate
+binare (adică ne-textuale) de stocare a datelor, care mai sunt şi
+secrete pe deasupra!  Din cauza asta, multe din aceste scule sunt de
+utilitate redusă în lumea Windows.  Din fericire, una dintre formele
+cele mai prevalente de prezentare a informaţiei este limbajul HTML,
+care are o reprezentare pur textuală.  Pentru prelucrări de HTML,
+prelucrarea textelor de programe, programe automate de colectat
+informaţii de pe Internet, sculele descrise de mai jos sunt extrem
+de utile.
+
+<P>
+În acest text eu am folosit litere cursive pentru a scrie expresiile
+regulate, şi litere drepte pentru cuvinte.  Din păcate în lumea
+programelor se foloseşte un acelaşi set de caractere pentru a denota
+literele şi expresiile regulate.  Asta ridică o problemă
+suplimentară, pentru că nu avem noi semne, <!-- MATH
+ $*, \cdot, |, (, )$
+ -->
+<IMG
+ WIDTH="69" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img48.png"
+ ALT="$*, \cdot, \vert, (, )$">
+pentru a construi expresiile regulate, deci trebuie să folosim tot
+unele dintre litere.  Dar atunci e o ambiguitate între litera
+<code>*</code> şi semnul <IMG
+ WIDTH="13" HEIGHT="20" ALIGN="BOTTOM" BORDER="0"
+ SRC="img49.png"
+ ALT="${}^*$"> folosit pentru expresii regulate.
+
+<P>
+Toate programele de mai jos rezolvă această problemă în acelaşi
+fel, şi anume folosesc mai multe simboluri consecutive pentru una
+dintre semnificaţii, şi un singur simbol pentru cealaltă.  De
+exemplu, primul program, <TT>grep</TT>, utilizează semnul <TT>*</TT> pentru
+asterisc (operaţia) şi <code>\*</code> pentru caracterul steluţă.
+
+<P>
+
+<H2><A NAME="SECTION00061000000000000000">
+Shell-ul Unix</A>
+</H2>
+
+<P>
+Am scris în iunie 1997 un articol despre shell-ul din Unix (mai
+curînd ca să explic ce este, decît ca să arăt cum se foloseşte
+un shell modern sofisticat).  Pe scurt, shell-ul este un program care
+poate fi folosit pentru a da comenzi sistemului, de obicei în mod
+interactiv.
+
+<P>
+Shell-ul Unix tradiţional recunoaşte nişte forme extrem de
+primitive de expresii regulate, care sunt abreviate într-un mod nu
+tocmai natural.  Pe de altă parte shell-ul permite doar forme
+restrînse de expresii, aşa că voi începe cu el, pentru că e mai
+simplu.
+
+<P>
+Următoarele construcţii în shell sunt pe post de expresii regulate:
+
+<P>
+
+<UL>
+<LI>Orice caracter este o expresie regulată; excepţii sunt semnele
+de mai jos.
+</LI>
+<LI>Semnul ``?'' ţine locul unui singur caracter, oricare ar fi el.
+Pentru a scrie chiar caracterul semn de întrebare trebuie să scriem
+<code>\?</code>.
+</LI>
+<LI>Pentru a scrie semnul <code>\</code> trebuie să scriem <code>\\</code>.
+</LI>
+<LI>Semnul de concatenare este omis.  Aşa cum în matematică
+cîteodată omitem semnul de înmulţire, în shell nu scriem <IMG
+ WIDTH="11" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="img12.png"
+ ALT="$\cdot$">.
+Astfel, şirul <code>a???b</code> reprezintă toate cuvintele de cinci
+litere care încep cu ``a'' şi se termină cu ``b''.
+</LI>
+<LI>Semnul ``*'' nu mai e un operator care se aplică unei expresii;
+el înseamnă un şir oarecare de zero sau mai multe caractere.
+Astfel, cînd scriem ``<code>a*b</code>'' asta înseamnă: toate şirurile
+care încep cu ``a'' şi se termină cu ``b''.
+</LI>
+<LI>Alternanţa se reprezintă în felul următor: în loc de
+<IMG
+ WIDTH="53" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img50.png"
+ ALT="$R\vert S\vert T$"> se scrie <code>{R,S,T}</code>.  Astfel, expresia <code>{a,b}{c,d}</code>
+reprezintă patru şiruri: ac, bc, ad, bd.
+</LI>
+</UL>
+
+<P>
+În mod normal atunci cînd shell-ul primeşte o comandă de la
+utilizator, încearcă să expandeze expresiile regulate în toate
+numele de fişiere de pe disc care se potrivesc.  Astfel comanda:
+<code>ls .??*</code> va afişa (comanda <TT>ls</TT>) toate fişierele al căror
+nume începe cu semnul punct şi are cel puţin trei caractere.
+
+<P>
+Chiar şi MS-DOS aparent oferea astfel de expresii, dar de fapt era
+mult mai limitat: puteai avea cel mult o steluţă pentru numele
+fişierului şi una pentru extensie.  În Unix poţi spune ceva de
+genul <code>rm *a*b*</code>, care înseamnă ``şterge toate fişierele care
+au un a şi un b în nume, în ordinea asta''.  Deşi expresia
+<code>*a*b*</code> pare mult mai complicată, teoria automatelor finite ne
+spune că ea poate fi analizată şi folosită la fel de rapid ca
+orice expresie mai simplă.
+
+<P>
+În Unix poţi spune chiar lucruri de genul: <code>wc -l */*/*.cc</code>,
+pentru a număra liniile (<TT>wc -l</TT> = word count lines) din toate
+fişierele C++ aflate la două directoare adîncime.
+
+<P>
+
+<H2><A NAME="SECTION00062000000000000000">
+<TT>grep</TT></A>
+</H2>
+
+<P>
+<TT>grep</TT> este un utilitar extrem de util, care a fost proiectat
+special pentru a manipula expresii regulate.  Numele său vine de la
+Get Regular Expression Patterns, adică ``caută textele descrise de o
+anumită expresie regulată''.  <TT>grep</TT> primeşte o expresie
+regulată şi o listă de fişiere, şi caută în acele fişiere
+liniile care conţin cuvinte descrise de acea expresie regulată.
+
+<P>
+Există mai multe specialităţi de <TT>grep</TT>, şi cel mai comun
+dintre ele are tot felul de opţiuni (de genul: tipăreşte numerele
+de linie, ignoră diferenţa între literele mari şi mici,
+tipăreşte numai ce <EM>nu</EM> se potriveşte, etc.).  Noi vom studia
+doar funcţionalitatea de bază.
+
+<P>
+<TT>grep</TT> oferă o paletă foarte largă de operaţii pentru a
+descrie expresiile regulate, care se dovedesc a fi foarte utile.
+Pentru că unele semne sunt atît litere cît şi operatori în ER,
+regulile sunt cam încîlcite; le voi prezenta aici pe cele mai
+importante:
+
+<P>
+
+<UL>
+<LI>Semnul <code>.</code> (punct) ţine locul oricărui caracter, mai
+puţin sfîrşitul de linie.  De exemplu, expresia ``<code>...</code>''
+descrie orice cuvînt de trei litere.
+</LI>
+<LI>Semnul de concatenare se omite; ex. <code>a.b</code> înseamnă orice
+cuvînt de trei litere care începe cu ``a'' şi se termină cu ``b''.
+</LI>
+<LI>Parantezele se scriu astfel: <code>\(</code> şi <code>\)</code>, şi se pot
+folosi pentru a schimba ordinea de aplicare a operaţiilor.
+</LI>
+<LI>Semnul de alternanţă este <code>\|</code>, ex. <code>\(a\|b\)c</code>
+reprezintă cuvintele ac şi bc.
+</LI>
+<LI>Operatorul star se scrie chiar ca o steluţă: ex. <code>(ab)*</code>.
+</LI>
+<LI>Fiecare caracter, mai puţin cele speciale, este o expresie
+regulată.
+</LI>
+<LI>Unele caractere speciale se prefixează cu <code>\</code> pentru a fi
+exprimate; de exemplu, <code>\*</code> reprezintă chiar o steluţă.
+</LI>
+<LI>Putem scrie <code>[a-f]</code> pentru a indica toate caracterele
+între a şi f, inclusiv (a,b,c,d,e,f).
+</LI>
+<LI>Putem scrie <code>[^a-f]</code> pentru toate caracterele care <EM>nu</EM>
+sunt între a şi f.
+</LI>
+<LI>Putem scrie <code>[acfz]</code> pentru unul dintre caracterele a, c, f
+sau z.
+</LI>
+<LI>Semnul <code>^</code> este începutul de linie.
+</LI>
+<LI>Semnul <code>$</code> este sfîrşitul de linie. </LI>
+<LI>Semnul <code>\?</code> se aplică ca steluţa, după o expresie, şi
+înseamnă: ``expresia anterioară de zero sau una ori''.  Cu alte
+cuvinte, expresia <code>ab\(c\?\)</code> reprezintă cuvintele ab şi abc.
+</LI>
+<LI>Putem spune: expresia R repetată de două, trei sau patru ori,
+astfel: <code>R\{2,4\}</code>.  De exemplu, expresia <code>\(ab\)\{1,3\}</code>
+descrie cuvintele ab, abab şi ababab.
+</LI>
+</UL>
+
+<P>
+Dacă invocăm <TT>grep</TT> astfel: <TT>grep</TT> ER <TT>fisier</TT>, atunci
+se întîmplă următoarele lucruri:
+
+<P>
+
+<OL>
+<LI><TT>grep</TT> transformă automat expresia regulată ER în
+<code>^.*</code>ER<code>.*$</code>.
+</LI>
+<LI>Expresia rezultată obţinută este compilată într-un automat
+finit.
+</LI>
+<LI>Fişierul/ele indicate sunt parcurse, şi fiecare linie care
+este acceptată de automatul finit este tipărită.
+</LI>
+</OL>
+
+<P>
+De ce schimbă <TT>grep</TT> expresia regulată în acest fel?  Prin
+definiţie, <TT>grep</TT> tipăreşte toate liniile care <EM>conţin</EM> un
+cuvînt care se potriveşte cu expresia regulată.  Faptul că linia
+conţine un cuvînt potrivit este acelaşi lucru cu faptul că linia
+are nişte caractere oarecare, cuvîntul şi apoi alte caractere.
+Ceea ce e totuna cu a zice că linia însăşi se potriveşte cu
+expresia regulată expusă mai sus!
+
+<P>
+Notaţia asta pare complicată, şi chiar este.  <TT>grep</TT> este
+însă o sculă de neînlocuit, pe care eu o folosesc zilnic.
+
+<P>
+În realitate, problema este şi mai complicată: adesea tastăm
+comanda grep chiar în linia de comandă a shell-ului.  De aceea,
+shell-ul, înainte de a executa comanda, face anumite substituţii în
+linia de comandă, şi abia apoi pasează programului <TT>grep</TT>
+argumentele.
+
+<P>
+De exemplu, dacă tastăm în shell <code>grep a\* fisier</code>, shell-ul
+va interpreta caracterele <code>\*</code> drept semnul steluţă (protejată
+pentru a nu fi interpretată ca o expresie regulată, ci ca un
+caracter), şi ca atare va trimite drept argumente lui <TT>grep</TT> doar
+şirul <code>a*</code>, care pentru grep înseamnă altceva decît
+<code>a\*</code>.
+
+<P>
+Această complicaţie suplimentară face programarea în shell cu
+expresii regulate o treabă foarte neplăcută.  Există însă o
+soluţie simplă: întotdeauna înveliţi argumentele lui <TT>grep</TT>
+cu ghilimele simple <code>''</code>, şi atunci shell-ul nu se va mai atinge
+de ele.  Veţi scrie deci
+<code>grep 'a\*' fisier</code>.  
+
+<P>
+Dacă sunteţi amator de expresii încîlcite, puteţi scrie şi
+<code>grep a\\\* fisier</code>, pentru că shell-ul va trimite lui
+<TT>grep</TT> din <code>\\</code> doar un <code>\</code>, şi din <code>\*</code> doar
+steluţa.
+
+<P>
+
+<H2><A NAME="SECTION00063000000000000000">
+<TT>awk</TT></A>
+</H2>
+
+<P>
+<TT>awk</TT> este un limbaj de programare foarte simpatic, creat de trei
+inşi celebri: Aho, Weinberger şi Kernighan (ultimul autor a creat
+şi limbajul C); iniţialele celor trei au dat şi numele limbajului.
+<TT>awk</TT> seamănă puţin cu <TT>grep</TT>, în sensul că procesează
+fiecare linie din fişier separat.  Spre deosebire de <TT>grep</TT>,
+<TT>awk</TT> este un limbaj complet de programare, cu variabile, bucle,
+etc.
+
+<P>
+În prezent limbajul <TT>awk</TT> a fost subsumat complet de Perl, care
+este mult mai eficient, aşa că nu-l voi mai discuta aici.
+
+<P>
+
+<H2><A NAME="SECTION00064000000000000000">
+<TT>sed</TT></A>
+</H2>
+
+<P>
+<TT>sed</TT> înseamnă Stream EDitor, adică un editor de texte
+ne-interactiv.  În <TT>sed</TT> ``bagi'' un fişier şi un program cu
+reguli de ``re-scriere''.  <TT>sed</TT> parcurge fişierul de obicei
+linie cu linie şi îl rescrie conform cu aceste reguli.
+
+<P>
+Ca şi <TT>awk</TT>, <TT>sed</TT> este complet surclasat de limbajul Perl.
+Voi indica aici doar una din trăsăturile lui, care este foarte
+folosită în Perl: comanda <code>s///</code>.  Această comandă are forma
+<code>s/ER/inlocuire/</code>.  <TT>s</TT> vine de la <EM>substituţie</EM>.
+Expresiile regulate sunt foarte asemănătoare cu cele ale lui
+<TT>grep</TT>.
+
+<P>
+Iată algoritmul după care operează <TT>sed</TT>:
+
+<P>
+
+<OL>
+<LI>Fiecare linie din textul de la intrare este comparată cu
+expresia regulată indicată.
+
+<P>
+</LI>
+<LI>Fiecare linie care se potriveşte setează nişte variabile.
+
+<P>
+</LI>
+<LI>Fiecare linie care se potriveşte este apoi înlocuită conform
+cu <TT>inlocuire</TT>.  <TT>inlocuire</TT> poate folosi variabilele setate.
+Liniile care nu se potrivesc rămîn neschimbate.
+
+<P>
+</LI>
+<LI>Linia rezultată este tipărită şi ciclul continuă cu
+următoarea linie.
+</LI>
+</OL>
+
+<P>
+Iată un exemplu, pentru clarificare:
+<code>sed 's/\([^ ]*\)[ ]*\(.*\)/\2 \1#/' fisier</code>.  Asta
+se citeşte aşa:
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="sed"></A><A NAME="438"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 5:</STRONG>
+Cum interpretează <TT>sed</TT> comanda din textul
+articolului.</CAPTION>
+<TR><TD><IMG
+ WIDTH="355" HEIGHT="190" BORDER="0"
+ SRC="img51.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=8cm\epsffile{sed.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<UL>
+<LI>Caută să găseşti de la începutul liniei (<code>^</code>) o
+secvenţă de caractere care nu sunt spaţii (<code>[^ ]*</code>).
+
+<P>
+</LI>
+<LI>Aceste caractere vor deveni prima variabilă (lucru indicat de
+parantezele <code>\( \)</code>).
+
+<P>
+</LI>
+<LI>Apoi trebuie să urmeze un număr de spaţii <code>[ ]*</code>.
+
+<P>
+</LI>
+<LI>Apoi urmează un număr oarecare de caractere <code>.*</code>.
+
+<P>
+</LI>
+<LI>Aceste ultime caractere devin variabila a două (<code>\( \)</code>).
+
+<P>
+</LI>
+<LI>După ce o linie se potriveşte, ea este transformată astfel:
+<code>\2 \1#</code>.  Adică a doua variabilă este pusă la început,
+urmată de un spaţiu, urmată de prima, urmată de semnul <code>#</code>.
+</LI>
+</UL>
+
+<P>
+Dacă aplicăm acest program următorului fişier:
+<PRE>
+Acesta este un mic
+fisier pe care incercam
+un mic program sed
+</PRE>
+obţinem
+<PRE>
+este un mic Acesta#
+pe care incercam fisier#
+mic program sed un#
+</PRE>
+
+<P>
+Am mutat astfel primul din linie cuvînt la sfîrşitul liniei!
+
+<P>
+
+<H2><A NAME="SECTION00065000000000000000">
+<TT>vi</TT></A>
+</H2>
+
+<P>
+<TT>vi</TT> este un editor de texte primitiv, probabil primul editor de
+texte vizual (numele înseamnă VIsual editor).  <TT>vi</TT> a fost
+conceput şi implementat de Bill Joy, care este unul dintre fondatorii
+companiei Sun Microsystems, pe vremea cînd era încă student la
+Universitatea din California Berkeley.
+
+<P>
+Cu toate că este relativ primitiv, <TT>vi</TT> oferă o serie de
+prelucrări cu expresii regulate extrem de puternice, care într-o
+anumită măsură nu mai sunt oferite de nici un editor actual!
+
+<P>
+Expresiile regulate şi comenzile în <TT>vi</TT> sunt foarte
+asemănătoare cu cele din <TT>sed</TT>.  Iată doar un exemplu:
+
+<P>
+<PRE>
+:/Introducere/,/Capitolul/s/&lt;I&gt;\(.*\)&lt;\/I&gt;/&lt;B&gt;\1&lt;\/B&gt;/g
+</PRE>
+
+<P>
+Această comandă complicată trebuie citită după cum urmează:
+
+<P>
+
+<OL>
+<LI><code>:/Introducere/,/Capitolul/</code> Pentru toate liniile între
+cea care conţine cuvîntul ``Introducere'' şi cea care conţine
+cuvîntul ``Capitolul'' aplică comanda care urmează fiecărei linii.
+
+<P>
+</LI>
+<LI>Comanda este o substituţie <code>s</code>
+
+<P>
+</LI>
+<LI><code>/&lt;I&gt;\(.*\)&lt;\/I&gt;</code> se citeşte astfel: orice şir de forma
+<code>&lt;I&gt;ceva caractere&lt;/I&gt;</code><A NAME="tex2html13"
+  HREF="#foot240"><SUP>5</SUP></A> este salvat în
+variabila 1, lucru indicat de paranteze <code>\( \)</code>.
+
+<P>
+</LI>
+<LI>Apoi porţiunea care se potriveşte este înlocuită cu
+<code>&lt;B&gt;\1&lt;\/B&gt;</code>, adică: păstrează textul neschimbat (variabila
+<code>\1</code>) însă înlocuieşte I-ul cu un B<A NAME="tex2html14"
+  HREF="#foot241"><SUP>6</SUP></A>.
+</LI>
+</OL>
+
+<P>
+Figura&nbsp;<A HREF="#vi">2</A> arată un exemplu de text înainte şi după prelucrare.
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="321"></A>
+<TABLE>
+<CAPTION><STRONG>Tabela 2:</STRONG>
+Modificările făcute asupra unui text de comanda <TT>vi</TT>
+din text.</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1" ALIGN="CENTER">
+<TR><TD ALIGN="LEFT"><B>Inainte</B></TD>
+<TD ALIGN="LEFT"><B>După</B></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>
+Un text &lt;I&gt;inainte&lt;/I&gt; de introducere. <BR></TT>
+<P>
+<TT>
+Introducere <BR></TT>
+<P>
+<TT>
+Un text in &lt;I&gt;interiorul&lt;/I&gt; &lt;B&gt;introducerii&lt;/B&gt;.
+Foarte &lt;I&gt;scurt&lt;/I&gt;. <BR></TT>
+<P>
+<TT>
+Capitolul 1 <BR></TT>
+<P>
+<TT>
+Un text in &lt;I&gt;interiorul&lt;/I&gt; capitolului 1.</TT></TD>
+<TD ALIGN="LEFT"><TT>
+Un text &lt;I&gt;inainte&lt;/I&gt; de introducere. <BR></TT>
+<P>
+<TT>
+Introducere <BR></TT>
+<P>
+<TT>
+Un text in &lt;B&gt;interiorul&lt;/B&gt; &lt;B&gt;introducerii&lt;/B&gt;.
+Foarte &lt;B&gt;scurt&lt;/B&gt;. <BR></TT>
+<P>
+<TT>
+Capitolul 1 <BR></TT>
+<P>
+<TT>
+Un text in &lt;I&gt;interiorul&lt;/I&gt; capitolului 1. </TT></TD>
+</TR>
+</TABLE>
+</DIV>
+</TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+
+<H2><A NAME="SECTION00066000000000000000">
+<TT>emacs</TT></A>
+</H2>
+
+<P>
+Editorul de texte <TT>emacs</TT> este un editor non-wyswyg extrem de
+puternic, şi editorul meu favorit<A NAME="tex2html16"
+  HREF="#foot261"><SUP>7</SUP></A>; acest text a fost
+scris cu <TT>emacs</TT>; Ca şi <TT>vi</TT>, <TT>emacs</TT> oferă expresii
+regulate puternice în comenzi de genul search-and-replace.  Nu le voi
+discuta aici, însă; sintaxa şi expresivitatea sunt foarte
+asemănătoare cu <TT>vi</TT>.
+
+<P>
+
+<H2><A NAME="SECTION00067000000000000000">
+<TT>f?lex</TT></A>
+</H2>
+
+<P>
+<TT>lex</TT> şi <TT>flex</TT> sunt două generatoare de analizoare lexicale
+pentru construcţia de compilatoare.  <TT>flex</TT> este o generaţie mai
+nouă.  Aceste programe primesc un fişier cu descrieri de expresii
+regulate, şi cu acţiuni asociate fiecărei expresii.  Apoi aceste
+programe generează programe C sau C++ (există şi <TT>jflex</TT> pentru
+Java mai nou) care implementează automatele finite care recunosc
+aceste expresii regulate, şi execută acţiunile indicate de fiecare
+dată cînd întîlnesc una din ele.
+
+<P>
+Dar aceste programe se pot folosi şi în alte scopuri pentru
+prelucrarea de texte; de pildă eu am scris un program în întregime în
+<TT>flex</TT> care translatează texte scrise într-un subset al
+limbajului L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X(un limbaj
+pentru typesetting -- aranjare în pagină) în text chior.  Eu îmi scriu
+toate articolele pentru PC Report în
+L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X, dar le transform în
+text înainte de a le trimite revistei.
+
+<P>
+Iată un exemplu de program simplu scris în <TT>lex</TT> adună toate
+numerele naturale dintr-un fişier, indiferent unde apar ele:
+
+<P>
+<PRE>
+%{
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int suma=0;
+%}
+
+CIFRA   [0-9]
+NUMAR   {CIFRA}+
+%%
+
+{NUMAR} { suma += atoi(yytext); }
+.       /* ignora orice nu e un numar */
+%%
+int yywrap() { return 1;}
+
+int main() 
+{
+    yylex();
+    printf("Suma %d\n", suma);
+    return 0;
+}
+</PRE>
+
+<P>
+
+<H2><A NAME="SECTION00068000000000000000">
+Perl</A>
+</H2>
+
+<P>
+În fine, voi încheia cu o sumară prezentare a expresiilor regulate
+în Perl.  PC Report a publicat cel puţin un articol despre acest
+interesant limbaj, şi poate va continua seria.
+
+<P>
+Perl vine de la Practical Extraction and Report Language: un limbaj
+pentru extras date şi produs rapoarte.  Este un limbaj minunat pentru
+a procesa fişiere text şi a face transformări sofisticate.  Pînă
+de curînd era limbajul preferat pentru a genera pagini dinamice la
+serverele de web, deşi în ultima vreme are concurenţi serioşi în
+limbaje şi sisteme ca Python, PHP, Visual Basic, Zope, etc.
+
+<P>
+Perl este departe de a fi un limbaj ideal, dar repară cu succes
+problemele expresiilor regulate din celelalte limbaje şi scule în
+mod normal folosite.  Perl are următoarele avantaje:
+
+<P>
+
+<UL>
+<LI>Oferă toate capabilităţile celorlalte sisteme; în mod
+intenţionat integrează tot ce pot face <TT>awk</TT>, shell-ul,
+<TT>grep</TT> şi <TT>sed</TT>.
+
+<P>
+</LI>
+<LI>Oferă o sintaxă unică pentru a descrie expresiile regulate;
+fiecare din programele de mai sus are reguli puţin diferite de
+celelalte.
+
+<P>
+</LI>
+<LI>Oferă o gamă foarte amplă de operatori cu expresii regulate.
+Foarte multe abrevieri practice sunt pre-definite.  
+
+<P>
+</LI>
+<LI>Perl oferă chiar o extensie care de fapt <EM>nu este</EM> o
+expresie regulată, în sensul teoretic al cuvîntului, pentru că
+poate fi folosită pentru a descrie limbaje neregulate.
+
+<P>
+</LI>
+<LI>Cînd scrieţi programe Perl nu mai aveţi problema că semnele
+scrise sunt interpretate întîi de shell şi abia după aia de
+program.  În felul acesta, ce scrieţi, asta ajunge la compilatorul
+Perl.
+
+<P>
+</LI>
+<LI>Perl poate prelucra cuvinte care se întind pe mai multe linii
+(celelalte programe, mai puţin <TT>f?lex</TT> se limitează la o
+singură linie de text pentru fiecare expresie regulată!).
+
+<P>
+</LI>
+<LI>În fine, sintaxa Perl este mult mai omogenă.  De exemplu,
+niciodată nu se pune semnul <code>\</code> în faţa unui operator pentru
+expresii regulate.  Dacă puneţi acest semn, caracterul devine un
+caracter obişnuit, şi nu un operator.
+</LI>
+</UL>
+
+<P>
+Voi menţiona o construcţie Perl care depăşeşte puterea
+expresiilor regulate.  Din această cauză, algoritmii eficienţi
+cunoscuţi, care generează automate finite, nu mai funcţionează
+pentru astfel de expresii.  Ele trebuie deci folosite cu cumpătare,
+pentru că anumite cazuri patologice vor necesita extrem de mult timp.
+
+<P>
+Perl ne permite să scriem ceva de genul: <code>(.*)\1</code>; asta
+înseamnă un şir de caractere urmat de el însuşi, deci un cuvînt
+care este format din concatenarea a două şiruri identice.  Această
+exprimare simplifică multe operaţii, dar nu este o ER în sensul
+strict al cuvîntului, deşi manualul Perl o numeşte aşa.
+
+<P>
+Închei acest paragraf cu o listă a operatorilor şi prescurtărilor
+cele mai importante din Perl (nu toate!).  ER din Perl sunt extrem de
+bogate, dar învăţate încetul cu încetul sunt foarte abordabile.
+Dacă faceţi multe prelucrări pe fişiere, Perl este o sculă
+absolut necesară în arsenalul dumneavoastră.
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">Expresie</TD>
+<TD ALIGN="LEFT">Semnificaţie</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>\</code></TD>
+<TD ALIGN="LEFT">Următorul meta-caracter devine un caracter obişnuit</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>^</code></TD>
+<TD ALIGN="LEFT">Început de linie</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>.</code></TD>
+<TD ALIGN="LEFT">Orice caracter în afară de newline</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>$</code></TD>
+<TD ALIGN="LEFT">Sfîrşit de linie</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>|</code></TD>
+<TD ALIGN="LEFT">Alternanţă (<IMG
+ WIDTH="27" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img52.png"
+ ALT="$a\vert b$">)</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>()</code></TD>
+<TD ALIGN="LEFT">Indică precedenţa operaţiilor</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code></code></TD>
+<TD ALIGN="LEFT">Concatenarea este implicită (nu folosim nici un semn)</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>[]</code></TD>
+<TD ALIGN="LEFT">O mulţime de caractere (ca la <TT>grep</TT>)</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>*</code></TD>
+<TD ALIGN="LEFT">Operatorul star: R* = R de zero sau mai multe ori la rînd</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>+</code></TD>
+<TD ALIGN="LEFT">R+ = RR* (R cel puţin o dată)</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>?</code></TD>
+<TD ALIGN="LEFT">R+ = <IMG
+ WIDTH="31" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img53.png"
+ ALT="$\epsilon\vert R$"> (R de zero sau una ori)</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>{n}</code></TD>
+<TD ALIGN="LEFT">R{n} = R exact de n ori</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>{n,}</code></TD>
+<TD ALIGN="LEFT">R{n,} = R de cel puţin n ori</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>{n,m}</code></TD>
+<TD ALIGN="LEFT">R{n,m} = R de cel puţin n dar cel mult m ori la rînd</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>\t</code></TD>
+<TD ALIGN="LEFT">Caracterul tab</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>\n</code></TD>
+<TD ALIGN="LEFT">Caracterul sfîrşit de linie</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>\r</code></TD>
+<TD ALIGN="LEFT">Caracterul retur de car</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>\x1B</code></TD>
+<TD ALIGN="LEFT">Caracter descris în hexazecimal</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>\l</code></TD>
+<TD ALIGN="LEFT">Următorul caracter micşorat (majuscule devin minuscule)</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>\u</code></TD>
+<TD ALIGN="LEFT">Următorul caracter majorat (minusculele devin majuscule)</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>\w</code></TD>
+<TD ALIGN="LEFT">Orice caracter care formează ``cuvinte'' (alfanumerice şi _)</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>\W</code></TD>
+<TD ALIGN="LEFT">Orice caracter care nu formează cuvinte</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>\s</code></TD>
+<TD ALIGN="LEFT">Orice spaţiu</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>\S</code></TD>
+<TD ALIGN="LEFT">Orice caracter care nu e spaţiu</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>\d</code></TD>
+<TD ALIGN="LEFT">Orice cifră</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>\D</code></TD>
+<TD ALIGN="LEFT">Orice caracter care nu e cifră</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>\b</code></TD>
+<TD ALIGN="LEFT">O poziţie dintre un cuvînt şi un non-cuvînt (zero caractere)</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>\B</code></TD>
+<TD ALIGN="LEFT">O poziţie care nu este între un cuvînt şi un non-cuvînt</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Alte surse de informaţie</A>
+</H1>
+
+<P>
+Există o grămadă de informaţie despre aceste programe.  Pentru
+utilitarele descrise (<TT>grep</TT>, <TT>sh</TT>, <TT>sed</TT>,
+<TT>awk</TT>), paginile de manual interactiv (<TT>man</TT>) au o
+grămadă de informaţii.  De asemenea, implementările ``free'' din
+proiectul GNU (menţionat adesea în PC Report, vedeţi de pildă <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#open">articolul</a>
+meu din iunie 1998) ale acestor utilitare vin cu documentaţii
+excelente în formă electronică.
+
+<P>
+Limbajul Perl are o mulţime de informaţii interesante on-line, la
+<TT><A NAME="tex2html17"
+  HREF="www.perl.com">www.perl.com</A></TT>; toate manualele de bază sunt acolo în formă
+electronică.
+
+<P>
+Dacă vreţi să învăţaţi mai mult despre expresii regulate,
+există o grămadă de cărţi utile.  De exemplu ``Cartea Dragon'', a
+lui Aho, Sethi şi Ullman ``Compilers : Principles, Techniques, and
+Tools'', de la Addison-Wesley din 1985, care este o carte clasică
+despre teoria şi construcţia calculatoarelor.  Un tratament foarte
+teoretic şi elegant puteţi găsi în cartea lui Dexter Kozen
+``Automata and Computability'', de la Springer Verlag, 1999.
+
+<P>
+Echivalentul lui <TT>lex</TT> pentru Java are o pagina de web la
+<TT><A NAME="tex2html18"
+  HREF="http://www.jflex.de/">http://www.jflex.de/</A></TT>, cu tot cu documentaţie.
+
+<P>
+
+<H1><A NAME="SECTION00080000000000000000">
+Concluzii</A>
+</H1>
+
+<P>
+Textul asta prezintă o grămadă de detalii; mă şi întreb dacă vor
+fi folositoare cuiva...Cred ca unele dintre lucrurile de aici
+sunt însă demne de reţinut:
+
+<P>
+
+<UL>
+<LI>O expresie regulată este o metodă de a descrie o mulţime
+potenţial infinită de cuvinte printr-un singur şir de caractere;
+
+<P>
+</LI>
+<LI>Expresiile regulate sunt extrem de folosite în prelucrarea de
+texte, scrierea de programe, generarea de pagini de web, şi multe
+alte domenii;
+
+<P>
+</LI>
+<LI>Există metode practice extrem de eficiente de a genera din
+expresiile regulate automate mici şi rapide care pot verifica în
+timp linear dacă un cuvînt dat este generat de expresia regulată;
+
+<P>
+</LI>
+<LI>N-am spus-o explicit, dar teoria automatelor finite are enorm de
+multe aplicaţii în afara limbajelor, mai ales în hardware.  Dacă
+veţi citi despre arhitectura sistemelor de calcul veţi vedea că
+practic <EM>toate microprocesoarele moderne sunt automate finite</EM>.
+</LI>
+</UL>
+
+<P>
+Orice programator poate deci folosi expresiile regulate, fără să
+ştie tot ce se ascunde în spatele lor.  Nici articolul acesta nu
+face decît să ridice puţin voalul, făcînd aluzie la o combinaţie
+de solide rezultate teoretice şi inginereşti.  Fundamentele solide
+sunt cele care de fapt fac această ``tehnologie'' atît de eficace.
+
+<P>
+<BR><HR><H4>Note</H4>
+<DL>
+<DT><A NAME="foot89">... yak-ul</A><A NAME="foot89"
+ HREF="regex-html.html#tex2html4"><SUP>1</SUP></A>
+<DD>Şi Java are un astfel de
+generator lexical.
+
+<DT><A NAME="foot103">... stii</A><A NAME="foot103"
+ HREF="regex-html.html#tex2html6"><SUP>2</SUP></A>
+<DD>Un
+fel de Xerox primitiv.
+
+<DT><A NAME="foot104">... calculator</A><A NAME="foot104"
+ HREF="regex-html.html#tex2html7"><SUP>3</SUP></A>
+<DD>Mai exact, unui interpretor sau
+unui compilator.
+
+<DT><A NAME="foot123">...<IMG
+ WIDTH="39" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img17.png"
+ ALT="$a\vert b\vert\epsilon$"></A><A NAME="foot123"
+ HREF="regex-html.html#tex2html9"><SUP>4</SUP></A>
+<DD>Operaţia <IMG
+ WIDTH="11" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
+ SRC="img11.png"
+ ALT="$\vert$">
+este asociativă, aşa că o putem folosi fără paranteze.
+
+<DT><A NAME="foot240">...
+<code>&lt;I&gt;ceva caractere&lt;/I&gt;</code></A><A NAME="foot240"
+ HREF="regex-html.html#tex2html13"><SUP>5</SUP></A>
+<DD><code>&lt;I&gt;</code> în HTML descrie
+cuvinte scrise cu litere cursive (I = italic).
+
+<DT><A NAME="foot241">... B</A><A NAME="foot241"
+ HREF="regex-html.html#tex2html14"><SUP>6</SUP></A>
+<DD>În HTML
+<code>&lt;B&gt;</code> indică caractere grase (B = bold).
+
+<DT><A NAME="foot261">... favorit</A><A NAME="foot261"
+HREF="regex-html.html#tex2html16"><SUP>7</SUP></A> <DD>Am scris un <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#emacs">articol</a>
+întreg în PC Report despre el în mai 1997.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

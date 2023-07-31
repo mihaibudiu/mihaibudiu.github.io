@@ -1,0 +1,861 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Calculatoare ne-universale: implementarea programelor în hardware</TITLE>
+<META NAME="description" CONTENT="Calculatoare ne-universale: implementarea programelor în hardware">
+<META NAME="keywords" CONTENT="spatial-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Calculatoare ne-universale: 
+<BR>
+implementarea programelor în hardware</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- <TT>mihaib+@cs.cmu.edu</TT> 
+<BR><TT><A NAME="tex2html2"
+  HREF="http://www.cs.cmu.edu/~mihaib/">http://www.cs.cmu.edu/~mihaib/</A></TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>mai 2001</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>sintetizarea automată de calculatoare specifice unei aplicaţii
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>cunoştinţe elementare despre arhitectura
+calculatoarelor şi limbaje de programare, elemente de C
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>hardware, hardware reconfigurabil, compilare,
+sinteza de circuite
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Cuprins</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html41"
+  HREF="spatial-html.html">Un excurs istoric</A>
+<LI><A NAME="tex2html42"
+  HREF="#SECTION00030000000000000000">Modelul spaţial de calcul</A>
+<UL>
+<LI><A NAME="tex2html43"
+  HREF="#SECTION00031000000000000000">Hardware reconfigurabil</A>
+<LI><A NAME="tex2html44"
+  HREF="#SECTION00032000000000000000">Limbaje de descriere a hardware-ului (HDL)</A>
+<LI><A NAME="tex2html45"
+  HREF="#SECTION00033000000000000000">Hardware din limbaje de nivel înalt</A>
+<LI><A NAME="tex2html46"
+  HREF="#SECTION00034000000000000000">Apeluri de procedură</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html47"
+  HREF="#SECTION00040000000000000000">Rezultate preliminare</A>
+<UL>
+<LI><A NAME="tex2html48"
+  HREF="#SECTION00041000000000000000">Un program desfăşurat</A>
+<LI><A NAME="tex2html49"
+  HREF="#SECTION00042000000000000000">Modelul computaţional</A>
+<LI><A NAME="tex2html50"
+  HREF="#SECTION00043000000000000000">Duplicarea codului</A>
+<LI><A NAME="tex2html51"
+  HREF="#SECTION00044000000000000000">Performanţă</A>
+<LI><A NAME="tex2html52"
+  HREF="#SECTION00045000000000000000">Cercetări viitoare</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html53"
+  HREF="#SECTION00050000000000000000">Alte surse de informaţie</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Un excurs istoric</A>
+</H1>
+
+<P>
+Primele calculatoare construite erau foarte diferite de cele de
+astăzi.  Nu mă refer aici la dimensiuni şi capacitate (care depind
+doar de tehnologie), ci la structura lor fundamentală.  Acele
+calculatoare erau construite pentru a rezolva o <EM>singură
+problemă</EM>; nu erau universale.  Ele constau dintr-o colecţie de
+unităţi funcţionale, care puteau face calcule simple.
+``Programatorii'' aveau sarcina de a conecta unităţile funcţionale
+între ele cu sîrme, pe care le înfigeau manual în tot felul de
+mufe.  De exemplu, dacă vroiau să calculeze (a+b)<sup>2</sup>, programatorii
+luau o unitate care făcea adunări şi una care făcea înmulţiri
+şi le cuplau ca în figura&nbsp;<A HREF="spatial-html.html#binom">1</A>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="binom"></A><A NAME="184"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 1:</STRONG>
+Implementarea în hardware a expresiei (a+b)<sup>2</sup>.  Variabilele
+devin sîrme, iar operaţiile sunt executate de unităţi funcţionale.</CAPTION>
+<TR><TD><IMG
+ WIDTH="135" HEIGHT="229" BORDER="0"
+ SRC="img3.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=3cm\epsffile{binom.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+În anii '40 în domeniul calculatoarelor intră în scenă un genial
+matematician, pe nume John von Neumann.  von Neumann analizează
+starea de fapt a calculatoarelor şi scrie în 1945 un raport
+intitulat ``First Draft of a Report on the EDVAC'' (Prima ciornă a
+unui raport despre EDVAC), în care sugerează o arhitectura
+revoluţionară.  În această arhitectură, programul nu mai este
+reprezentat de felul în care sunt cuplate unităţile funcţionale,
+ci este stocat în memorie, fiind descris folosind un limbaj numit
+cod-maşină.  În cod-maşină, operaţiile de executat sunt
+codificate sub forma unor numere numite <EM>instrucţiuni</EM>.
+Programul de executat este descris printr-un şir de instrucţiuni,
+care se execută consecutiv.
+
+<P>
+Pe lîngă unităţile funcţionale care fac operaţii aritmetice,
+calculatorul mai are o unitate de control, care citeşte
+instrucţiunile programului şi care trimite semnale între
+unităţile funcţionale pentru a executa aceste instrucţiuni.
+Rezultatele intermediare sunt stocate în memorie.  Această
+arhitectură se numeşte ``von Neumann''.  Dacă nu sunteţi
+impresionaţi de această viziune radicală, este pentru că marea
+majoritate a calculatoarelor din ziua de azi sunt bazate pe această
+arhitectură; noţiunea de limbaj-maşină, şi cea înrudită, de
+limbaj de programare, folosite pentru descrierea programelor, sunt
+concepte foarte naturale pentru toţi cei care manipulează
+calculatoarele.
+
+<P>
+Se cuvine menţionat faptul că ideea de a descrie un program folosind
+un limbaj (şi nu prin conexiuni între unităţi funcţionale) este
+mai veche; în 1936 Alan Turing folosise noţiunea de ``maşină
+Turing universală'' pentru a descrie un calculator universal, care
+poate executa orice program.  Programele erau stocate în memoria
+calculatorului, reprezentate ca şiruri de numere.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Modelul spaţial de calcul</A>
+</H1>
+
+<P>
+Spuneam că marea majoritate a calculatoarelor digitale construite
+astăzi au o arhitectură von Neumann.  Dar nu toate; există încă
+``calculatoare'' bazate pe arhitectura veche, în care unităţile
+funcţionale sunt legate între ele prin sîrme şi nu există un
+program stocat în memorie.  
+
+<P>
+Modelul von Neumann are o virtute excepţională: flexibilitatea.
+Folosind acelaşi hardware putem executa oricîte programe, toate
+diferite între ele.  Preţul care trebuie însă plătit este
+performanţa: unele operaţiuni nu se pot descrie foarte eficient prin
+instrucţiunile disponibile, şi s-ar putea implementa mult mai bine
+direct în hardware; figura&nbsp;<A HREF="spatial-html.html#inversare">2</A> prezintă un astfel de
+exemplu extrem.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="inversare"></A><A NAME="190"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 2:</STRONG>
+Implementarea unui program care pune biţii
+dintr-un octet în ordine inversă, în software (în limbajul C) şi
+respectiv hardware.  Execuţia în software necesită cîteva zeci de
+instrucţiuni, pe cînd cea în hardware se face practic instantaneu.</CAPTION>
+<TR><TD><IMG
+ WIDTH="453" HEIGHT="97" BORDER="0"
+ SRC="img4.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=10cm\epsffile{inversare.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Ca atare, atunci cînd este nevoie de performanţă deosebită, sau
+cînd flexibilitatea nu este foarte importantă, inginerii
+construiesc în continuare calculatoare specializate.  De exemplu,
+ruterele de mare viteză de pe coloana vertebrală a Internetului
+trebuie să proceseze pachetele cu informaţii la viteze uluitoare (au
+la dispoziţie doar cîteva zeci de nano-secunde pentru fiecare
+pachet).  Ca atare, unele din funcţiile de clasificare şi manipulare
+ale pachetului sunt implementate direct în hardware, într-un
+algoritm fixat.  Chiar dacă performanţa nu este critică, atunci
+cînd algoritmul de procesare este foarte bine standardizat, este
+adesea mai ieftin de folosit un astfel circuit specializat, numit ASIC
+(Application-Specific Integrated Circuit).  Chiar şi într-un
+calculator obişnuit se găsesc de obicei multe astfel de circuite
+pentru manipularea perifericelor: plăci de reţea, controlere de
+magistrală, etc.
+
+<P>
+
+<H2><A NAME="SECTION00031000000000000000">
+Hardware reconfigurabil</A>
+</H2>
+
+<P>
+În articolul meu anterior din NetReport am discutat despre o
+posibilă evoluţie a tehnologiilor electronice, nanotehnologiile,
+care ne vor permite să construim circuite digitale cu miliarde de
+porţi logice.  În acel articol am sugerat că aceste circuite imense
+vor putea fi folosite cel mai eficient sub formă de hardware
+reconfigurabil.  Hardwareul reconfigurabil este un model de calcul
+foarte asemănător cu cel de acum cincizeci de ani: constă dintr-o
+``mare'' de porţi logice universale, care pot fi programate
+individual pentru a implementa orice funcţie logică, şi două
+reţele: una care leagă porţile între ele, şi care poate fi
+configurată în felurite moduri pentru a lega şi dezlega porţile,
+şi una de configuraţie, care este folosită pentru a transporta
+informaţiile de configurare spre porţi şi spre cealaltă reţea.
+
+<P>
+Folosind hardware reconfigurabil putem sintetiza circuite specifice
+fiecărei aplicaţii; de data asta, însă, în loc de a conecta
+unităţile funcţionale manual, le cuplăm în mod electronic,
+schimbînd felul în care sunt cuplate porţile logice.
+
+<P>
+În articolul de faţă voi arăta discuta mai pe larg cum se poate
+transforma un program într-un circuit şi ce fel de proprietăţi are
+acest nou model de execuţie.
+
+<P>
+
+<H2><A NAME="SECTION00032000000000000000">
+Limbaje de descriere a hardware-ului (HDL)</A>
+</H2>
+
+<P>
+Ideea de a descrie hardware folosind programe nu este de loc nouă; de
+fapt circuitele integrate digitale sunt construite chiar în acest
+fel: circuitul de construit este descris într-un limbaj special de
+programare, numit Hardware Description Language.  Circuitul astfel
+descris este apoi prelucrat de o suită complicată de programe CAD
+(Computer-Aided Design), care optimizează circuitul, îl transformă
+în operaţii elementare, le plasează pe o suprafaţă plană şi le
+conectează prin sîrme.  În faza de proiectare, circuitul descris
+într-un HDL poate fi <EM>simulat</EM>, pentru testare şi depanare.
+
+<P>
+La ora actuală există două limbaje foarte importante de descriere a
+hardware-ului, care au fiecare susţinătorii lor aprigi; unul dintre
+ele se numeşte VHDL iar celălalt Verilog.  VHDL este prescurtarea a
+două prescurtări: Vhsic HDL, unde VHSIC înseamnă ``Very High Speed
+Integrated Circuits''.  Verilog vine de la ``VERifying LOGic'', dar
+limbajul este folosit nu numai pentru a simula şi verifica circuite
+logice (cum a fost conceput iniţial, şi după cum arată numele
+său), ci şi pentru a le proiecta şi implementa (<EM>sinteza de
+hardware</EM>; hardware synthesis).
+
+<P>
+Cele două limbaje sunt relativ similare ca putere de expresie, dar
+incompatibile între ele.  Sunt de asemenea destul de diferite de
+celelalte limbaje obişnuite de programare: în limbajele HDL
+programatorul exprimă un circuit ca o colecţie de sub-circuite care
+operează în paralel (paralelismul este explicit în program).
+Variabilele sunt semnale electrice, iar operaţiile descriu unităţi
+funcţionale.  Nu există funcţii recursive, structuri de date
+complicate sau manipulare dinamică a memoriei (<TT>malloc/new/free</TT>).
+
+<P>
+
+<H2><A NAME="SECTION00033000000000000000">
+Hardware din limbaje de nivel înalt</A>
+</H2>
+
+<P>
+Verilog şi VHDL sunt foarte potrivite pentru a descrie circuite,
+însă sunt puţin potrivite pentru felul în care gîndesc oamenii.
+În general, oamenii au probleme în a-şi imagina mai multe procese
+care se petrec concurent şi comunică între ele; din cauza asta
+calculatoarele paralele nu au avut prea mult succes, şi tot din cauza
+asta programarea aplicaţiilor cu mai multe fire de execuţie
+(threads) este un exerciţiu de disciplină şi nervi de fier.
+
+<P>
+Ca atare, de multă vreme unele grupuri de cercetare încearcă să
+folosească limbaje mai simple şi mai naturale (de genul Pascal/C)
+pentru a descrie hardware.  (Dacă limbajele acestea nu vi se par
+naturale, înseamnă că nu aţi încercat să descrieţi un sistem
+complex în Verilog!).
+
+<P>
+Tentativa de a genera hardware din limbaje obişnuite de programare se
+loveşte de mai multe obstacole.  În primul rînd, tehnologia pentru
+extragerea paralelismului dintr-un program scris într-un limbaj
+``secvenţial'' (ca C sau Fortran) este nesatisfăcătoare; ori
+paralelismul este principalul avantaj al unui model de execuţie în
+hardware.
+
+<P>
+În al doilea rînd, limbajele de genul C sau Fortran folosesc tot
+felul de construcţii care nu au un corespondent direct în hardware,
+cum ar fi funcţii recursive, memorie alocată dinamic, sau structuri
+de date complicate.  În ce fel se pot traduce acestea în hardware
+într-un mod eficient este un subiect activ de cercetare.
+
+<P>
+În cele ce urmează voi ilustra cum se pot traduce în hardware
+operaţiile fundamentale ale unui limbaj de programare.
+
+<P>
+
+<H3><A NAME="SECTION00033100000000000000">
+O instrucţiune</A>
+</H3>
+
+<P>
+Pentru a traduce o operaţiune simplă în hardware, asociem
+variabilele cu ``sîrmele'', şi operaţiile cu unităţi
+funcţionale, după cum am anticipat şi mai devreme.
+Figura&nbsp;<A HREF="spatial-html.html#binom">1</A> ilustrează o astfel de transformare.
+
+<P>
+
+<H3><A NAME="SECTION00033200000000000000">
+Un bloc de instrucţiuni</A>
+</H3>
+
+<P>
+În limbajele de nivel înalt valorile sunt stocate în variabile; în
+codul maşină ele sunt atribuite unor regiştri, sau sunt stocate în
+memorie.  Cînd avem de-a face cu un bloc de instrucţiuni consecutive
+care manipulează doar regiştri, le putem traduce în hardware
+transformînd fiecare registru într-o sîrmă, ca în
+figura&nbsp;<A HREF="spatial-html.html#bloc">3</A>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="bloc"></A><A NAME="197"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura:</STRONG>
+Un bloc de instrucţiuni şi circuitul
+corespunzător.  Observaţi cum variabilele devin sîrme.  Variabila
+<TT>b</TT> este folosită de două ori, deci devine două sîrme
+diferite, <TT>b</TT> şi <TT>b&#8217;</TT>.  Observaţi de asemenea cum
+operaţiile <TT>&amp;</TT> şi <TT>+</TT> sunt executate simultan.</CAPTION>
+<TR><TD><IMG
+ WIDTH="316" HEIGHT="219" BORDER="0"
+ SRC="img5.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=7cm\epsffile{bloc.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H3><A NAME="SECTION00033300000000000000">
+Instrucţiuni de control</A>
+</H3>
+
+<P>
+În limbajele de nivel înalt avem construcţii care selectează
+între diferite instrucţiuni care urmează să se execute, cum ar fi
+<TT>if-then-else</TT>.  Pentru a le traduce pe acestea în hardware avem
+mai multe alternative.  În figura&nbsp;<A HREF="spatial-html.html#control">4</A> ilustrăm o
+posibilitate care exploatează la maximum paralelismul dintre
+instrucţiuni, executînd simultan părţile <TT>then</TT> şi
+<TT>else</TT>, şi selectînd doar rezultatele necesare.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="control"></A><A NAME="216"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 4:</STRONG> Implementarea
+instrucţiunilor de control al execuţiei în mod speculativ: executăm
+simultan ramurile <TT>if</TT>, <TT>then</TT> şi <TT>else</TT> şi
+păstrăm numai rezultatul corect.  Trapezul este un multiplexor, cu
+trei intrări: un selector, desenat în lateral, şi două valori între
+care se selectează.  Ieşirea multiplexorului este intrarea din stînga
+dacă selectorul este 0 şi intrarea din dreapta dacă selectorul este
+1.</CAPTION> <TR><TD><IMG WIDTH="361" HEIGHT="239" BORDER="0"
+SRC="img6.png"
+ALT="\begin{figure}\centerline{\epsfxsize=8cm\epsffile{control.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Acest gen de execuţie se numeşte <EM>speculativă</EM>, pentru că
+execută mai mult decît este strict necesar şi selectează numai
+ceea ce e necesar la sfîrşit.  Şi microprocesoarele moderne
+folosesc o formă de execuţie speculativă, pe care am descris-o mai
+demult într-un articol din PC Report despre predicţia salturilor.
+
+<P>
+
+<H3><A NAME="SECTION00033400000000000000">
+Accese la memorie</A>
+</H3>
+
+<P>
+Una dintre cele mai puternice trăsături ale limbajelor de nivel
+înalt este capacitatea de a manipula matrici, care se bazează pe
+posibilitatea de a adresa memoria în mod <EM>indirect</EM>.  Cu alte
+cuvinte, citim conţinutul unei celule de memorie a cărei adresă a
+fost calculată.
+
+<P>
+Accesele indirecte nu pot fi transformate pur şi simplu în sîrme;
+trebuie să folosim memorii hardware pentru a stoca matrici.  În
+plus, atunci cînd avem cod executat în mod speculativ, trebuie să
+fim atenţi să nu executăm decît accesele la memorie corecte,
+pentru că altfel vom ``strica'' conţinutul memoriei.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="memorie"></A><A NAME="228"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 5:</STRONG>
+Pentru a implementa matrici folosim memorii
+în care adresăm cu indicele din matrice.  Citirea din matrice este o
+citire din memorie, iar scrierea în matrice este o scriere în
+memorie.</CAPTION>
+<TR><TD><IMG
+ WIDTH="361" HEIGHT="203" BORDER="0"
+ SRC="img7.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=8cm\epsffile{memorie.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Figura&nbsp;<A HREF="spatial-html.html#memorie">5</A> ilustrează implementarea unei bucăţi de cod
+care conţine accese la memorie.
+
+<P>
+
+<H3><A NAME="SECTION00033500000000000000">
+Bucle</A>
+</H3>
+
+<P>
+Lucrurile devin mai interesante atunci cînd avem de executat bucle.
+Circuitul pe care-l implementăm nu mai este un simplu circuit <EM>combinatorial</EM>, în care semnalul se propagă într-un singur sens.
+El devine un circuit <EM>secvenţial</EM>, cu o buclă de feed-back.
+Bucla de feed-back trebuie să fie întreruptă de un registru
+controlat de un ceas, care sincronizează propagarea tuturor
+semnalelor din buclă.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="bucla"></A><A NAME="234"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 6:</STRONG>
+Implementarea (uşor simplificată) a unei
+bucle.  Un <EM>registru</EM> citeşte noua valoare a lui <TT>i</TT> la
+fiecare tact de ceas şi o memorează pînă la următorul tact.
+Bucla este pornită în execuţie punînd semnalul de iniţializare pe
+0 (după aceea semnalul trebuie să rămînă 1 pînă la terminarea
+buclei).  Semnalul de terminare a buclei indică momentul cînd toate
+iteraţiile s-au terminat.</CAPTION>
+<TR><TD><IMG
+ WIDTH="543" HEIGHT="254" BORDER="0"
+ SRC="img8.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{bucla.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Figura&nbsp;<A HREF="spatial-html.html#bucla">6</A> ilustrează o posibilă implementare a unei
+bucăţi de cod care conţine o buclă.
+
+<P>
+
+<H2><A NAME="SECTION00034000000000000000">
+Apeluri de procedură</A>
+</H2>
+
+<P>
+Cînd avem un program compus din mai multe proceduri, fiecare
+procedură poate fi implementată ca un circuit separat.  Procedura
+curentă, în curs de execuţie, corespunde circuitului activ.
+Controlul este transmis între proceduri prin semnale care activează
+procedura chemată.
+
+<P>
+O problemă ceva mai complicată este că atunci cînd procedura
+chemată se termină, trebuie să sară la o bucată de cod diferită
+de fiecare dată (la chemătorul ei).  Acest lucru poate fi realizat
+în mai multe feluri; de exemplu, fiecare procedură primeşte un
+parametru suplimentar, care este chemătorul său; pentru terminarea
+procedurii, se poate sintetiza o bucată de hardware care selectează
+dintre toţi chemătorii posibili bazat pe valoarea acestui parametru
+şi-i trimite un mesaj cînd procedura curentă şi-a terminat
+execuţia.
+
+<P>
+Această implementare nu funcţionează pentru procedurile recursive,
+care mai au nevoie şi de o stivă; deocamdată nu avem la-ndemînă o
+soluţie eficientă pentru a trata astfel de cazuri.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Rezultate preliminare</A>
+</H1>
+
+<P>
+Pentru a estima impactul unui asemenea model de calcul asupra
+performanţei am făcut un studiu preliminar, care face o mulţime de
+asumpţii simplificatoare.  Sperăm că modelul real de calcul nu va
+da rezultate substanţial diferite de idealizarea noastră.
+
+<P>
+Cel mai ``idealizat'' aspect al analizei noastre constă în
+cantitatea de informaţie pe care am folosit-o despre program şi
+zonele de memorie pe care le foloseşte: am presupus că ştim exact
+ce adrese de memorie vor fi accesate de fiecare instrucţiune de
+citire şi scriere din memorie.  Această informaţie a fost
+colectată executînd programul modificat pentru a colecta informaţii
+despre propria sa comportare (un astfel de program se numeşte <EM>instrumentat</EM>).
+
+<P>
+
+<H2><A NAME="SECTION00041000000000000000">
+Un program desfăşurat</A>
+</H2>
+
+<P>
+Figura&nbsp;<A HREF="spatial-html.html#graf">7</A> arată un astfel de program desfăşurat şi aşezat
+în plan.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="graf"></A><A NAME="243"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 7:</STRONG>
+Un program aşezat în plan.  Fiecare pătrat
+reprezintă 100 de unităţi, unde o instrucţiune aritmetică simplă
+sau un cuvînt de memorie ocupă 1 unitate.  Un pătrat verde conţine
+numai memorie, iar un pătrat alb conţine numai instrucţiuni.
+Nuanţe intermediare indică mixturi de instrucţiuni şi memorie.
+Liniile roşii indică transfer de control între blocuri consecutive
+de instrucţiuni, iar liniile albastre indică accese la memorie.
+Grosimea unei linii este proporţională cu logaritmul frecvenţei cu
+care acea linie este utilizată.  De exemplu, o linie de 10 ``pixeli''
+a fost utilizată de program de 2<sup>10</sup> = 1024 de ori.  Liniile
+groase sunt deci mult mai importante decît cele subţiri.</CAPTION>
+<TR><TD><IMG
+ WIDTH="452" HEIGHT="297" BORDER="0"
+ SRC="img9.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=10cm\epsffile{graf.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Fiecare program este reprezentat sub forma unui <EM>graf</EM>, în care
+nodurile sunt instrucţiuni sau memorii şi în care muchiile sunt
+transfer de execuţie între instrucţiuni sau accese la memorie.
+Toate programele pe care le-am analizat<A NAME="tex2html10"
+  HREF="#foot124"><SUP>1</SUP></A> au trăsături
+foarte similare:
+
+<P>
+
+<UL>
+<LI>Numărul de muchii este proporţional cu cel de noduri
+(constanta de proporţionalitate este sub 10)<A NAME="tex2html11"
+  HREF="#foot126"><SUP>2</SUP></A>.
+</LI>
+<LI>Gradul unui nod (numărul de vecini) urmează o distribuţie
+foarte inegală: cîteva noduri au foarte multe muchii.
+</LI>
+<LI>În particular, există un număr foarte mic de noduri care
+``atinge'' aproape toată memoria folosită de program.  În figură sunt
+două astfel de pătrate, din care radiază foarte multe muchii
+albastre.  Numim astfel de noduri ``stele''.
+</LI>
+</UL>
+
+<P>
+Analizînd graful din figură am descoperit că una dintre cele două
+stele este în corpul funcţiei <TT>memcpy</TT>.  Dacă ne gîndim
+puţin, vom realiza că acest lucru este foarte natural: toate
+structurile de date ale programului care sunt copiate vor fi atinse
+de această funcţie.  
+
+<P>
+
+<H2><A NAME="SECTION00042000000000000000">
+Modelul computaţional</A>
+</H2>
+
+<P>
+Dacă am luat un program şi l-am ``întins'' pe o suprafaţă,
+întrebarea următoare este: ``cît de repede merge''?  Pentru a putea
+răspunde, trebuie să precizăm alte cîteva lucruri despre modelul
+nostru computaţional:
+
+<P>
+
+<UL>
+<LI>Am transformat fiecare bloc de instrucţiuni aflate între două
+instrucţiuni de salt (jump/branch) consecutive într-un circuit; (nu
+am folosit deci metoda descrisă mai sus pentru a genera cod
+speculativ: un <TT>if</TT> va executa numai ramura corectă).
+
+<P>
+</LI>
+<LI>Am presupus că în interiorul fiecărui bloc toate
+instrucţiunile independente se vor executa în paralel.
+
+<P>
+</LI>
+<LI>Am presupus că timpul de transmisiune a unui semnal de-a lungul
+unei muchii este proporţional cu lungimea muchiei.
+
+<P>
+</LI>
+<LI>Am presupus că un bloc este pornit în execuţie numai după ce
+blocul anterior a terminat complet de calculat, şi că mesajul prin
+care execuţia este pornită este trimis împreună cu datele de la
+intrarea blocului.
+
+<P>
+</LI>
+<LI>Nu am făcut nici un fel de optimizări specifice generării de
+hardware (de exemplu, un circuit care adună cu valoarea constantă 1
+poate fi făcut mult mai simplu şi mai rapid decît un circuit
+general de adunare).
+</LI>
+</UL>
+
+<P>
+
+<H2><A NAME="SECTION00043000000000000000">
+Duplicarea codului</A>
+</H2>
+
+<P>
+Pornind de la acest model am evaluat performanţa programelor.
+Rezultatele au fost amestecate.  Am căutat apoi metode de a
+îmbunătăţi performanţa prin transformări simple.
+
+<P>
+Primul obiectiv asupra căruia ne-am îndreptat atenţia au fost
+``stelele''; acestea sunt detrimentale performanţei, pentru că,
+avînd mulţi vecini, unii dintre aceştia vor fi în mod necesar
+plasaţi la distanţă mare de centru, deci vor fi accesaţi foarte
+greu.
+
+<P>
+Ne-am întrebat: nu am putea cumva să ``spargem'' o stea în bucăţi, în
+aşa fel încît să facem două stele mai mici?  Răspunsul este: da, şi
+chiar foarte simplu.  Tot ce trebuie făcut pentru programul din figură
+este să duplicăm codul funcţiei <TT>memcpy</TT> şi să aranjăm ca din
+locuri diferite să fie chemate copii diferite.  O tehnică foarte
+simplă pentru a realiza acest lucru se numeşte în compilatoare
+``inlining'', în care funcţia chemată este inserată textual în codul
+chemătorului.
+
+<P>
+După ce am aplicat această transformare, am obţinut graful din
+figura&nbsp;<A HREF="spatial-html.html#graf-inline">8</A>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="graf-inline"></A><A NAME="253"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 8:</STRONG>
+Programul din figura&nbsp;<A HREF="spatial-html.html#graf">7</A> după ce
+corpul funcţiei <TT>memcpy</TT> a fost duplicat prin <EM>inlining</EM>.
+Observaţi cum stelele sunt mult mai mici şi mai bine plasate.</CAPTION>
+<TR><TD><IMG
+ WIDTH="452" HEIGHT="309" BORDER="0"
+ SRC="img10.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=10cm\epsffile{graf-inline.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H2><A NAME="SECTION00044000000000000000">
+Performanţă</A>
+</H2>
+
+<P>
+Rezultatele au fost destul de interesante.  Am comparat performanţa
+acestor programe cu execuţia lor pe un microprocesor Alpha 21164 la
+500 Mhz.  Am presupus că în implementarea spaţială vom putea
+executa o operaţie pe ciclu de ceas şi că vom putea folosi aceeaşi
+frecvenţă de ceas cu Alpha.
+
+<P>
+În medie programele noastre funcţionează ceva mai puţin de 2 ori
+mai încet decît pe Alpha, dar unele dintre ele merg mai rapid, după
+cum se vede în figura&nbsp;<A HREF="spatial-html.html#performanta">9</A>, în stînga.  Graficul din
+dreapta arată cum îşi petrece timpul fiecare din programe.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="performanta"></A><A NAME="263"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 9:</STRONG>
+<B>În stînga</B> este raportul dintre
+timpul de execuţie al programului executat pe un microprocesor Alpha
+şi pe un model spaţial de calcul.  Valoarea zero indică egalitatea
+timpului de execuţie.  O valoare negativă indică execuţie mai
+rapidă în hardware, pe cînd o valoare pozitivă indică execuţie
+mai rapidă pe Alpha.  <B>În dreapta</B> este ilustrat timpul de
+execuţie al fiecărui program.  Culoarea verde indică timp petrecut
+aşteptînd ca citiri din memorii de la distanţă să returneze
+rezultatul.  Albastru este pentru timp în care se execută calcule
+utile.  Negru arată timpul petrecut transferînd control între
+blocuri consecutive, şi galben măsoară timpul de transfer al
+datelor între blocuri consecutive.  Porţiunile verde şi negru pot fi
+probabil reduse prin optimizări mai agresive, cum ar fi folosirea de
+cache-uri şi respectiv execuţie speculativă.</CAPTION>
+<TR><TD><IMG
+ WIDTH="722" HEIGHT="297" BORDER="0"
+ SRC="img11.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=16cm\epsffile{performanta.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H2><A NAME="SECTION00045000000000000000">
+Cercetări viitoare</A>
+</H2>
+
+<P>
+Acest text ilustrează cercetările noastre preliminare în domeniul
+modelului spaţial de execuţie; foarte multe lucruri mai rămîn de
+făcut.  Rezultatele noastre sunt însă încurajatoare: avem o
+metodologie care ne permite să compilăm programe destul de
+complicate iar performanţa nu este substanţial degradată faţă de
+modelele de calcul convenţionale.
+
+<P>
+Va trebui însă să dezvoltăm o grămadă de tehnici noi, plecînd
+de la construcţia hardware-ului reconfigurabil însuşi, trecînd
+prin metode de compilare şi scule de simulare mai sofisticate, care
+iau în considerare mai multe detalii despre arhitectura reală a unui
+astfel de sistem.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Alte surse de informaţie</A>
+</H1>
+
+<P>
+
+<UL>
+<LI>Pagina Alan Turing: <TT><A NAME="tex2html14"
+  HREF="http://www.turing.org.uk/turing">http://www.turing.org.uk/turing</A></TT>.
+
+<P>
+</LI>
+<LI>O scurtă introducere în VHDL:
+<TT><A NAME="tex2html15"
+  HREF="http://www.eej.ulst.ac.uk/tutor/vhdnotes.html">http://www.eej.ulst.ac.uk/tutor/vhdnotes.html</A></TT>.
+
+<P>
+</LI>
+<LI>Un site despre Verilog: <TT><A NAME="tex2html16"
+  HREF="http://www.verilog.com">http://www.verilog.com</A></TT>.
+
+<P>
+</LI>
+<LI>Articolul din conferinţa ISCA 2001 care prezintă rezultatele
+descrise în acest articol este disponibil la
+<TT><A NAME="tex2html17"
+  HREF="http://www.cs.cmu.edu/~mihaib/research/isca01.ps">http://www.cs.cmu.edu/~mihaib/research/isca01.ps</A></TT>.
+
+<P>
+Articole ale mele anterioare din PC Report:
+
+<P>
+
+<UL>
+<LI>august 1999, despre predicţia salturilor
+
+<BR><TT><A NAME="tex2html18"
+  HREF="http://www.cs.cmu.edu/~mihaib/articles/complex/articles.html#predictie">http://www.cs.cmu.edu/~mihaib/articles/complex/articles.html#predictie</A></TT>.
+
+<P>
+</LI>
+<LI>luna decembrie 1999, despre teoria complexităţii şi maşina
+Turing universală:
+
+<BR><TT><A NAME="tex2html19"
+  HREF="http://www.cs.cmu.edu/~mihaib/articles/complex/articles.html#complex">http://www.cs.cmu.edu/~mihaib/articles/complex/articles.html#complex</A></TT>.
+
+<P>
+</LI>
+<LI>luna mai 2001, despre nanotehnologie:
+
+<BR><TT><A NAME="tex2html20"
+  HREF="http://www.cs.cmu.edu/~mihaib/articles/articles.html#nano">http://www.cs.cmu.edu/~mihaib/articles/articles.html#nano</A></TT>.
+
+<P>
+</LI>
+<LI>iulie 1998, despre hardware reconfigurabil:
+
+<BR><TT><A NAME="tex2html21"
+  HREF="http://www.cs.cmu.edu/~mihaib/articles/articles.html#reconf">http://www.cs.cmu.edu/~mihaib/articles/articles.html#reconf</A></TT>.
+</LI>
+</UL>
+</LI>
+</UL>
+
+<P>
+<BR><HR><H4>Note</H4>
+<DL>
+<DT><A NAME="foot124">... analizat</A><A NAME="foot124"
+ HREF="spatial-html.html#tex2html10"><SUP>1</SUP></A>
+<DD>Am analizat o serie
+de programe reprezentative scrise în limbajul C.
+
+<DT><A NAME="foot126">... 10)</A><A NAME="foot126"
+ HREF="spatial-html.html#tex2html11"><SUP>2</SUP></A>
+<DD>Numărul de
+muchii într-un graf poate fi pătratic în cel de noduri.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

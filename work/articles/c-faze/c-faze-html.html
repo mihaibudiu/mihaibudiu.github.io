@@ -1,0 +1,1044 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Fazele compilatorului de C</TITLE>
+<META NAME="description" CONTENT="Fazele compilatorului de C">
+<META NAME="keywords" CONTENT="c-faze-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+<BODY>
+
+<P>
+
+<H1 ALIGN="CENTER">Fazele compilatorului de C</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu</STRONG></P>
+<P ALIGN="CENTER"><STRONG>ianuarie 1996</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>fazele compilării programelor C 
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>preprocesor, compilator, linkeditor, modul,
+                   modul obiect, header, bibliotecă, fişier executabil 
+</DD>
+<DT><STRONG>Nivelul tehnic:</STRONG></DT>
+<DD>programator cu 1-2 ani de experienţă 
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>limbajul C, bine 
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html13"
+  HREF="c-faze-html.html">Precizare</A>
+<LI><A NAME="tex2html14"
+  HREF="#SECTION00030000000000000000">Introducere</A>
+<LI><A NAME="tex2html15"
+  HREF="#SECTION00040000000000000000">Premizele scrierii de programe mari</A>
+<LI><A NAME="tex2html16"
+  HREF="#SECTION00050000000000000000">Soluţia oferită de C</A>
+<UL>
+<LI><A NAME="tex2html17"
+  HREF="#SECTION00051000000000000000">Un exemplu</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html18"
+  HREF="#SECTION00060000000000000000">Compilarea C</A>
+<LI><A NAME="tex2html19"
+  HREF="#SECTION00070000000000000000">Preprocesarea</A>
+<LI><A NAME="tex2html20"
+  HREF="#SECTION00080000000000000000">Compilarea propriu-zisă</A>
+<LI><A NAME="tex2html21"
+  HREF="#SECTION00090000000000000000">Linkeditarea</A>
+<LI><A NAME="tex2html22"
+  HREF="#SECTION000100000000000000000">Concluzii</A>
+<LI><A NAME="tex2html23"
+  HREF="#SECTION000110000000000000000">Glosar</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+Acest articol face parte dintr-o serie de articole care îşi
+propune să discute limbajul C standard (ANSI C) supunînd atenţiei
+felurite aspecte mai puţin înţelese / folosite / explicate.
+Fiecare articol este complet, în sensul că o cunoaştere a
+limbajului C ar trebui să fie suficientă pentru înţelegerea lui,
+şi nu se bazează fundamental pe altele din aceeaşi serie.
+Datorită însă faptului că în realitate articolele nu prezintă tehnici
+de programare, ci efectiv limbajul şi semantica (semnificaţia) sa
+(deci o construcţie unitară), referiri incrucişate între articole
+apar, atunci cînd aspecte clarificate cu o altă ocazie intervin în
+discurs.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Precizare</A>
+</H1>
+
+<P>
+Vom folosi pe alocuri termenul <EM>obiect</EM> pentru a denota
+anumite construcţii ale unui limbaj cum ar fi variabile, constante,
+funcţii, metode, obiecte (în sensul limbajelor orientate pe
+obiecte).  A nu se confunda această noţiune cu cea de obiect din
+limbajele orientate pe obiecte, pe care nu o folosim niciodată
+explicit în acest articol, şi al cărei sens îl socotim mai
+restrîns.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Introducere</A>
+</H1>
+
+<P>
+Încă de la apariţia sa la începutul anilor '70 limbajul C
+s-a impus ca lider de necontestat pentru programarea de sistem.
+Aceasta din urmă cuprinde o clasă largă de programe care
+interacţionează foarte strîns cu calculatorul şi a căror
+performanţă o afectează pe a tuturor celorlalte.  Un exemplu tipic de
+astfel de program este sistemul de operare.  (El este singurul program
+care -- de exemplu -- interacţionează cu discul.  Toate celelalte
+programe cer serviciile lui pentru acest scop, prin funcţiile de
+lucru cu fişiere.  De aceea el ``interacţionează strîns cu
+calculatorul''.)
+
+<P>
+C are mai multe calităţi care îl fac atît de apreciat de
+către programatorii de sistem (şi nu numai).  Una dintre ele, de
+care ne vom ocupa în parte în acest articol, este suportul pe care
+îl oferă pentru dezvoltarea de programe <EM>mari</EM>, eventual lucrate
+în echipă.  Vom vedea că acest suport este oferit prin nişte
+mecanisme extrem de simple, dar a căror existenţă are adesea un
+impact foarte important asupra limbajului însuşi.
+
+<P>
+Să vedem acum ce condiţii trebuie să fie îndeplinite de un
+limbaj pentru ne permite scrierea unor programe mari.  Să numim
+aceste condiţii <EM>premize</EM>, şi să urmărim apoi întruparea lor
+în cazul C-ului.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Premizele scrierii de programe mari</A>
+</H1>
+
+<P>
+Pentru ca un program să poată fi scris de mai mulţi
+programatori trebuie ca el să poată fi descompus în părţi
+independente -- cît mai mult -- una de alta, care să poată fi
+concepute, compilate, testate eventual separat.
+
+<P>
+O categorie de astfel de părţi sunt <EM>bibliotecile</EM>.
+Unele operaţii foarte utile sunt totdeauna aceleaşi (de exemplu
+funcţiile matematice (sinus, cosinus, exponenţiale)) şi pot fi
+scrise odată pentru totdeauna de un programator, fiind apoi folosite
+de toţi utilizatorii.  Aceste funcţii sunt livrate adesea de firme 
+sub forma unor biblioteci de funcţii.
+
+<P>
+Chiar şi cînd un singur programator este implicat,
+împărţirea unui program în părţi puţin dependente una de alta
+este de foarte mare ajutor pentru scrierea, dar mai ales depanarea
+rezultatului.  Studii experimentale au arătat că dificultatea
+scrierii unui program creşte exponenţial cu lungimea lui.  Asta
+înseamnă ca a scrie un program de 2000 de linii este (mult) mai greu
+decît a scrie 2 de cîte 1000.
+
+<P>
+Este deci foarte util să poţi împărţi un program în mai
+multe texte, fiecare -- probabil -- într-un fişier separat.
+Această împărţire se poate face în foarte multe feluri; de
+preferinţă toate funcţiile / variabilele / procedurile etc. care
+fac ceva înrudit trebuie sa fie puse în acelaşi fişier.  Numele
+unui astfel de fişier este <EM>modul</EM>. Putem acum enunţa premiza
+întîi necesară unui limbaj pentru scrierea de programe mari:
+
+<P>
+<B>PREMIZA 1 : textul unui program poate fi împărţit în mai
+multe module.</B>
+
+<P>
+Pentru a putea testa corectitudinea -- măcar sintactică -- a
+fiecărui modul, el trebuie să se poată compila separat de
+celelalte.  Reamintim că în cursul compilării toate erorile
+sintactice sunt depistate (iar cîteodată şi posibile erori
+conceptuale -- de exemplu variabile neiniţializate).  Compilarea
+separată permite corectarea fiecărui modul independent.  Avem deci:
+
+<P>
+<B>PREMIZA 2 : fiecare modul se poate compila separat.</B>
+
+<P>
+Pe de altă parte, modulele făcînd parte dintr-un tot,
+este de aşteptat ca unele obiecte (funcţii, proceduri,
+variabile, etc.)  dintr-un modul să se folosească cumva de
+altele, dintr-un alt modul.  Pentru că modulele se pot compila
+separat, pentru a face posibilă verificarea corectitudinii
+sintactice a fiecăruia în parte, cumva insuşirile
+obiectelor dintr-un modul care sunt accesibile şi din altele
+trebuie descrise modulelor utilizator.
+
+<P>
+Să numim un obiect (variabilă, funcţie, etc.) al unui
+modul care poate fi folosit de alte module <EM>exportat</EM> de modulul
+căruia îi aparţine.  El este, prin simetrie, <EM>importat</EM>
+de modulele care îl folosesc.
+
+<P>
+Premiza care urmează este necesară pentru întreţinerea
+uşoară a informaţiilor care trebuie să fie folosite din mai multe
+locuri:
+
+<P>
+<B>PREMIZA 3 : Declaraţiile obiectelor exportate de <EM>fiecare</EM>
+modul trebuie să fie centralizate (strînse într-un singur
+loc)</B>.  (<EM>Declaraţia</EM> este o instrucţiune care descrie unele
+din însuşirile unui obiect; ea va fi tratată mai pe larg
+mai jos, în contextul limbajului C).
+
+<P>
+Avem apoi:
+
+<P>
+<B>PREMIZA 4 : Trebuie să existe o metodă prin care declaraţiile
+unui modul exportator sunt preluate de modulele importatoare.</B>
+
+<P>
+Pentru a încheia ne mai trebuie o premiză.  Cineva
+trebuie să combine rezultatele compilărilor diferitelor module
+separate într-un singur program care se poate executa :
+
+<P>
+<B>PREMIZA 5 : Trebuie să putem pune împreună mai multe
+module compilate (separat) pentru a obţine un executabil.</B>
+
+<P>
+În principiu pentru a obţine programul am putea avea o nouă
+compilare a tuturor modulelor împreună.  Însă din moment ce
+fiecare modul este probabil deja compilat, ar fi timp cîştigat dacă
+am putea folosi acest lucru.
+
+<P>
+Să observăm că remarcile din această secţiune
+sunt practic independente de limbajul considerat. Ele arată care
+trebuie să fie calităţile unui limbaj pentru a uşura
+scrierea unor programe multimodul.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Soluţia oferită de C</A>
+</H1>
+
+<P>
+Compilarea unui program scris în C presupune prezenţa
+mai multor module.  Cazul existenţei unuia singur este unul
+particular.  (În realitate, după cum vom vedea, chiar programele
+care par formate dintr-un singur modul sunt adesea formate din mai
+multe: cele scrise de programator plus biblioteci!)
+
+<P>
+Limbajul C face o distincţie foarte precisă între <EM>declaraţii</EM> şi <EM>definiţii</EM>.  O declaraţie este o construcţie
+care anunţă existenţa unui obiect precum şi anumite trăsături
+ale sale.  <EM>Definiţia</EM> unui obiect construieşte efectiv obiectul
+(îi alocă un spaţiu).  Orice definiţie este simultan şi
+o declaraţie, dar nu şi invers.
+
+<P>
+Limbajul C permite exportarea variabilelor şi funcţiilor.  C
+mai permite şi folosirea în comun a macrodefiniţiilor (numite pe
+scurt <EM>macro</EM>uri) şi numelor de tipuri (introduse cu <TT>typedef</TT>) de către mai multe module.  Macrourile şi tipurile nu dau
+naştere nici unui obiect care să existe în timpul <EM>execuţiei</EM>
+programului, cum este de exemplu o variabilă.  (Cu alte cuvinte
+macro-urile şi tipurile au numai declaraţii şi niciodată
+definiţii).
+
+<P>
+
+<H2><A NAME="SECTION00051000000000000000">
+Un exemplu</A>
+</H2>
+
+<P>
+Pentru a ilustra terminologia să considerăm un program
+foarte simplu format din două fişiere:
+
+<P>
+<PRE>
+/***********************
+ * fisierul : header.h *
+ ***********************/
+
+#define YES 1
+#define NO 0
+
+#define max(a,b) ((a) &gt; (b) ? (a) : (b))
+typedef int NUMAR;
+
+NUMAR abs(NUMAR);   /* valoarea absoluta */
+extern NUMAR m;
+
+/*********************
+ * fisierul : main.c *
+ *********************/
+
+#include "header.h"
+#include &lt;stdio.h&gt;
+
+NUMAR m;
+
+NUMAR abs(NUMAR x)
+{ if (x &lt; (NUMAR) 0) return -x; else return x; }
+
+static NUMAR n;
+
+int main(void)
+{
+        int y,z;
+
+        /* sarim ceva din program */
+        if (max (y,z) &lt; m) /* mai sarim ceva */
+}
+</PRE>
+
+<P>
+O calitate importantă a obiectelor în C este <EM>vizibilitatea</EM>.  Vizibilitatea unui obiect este totalitatea liniilor
+din program în care el poate fi referit.
+
+<P>
+Obiectele C care sunt declarate înafara oricărei
+funcţii se numesc <EM>externe</EM>, iar celelalte se numesc <EM>locale</EM>.  În fişierul <TT>main.c</TT> din exemplul nostru sunt
+externe variabilele <TT>m</TT> şi <TT>n</TT>, precum şi funcţiile
+<TT>main</TT> şi <TT>abs</TT>.
+
+<P>
+Obiectele externe au vizibilitate începînd de la declaraţia
+lor şi pînă la sfîrşitul fişierului cu excepţia blocurilor care
+declară un alt obiect cu acelaşi nume.  Deci <TT>m</TT> este vizibil
+în funcţiile <TT>abs</TT> şi <TT>main</TT>, dar <TT>n</TT> numai în <TT>main</TT>.
+
+<P>
+Obiectele declarate în interiorul unui bloc (delimitat de {
+}) se numesc <EM>locale</EM>.  <TT>y</TT> şi <TT>z</TT> sunt locale lui <TT>main</TT>.  <TT>x</TT> este local lui <TT>abs</TT>.  Un obiect local este
+vizibil începînd de la locul declaraţiei şi pînă la sfîrşitul
+blocului în care este declarat (cu excepţia blocurilor interioare
+care declară un obiect cu acelaşi nume).
+
+<P>
+Cum arată definiţia unei variabile / funcţii în C
+presupunem că se ştie.  Declaraţia unei variabile se face prefixînd
+definiţiei ei cuvîntul <TT>extern</TT>.  Declaraţia unei funcţii se
+face ne-scriind blocul care formează corpul ei.  Astfel în fişierul
+<TT>header.h</TT> avem declaraţii (şi nu definiţii) ale variabilei
+<TT>m</TT> şi funcţiei <TT>abs</TT>.
+
+<P>
+În C implicit toate obiectele externe dintr-un fişier pot fi
+exportate.  Dacă un obiect extern este folosit numai de modulul în
+care este definit (adică nu este exportat) atunci definiţia sa se
+poate prefixa cu cuvîntul <TT>static</TT>.  Astfel în fişierul <TT>main.c m</TT> este exportat iar <TT>n</TT> nu este!  Obiectele care pot fi
+exportate se numesc cu <EM>legare externă</EM> (external linkage).  Asta
+pentru că un alt modul le poate folosi fără a le defini,
+legîndu-se la cel în care sunt definite.  Pentru modulul <TT>main.c
+m</TT> este cu legare externă.
+
+<P>
+Se obişnuieşte a se strînge toate declaraţiile
+obiectelor exportate de un modul (sau un grup de module) într-un
+fişier numit <EM>header</EM> (sau antet în română).  Aceste
+fişiere nu conţin niciodată definiţii.  Numele lor se
+termină prin convenţie cu <TT>.h</TT>.  Un astfel de fişier este
+în exemplul nostru <TT>header.h</TT>.
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Compilarea C</A>
+</H1>
+
+<P>
+Compilarea este formată din trei faze independente, care sunt
+realizate de obicei de trei programe distincte, care se execută unul
+după altul sau în paralel.
+
+<P>
+Exemplele pe care le prezentăm sunt pentru două tipuri de
+compilatoare : de sub UNIX (practic orice UNIX, testate pentru Linux)
+sau MsDos (testate cu BorlandC 2.0).
+
+<P>
+<PRE>
+module c si          module             module               program
+headere              preprocesate       obiect               executabil
+ |  ----------------    ------------------    ---------------   ^
+ \-&gt;| preprocesare | -&gt; | compilare      | --&gt;| linkeditare |---/
+    |              |    |   propriu-zisa | /-&gt;|  (legare)   |
+    ----------------    ------------------ |  ---------------
+                                        biblioteci
+</PRE>
+
+<P>
+Prin anumite opţiuni putem ruga compilatorul să parcurgă
+numai unele dintre aceste faze.  Cînd compilăm mai multe module, noi
+dăm o singură comandă, dar această comandă invocă cele trei faze
+pentru noi.  Să presupunem că avem un program format din modulul
+<TT>main.c</TT> de mai sus şi modulul <TT>error.c</TT>.  Sub UNIX putem
+crea rezultatul cu:
+
+<P>
+<PRE>
+cc main.c error.c
+</PRE>
+
+<P>
+Cu BorlandC o facem cu comanda
+
+<P>
+<PRE>
+bcc main.c error.c
+</PRE>
+
+<P>
+(Chiar cînd compilarea este lansată din mediul
+integrat BorlandC prin tasta F9, sau prin Compile/Build, în
+realitate acelaşi lucru se întîmplă : mediul integrat
+invocă pentru noi compilatorul cu o astfel de linie, luînd din
+project numele fişierelor de compilat !).
+
+<P>
+Iată evoluţia fişierelor pentru MsDos BorlandC
+
+<P>
+
+<BR><P></P>
+<DIV ALIGN="CENTER">
+<!-- MATH
+ \begin{displaymath}
+\left. 
+\begin{array}{rclcl}
+  \left.
+  \begin{array}{l}
+  stdio.h  \\
+  header.h \\
+  main.c   
+  \end{array}  
+\right\} & \stackrel{preprocesare}{\longrightarrow} & main.i & \stackrel{compilare}{\longrightarrow}  & main.obj \\
+error.c  & \stackrel{preprocesare}{\longrightarrow} & error.i & \stackrel{compilare}{\longrightarrow} & error.obj \\
+	 & &       &  & \\%% pentru spatiere
+         & &       &  & cs.lib   
+\end{array}
+\right\}
+\stackrel{legare}{\longrightarrow} main.exe
+\end{displaymath}
+ -->
+
+<IMG
+ WIDTH="553" HEIGHT="147" BORDER="0"
+ SRC="img1.png"
+ ALT="\begin{displaymath}
+\left.
+\begin{array}{rclcl}
+\left.
+\begin{array}{l}
+stdi...
+...end{array}\right\}
+\stackrel{legare}{\longrightarrow} main.exe
+\end{displaymath}">
+</DIV>
+<BR CLEAR="ALL">
+<P></P> 
+
+<P>
+După cum vedeţi premiza 1 (mai multe module) este
+îndeplinită -- un program se poate asambla din mai multe fişiere
+sursă.
+
+<P>
+Să studiem acum fiecare fază a compilării separat,
+identificînd şi celelalte premize:
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Preprocesarea</A>
+</H1>
+
+<P>
+Preprocesarea este o fază deosebit de interesantă, căreia
+intenţionăm să-i acordăm un articol special cîndva.  Acum o
+vom privi din punctul de vedere care ne interesează.
+
+<P>
+Preprocesorul este de obicei un program separat, care se
+numeşte <TT>cpp</TT> (C PreProcessor).  Numele său vine de la
+faptul că el realizează o procesare înainte (pre) de
+compilarea propriu-zisă.
+
+<P>
+Preprocesorul este un program care prelucrează texte.  El
+primeşte un text iar rezultatul lui este tot un text.  Comparaţi-l
+din acest punct de vedere cu celelalte două faze.
+
+<P>
+În principiu preprocesorul parcurge toate textele care-i sunt
+specificate de sus în jos, lucrînd pe linii, căutînd comenzi
+pentru el (numite directive), pe care le execută.  Comenzile pentru
+preprocesor încep cu un semn diez (#) în prima coloană.
+Preprocesorul C are trei mari grupe de comenzi:
+
+<P>
+<PRE>
+        #include
+        #define / #undef
+        #if / #else / #endif / #ifndef
+</PRE>
+
+<P>
+Cea mai interesantă pentru noi acum este <TT>#include</TT>,
+prezentă şi în fişierul <TT>main.c</TT>.  Această directivă este
+urmată de un nume de fîsîer scris între semnele &lt; &gt; sau
+<code>" "</code>.  În <TT>main.c</TT> avem
+
+<P>
+<PRE>
+#include &lt;stdio.h&gt;
+#include "header.h"
+</PRE>
+
+<P>
+Prima formă caută fişierul specificat (stdio.h) într-o
+serie de directoare care depind de implementarea compilatorului.  De
+obicei în UNIX este vorba de <TT>/usr/lib</TT>, iar la BorlandC există
+o opţiune ``Directories'' unde se specifică acest(e) locuri.  A doua
+formă caută fişierul specificat (<TT>header.h</TT>) întîi relativ la
+acelaşi loc în care se găseşte <TT>main.c</TT> (ex. în directorul
+curent), iar apoi, dacă a eşuat în căutare,
+în aceleaşi locuri ca prima formă a lui <TT>include</TT> (cu <code>&lt; &gt;</code>).
+
+<P>
+După cum arată şi numele fişierelor (faptul că se
+termină cu .h), de obicei (dar nu obligatoriu) acestea sunt fişiere
+header, care conţin declaraţiile unor obiecte exportate de alte
+module, importate de modulul curent.
+
+<P>
+Cînd preprocesorul execută directiva <code>#include</code>
+el găseşte headerul indicat (sau dacă nu, opreşte
+compilarea raportînd o eroare) şi substituie linia
+<code>#include</code> cu textul headerului.  După aceea continuă
+preprocesarea din acelaşi punct, prelucrînd deci textul tocmai
+introdus (care poate include alte headere la rîndul lui).
+
+<P>
+Iată deci cum premiza a 4-a (preluarea într-un modul a
+fişierelor cu declaraţii) este îndeplinită.  De
+asemenea, fişierele header sunt o consecinţa a premizei a 3-a
+(centralizarea declaraţiilor).
+
+<P>
+Puteţi vedea rezultatul preprocesării rulînd
+comandă <TT>cpp</TT> pe fişierele C.  Aceasta realizează numai prima
+fază a compilării din cele mai sus indicate.  (<TT>-P-</TT> indică suprimarea informaţiilor despre numele fişierelor incluse.
+Rezultatul obţinut este fişierul <TT>main.i</TT>; prin convenţie
+extensia .i este pentru fişiere preprocesate.)
+
+<P>
+Borland:
+
+<P>
+<PRE>
+cpp -P- main.c
+</PRE>
+
+<P>
+sau UNIX
+
+<P>
+<PRE>
+cc -E main.c &gt; main.i
+</PRE>
+
+<P>
+sau UNIX (dacă aveţi <TT>cpp</TT> în directorul <TT>/lib</TT>) :
+
+<P>
+<PRE>
+/lib/cpp main.c &gt; main.i
+</PRE>
+
+<P>
+
+<H1><A NAME="SECTION00080000000000000000">
+Compilarea propriu-zisă</A>
+</H1>
+
+<P>
+Datorită includerii, fişierele preprocesate conţin deja
+declaraţiile obiectelor importate.  Apoi ele sunt compilate separat
+(premiza 2).  Rezultatul acestei compilări este ceea ce se numeşte
+<EM>modul obiect (object file)</EM>.  Borlandc generează fişiere cu
+extensia <TT>.obj</TT>, compilatoarele din UNIX cu extensia <TT>.o</TT>.  Se
+obţine cîte unul pentru fiecare modul C iniţial.
+
+<P>
+Ce este un modul (fişier) obiect?  Este un amestec de program
+compilat (cod maşină) şi variate informaţii.  Tot textul C al
+modulului a fost compilat în cod maşină.  Însă referinţele la
+simboluri externe din alte module nu au putut fi satisfăcute, pentru că
+aceste module sunt compilate separat.  De
+aceea modulul obiect conţine o listă a simbolurilor nesatisfăcute,
+indicînd şi locurile unde sunt folosite.  În plus mai conţine şi o listă a
+simbolurilor exportate de modul.
+
+<P>
+De asemenea un modul obiect are o parte cu informaţii
+numite <EM>de relocare</EM>.  Acestea sunt necesare pentru că toate
+salturile din codul compilat sar la nişte adrese care se vor
+schimba probabil atunci cînd modulul obiect va fi pus cap la cap
+cu altele pentru a forma executabilul.
+
+<P>
+Adesea modulul obiect mai conţine şi alte informaţii
+care sunt necesare pentru depanarea programului rezultat.  Aceste
+informaţii arată căror fişiere sursă şi căror
+linii (C) le corespund feluritele instrucţiuni din codul maşină.
+
+<P>
+Cîteodată faza de compilare propriu-zisă este
+formată din două părţi independente şi făcute de
+programe separate.  O primă fază generează un program în
+limbaj de asamblare, iar a doua fază asamblează programul pentru
+a obţine un fişier obiect.
+
+<P>
+<PRE>
+          module      programe in      module
+        preprocesate  asamblare         obiect
+        ---|  |------------|  |------------|  |----
+           |-&gt;| compilare  |-&gt;| asamblare  |-&gt;|
+           |  |            |  |            |  |
+        ---|  |------------|  |------------|  |-----
+                \_________________________/
+                  compilare propriu-zisa
+</PRE>
+
+<P>
+Puteţi opri compilarea la module obiect invocînd
+compilatorul cu opţiunea <TT>-c</TT> (compile only); iată cum
+puteţi compila cele două surse la module obiect :
+
+<P>
+UNIX :
+
+<P>
+<PRE>
+cc -c error.c main.c
+</PRE>
+
+<P>
+BorlandC
+
+<P>
+<PRE>
+bcc -c error.c main.c
+</PRE>
+
+<P>
+Fişierul obiect nu arată prea interesant -- pentru
+cititorul uman -- dar puteţi încerca să opriţi
+compilarea la limbaj de asamblare:
+
+<P>
+UNIX
+
+<P>
+<PRE>
+cc -S error.c main.c
+</PRE>
+
+<P>
+BorlandC
+
+<P>
+<PRE>
+bcc -S error.c main.c
+</PRE>
+
+<P>
+Rezultatele sunt fişiere cu extensia <TT>.s</TT> în UNIX
+sî <TT>.asm</TT> în DOS.  Citiţi-le!  Aceste fişier pot
+fi asamblate pentru a obţine cod obiect prin
+
+<P>
+UNIX
+
+<P>
+<PRE>
+as -c error.c main.c
+</PRE>
+
+<P>
+BorlandC
+
+<P>
+<PRE>
+tasm error.c main.c
+</PRE>
+
+<P>
+
+<H1><A NAME="SECTION00090000000000000000">
+Linkeditarea</A>
+</H1>
+
+<P>
+După cum am văzut fiecare modul sursă este compilat separat
+într-un modul obiect.  Modulele obiect au o mulţime de referinţe
+nesatisfăcute (la obiectele importate).  Legarea modulelor
+(implicînd completarea referinţelor obiectelor globale, relocarea
+codului) este făcută de ultima fază a compilării, numită <EM>linkeditare</EM>.  (Link = legătură în engleză).  Ea este făcută de
+programul <TT>ld</TT> (în UNIX) sau <TT>tlink</TT> (BorlandC).  Argumentele
+ei sunt module obiect.
+
+<P>
+Interesant este că aceste module obiect pot fi obţinute
+prin compilarea unor programe scrise în limbaje diferite; este
+frecventă combinarea programelor scrise în limbaj de asamblare
+cu a celor în C: toate sunt compilate la module obiect, după
+care sunt legate împreună.  Lucrurile nu sunt foarte simple,
+pentru că trebuie respectate anumite convenţii (de exemplu
+compilatorul C se poate aştepta ca anumiţi regiştri să nu
+fie schimbaţi de nici o funcţie).
+
+<P>
+Puteţi încerca să legaţi modulele obiect obţinute mai sus
+astfel, deşi n-o să meargă!
+
+<P>
+UNIX :
+
+<P>
+<PRE>
+ld main.o error.o
+</PRE>
+
+<P>
+BorlandC :
+
+<P>
+<PRE>
+tlink main.obj error.obj
+</PRE>
+
+<P>
+Iată de ce: în realitate cînd linkerul este invocat de
+către compilatorul de C (deci nu separat, cum am făcut noi mai
+sus), mai primeşte ca argumente, pe lîngă modulele obiect
+generate prin fazele anterioare ale compilării şi cel puţin
+o <EM>bibliotecă</EM>.  Este vorba de biblioteca standard C, numită
+în UNIX <TT>libc.a</TT>, iar în DOS <TT>cs.lib</TT> (în locul
+lui s poate fi o altă literă care depinde de modelul de memorie
+pe care l-aţi folosit).  Erorile obţinute prin comanda de mai
+sus arată care sunt simbolurile externe importate din bibliotecă
+şi care au lipsit la legare.
+
+<P>
+Pentru a lega modulele trebuie specificate şi bibliotecile.
+Sintaxa la BorlandC pentru linker e puţin mai complicată :
+
+<P>
+BorlandC :
+
+<P>
+<PRE>
+tlink c0s main error, main, ,cs
+</PRE>
+
+<P>
+pentru că se specifică separate de virgule fişierele
+<TT>.obj</TT> (incluzînd <TT>c0s</TT>, un fişier standard), numele
+rezultatului, fişierele map (informaţii generate de compilator),
+apoi bibliotecile, şi apoi resursele (aici map şi resursele
+lipsesc).
+
+<P>
+Sub UNIX lucrurile pot fi foarte complicate, pentru că
+bibliotecile se pot afla în multe locuri.  Numele bibliotecilor
+este dat linkerului este precedat de opţiunea <TT>-l</TT>; linkerul unui
+nume specificat îi prefixează <TT>lib</TT>, sufixîndu-i <TT>.a</TT>.  Astfel <TT>-lc</TT> leagă biblioteca <TT>libc.a</TT>.  O linie
+minimă de comandă pentru linker ar fi (dar în funcţie de
+sistem mai trebuie specificate şi alte opţiuni, ca <TT>-L</TT> care
+indică locul bibliotecilor) :
+
+<P>
+<PRE>
+ld /usr/lib/crt0.o main.o error.o -L/usr/lib -lc
+</PRE>
+
+<P>
+Fişierele <TT>c0s</TT> (Borland), respectiv <TT>crt0.o</TT>
+(UNIX) care apar mai sus sunt nişte module obiect care conţin
+codul unei funcţii cu care se începe execuţia programului,
+care va cheama funcţia <TT>main()</TT> şi care după executarea
+acesteia cheamă funcţia <TT>exit()</TT>, pentru a termina civilizat
+programul.
+
+<P>
+O bibliotecă (<TT>cs.lib</TT> respectiv <TT>libc.a</TT> sunt
+biblioteci) este de fapt o colecţie de module obiect care au fost
+compilate mai demult din sursele lor şi au fost strînse laolaltă
+într-un fişier arhivă.  În <TT>libc.a (cs.lib)</TT> se află codul
+funcţiilor standard pe care programul dumneavoastră le poate folosi.
+De exemplu <TT>printf, exit, fopen, scanf</TT>.  Prin convenţie
+declaraţiile acestor funcţii sunt grupate în fişiere header puse
+într-un anumit loc în sistemul de fişiere.  Acestea sunt headerele
+incluse prin directiva <code>#include &lt;nume_header.h&gt;</code>!  (De aceste
+headere este nevoie pentru că ele conţin declaraţille funcţiilor
+exportate de bibliotecă).
+
+<P>
+Şi dumneavoastră puteţi crea biblioteci folosind programul
+<TT>ar</TT> (în UNIX) sau <TT>tlib</TT> (în DOS).  Aceste programe
+manipulează arhive (biblioteci) în multiple feluri.  Bibliotecile
+pot fi explorate (pentru a vedea ce conţin) cu <TT>tdump</TT> (în DOS)
+sau cu <TT>nm, ranlib, objdump</TT>, etc. sub UNIX.  O discuţie acestor
+utilitare este însă în afara acestui articol.
+
+<P>
+Rezultatul obţinut de la linker este în fine un program
+executabil sub sistemul de operare pentru care lucrează linkerul.  Un
+astfel de fişier are însă o structură destul de complicată,
+folosită de sistemul de operare pentru două scopuri: el conţine
+informaţii despre structura însăşi a fişierului executabil (cît
+de lung e codul, cît de lungi sunt datele, sistemul de operare pentru
+care merge, dacă foloseşte biblioteci încărcate dinamic, eventuale
+date de relocare, etc.) şi informaţii de depanare, care sunt
+folosite cînd programul este depanat (de ex. cu <TT>td</TT> = Turbo
+Debugger în DOS sau cu <TT>dbx</TT> în UNIX).  Aceste informaţii sunt
+preluate din fişierele obiect, dacă existau, şi în principiu
+indică din ce surse C provin instrucţiunile din executabilul final.
+Aceste informaţii pot fi scoase din program, dacă nu mai este nevoie
+ca el să fie depanat, cu <TT>tdstrip</TT> (DOS) sau <TT>strip</TT> (UNIX),
+pentru a face un executabil mai mic.
+
+<P>
+Două cuvinte despre <EM>linkeditarea dinamică</EM>.  Aceasta
+este o tehnologie relativ nouă, prezentă în sistemul de operare
+Windows sub forma fişierelor-biblioteci cu extensia <TT>.dll</TT>
+(Dinamic Linking Libraries).  Sub UNIX aceste biblioteci se numesc fie
+dll-uri fie Shared Libraries (biblioteci comune; numele lor conţine
+particula <TT>so</TT>; exemplu: <TT>lib.so.4.1</TT>).  Ideea este destul de
+simplă.  Există o clasă mare de funcţii care tind să fie prezente
+în majoritatea programelor.  Un exemplu tipic este <TT>printf</TT>: cam
+toate programele au ceva de scris.  Atunci în loc să se lege
+(linkeze) codul acestor funcţii în fiecare program, funcţiile sunt 
+``încărcate'' în memorie o singură dată de sistemul de operare,
+şi apoi legate de toate programele care au nevoie de ele.  De aici cele
+două denumiri ale acestor biblioteci: dinamice pentru că legarea nu
+mai e o fază a compilării, ci chiar a executării programului
+(legarea se face cînd programul este pornit) şi comune (shared)
+pentru că pot aparţine mai multor programe diferite simultan!
+
+<P>
+
+<H1><A NAME="SECTION000100000000000000000">
+Concluzii</A>
+</H1>
+
+<P>
+Limbajul C pune la dispoziţie nişte mecanisme excelente
+pentru scrierea de programe mari.  Aceste mecanisme permit 
+
+<P>
+
+<UL>
+<LI>scrierea unui program din mai multe bucăţi, care se pot compila separat.
+</LI>
+<LI>reutilizarea bucăţilor în programe diferite sub forma
+bibliotecilor.  
+</LI>
+<LI>o gestiune relativ simplă a schimbărilor
+dintr-un modul datorită headerelor care grupează declaraţiile
+obiectelor exportate.
+</LI>
+</UL>
+
+<P>
+Cunoaşterea fazelor compilării este esenţială pentru
+scrierea unor programe corecte în C.  Dacă un obiect este folosit
+fără a fi declarat, se obţin erori, sau codul generat este incorect!
+(Vom reveni asupra acestui aspect într-un articol despre prototipuri
+de funcţii).  Asta poate da naştere la multe bug-uri misterioase.
+Este clar că un modul nu poate şti nimic despre obiectele globale
+(adică cu legare externă) definite în alte module pînă în clipa
+legării.  Ori pînă la legare anumite informaţii se pierd datorită
+compilării (de ex.  anumite informaţii de tip).  Linker-ul ar putea
+să nu depisteze anumite erori (de exemplu folosirea unui acelaşi
+obiect cu tipuri diferite în module diferite).
+
+<P>
+Lecţia se poate rezuma într-o propoziţie : <EM>nu
+folosiţi niciodată în C funcţii sau variabile nedeclarate!</EM>
+Puteţi folosi sau nu pentru declaraţii headere.
+
+<P>
+
+<H1><A NAME="SECTION000110000000000000000">
+Glosar</A>
+</H1>
+
+<P>
+Acest articol (şi toate din această serie) folosesc o
+terminologie standard, foarte precisă.  Iată semnificaţiile
+cuvintelor cheie din acest text (şi numele lor englezesc) :
+
+<P>
+<DL>
+<DT><STRONG>asamblare:</STRONG></DT>
+<DD>compilare din limbaj de asamblare în cod-maşină;
+ASSEMBLY.
+
+<P>
+</DD>
+<DT><STRONG>ANSI:</STRONG></DT>
+<DD>American National Standards Institute; o foarte
+prestigioasă instituţie americană care se ocupă cu crearea
+standardelor.  În această serie de articole noi discutăm
+limbajul C aşa cum a fost el standardizat de ANSI.
+
+<P>
+</DD>
+<DT><STRONG>bibliotecă:</STRONG></DT>
+<DD>o colecţie de MODULE OBIECT grupate laolaltă.
+Conţine codul unor funcţii / variabile foarte utile; în C se
+consideră ca biblioteca include şi HEADERELE cu declaraţile
+obiectelor exportate de biblioteca; LIBRARY.
+
+<P>
+</DD>
+<DT><STRONG>compilare:</STRONG></DT>
+<DD>transformarea unui program dintr-un limbaj
+într-altul; adesea rezultatul este în cod-maşină; COMPILATION.
+
+<P>
+</DD>
+<DT><STRONG>declaraţie:</STRONG></DT>
+<DD>o construcţie (de program) care anunţă
+existenţa unui obiect fără însă a-l construi (aloca
+spaţiu) pentru el; DECLARATION.
+
+<P>
+</DD>
+<DT><STRONG>definiţie:</STRONG></DT>
+<DD>o construcţie (de program) care construieşte
+(alocă spaţiu) pentru un obiect; DEFINITION.
+
+<P>
+</DD>
+<DT><STRONG>exportat:</STRONG></DT>
+<DD>(de un modul) un obiect care este DEFINIT în acel
+modul dar care poate fi folosit şi în altul; EXPORTED.
+
+<P>
+</DD>
+<DT><STRONG>extern:</STRONG></DT>
+<DD>(în C) orice obiect care nu este LOCAL unei funcţii.
+În C variabilele declarate înafara corpului unei funcţii şi
+toate funcţiile sunt externe; EXTERNAL
+
+<P>
+</DD>
+<DT><STRONG>header:</STRONG></DT>
+<DD>un fişier care grupează declaraţiile obiectelor
+exportate de unul sau mai multe module (sursă, obiect sau
+biblioteci); HEADER FILE.
+
+<P>
+</DD>
+<DT><STRONG>importat:</STRONG></DT>
+<DD>(de un modul) un obiect folosit de acel modul dar
+DEFINIT în altul; IMPORTED.
+
+<P>
+</DD>
+<DT><STRONG>linkeditare:</STRONG></DT>
+<DD>combinarea mai multor module obiect într-unul
+singur (executabil) prin rezolvarea referinţelor la obiectele
+NEDEFINITE pentru fiecare din modulele componente; LINKING.
+
+<P>
+</DD>
+<DT><STRONG>local:</STRONG></DT>
+<DD>un obiect este local unui bloc dacă este vizibil numai
+în acel bloc.  Aşa sunt în C argumentele funcţiilor şi
+variabilele declarate în funcţii; LOCAL
+
+<P>
+</DD>
+<DT><STRONG>modul:</STRONG></DT>
+<DD>o parte dintr-un program -- un singur fişier, grupînd de
+obicei obiecte (variabile, funcţii, etc). folosite împreună;
+MODULE; TRANSLATION UNIT
+
+<P>
+</DD>
+<DT><STRONG>modul obiect:</STRONG></DT>
+<DD>un modul compilat dar cu referinţe la obiecte
+din alte module încă nerezolvate (referă obiecte cu adrese
+necunoscute în acel modul); OBJECT MODULE (OBJECT FILE)
+
+<P>
+</DD>
+<DT><STRONG>preprocesare:</STRONG></DT>
+<DD>o fază anterioară compilării, care prelucrează
+textul programului sursă C, obţinînd o nouă sursă C;
+PREPROCESSING
+
+<P>
+</DD>
+<DT><STRONG>program executabil:</STRONG></DT>
+<DD>un program care poate fi direct executat de
+către sistemul de operare; EXECUTABLE (BINARY) FILE.
+
+<P>
+</DD>
+<DT><STRONG>vizibilitate:</STRONG></DT>
+<DD>a unui obiect -- porţiunea din program în
+care acel obiect poate fi referit; SCOPE
+
+<P>
+</DD>
+</DL>
+
+<P>
+<BR><HR>
+
+</BODY>
+</HTML>

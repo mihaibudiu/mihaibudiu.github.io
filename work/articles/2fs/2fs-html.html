@@ -1,0 +1,1597 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Funcţionarea sistemului de fişiere din Unix</TITLE>
+<META NAME="description" CONTENT="Funcţionarea sistemului de fişiere din Unix">
+<META NAME="keywords" CONTENT="2fs-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+<body>
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Funcţionarea sistemului de fişiere din Unix</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- <TT>mihaib+, at cs.cmu.edu</TT> 
+<BR><TT>http://www.cs.cmu.edu/~mihaib/</TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>18 octombrie 1997</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>Funcţiuni speciale ale sistemului de fişiere în
+sistemul de operare Unix
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>oarecare familiaritate cu sistemul de
+operare Unix
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>atribute, protecţie, interfaţă, periferic,
+apel de sistem
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html26"
+  HREF="2fs-html.html">Funcţiunile sistemului de fişiere</A>
+<LI><A NAME="tex2html27"
+  HREF="#SECTION00030000000000000000">Fişiere</A>
+<LI><A NAME="tex2html28"
+  HREF="#SECTION00040000000000000000">Operaţiile cu conţinutul fişierelor</A>
+<LI><A NAME="tex2html29"
+  HREF="#SECTION00050000000000000000">Directoare</A>
+<LI><A NAME="tex2html30"
+  HREF="#SECTION00060000000000000000">Operaţiile cu atribute</A>
+<LI><A NAME="tex2html31"
+  HREF="#SECTION00070000000000000000">Protecţie</A>
+<LI><A NAME="tex2html32"
+  HREF="#SECTION00080000000000000000">Abstracţia de fişier; operaţiile pe fişiere</A>
+<LI><A NAME="tex2html33"
+  HREF="#SECTION00090000000000000000">Ţevile cu nume</A>
+<LI><A NAME="tex2html34"
+  HREF="#SECTION000100000000000000000">Perifericele în Unix: fişierele ``speciale''</A>
+<LI><A NAME="tex2html35"
+  HREF="#SECTION000110000000000000000">Pseudo-perifericele (pseudo-devices)</A>
+<LI><A NAME="tex2html36"
+  HREF="#SECTION000120000000000000000">Sistemul de fişiere <TT>/proc</TT></A>
+<LI><A NAME="tex2html37"
+  HREF="#SECTION000130000000000000000">Concluzie: programarea orientată pe obiecte</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+Sistemul de operare Unix s-a impus în lumea calculatoarelor datorită
+multor calităţi remarcabile.  Acest articol va încerca să
+ilustreze una dintre ele, şi anume <I>uniformitatea</I> remarcabilă
+a operaţiilor.  Vom ilustra cum o singură parte a sistemului de
+operare, şi anume sistemul de fişiere integrează într-un mod
+uniform o multitudine de funcţii independente cum ar fi: stocarea
+informaţiei, numirea ei, protejarea informaţiei prin controlul
+accesului, numirea perifericelor şi controlul accesului la
+periferice, iar în sistemele moderne Unix chiar şi numirea
+proceselor, operaţiile cu procese şi controlul accesului la procese.
+Partea frumoasă este că toate aceste lucruri diferite se fac
+folosind un număr mic de mecanisme: protecţia fişierelor,
+perifericelor şi proceselor se face de către nucleu în exact
+acelaşi fel.  Această uniformitate face sistemul mai uşor de
+folosit şi de implementat şi mai flexibil.
+
+<P>
+Într-un <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#sistem-f">articol</a>
+anterior am prezentat structurile de date pe care le foloseşte
+sistemul de operare Unix pentru a implementa operaţiile cu fişiere
+(structuri a căror totalitate poartă denumirea de ``sistem de
+fişiere'').  O oarecare familiaritate cu conţinutul acelui articol se
+poate dovedi utilă, dar (sper că) nu este absolut necesară.  Articolul
+acela este disponibil din pagina de web a autorului în postscript.
+Articolul de faţă este o continuare independentă a celuilalt.  Sperăm
+ca peste cîtăva vreme să augumentăm această suită cu un al treilea
+articol despre implementarea sistemului de fişiere din Unix, care este
+extrem de interesantă.
+
+<P>
+Am folosit acest articol şi ca un pretext pentru a trece în revistă
+<I>totalitatea</I> apelurilor de sistem din Unix care operează cu
+fişiere.  E un lucru foarte instructiv să înţelegem cum orice
+operaţie ne putem imagina se poate sintetiza numai din aceste
+operaţii primitive puse la dispoziţie de nucleu.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Funcţiunile sistemului de fişiere</A>
+</H1>
+
+<P>
+Un răspuns superficial la întrebarea ``la ce foloseşte un sistem de
+fişiere (în Unix -- dar şi în alte multe sisteme de operare)?''
+ar fi ``la stocarea informaţiei.''  Răspunsul este cu siguranţă
+corect, dar incomplet.  Sistemul de fişiere mai are şi multe alte
+funcţionalităţi esenţiale, cîteodată foarte departe de misiunea
+aceasta.  Le vom enumera pe scurt, le vom discuta fugar, şi vom vedea
+apoi cum unele dintre aceste funcţiuni se manifestă în sistemul de
+operare Unix.
+
+<P>
+Funcţiuni ale sistemelor de fişiere:
+
+<UL>
+<LI>Stocarea persistentă a informaţiei;
+</LI>
+<LI>Numirea informaţiei (servicii de directoare);
+</LI>
+<LI>Protecţia informaţiei;
+</LI>
+<LI>Mecanism de comunicaţie inter-proces (folosirea în comun a
+informaţiei);
+</LI>
+<LI>Interfaţă spre structurile de date ale nucleului (ex:
+periferice (devices) în Unix; sistemul de fişiere <TT>/proc</TT>);
+</LI>
+<LI>Interfaţă universală la resurse ale reţelei (ex: URL-uri);
+</LI>
+<LI>Aparat de măsură a propriei sale performanţe.
+</LI>
+</UL>
+
+<P>
+Ultimele două aspecte nu vor fi discutate în acest articol.
+
+<P>
+Celorlalte le vom consacra grosso modo cîte o secţiune.
+
+<P>
+Să aruncăm o scurtă privire pe lista de apeluri de sistem care
+operează cu fişiere (un apel de sistem este o funcţiune oferită de
+sistemul de operare).  Dăm în tabela&nbsp;<A HREF="2fs-html.html#apeluri">1</A> o listă
+completă (sortată alfabetic) a apelurilor de sistem care operează
+cu fişiere, din sistemul de operare SunOS 4.1.3, o versiune de Unix
+extrem de populară de la firma Sun Microsystems.
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT"> Apel</TD>
+<TD ALIGN="LEFT">Funcţiune</TD>
+<TD ALIGN="CENTER">Categorie</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>access </TT></TD>
+<TD ALIGN="LEFT">verifică dreptul de acces</TD>
+<TD ALIGN="CENTER">A</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>chdir </TT></TD>
+<TD ALIGN="LEFT">schimbă directorul curent</TD>
+<TD ALIGN="CENTER">D</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>chmod </TT></TD>
+<TD ALIGN="LEFT">schimbă drepturile de acces</TD>
+<TD ALIGN="CENTER">A</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>chown </TT></TD>
+<TD ALIGN="LEFT">schimbă posesorul</TD>
+<TD ALIGN="CENTER">A</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>chroot </TT></TD>
+<TD ALIGN="LEFT">schimbă directorul rădăcină</TD>
+<TD ALIGN="CENTER">D</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>close </TT></TD>
+<TD ALIGN="LEFT">închide un fişier</TD>
+<TD ALIGN="CENTER">F</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>creat </TT></TD>
+<TD ALIGN="LEFT">crează un fişier</TD>
+<TD ALIGN="CENTER">FD</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>execve </TT></TD>
+<TD ALIGN="LEFT">execută un fişier</TD>
+<TD ALIGN="CENTER">--</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>fchmod </TT></TD>
+<TD ALIGN="LEFT">ca şi <TT>chmod</TT></TD>
+<TD ALIGN="CENTER">A</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>fchown </TT></TD>
+<TD ALIGN="LEFT">ca şi <TT>chown</TT></TD>
+<TD ALIGN="CENTER">A</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>fcntl </TT></TD>
+<TD ALIGN="LEFT">operaţii speciale</TD>
+<TD ALIGN="CENTER">A</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>flock </TT></TD>
+<TD ALIGN="LEFT">``încuie'' fişier</TD>
+<TD ALIGN="CENTER">A</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>fstat </TT></TD>
+<TD ALIGN="LEFT">ca şi <TT>stat</TT></TD>
+<TD ALIGN="CENTER">A</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>fsync </TT></TD>
+<TD ALIGN="LEFT">salvează conţinutul  din cache al fişierului</TD>
+<TD ALIGN="CENTER">F</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>ftruncate </TT></TD>
+<TD ALIGN="LEFT">ca şi <TT>truncate</TT></TD>
+<TD ALIGN="CENTER">F</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>getdents </TT></TD>
+<TD ALIGN="LEFT">citeşte conţinutul directorului</TD>
+<TD ALIGN="CENTER">D</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>ioctl </TT></TD>
+<TD ALIGN="LEFT">operaţii speciale cu fişiere speciale</TD>
+<TD ALIGN="CENTER">S</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>link </TT></TD>
+<TD ALIGN="LEFT">dă încă un nume unui fişier</TD>
+<TD ALIGN="CENTER">D</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>lseek </TT></TD>
+<TD ALIGN="LEFT">mută cursorul la o nouă adresă în fişier</TD>
+<TD ALIGN="CENTER">F</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>lstat </TT></TD>
+<TD ALIGN="LEFT">ca şi <TT>stat</TT></TD>
+<TD ALIGN="CENTER">A</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>mkdir </TT></TD>
+<TD ALIGN="LEFT">face un nou director</TD>
+<TD ALIGN="CENTER">D</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>mkfifo </TT></TD>
+<TD ALIGN="LEFT">face un fişier special ``ţeavă''</TD>
+<TD ALIGN="CENTER">S</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>mknod </TT></TD>
+<TD ALIGN="LEFT">face un fişier special</TD>
+<TD ALIGN="CENTER">S</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>mmap </TT></TD>
+<TD ALIGN="LEFT">transformă acest fişier într-o zonă de memorie</TD>
+<TD ALIGN="CENTER">F</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>open </TT></TD>
+<TD ALIGN="LEFT">deschide un fişier pentru acces</TD>
+<TD ALIGN="CENTER">F</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>read </TT></TD>
+<TD ALIGN="LEFT">citeşte din fişier date</TD>
+<TD ALIGN="CENTER">F</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>readlink </TT></TD>
+<TD ALIGN="LEFT">citeşte o legătură simbolică</TD>
+<TD ALIGN="CENTER">D</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>rename </TT></TD>
+<TD ALIGN="LEFT">schimbă numele unui fişier</TD>
+<TD ALIGN="CENTER">D</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>rmdir </TT></TD>
+<TD ALIGN="LEFT">şterge un director</TD>
+<TD ALIGN="CENTER">D</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>stat </TT></TD>
+<TD ALIGN="LEFT">citeşte atributele unui fişier</TD>
+<TD ALIGN="CENTER">A</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>symlink </TT></TD>
+<TD ALIGN="LEFT">crează un nou nume pentru un fişier</TD>
+<TD ALIGN="CENTER">D</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>sync </TT></TD>
+<TD ALIGN="LEFT">salvează cache-ul pe disc</TD>
+<TD ALIGN="CENTER">--</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>tell </TT></TD>
+<TD ALIGN="LEFT">unde e cursorul în fişier?</TD>
+<TD ALIGN="CENTER">F</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>truncate </TT></TD>
+<TD ALIGN="LEFT">reduce lungimea fişierului</TD>
+<TD ALIGN="CENTER">F</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>umask </TT></TD>
+<TD ALIGN="LEFT">schimbă drepturile cu care se crează fişiere</TD>
+<TD ALIGN="CENTER">A</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>unlink </TT></TD>
+<TD ALIGN="LEFT">şterge un nume al unui fişier</TD>
+<TD ALIGN="CENTER">D</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>write </TT></TD>
+<TD ALIGN="LEFT">scrie date în fişier</TD>
+<TD ALIGN="CENTER">F</TD>
+</TR>
+</TABLE>
+</DIV>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="apeluri"></A><A NAME="326"></A>
+<TABLE>
+<CAPTION><STRONG>Table 1:</STRONG>
+Apelurile de sistem pentru fişiere din SunOS.</CAPTION>
+<TR><TD></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+Am clasificat apelurile de sistem după tipul operaţiei în
+categoriile descrise în tabela&nbsp;<A HREF="#categ">2</A>.
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="327"></A>
+<TABLE>
+<CAPTION><STRONG>Table 2:</STRONG>
+Tipuri de apeluri de sistem pentru fişiere</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1" ALIGN="CENTER">
+<TR><TD ALIGN="CENTER">Categorie</TD>
+<TD ALIGN="LEFT">Semnificaţie</TD>
+<TD ALIGN="CENTER">Apeluri</TD>
+<TD ALIGN="CENTER">Operaţii distincte</TD>
+</TR>
+<TR><TD ALIGN="CENTER">A</TD>
+<TD ALIGN="LEFT">operaţii cu atribute</TD>
+<TD ALIGN="CENTER">11</TD>
+<TD ALIGN="CENTER">7</TD>
+</TR>
+<TR><TD ALIGN="CENTER">F</TD>
+<TD ALIGN="LEFT">operaţii cu conţinutul fişierelor</TD>
+<TD ALIGN="CENTER">10</TD>
+<TD ALIGN="CENTER">9</TD>
+</TR>
+<TR><TD ALIGN="CENTER">D</TD>
+<TD ALIGN="LEFT">operaţii cu directoare</TD>
+<TD ALIGN="CENTER">11</TD>
+<TD ALIGN="CENTER">11</TD>
+</TR>
+<TR><TD ALIGN="CENTER">S</TD>
+<TD ALIGN="LEFT">operaţii cu fişiere ``speciale''</TD>
+<TD ALIGN="CENTER">3</TD>
+<TD ALIGN="CENTER">3</TD>
+</TR>
+<TR><TD ALIGN="CENTER">--</TD>
+<TD ALIGN="LEFT">nu e o operaţie propriu-zisă pe fişiere</TD>
+<TD ALIGN="CENTER">2</TD>
+<TD ALIGN="CENTER">2</TD>
+</TR>
+<TR><TD ALIGN="CENTER" COLSPAN=2>Total</TD>
+<TD ALIGN="CENTER">37</TD>
+<TD ALIGN="CENTER">32</TD>
+</TR>
+</TABLE>
+</DIV>
+</TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Fişiere</A>
+</H1>
+
+<P>
+Funcţiunea cea mai evidentă a unui sistem de fişiere este de a
+organiza datele în fişiere.  Acestea pot avea proprietăţi felurite
+în diferite sisteme de operare.  În Unix fişierele propriu-zise
+(adică nu directoarele sau alte varietăţi ciudate pe care le
+discutăm mai jos) sunt simple array-uri de octeţi din punct de
+vedere al sistemului de operare; utilizatorul îşi organizează în
+aceste array-uri datele cum doreşte.  Acest model este valabil şi
+în MS-DOS şi Windows.  În plus fişierele mai sunt caracterizate de
+nişte <I>atribute</I> a căror semnificaţie este importantă pentru
+sistemul de operare.  Atribute tipice sunt: numele fişierelor, de
+care utilizatorul se foloseşte pentru a indica fişierele asupra
+cărora vrea să facă operaţiile, posesorul fişierului, data la
+care fişierul a fost creat, drepturile de acces la fişier, etc.
+Atributele unui fişier sunt memorate de Unix într-o structură de
+date numită <I>inod</I>, de la ``information-node''.
+
+<P>
+Atributele sunt oarecum secundare funcţiei principale a fişierelor,
+cea de a memora date; fişierele puteau fi folosite pentru a memora
+date chiar şi fără a avea la-ndemînă atribute.  Sistemul de
+operare însă menţine atributele pentru că s-a observat că
+funcţionalitatea pe care acestea o oferă este foarte utilă.
+Vom vedea că atributele sunt unul dintre mecanismele prin care
+sistemul de fişiere poate fi folosit şi pentru alte scopuri.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Operaţiile cu conţinutul fişierelor</A>
+</H1>
+
+<P>
+Să trecem în revistă rapid operaţiile care se ocupă doar de
+manipularea datelor; operaţiile cu atribute vor fi explorate într-o
+secţiune ulterioară.
+
+<P>
+În tabelul&nbsp;<A HREF="#continut">3</A> sunt extrase din tabelul&nbsp;<A HREF="2fs-html.html#apeluri">1</A>
+operaţiile de categoria ``F'', care lucrează direct cu conţinutul
+fişierelor.
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="329"></A>
+<TABLE>
+<CAPTION><STRONG>Table 3:</STRONG>
+Apeluri de sistem pentru conţinutul fişierelor.</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER"><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT"> Apel</TD>
+<TD ALIGN="LEFT"> Sintaxa</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>Descriere</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>open  </TT></TD>
+<TD ALIGN="LEFT"><TT>fd = open(path, mod) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>deschide un fişier specificat prin
+                           nume (path) pentru acces în modul indicat;
+                           întoarce un număr întreg (descriptor) pentru a
+                           manipula ulterior fişierul</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>close </TT></TD>
+<TD ALIGN="LEFT"><TT>close(fd) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>închide un fişier deschis cu <TT>open</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>creat </TT></TD>
+<TD ALIGN="LEFT"><TT>creat(path, drepturi) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>crează un fişier cu un nume specificat</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>truncate </TT></TD>
+<TD ALIGN="LEFT"><TT>truncate(path, lungime) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>redu lungimea fişierului dat
+                                        prin nume la cea indicată</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>ftruncate </TT></TD>
+<TD ALIGN="LEFT"><TT>ftruncate(fd, lungime) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>ca şi <TT>truncate</TT>, doar
+                                     că fişierul e indicat prin descriptor</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>lseek </TT></TD>
+<TD ALIGN="LEFT"><TT>lseek(fd, deplasare, relativ) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>mută cursorul de scriere/citire la o
+                                        nouă adresă în fişier</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>tell </TT></TD>
+<TD ALIGN="LEFT"><TT>tell(fd) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>află unde e cursorul în fişier</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>read </TT></TD>
+<TD ALIGN="LEFT"><TT>read(fd, memorie, lungime) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>citeşte din fişier date în memorie 
+                                (de la poziţia unde e cursorul curent)</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>write </TT></TD>
+<TD ALIGN="LEFT"><TT>write(fd, memorie, lungime) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>scrie date din memorie în fişier (la 
+                                poziţia dată de cursorul curent)</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>fsync </TT></TD>
+<TD ALIGN="LEFT"><TT>fsync(fd) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>salvează conţinutul fişierului 
+                        care era păstrat în cache</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>mmap </TT></TD>
+<TD ALIGN="LEFT"><TT>... </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>transformă acest fişier într-o zonă de memorie; scrierile în
+                această zonă de memorie se vor reflecta în fişier, iar citirile
+                din memorie se vor face din acel fişier.  Argumentele sunt prea
+                complicate ca să le discutăm acum.</TD>
+</TR>
+</TABLE>
+</DIV></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+După cum vedeţi operaţiile sunt relativ clare, poate mai puţin
+<TT>mmap()</TT>, de care ne vom ocupa altă dată, într-un articol
+referitor la sistemul de memorie virtuală (această funcţie, de
+altfel foarte importantă, este o aplicaţie imediată a sistemului de
+memorie virtuală).
+
+<P>
+Putem face mai multe lucruri cu un fişier: îl putem crea, îl putem
+scurta, ne putem plimba prin el şi putem citi/scrie în el
+``petice''.  Funcţia <TT>fsync()</TT> ne asigură că fişierul
+ajunge pe disc; sistemele de operare încearcă să ţină cît mai
+mult timp informaţiile în memorie pentru că discul este foarte lent
+comparativ cu memoria şi orice acces la el este foarte costisitor.
+Este demn de observat că doar <TT>open()</TT>, <TT>creat()</TT> şi
+<TT>truncate()</TT> lucrează cu fişiere date prin <I>nume</I>;
+celelalte funcţii lucrează cu fişiere deja deschise cu
+<TT>open()</TT> anterior, şi care sunt indicate cu rezultatul dat de
+funcţia <TT>open()</TT>.  Cînd <TT>open()</TT> deschide un fişier
+returnează un număr întreg care se numeşte <I>descriptor de
+fişier</I>: ``file descriptor'', sau ``file handle'' (în traducere
+``mîner de fişier''), folosit de alte funcţii pentru a indica
+fişierul.  Verificarea dreptului de acces se face o singură dată,
+la deschiderea fişierului.  Toate celelalte operaţii sunt apoi mult
+mai rapide.<A NAME="tex2html4"
+  HREF="#foot114"><SUP>1</SUP></A>
+<P>
+Funcţia <TT>open()</TT> poate crea noi fişiere, ca şi <TT>creat()</TT>.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Directoare</A>
+</H1>
+
+<P>
+Sistemul de directoare are ca misiune de a ordona fişierele într-o
+ierarhie şi de a le da nume care să fie convenabile utilizatorilor.
+Un director este un obiect al cărui ``conţinut'' este format din
+nume de fişiere şi din nume de alte directoare.  Directoarele mai
+conţin pentru fiecare nume şi numărul inodului care-i corespunde
+(articolul citat în introducere vorbeşte mai mult despre asta).
+Presupunem că cititorului îi este cunoscută noţiunea de
+``cărare'' (path) care descrie un lanţ de directoare care duce la un
+fişier (de exemplu <TT>/usr/home/mihaib/data/articles/2fs.tex</TT>
+este cărarea care duce la fişierul în care tocmai scriu acest
+articol în această clipă.
+
+<P>
+Să trecem rapid în revistă în tabelul&nbsp;<A HREF="#directoare">4</A> operaţiile
+(luate din tabelul&nbsp;<A HREF="2fs-html.html#apeluri">1</A>) care lucrează cu directoare.
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="331"></A>
+<TABLE>
+<CAPTION><STRONG>Table 4:</STRONG>
+Apeluri de sistem pentru directoare</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER"><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT"> Apel</TD>
+<TD ALIGN="LEFT"> Sintaxa</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>Descriere</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>chdir   </TT></TD>
+<TD ALIGN="LEFT"><TT>chdir(path) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>schimbă directorul curent pentru acest proces</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>chroot  </TT></TD>
+<TD ALIGN="LEFT"><TT>chroot(path) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>schimbă directorul rădăcină pentru acest proces</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>getdents </TT></TD>
+<TD ALIGN="LEFT"><TT>getdents(fd, memorie, lungime) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>citeşte conţinutul
+                                            directorului în memorie</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>creat   </TT></TD>
+<TD ALIGN="LEFT"><TT>creat(path, drepturi) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>crează un fişier cu numele indicat</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>mkdir   </TT></TD>
+<TD ALIGN="LEFT"><TT>mkdir(path, drepturi) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>fă un nou director cu numele indicat</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>rmdir   </TT></TD>
+<TD ALIGN="LEFT"><TT>rmdir(path) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>şterge un director care nu conţine fişiere</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>link    </TT></TD>
+<TD ALIGN="LEFT"><TT>link(path1, path2) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>dă încă un nume (path2) fişierului cu numele path1</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>unlink  </TT></TD>
+<TD ALIGN="LEFT"><TT>unlink(path) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>şterge un nume al unui fişier</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>rename  </TT></TD>
+<TD ALIGN="LEFT"><TT>rename(path1, path2) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>schimbă numele unui fişier din path1 în path2</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>symlink </TT></TD>
+<TD ALIGN="LEFT"><TT>symlink(path1, path2) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>crează un nou nume pentru un fişier</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>readlink </TT></TD>
+<TD ALIGN="LEFT"><TT>readlink(path, memorie, lungime) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>citeşte la cine merge o legătură simbolică</TD>
+</TR>
+</TABLE>
+</DIV></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+Funcţia <TT>creat()</TT> apare din nou, pentru că schimbă
+conţinutul unui director atunci cînd crează un fişier.
+<TT>mkdir()</TT> este echivalentul lui <TT>creat()</TT>, doar că face
+un nou director.
+
+<P>
+Un fişier în Unix poate avea mai multe nume.  Primul nume apare
+cînd fişierul este creat, următoarele se pot adăuga cu funcţia
+<TT>link()</TT>.  Un nume al unui fişier poate fi schimbat cu
+<TT>rename()</TT>, sau poate fi şters cu <TT>unlink()</TT>.
+<TT>rmdir()</TT> este echivalentul lui <TT>unlink()</TT> pentru
+directoare.
+
+<P>
+În fine, în Unix există o clasă specială de fişiere numite
+<I>legături simbolice</I> (symbolic links), al căror conţinut este
+numele altui fişier (o cărare).  Aceste fişiere se crează cu apelul
+<TT>symlink()</TT>.
+
+<P>
+Dacă fişierul A este o legătură simbolică la B, atunci orice
+acces la A este transformat de nucleu într-un acces la B.  Pentru că
+un <TT>read()</TT> din fişierul A ne arată automat conţinutul
+fişierului B, avem la dispoziţie funcţia specială,
+<TT>readlink()</TT>, cu care putem vedea la ce fişier punctează o
+legătură simbolică.
+
+<P>
+Legăturile simbolice sunt foarte asemănătoare cu numele
+fişierelor, dar există o serie de diferenţe subtile pe care le vom
+discuta altă dată.  Ele au fost create pentru că, deşi un fişier
+poate avea mai multe nume create cu <TT>link()</TT>, ele toate trebuie
+să se afle pe acelaşi disc.  Pentru a putea avea nume alternative
+pentru un fişier pe alte discuri decît cel pe care se află
+fişierul, se folosesc legăturile simbolice.
+
+<P>
+URL-urile (Universal Resource Locators), cu care în Internet se indică
+paginile de web, sunt o extensie a noţiunii de legătură simbolică: pe
+lîngă numele unui fişier ele indică şi numele unui calculator plus
+eventual numele unui protocol, astfel:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="RIGHT"><TT>http://</TT></TD>
+<TD ALIGN="CENTER"><TT>www.cs.cmu.edu</TT></TD>
+<TD ALIGN="LEFT"><TT>/afs/cs/user/mihaib/</TT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT">protocolul de comunicaţii</TD>
+<TD ALIGN="CENTER">calculatorul</TD>
+<TD ALIGN="LEFT">cărarea</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Facem acum o observaţie banală, dar <I>crucială</I>: <B>pentru a
+putea face orice operaţie cu un fişier trebuie să cunoaştem o
+cărare la el</B> (pot exista mai multe, pentru că un fişier poate avea
+mai multe nume); <B>singura metodă pentru a specifica un fişier
+este printr-o cărare!</B>
+
+<P>
+De aici rezultă imediat o serie de consecinţe foarte importante.
+Una dintre ele este că un fişier care nu are nume nu este accesibil
+nicicum.  Din cauza asta în Unix fişierele nu pot fi şterse (nu
+există nici un apel de sistem pentru asta! verificaţi); ele dispar
+atunci cînd ultimul lor nume este şters cu <TT>unlink()</TT>.
+
+<P>
+Dar cele mai importante consecinţe vor apărea abia atunci cînd vom
+vorbi despre protecţie.  Înainte de asta trebuie însă să vedem
+cum se manipulează atributele.
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Operaţiile cu atribute</A>
+</H1>
+
+<P>
+Toate atributele unui fişier (mai puţin numele) sunt ţinute de Unix
+în inod.  (Numele sunt ţinute în directoare.)  În
+tabela&nbsp;<A HREF="#atribute">5</A> sunt trecute operaţiile puse la dispoziţie de
+către nucleu pentru a opera cu atribute.
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="333"></A>
+<TABLE>
+<CAPTION><STRONG>Table 5:</STRONG>
+Apeluri de sistem pentru manipularea atributelor.</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER"><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT"> Apel</TD>
+<TD ALIGN="LEFT"> Sintaxa</TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>Descriere</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>access  </TT></TD>
+<TD ALIGN="LEFT"><TT>access(path, drepturi) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>verifică dacă fişierul path poate fi
+                                accesat în modul indicat (de către
+                                procesul curent)</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>umask   </TT></TD>
+<TD ALIGN="LEFT"><TT>umask(masca) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>indică drepturile de acces pe care le vor
+                        avea fişierele create de acum încolo
+                        (cu <TT>open</TT>, <TT>creat</TT>, <TT>mkdir</TT>)</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>chmod   </TT></TD>
+<TD ALIGN="LEFT"><TT>chmod(path, drepturi) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>schimbă drepturile de acces la
+                                fişierul indicat</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>fchmod  </TT></TD>
+<TD ALIGN="LEFT"><TT>fchmod(fd, drepturi) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>ca şi <TT>chmod</TT>, pe un fişier deschis</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>chown   </TT></TD>
+<TD ALIGN="LEFT"><TT>chown(path, utilizator, grup) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>schimbă posesorul unui fişier</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>fchown  </TT></TD>
+<TD ALIGN="LEFT"><TT>fchown(fd, utilizator, grup) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>ca şi <TT>chown</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>stat    </TT></TD>
+<TD ALIGN="LEFT"><TT>stat(path, memorie) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>citeşte toate atributele unui fişier</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>fstat   </TT></TD>
+<TD ALIGN="LEFT"><TT>fstat(fd, memorie) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>ca şi <TT>stat</TT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>lstat   </TT></TD>
+<TD ALIGN="LEFT"><TT>lstat(path, memorie) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>ca şi <TT>stat</TT>, doar că citeşte
+                                atributele unei legături simbolice</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>flock   </TT></TD>
+<TD ALIGN="LEFT"><TT>flock(fd, permisiuni) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>``încuie'' sau descuie un fişier
+                                (interzice -- pentru sincronizare --
+                                accesele  altor procese)</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>fcntl   </TT></TD>
+<TD ALIGN="LEFT"><TT>fcntl(fd, comanda, argumente) </TT></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=198>operaţii speciale...</TD>
+</TR>
+</TABLE>
+</DIV></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+Funcţia <TT>fcntl()</TT> (file control: controlul fişierelor) face o
+sumedenie de lucruri diferite în funcţie de valoarea celui de-al
+doilea argument: află dacă fişierul e încuiat, modifică modul de
+lucru cu fişierul (de exemplu poate aranja ca fiecare octet scris să
+meargă imediat spre disc, fără să stea în cache), poate pune alte
+încuietori, etc.  O funcţie complicată care deocamdată nu ne
+interesează prea tare.
+
+<P>
+<TT>stat()</TT> citeşte într-o structură de date atributele
+fişierului.
+
+<P>
+Pentru secţiunea următoare ne interesează mai ales să ştim că
+următoarele sunt atribute ale unui fişier:
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="181"></A>
+<TABLE>
+<CAPTION><STRONG>Table 6:</STRONG>
+Atribute importante ale fişierelor.</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER"><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">Posesorul</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Drepturi de acces</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Tipul (director, etc.)</TD>
+</TR>
+</TABLE>
+</DIV></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+Funcţiile <TT>access()</TT>, <TT>umask()</TT>, <TT>[f]chmod()</TT>
+operează cu drepturile, funcţiile <TT>[f]chown()</TT> cu posesorul.
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Protecţie</A>
+</H1>
+
+<P>
+Cum implementează sistemul de operare Unix protecţia accesului la
+fişiere?
+
+<P>
+În primul rînd trebuie să ne fie clar <I>cine</I> poate accesa
+fişierele.  Fişierele sunt accesate numai de procese (programele
+care sunt în curs de execuţie).  Nu utilizatorii lucrează cu
+fişiere<A NAME="tex2html8"
+  HREF="#foot189"><SUP>2</SUP></A>, ci programele lor.  Fiecare program are o identitate
+moştenită de la programul care a identificat utilizatorul cînd
+acesta a tastat parola.  Pe toate programele care s-au născut din
+programul căruia i-am tastat parola mea, scrie undeva ``ăsta e al
+lui mihaib'' (numele meu de utilizator).
+
+<P>
+Atributul ``posesor'' al unui fişier este de aceeaşi natură.  Cînd
+un proces ştampilat ``mihaib'' crează un fişier (cu <TT>open(),
+mknod(), mkdir()</TT> sau <TT>creat()</TT>), acel fişier capătă
+aceeaşi ştampilă, care devine atributul ``posesor''.  Comanda
+<TT>chown()</TT> poate fi folosită pentru a schimba posesorul unui
+fişier.
+
+<P>
+În cele ce urmează simplificăm puţin discuţia restrîngînd
+atenţia la drepturile ``utilizatorilor''.  După cum ştiţi Unix
+poate agrega utilizatori în grupuri, dar funcţionarea sistemului de
+protecţie este asemănătoare pentru grupuri ca pentru indivizi.
+
+<P>
+Cum observam mai sus, orice comandă care operează asupra unui
+fişier trebuie să manipuleze întîi o cărare la acel fişier
+(pentru a putea scrie într-un fişier, el trebuie întîi deschis,
+şi atunci se indică prin cărare).  Unix-ul clasic distinge doar
+trei tipuri de operaţii pe fişiere: citire, scriere şi executare.
+
+<P>
+Regula de protecţie pentru accesul la un fişier în Unix este atunci
+foarte simplă:
+
+<P>
+<BLOCKQUOTE>
+<EM>Un proces poate opera asupra unui fişier indicat printr-o cărare
+dacă are drept de inspecţie în toate directoarele din cărare, şi
+dacă are dreptul de a face operaţia dorită asupra ultimei
+componente din cărare.
+
+</EM></BLOCKQUOTE>
+
+<P>
+Observaţi un lucru foarte interesant: decizia dacă un proces are
+dreptul să facă ceva cu un fişier depinde numai de drepturile
+procesului pe fiecare componentă a cărării.  Decizia nu depinde
+nicidecum de conţinutul fişierului, de pildă.  Decizia nu depinde
+(aproape) nicidecum de <I>tipul</I> fişierului.
+
+<P>
+Chiar dacă fişierul este un director, un fişier de date, un fişier
+special (vom vedea ce sunt astea mai jos), sau o legătură
+simbolică, dreptul de acces se verifică în acelaşi fel (pentru
+toate fişierele care compun cărarea):
+
+<P>
+
+<UL>
+<LI>Se compară posesorul din inod cu posesorul procesului care vrea
+să facă operaţia;
+</LI>
+<LI>Se compară drepturile din inod-ul fişierului cu tipul
+operaţiei cerute.
+</LI>
+</UL>
+
+<P>
+Observaţi că datorită faptului că un fişier poate avea mai multe
+cărări, accesul pe diferite cărări poate avea restricţii diferite
+pentru un acelaşi proces!
+
+<P>
+Lăsăm ca exerciţiu cititorului ilustrarea aplicaţiilor acestui
+mecanism de protecţie.  Exemplele abundă: directoarele fiecărui
+utilizator au drepturi mai mari pentru posesor, fişierele executabile
+de către toţi utilizatorii nu pot fi modificate (decît de
+administrator), (deci viruşii nu se pot propaga!), se pot folosi
+directoare publice pentru fişiere temporare (<TT>/tmp</TT>), poşta
+electronică poate fi stocată în fişiere ordinare fără frică de
+violare a secretului corespondenţei, serverele de comunicaţie în
+reţea (ex.: ftp, www) lucrează pe o ierarhie de directoare izolată
+de cea principală a sistemului (cu <TT>chroot()</TT><A NAME="tex2html9"
+  HREF="#foot200"><SUP>3</SUP></A>), etc.
+
+<P>
+
+<H1><A NAME="SECTION00080000000000000000">
+Abstracţia de fişier; operaţiile pe fişiere</A>
+</H1>
+
+<P>
+Sa ne uităm încă odată la tabelul&nbsp;<A HREF="#continut">3</A>.
+
+<P>
+Observaţi că ceea ce un proces ştie despre conţinutul unui fişier
+este accesibil numai prin funcţiile acestea: <TT>open(), close(),
+read(), write(), lseek()</TT> (celelalte funcţii sunt mai puţin
+importante şi nu neapărat necesare; operaţiile lor principale ar
+putea fi sintetizate din cele înşirate aici).
+
+<P>
+Această interfaţă este foarte generală, pentru că nu presupune
+nimic despre organizarea internă a fişierelor.  La o adică ne putem
+imagina aceste operaţii mergînd pe orice ``container'' cu date.
+<I>Aceste operaţii sunt o interfaţă abstractă pentru un depozit
+de date.</I>
+
+<P>
+Această putere de expresie a interfeţei a fost sesizată de
+proiectanţii Unix-ului, la începutul anilor '70, şi este
+premeditată.  În Unix o mulţime de alte obiecte pe lîngă fişiere
+sunt accesate folosind aceste operaţii!
+
+<P>
+
+<H1><A NAME="SECTION00090000000000000000">
+Ţevile cu nume</A>
+</H1>
+
+<P>
+Unix oferă noţiunea de ``pipe'': o ţeavă între două procese.
+Există două feluri de ţevi, dar acum ne vom ocupa doar de una
+dintre ele, de ``ţeava numită'' (named pipe).  Aceasta are un nume
+ca un fişier, dar se comportă oarecum diferit: datele pot fi citite
+o singură dată; citirea ``consumă'' datele.  Partea frumoasă este
+că o astfel de ţeavă poate fi manipulată tot cu apelurile indicate
+mai sus... nimic din interfaţă nu obligă un fişier să
+păstreze datele scrise!
+
+<P>
+O astfel de ţeavă se poate crea cu apelul de sistem
+<TT>mkfifo(path, drepturi);</TT>.  Dacă am creat un astfel de
+``fişier'', toate celelalte operaţii pe el se efectuează cu
+aceleaşi funcţii: <TT>open()</TT> deschide ţeava şi verifică
+drepturile de acces, <TT>close()</TT> o închide, <TT>write()</TT>
+scrie în ţeavă (şi blochează scriitorul pînă apare un cititor),
+iar <TT>read()</TT> citeşte din ţeavă (sau blochează cititorul
+pînă apare un scriitor).  Apelul de sistem <TT>lseek()</TT> nu se
+poate folosi cu astfel de fişiere.
+
+<P>
+<I>Natura diferită a ţevii nu este vizibilă pentru procese,
+pentru că interfaţa este aceeaşi.</I>  Această interfaţă este
+extrem de puternică.  
+
+<P>
+Ca un divertisment, care nu are prea mare legătură cu subiectul
+articolului, vom arăta cum se poate folosi o ``ţeavă numită''
+pentru a depista pe un calculator legat în Internet cine face
+<TT>finger</TT> ca să afle informaţii despre noi.
+
+<P>
+Ideea este că atunci cînd cineva face <TT>finger
+adresa_mea@cs.cmu.edu</TT> demonul local de finger citeşte din
+directorul meu fişierul cu numele <TT>.plan</TT>.  Dacă fac acest
+fişier o ţeavă numită şi pun un proces să scrie în ţeavă, acest proces
+va fi blocat pînă cînd cineva face un <TT>finger</TT> spre mine.
+Acest proces va fi deblocat de demonul de <TT>finger</TT>.  Un script
+shell ca cel următor face acest lucru:
+
+<P>
+<PRE>
+cd
+rm -f .plan
+mknod .plan p       # creaza teava
+while /bin/true; do
+        echo "No plan" &gt; .plan
+        netstat | grep finger &gt;&gt;ma-cauta
+done
+</PRE>
+
+<P>
+Comanda <TT>echo</TT> va fi blocată pînă apare un cititor.  După
+ce apare un cititor (demonul <TT>fingerd</TT>), se va executa imediat
+comanda <TT>netstat</TT>, care va arăta toate conexiunile de reţea
+deschise în clipa aceea, inclusiv cea a demonului <TT>fingerd</TT> de
+pe maşina locală cu programul <TT>finger</TT> de pe maşina de la
+distanţă.  În fişierul <TT>ma-cauta</TT> se va depune adresa
+maşinii de unde se face <TT>finger</TT>.  (Mai mult de atît este
+ceva mai greu de aflat.)
+
+<P>
+
+<H1><A NAME="SECTION000100000000000000000">
+Perifericele în Unix: fişierele ``speciale''</A>
+</H1>
+
+<P>
+Dar să ne întoarcem la drepturile noastre.
+
+<P>
+Am văzut că abstracţia de fişier poate îmbrăca mai multe
+obiecte: nu numai fişiere, ci şi ţevi.  Oare nu există şi alte
+creaturi care să poată fi manipulate prin această interfaţă?
+
+<P>
+Ba da, ba da.  O mulţime.  De exemplu: toate perifericele.
+
+<P>
+În Unix toate perifericele conectate la calculator au un nume de
+fişier şi sunt operate ca fişiere!  Aceste fişiere sunt numite
+``fişiere speciale'', şi există două mari categorii: fişiere
+speciale de tip ``caracter'' şi fişiere de tip ``bloc''.  Diferenţa
+între ele nu ne interesează aici<A NAME="tex2html10"
+  HREF="#foot228"><SUP>4</SUP></A>.
+
+<P>
+Tot ceea ce e periferic în Unix: mouse-ul, tastatura şi ecranul
+(numite împreună ``consolă''), terminalele conectate şi
+modemurile, memoria video, discurile şi unităţile de bandă,
+cdrom-ul şi placa audio, toate acestea sunt ascunse de Unix sub
+aceeaşi abstracţie, asupra căreia se operează cu <TT>open(),
+close(), read(), write(), lseek()</TT> şi <TT>ioctl()</TT>.
+
+<P>
+Singura funcţie nou-venită este <TT>ioctl()</TT>, care seamănă cu
+<TT>fcntl()</TT>, pe care am prezentat-o mai sus.  Diferenţa este că
+<TT>ioctl()</TT>, de la ``I/O control'' (controlul intrării şi
+ieşirii) se foloseşte numai pentru fişiere speciale, iar
+<TT>fcntl()</TT> pentru fişiere ordinare.  Funcţia aceasta este o
+şmecherie care permite utilizatorilor să facă toate operaţiile pe
+care nu le pot face cu celelalte funcţii.  Cu alte cuvinte, nu toate
+perifericele se ``ascund'' bine sub abstracţia prezentată, şi
+atunci avem nevoie de o funcţie specială.
+
+<P>
+Deocamdată să lăsăm pe <TT>ioctl()</TT> la o parte şi să vedem
+mai multe despre fişierele speciale.
+
+<P>
+În sistemele Unix tradiţionale toate fişierele speciale sunt
+strînse în directorul <TT>/dev</TT>, de la ``devices'' (aparate).
+În sistemele moderne există o întreagă ierarhie de directoare în
+directorul acesta: directoare pentru discuri, directoare pentru benzi,
+etc.
+
+<P>
+Iată o porţiune din directorul <TT>/dev</TT> de pe o staţie de
+lucru Sun cu SunOS 4.1.3 (fac o selecţie; sunt peste 550 de
+fişiere!):
+
+<P>
+<PRE>
+    crw-rw-rw-  1 root      69,   0 May  6 17:55 audio
+    crw-rw-rw-  1 root      26,   0 May  6 17:55 bwone0
+    crw--w--w-  1 mihaib     0,   0 Oct 19 14:06 console
+    lrwxrwxrwx  1 root            9 May  6 17:37 modem -&gt; /dev/ttya
+    crw-rw-rw-  1 root      11,   0 May  6 17:55 des
+    brw-rw-rw-  1 root      16,   0 May  6 17:51 fd0a
+    crw-rw-rw-  1 root     104,   0 May  6 17:55 lightpen
+    crw-rw-rw-  1 root      13,   0 May  6 17:51 mouse
+    crw-------  1 root      37,  40 May  6 17:51 nit
+    crw-rw-rw-  1 root      30,   0 May  6 17:55 rmt0
+    crw-rw-rw-  1 root      30,   1 May  6 17:55 rmt1
+    crw-r-----  1 root      17,   0 May  6 17:51 rsd0a
+    crw-r-----  1 root      17,   1 May  6 17:51 rsd0b
+    crw-rw-rw-  1 root       2,   0 Sep 25 11:25 tty
+    crw-rw-rw-  1 root      12,   0 Oct 19 14:44 ttya
+    crw-rw-rw-  1 root      12,   1 May  6 17:51 ttyb
+    ^                       ^^    ^
+tipul                    major    minor
+</PRE>
+
+<P>
+Numele fişierelor speciale nu sunt prea bine standardizate; fiecare
+sistem va numi un anumit periferic în alt fel.  Tipul mai sus este
+``c'' pentru fişiere de tip ``caracter'' şi ``b'' pentru fişiere de
+tip ``bloc''.  Pe sistemul meu fişierele de mai sus corespund la
+(tabela&nbsp;<A HREF="#speciale">7</A>):
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="334"></A>
+<TABLE>
+<CAPTION><STRONG>Table 7:</STRONG>
+Fişiere speciale.</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER"><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">audio</TD>
+<TD ALIGN="LEFT">placa de sunet</TD>
+</TR>
+<TR><TD ALIGN="LEFT">bwone0</TD>
+<TD ALIGN="LEFT">placa grafică alb-negru (Black-and-White ONE)</TD>
+</TR>
+<TR><TD ALIGN="LEFT">console</TD>
+<TD ALIGN="LEFT">consola (tastatură, ecran)</TD>
+</TR>
+<TR><TD ALIGN="LEFT">des</TD>
+<TD ALIGN="LEFT">integratul care criptează DES (Data Encription Standard)</TD>
+</TR>
+<TR><TD ALIGN="LEFT">fd0a</TD>
+<TD ALIGN="LEFT">primul floppy disk</TD>
+</TR>
+<TR><TD ALIGN="LEFT">lightpen</TD>
+<TD ALIGN="LEFT">creionul optic</TD>
+</TR>
+<TR><TD ALIGN="LEFT">mouse</TD>
+<TD ALIGN="LEFT">şoarecul</TD>
+</TR>
+<TR><TD ALIGN="LEFT">nit</TD>
+<TD ALIGN="LEFT">placa de reţea (Network Interface Tap)</TD>
+</TR>
+<TR><TD ALIGN="LEFT">rmt0</TD>
+<TD ALIGN="LEFT">banda nr. 0 (Remote Mag Tape)</TD>
+</TR>
+<TR><TD ALIGN="LEFT">rsd0a</TD>
+<TD ALIGN="LEFT">primul disc SCSI, partiţia A (Raw Scsi Disc 0)</TD>
+</TR>
+<TR><TD ALIGN="LEFT">ttya</TD>
+<TD ALIGN="LEFT">primul terminal (mai precis portul serial; TeleTYpe)</TD>
+</TR>
+</TABLE>
+</DIV></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+Faptul că fiecare periferic oferă o interfaţă de fişier are
+următoarele consecinţe:
+
+<P>
+
+<UL>
+<LI>Programele lucrează cu perifericele exact ca şi cu fişierele
+(aceleaşi operaţii); anumite programe nici nu trebuie să ştie cu
+ce anume lucrează;
+</LI>
+<LI>Protecţia accesului la periferice se face prin aceleaşi
+mecanisme (drepturi, posesor).
+</LI>
+</UL>
+
+<P>
+Fireşte, ca şi ţevile, fişierele speciale <I>nu există fizic
+pe disc</I>; pe disc există doar <I>numele acestor fişiere precum
+şi atributele</I>.  ``Conţinutul'' acestor fişiere este ``calculat''
+de nucleu.  Vom reveni la acest lucru.
+
+<P>
+Să vedem în acţiune abstracţia de fişier în cazul perifericelor.
+
+<P>
+Dacă vă uitaţi cu atenţie mai sus veţi observa că ``fişierul''
+<TT>console</TT> îi aparţine utilizatorului <TT>mihaib</TT> (eu),
+şi nu lui <TT>root</TT>, ca toate celelalte.  Asta pentru că atunci
+cînd eu am făcut ``login'' la consolă, fişierul special care este
+consola mi-a fost trecut în posesie mie de programul ``login''.  În
+felul acesta, toate procesele lansate de mine, care au ``ştampila''
+<TT>mihaib</TT> pe ele pot scrie şi citi de la consolă (un lucru
+foarte util)!
+
+<P>
+De asemenea veţi observa că drepturile pentru alţi utilizatori
+permit scrierea la consolă!  Acest lucru permite altor utilizatori
+să-mi trimită mesaje folosind comanda <TT>write</TT> a shell-ului, a
+cărei implementare nu face altceva decît să deschidă fişierul
+<TT>/dev/console</TT> şi să scrie mesajele.
+
+<P>
+Adesea se fac bancuri proaste pe un sistem pe care lucrează mai
+mulţi utilizatori: unul găseşte un astfel de terminal al unui coleg
+permisiv şi aruncă o tonă de date spre el: <TT>cat
+/usr/include/*.h &gt;/dev/console</TT>.  Pentru a nu permite aşa ceva, pot
+face <TT>chmod 600 /dev/console</TT>.  (Pot face acelaşi lucru cu
+comanda <TT>mesg n</TT>.)
+
+<P>
+Iată deci cum sistemul de fişiere constrînge accesul la periferice
+şi comunicaţia între procese.  Iar acest lucru este ``pe gratis'':
+acelaşi mecanism care era folosit pentru fişiere ordinare merge şi
+aici.
+
+<P>
+În general accesul la periferice este restrîns, pentru că altfel
+utilizatori răutăcioşi ar putea cauza stricăciuni.  Dacă aveţi
+drepturi de administrator pe o maşină puteţi citi toate discurile
+direct, bloc cu bloc, direct ``din'' fişierele speciale.  Pe maşina
+asta aş putea cu <TT>od /dev/sd0a</TT>.  Dacă aveţi un Linux şi
+vreţi să încercaţi, discurile se numesc de obicei
+<TT>/dev/hd0_</TT>.
+
+<P>
+Şi aşa mai departe.  Programele care arhivează pe bandă pur şi
+simplu deschid fişierul <TT>/dev/rmt0</TT> şi scriu apoi ce au de
+scris acolo.  Serverul de ferestre X Windows deschide (cu
+<TT>open()</TT>) fişierele speciale <TT>/dev/bwone0</TT> şi
+<TT>/dev/mouse</TT> şi scrie, respectiv citeşte de acolo.  Aceste
+programe nu au nici o instrucţiune magică pentru a opera cu benzi
+sau cu ecranul: ştiu doar să scrie şi să citească din
+``fişiere'', şi în plus ştiu ce semnificaţie are ``conţinutul''
+fişierelor (adică valorile scrise) pentru hardware.
+
+<P>
+Cum funcţionează aceste ``fişiere''?  Pentru implementarea
+fiecăruia din ele nucleul conţine o cantitate impresionantă de
+``soft'', numită ``driver'' (şofer?).  Pe un sistem Unix driverele
+pot lua mai mult de jumătate din codul întregului sistem de operare!
+
+<P>
+Fiecare fişier special are printre atribute două valori, numite
+``major device number'' şi ``minor device number''.  Acestea sunt
+cele două coloane de numere care apar în listingul de mai sus.
+
+<P>
+Cînd nucleul este compilat, înauntru are un array mare de structuri
+care corespund fiecărui driver.  De exemplu căsuţa 0 din array
+corespunde driver-ului de consolă, căsuţa 17 discurilor iar
+căsuţa 13 mouse-ului.  (Am citit numărul ``major'' din listing).
+
+<P>
+Aceasta este şi asocierea dintre numele de fişier şi programele
+care implementează abstracţia de fişier: cînd un proces deschide
+fişierul <TT>/dev/console</TT>, nucleul observă din atributele
+fişierului stocate în inod, că este vorba de un fişier special cu
+major-ul 0, deci roagă driver-ul 0 să manipuleze toate operaţiile
+pe acel fişier.  Acel driver va face anumite acţiuni cînd se va
+scrie în fişier, care acţiuni vor duce la afişarea de informaţii
+pe ecran.  Cum se face acest lucru, depinde foarte tare de hardware-ul
+în chestiune.
+
+<P>
+La ce foloseşte numărul minor?  De exemplu sistemul de mai sus are
+două benzi: <TT>rmt0</TT> şi <TT>rmt1</TT>.  Atunci, pentru că în
+hardware sunt identice, pentru ele există un singur driver.
+Driver-ul va opera însă cu una sau alta din unităţile de bandă,
+în funcţie de numărul minor al fişierului: scrierile la
+<TT>rmt0</TT> vor merge pe o banda, iar cele la <TT>rmt1</TT> la
+cealaltă.
+
+<P>
+<PRE>
+                 /-------------------------&gt;banda 1
+    /dev/rmt1    |
+     inod        |     | driver  |         | driver    |      | Array
+  |---------|    |     | consola |         | banda     |      | de
+  | posesor |    |     |_________|__....___|___^_______|_...__| drivere
+  | drepturi|    |      0         1         17/         18
+  | .....   |    |                           /
+  | major 17|----|--------------------------/
+  | minor  1|----/
+  |         |
+  | tip=c   |   
+  |---------|   |
+                |       
+   In sistemul  |  In nucleu
+   de fisiere   |
+        &lt;-------|------&gt;
+</PRE>
+
+<P>
+Pentru ca schema să funcţioneze trebuie ca atributele (major-minor)
+ale fişierelor speciale să fie corect alocate pentru a corespunde
+ordinii în care sunt driverele compilate în nucleu.  Administratorul
+de sistem este cel care crează noi fişiere speciale, cu comanda
+<TT>mknod</TT>, şi trebuie să fie grijuliu să menţină o asociere
+corectă cînd crează noi fişiere speciale (şi adaugă noi drivere
+în nucleu).
+
+<P>
+
+<H1><A NAME="SECTION000110000000000000000">
+Pseudo-perifericele (pseudo-devices)</A>
+</H1>
+
+<P>
+Observaţi că deja un periferic ``seamănă'' foarte puţin cu un
+fişier: nu poţi depune date pe care apoi să le extragi în mouse,
+de pildă.  Totuşi perifericul este un dispozitiv care manipulează
+informaţie, deci interfaţa generică este potrivită.
+
+<P>
+Se poate merge şi mai departe cu ideile.  La ce altceva se poate
+``aplica'' această interfaţă?  Ce fel de funcţionalitate îmi mai
+poate da sistemul fără a introduce abstracţii noi?
+
+<P>
+Foarte multe alte obiecte cu aceeaşi interfaţă pot fi construite.
+Pe lîngă fişierele speciale care corespund unor periferice
+concrete, în directorul <TT>/dev</TT> mai există o mulţime de alte
+fişiere speciale care corespund unor <I>periferice virtuale</I>, sau
+unor ``pseudo-periferice''.  Acestea sunt nişte aparate imaginare,
+sintetizate în întregime în software.
+
+<P>
+Iată cîteva:
+
+<P>
+<PRE>
+crw-------  1 root      16,   0 May  6 17:51 klog
+crw-r--r--  1 root       3,   1 May  6 17:51 kmem
+crw-r--r--  1 root       3,   0 May  6 17:51 mem
+crw-rw-rw-  1 root       3,   2 Oct 19 20:50 null
+crw-rw-rw-  1 root      21,   0 Oct 19 20:51 ptyp0
+crw-rw-rw-  1 root      21,   1 Oct 19 20:36 ptyp1
+crw-rw-rw-  1 root      20,   0 Oct 19 20:51 ttyp0
+crw-rw-rw-  1 root      20,   1 Oct 19 20:36 ttyp1
+crw-rw-rw-  1 root      15,   0 Apr  7  1997 win0
+crw-rw-rw-  1 root      15,   1 Apr  7  1997 win1
+crw-rw-rw-  1 root       3,  12 May  6 17:51 zero
+</PRE>
+
+<P>
+Ele corespund următoarelor funcţiuni:
+
+<P>
+<BR><P></P>
+<DIV ALIGN="CENTER"><A NAME="283"></A>
+<TABLE>
+<CAPTION><STRONG>Table 8:</STRONG>
+Fişiere speciale.</CAPTION>
+<TR><TD>
+<DIV ALIGN="CENTER"><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">klog</TD>
+<TD ALIGN="LEFT">depozit pentru mesajele de eroare ale nucleului</TD>
+</TR>
+<TR><TD ALIGN="LEFT">kmem</TD>
+<TD ALIGN="LEFT">memoria virtuală vizibilă nucleului</TD>
+</TR>
+<TR><TD ALIGN="LEFT">mem</TD>
+<TD ALIGN="LEFT">memoria fizică a calculatorului</TD>
+</TR>
+<TR><TD ALIGN="LEFT">null</TD>
+<TD ALIGN="LEFT">``canalul fără fund'' (sink)</TD>
+</TR>
+<TR><TD ALIGN="LEFT">ttyp0</TD>
+<TD ALIGN="LEFT">terminal virtual 0; master</TD>
+</TR>
+<TR><TD ALIGN="LEFT">ptyp0</TD>
+<TD ALIGN="LEFT">terminal virtual 0; sclav</TD>
+</TR>
+<TR><TD ALIGN="LEFT">win0</TD>
+<TD ALIGN="LEFT">fereastra 0</TD>
+</TR>
+<TR><TD ALIGN="LEFT">zero</TD>
+<TD ALIGN="LEFT">şirul infinit de zerouri</TD>
+</TR>
+</TABLE>
+</DIV></TD></TR>
+</TABLE>
+</DIV><P></P>
+<BR>
+
+<P>
+De exemplu <TT>win0</TT> reprezintă o fereastră de pe ecran; aceasta
+se comportă ca un terminal în miniatură, dar nu există fizic; este
+o noţiune emulată software.  Un pseudo-periferic, deci.
+
+<P>
+<TT>/dev/mem</TT> este chiar o imagine directă a memoriei
+calculatorului.  Citind astfel octetul 1000 din <TT>/dev/mem</TT>:
+
+<P>
+<PRE>
+{
+   char c;
+   int i = open("/dev/mem", O_RDONLY); 
+   lseek(i, 1000);
+   read(i, &amp;c, 1);
+   close(i);
+}
+</PRE>
+
+<P>
+vom afla ce se află în memoria fizică a maşinii la
+adresa 1000!  (Fireşte, presupunînd că drepturile de acces ne
+permit acest lucru.)
+
+<P>
+Alte fişiere bizare: <TT>/dev/null</TT> este un fişier de lungime 0,
+în care orice se scrie se pierde (nu are nici un efect).  Este extrem
+de util într-o sumedenie de circumstanţe.  De pildă dacă nu vrem
+să vedem erorile care pot fi generate de o comandă, putem să rugăm
+comanda să scrie aceste erori ``în'' fişierul <TT>/dev/null</TT>:
+<TT>ls -R /var/spool/ 2&gt;/dev/null</TT>.
+
+<P>
+Încă odată: protecţia accesului la pseudo-periferice se face în
+acelaşi fel, de către codul din sistemul de fişiere care caută în
+directoare.
+
+<P>
+
+<H1><A NAME="SECTION000120000000000000000">
+Sistemul de fişiere <TT>/proc</TT></A>
+</H1>
+
+<P>
+Prezentăm aici o altă spectaculoasă extensie a noţiunii de fişier
+(sau mai precis o altă construcţie care foloseşte interfaţa cu
+care se accesează fişierele): un sistem de fişiere în care se
+află... procese!
+
+<P>
+Această interfaţă a fost propusă în 1991 pentru sistemul Unix de
+la AT&amp;T, System V, iniţial pentru a facilita depanarea, dar a
+evoluat într-o metodă generală de interacţiune cu procesele care
+se execută pe un calculator.
+
+<P>
+Există o oarecare variabilitate în implementarea acestei
+construcţii, aşa că exemplul pe care îl prezentăm ar putea diferi
+oarecum pe sisteme specifice.
+
+<P>
+Lucrurile stau cam aşa: există un director <TT>/proc</TT>, iar în
+acest director există cîte un sub-director pentru fiecare proces
+care se execută pe sistem, numit ca identificatorul numeric al
+procesului (adică procesul ``1'' are un director numit ``1'').  În
+directorul fiecărui proces se află mai multe ``fişiere'' care
+descriu procesul respectiv.  Pentru un proces putem avea următoarele
+fişiere:
+
+<P>
+<DL>
+<DT><STRONG><TT>status</TT></STRONG></DT>
+<DD>informaţie despre starea procesului (posesori,
+memorie alocată, etc);
+</DD>
+<DT><STRONG><TT>psinfo</TT></STRONG></DT>
+<DD>informaţie folosită de comanda <TT>ps</TT>,
+pentru a descrie acest proces;
+</DD>
+<DT><STRONG><TT>ctl</TT></STRONG></DT>
+<DD>scriind în acest fişier anumite valori se poate
+influenţa comportarea procesului;
+</DD>
+<DT><STRONG><TT>map</TT></STRONG></DT>
+<DD>descrie harta memoriei virtuale a procesului; cum
+se traduce fiecare adresă virtuală într-una fizică;
+</DD>
+<DT><STRONG><TT>as</TT></STRONG></DT>
+<DD>memoria virtuală alocată procesului.
+</DD>
+<DT><STRONG>etc.</STRONG></DT>
+<DD>
+</DD>
+</DL>
+
+<P>
+Acest sistem de fişiere este folosit de debuggere: un debugger care
+vrea să depaneze procesul 100 va deschide fişierul
+<TT>/proc/100/as</TT> şi va scrie la adresa dorită (cu
+<TT>lseek(), write()</TT>) codul unui breakpoint!
+
+<P>
+Multe alte operaţii pot fi făcute pe fişiere în acest fel.  Linux
+are în plus în <TT>/proc</TT> pentru fiecare proces o listă a
+tuturor fişierelor pe care procesul le are deschise.
+
+<P>
+Protecţiile pe directoarele şi fişierele din <TT>/proc</TT> sunt
+puse în aşa fel încît interacţiunile între procese independente
+sunt strict controlate.  De exemplu directorul care corespunde
+fiecărui proces aparţine utilizatorului care a lansat procesul.
+
+<P>
+
+<H1><A NAME="SECTION000130000000000000000">
+Concluzie: programarea orientată pe obiecte</A>
+</H1>
+
+<P>
+Faptul că putem folosi interfaţa read-write-open-close-lseek-ioctl
+pentru creaturi atît de variate în constituţie, de la fişiere
+pînă la pseudo-periferice ne face să ne gîndim dacă nu poate fi
+folosită ca un mijloc universal de acces la informaţie.
+
+<P>
+Această interfaţă derivă simultan o fenomenală putere din
+generalitatea ei, pentru că orice tip de date poate fi văzut pînă
+la urmă ca o succesiune de octeţi, dar şi o fenomenală
+slăbiciune, pentru că semnificaţia acestor octeţi trebuie
+stabilită prin alte mijloace decît cele ale interfeţei.  Ce
+înseamnă să scriu un <I>x</I> ``în'' fişierul
+<TT>/dev/bwone0</TT>, asta numai cel care a scris driver-ul pentru
+placa grafică poate şti (şi cel care a citit documentaţia,
+desigur).
+
+<P>
+Funcţia <TT>ioctl()</TT>, despre care n-am spus mare lucru în acest
+articol, este folosită pentru a simula toate funcţiunile care nu se
+pot obţine cu uşurinţă doar cu funcţiile citate.  Un exemplu de
+acţiune care se obţine cu un <TT>ioctl()</TT> şi care este greu de
+implementat doar cu celelalte funcţii: pentru un driver al unităţii
+de bandă există o comandă <TT>ioctl()</TT> care îi spune să
+deruleze banda înapoi.
+
+<P>
+Varianta diametral opusă de proiectare este prezentă în interfaţa
+driver-elor de ``terminal'' din sistemele de operare Windows: o
+sumedenie de apeluri de sistem diferite pentru fiecare operaţie
+grafică, de la desenatul unui cerc, la şters fereastra.  Este greu
+de arbitrat între cele două alternative.  Lăsăm cititorul să
+gîndească la meritele fiecărei scheme.
+
+<P>
+Revenind la interfaţa uniformă din Unix: în tehnologia orientată
+pe obiecte această situaţie se rezumă astfel: avem o clasă de
+bază abstractă, care are ca metode virtuale <TT>open()</TT>,
+<TT>close()</TT>, <TT>read()</TT>, <TT>write()</TT>, <TT>ioctl()</TT>
+şi <TT>lseek()</TT>.  Fişierele, perifericele, pseudo-perifericele
+şi descrierile proceselor sunt toate clase derivate din această
+clasă de bază.
+
+<P>
+Deşi sistemul de operare Unix tradiţional (şi chiar şi variantele
+moderne) este scris în C, astfel de ``reminiscenţe'' ale
+programării orientate pe obiecte abundă.  Sperăm să putem vorbi
+în alte articole despre: variatele tipuri de sisteme de fişiere pe
+care Unix le poate folosi (în Linux există cel puţin 10!), despre
+sistemul de memorie virtuală şi despre STREAMS.  Toate aceste
+construcţii folosesc aceeaşi tehnologie, de a manipula a mulţime de
+obiecte diferite ca natură dar folosind o unică interfaţă.
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot114">... rapide.</A><A NAME="foot114"
+ HREF="2fs-html.html#tex2html4"><SUP>1</SUP></A>
+<DD>Dezavantajul este că o schimbare a drepturilor
+de acces nu are nici un efect pentru procesele care au deschis
+anterior fişierul!
+
+<DT><A NAME="foot189">... siere</A><A NAME="foot189"
+ HREF="2fs-html.html#tex2html8"><SUP>2</SUP></A>
+<DD>Un utilizator poate ``accesa'' discul doar cu un
+ciocan.
+
+<DT><A NAME="foot200">...chroot()</A><A NAME="foot200"
+ HREF="2fs-html.html#tex2html9"><SUP>3</SUP></A>
+<DD>În
+Unix nu numai noţiunea de ``director curent'' este alta pentru
+fiecare proces, dar fiecare proces are propriul lui ``director
+rădăcină''.
+
+<DT><A NAME="foot228">... aici</A><A NAME="foot228"
+ HREF="2fs-html.html#tex2html10"><SUP>4</SUP></A>
+<DD>Diferenţa este că cele
+bloc se pot accesa fizic numai în blocuri de informaţie de mărime
+fixă, iar cu cele caracter se pot transfera cantităţi arbitrare de
+informaţie.  Altă diferenţă este că se pot plasa sisteme de
+fişiere decît pe periferice de tip bloc.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

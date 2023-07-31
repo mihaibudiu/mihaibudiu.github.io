@@ -1,0 +1,1575 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Sistemul de Fişiere din Unix</TITLE>
+<META NAME="description" CONTENT="Sistemul de Fişiere din Unix">
+<META NAME="keywords" CONTENT="sistem-f-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<H1 ALIGN="CENTER">Sistemul de Fişiere din Unix</H1>
+<P ALIGN="CENTER"><STRONG>Mihai BUDIU -- budiu+ at cs.cornell.edu, mihaib@pub.ro 
+<BR>
+http://www.cs.cornell.edu/Info/People/budiu/budiu.html</STRONG></P>
+<P ALIGN="CENTER"><STRONG>iulie 1996</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect :</STRONG></DT>
+<DD>Sistemele de fişiere in Unix.
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>fişier, partiţie, i-nod, director, legătură.
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>noţiuni elementare despre: un sistem de operare,
+structuri de date, shell-ul Unix.
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html40"
+  HREF="sistem-f-html.html">Terminologia</A>
+<LI><A NAME="tex2html41"
+  HREF="#SECTION00030000000000000000">Cu ce obiecte lucrăm</A>
+<UL>
+<LI><A NAME="tex2html42"
+  HREF="#SECTION00031000000000000000">Partiţia</A>
+<LI><A NAME="tex2html43"
+  HREF="#SECTION00032000000000000000">Fişierele</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html44"
+  HREF="#SECTION00040000000000000000">Structura de date</A>
+<UL>
+<LI><A NAME="tex2html45"
+  HREF="#SECTION00041000000000000000">Blocul de boot</A>
+<LI><A NAME="tex2html46"
+  HREF="#SECTION00042000000000000000">Superblocul</A>
+<LI><A NAME="tex2html47"
+  HREF="#SECTION00043000000000000000">I-nodurile</A>
+<LI><A NAME="tex2html48"
+  HREF="#SECTION00044000000000000000">Zona de date</A>
+<LI><A NAME="tex2html49"
+  HREF="#SECTION00045000000000000000">Lista de blocuri libere</A>
+<LI><A NAME="tex2html50"
+  HREF="#SECTION00046000000000000000">Crearea unui sistem de fişiere</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html51"
+  HREF="#SECTION00050000000000000000">Operaţiile pe fişiere</A>
+<LI><A NAME="tex2html52"
+  HREF="#SECTION00060000000000000000">Directoarele</A>
+<UL>
+<LI><A NAME="tex2html53"
+  HREF="#SECTION00061000000000000000">Linkurile <TT>.</TT> şi <TT>..</TT></A>
+<LI><A NAME="tex2html54"
+  HREF="#SECTION00062000000000000000">Directorul rădăcină</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html55"
+  HREF="#SECTION00070000000000000000">Operaţiile pe directoare</A>
+<UL>
+<LI><A NAME="tex2html56"
+  HREF="#SECTION00071000000000000000">Găsirea i-nodului unui fişier</A>
+<LI><A NAME="tex2html57"
+  HREF="#SECTION00072000000000000000">Crearea şi distrugerea fişierelor</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html58"
+  HREF="#SECTION00080000000000000000">Programul <TT>fsck</TT></A>
+<LI><A NAME="tex2html59"
+  HREF="#SECTION00090000000000000000">Un experiment</A>
+<LI><A NAME="tex2html60"
+  HREF="#SECTION000100000000000000000">Răspuns:</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+Chiar şi cei mai naivi utilizatori ai unui calculator au de a
+face cu <EM>sistemul de fişiere</EM> în majoritatea timpului (termenul
+este consacrat în jargonul informatic); o mai apropiată privire
+asupra sa este salutară.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Terminologia</A>
+</H1>
+
+<P>
+``Sistem de fişiere'' (filesystem sau file system) este un
+termen folosit în mai multe accepţiuni distincte.  O preliminară
+revizie a acestora poate ajuta eliminarea unora din neclarităţile
+care ar surveni atunci cînd în discuţie sensurile se schimbă
+ne-explicit.
+
+<P>
+O primă accepţiune a ``sistemului de fişiere'' este cea a
+unei <EM>structuri de date</EM> creată pe un suport de memorie, de
+obicei permanent, cum e discul, în care utilizatorii memorează
+informaţii într-un mod care le face mai uşor de stocat, manipulat
+sau regăsit.
+
+<P>
+O a doua accepţiune este cea a unui <EM>set de operaţii</EM>
+care se pot face asupra structurilor de date de mai sus: crearea,
+ştergerea, scrierea şi citirea de fişiere.
+
+<P>
+În fine, ultima accepţiune într-un sens le înglobează pe
+cele două anterioare: astfel sistemul de fişiere este o bucată
+dintr-un sistem de operare (adică o parte dintr-un program, de fapt);
+această bucată este vizibilă utilizatorului ca un set de <EM>proceduri</EM> (<EM>apeluri de sistem</EM>, pentru a fi mai precişi) care
+operează cu fişiere, manipulînd o structură de date pe un suport
+permanent de memorie.
+
+<P>
+Sistemul de fişiere văzut ca o colecţie de proceduri nu
+trebuie musai să fie parte a unui sistem de operare, însă de obicei
+sistemele moderne conţin un sistem de fişiere, pentru că este
+extrem de util; chiar dacă în anumite sisteme ``micro-nucleu''
+sistemul de fişiere nu este parte a nucleului, el poate fi asimilat
+în sistemul de operare.
+
+<P>
+Vom încerca în secţiunile următoare să vedem cum arată
+sistemul de fişiere în Unix.  Pe cel de la MS-DOS îl vom folosi
+cîteodată pentru a exemplifica o vedere alternativă.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Cu ce obiecte lucrăm</A>
+</H1>
+
+<P>
+
+<H2><A NAME="SECTION00031000000000000000">
+Partiţia</A>
+</H2>
+
+<P>
+Pentru a simplifica discuţia vom presupune că sistemul de
+fişiere este plasat pe un disc.  Variantele pe bandă, în memorie
+(Ram-Disk) sau prin reţea nu sunt neapărat fundamental diferite.
+
+<P>
+Discul este la nivelul cel mai de jos pentru software o
+instalaţie extrem de complexă: el este gestionat de un procesor
+propriu, numit controler de disc, care ştie să facă oarece
+operaţii, dar care trebuie programat pentru asta.  Controlerul vede
+discul ca o sumă de <EM>partiţii</EM> independente.  (Vom folosi
+cîteodată termenul de ``disc'' pentru a înţelege ``partiţie'',
+pentru că partiţia este un ``disc logic''.)  Natura fizică a unui
+disc îl împarte în cilindrii, fiecare cilindru e împărţit în
+piste, fiecare pistă în sectoare, fiecare sector conţinînd mai
+mulţi octeţi.
+
+<P>
+Pentru a fi utilizabil, un disc trebuie să fie <EM>formatat</EM>.  Operaţia de formatare (realizată de obicei cu programul
+<TT>fdisk</TT>) înscrie pe o partiţie o sumedenie de informaţii: de
+exemplu pe fiecare pistă este marcat numărul ei de ordine; în acest
+fel cînd se încearcă citirea uneia se poate verifica dacă se află
+capul de citire unde trebuie (detectînd erorile datorate mecanicii
+deficiente).
+
+<P>
+Deşi subiectul este realmente fascinant, nu vom insista
+asupra relaţiilor între aceste părţi, pentru că sistemul de
+fişiere se construieşte de obicei pe o structură ceva mai simplă,
+care este oferită de <EM>driverul de disc</EM>.  Driverul este o
+colecţie de proceduri care ştie să manipuleze partiţiile, pistele
+şi toate alea, însă transformă discul într-un <EM>vector de
+blocuri</EM>, fiecare cu mai mulţi octeţi.  Pe scurt, driverului îi
+indici un număr de bloc iar el decide pe care sector, pistă,
+cilindru se găseşte acest bloc.  Dacă vrei să citeşti ceva din
+bloc, indici blocul şi numărul octetului din bloc iar driverul
+găseşte unde se află octetul pe discul fizic şi îl ia de acolo.
+
+<P>
+De ce blocuri şi nu octeţi?  Pentru că raportul duratelor
+între a citi un octet şi a citi 100 de octeţi <EM>consecutivi</EM> nu
+este de 100 la 1 ci undeva între 1 şi 2.  Asta pentru că foarte
+mult durează să găseşti primul octet; citirea următorilor este
+destul de rapidă.  De asemenea, s-a observat că lumea rareori
+citeşte fişierele complet aleator: un octet aici altul colea; in
+general sunt accesaţi împreună mai mulţi consecutivi.  De aceea
+driverul face toate operaţiile pe disc în termeni de blocuri de
+mărime egală.
+
+<P>
+Cît de mari?  Depinde de sistem.  De obicei între jumătate
+de kilo octet şi 8k.
+
+<P>
+Iată deci cum este plasat sistemul de fişiere în cadrul
+sistemului de operare:
+
+<P>
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="fs_position"></A><A NAME="377"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 1:</STRONG>
+Sistemul de Fisiere in Sistemul de Operare</CAPTION>
+<TR><TD><IMG
+ WIDTH="318" HEIGHT="250" BORDER="0"
+ SRC="img1.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=7cm\epsffile{fs_position.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Sistemul de fişiere are deci la dispoziţie mai multe
+partiţii.  Fiecare partiţie este văzută ca un array de blocuri
+independente.  Citirea/scrierea unui bloc este realizată de driverul
+de disc, de serviciile căruia sistemul de fişiere se foloseşte.
+(În realitate din motive de eficienţă între sistemul de fişiere
+şi driver de obicei se mai plasează un nivel: <EM>cache</EM>-ul de
+disc, care memorează blocurile mai frecvent utilizate în memorie).
+În mod normal pe fiecare partiţie se construieşte cîte un sistem
+de fişiere independent; din această cauză vom simplifica discuţia
+presupunînd că avem la dispoziţie una singură.
+
+<P>
+În DOS partiţiile devin ``discuri logice'' distincte: C: D:
+E:, etc.  În Unix ele sunt specificate prin ``fişiere speciale''
+aflate în directorul <TT>/dev</TT>, dar pentru folosire sunt <EM>montate</EM> una peste alta.  De ajuns pentru moment despre partiţii.
+
+<P>
+
+<H2><A NAME="SECTION00032000000000000000">
+Fişierele</A>
+</H2>
+
+<P>
+Sistemul de fişiere trebuie să ne ofere operaţii de: creare
+şi distrugere a fişierelor, numire a fişierelor (de fiecare dată
+cînd ai de-a face cu mai multe obiecte de acelaşi fel se pune
+problema de a le distinge prin nume diferite), de modificare şi
+inspectare a conţinutului fişierelor.
+
+<P>
+Modurile în care se pot realiza aceste operaţii sunt
+nenumărate, influenţate fiind de feluritele proprietăţi pe care le
+dorim.  De exemplu sistemul de operare CP/M (din care a fost derivat
+şi MS/DOS 1.0) are un singur <EM>director</EM> (vom vedea mai jos un pic
+ce este un director în realitate) în care se află toate fişierele.
+Din cauza asta oricare două fişiere sunt distinse numai prin numele
+lor, deci nu putem avea pe acelaşi disc două fişiere cu nume
+identice.
+
+<P>
+Unix, şi MS-DOS (care a preluat de la el ideea) folosesc o
+<EM>ierarhie</EM> (un arbore) de directoare, fiecare avînd un nume la
+rîndul lui.  Fiecare fişier ``se află'' într-un director, în
+directoare diferite putînd exista fişiere la fel numite.
+Identificarea unui fişier se face indicînd pe lîngă numele lui,
+numele directoarelor prin care se ajunge la el (<EM>calea</EM> -- <EM>path</EM> pînă la el).
+
+<P>
+Am aflat cam cum <EM>numim</EM> fişierele.  Mai trebuie să
+ştim ce putem <EM>face</EM> cu ele.  Întrebarea nu e chiar banală; de
+exemplu limbajul Pascal oferă un model de fişier ``structurat'':
+fiecare fişier este un array de lungime teoretic nelimitată de
+obiecte identice (record de obicei).  Se pot imagina cu uşurinţă
+modele mai complicate de fişiere (unele foarte utile în aplicaţii
+de baze de date); de exemplu fişiere de ``perechi'' în care fiecare
+dată are o ``cheie'' iar accesele se fac după valorile cheii:
+``găseşte cîmpul cu cheia 100'', ``incrementează cîmpul cu cheia
+<B>Bibi</B>''.
+
+<P>
+Unix oferă probabil cel mai simplu model de fişier: un array
+de octeţi arbitrari.  Acelaşi lucru îl face şi DOS-ul, distingînd
+cîteodată între fişiere text şi fişiere ``oarecare''.
+
+<P>
+Deşi ar mai fi multe de spus, să ne concentrăm acum asupra
+modului în care sunt realizate aceste operaţii.  Deşi felurite
+versiuni şi variante ale Unix-ului pot proceda în realitate în mod
+diferit, vom vedea cum arată implementările ``clasice''.  Mai
+important decît să ştim cum se fac lucrurile în detaliu este să
+ştim cum le-am putea face noi.
+
+<P>
+Cum s-a ajuns la structura pe care o vom desfăşura mai jos
+din cerinţele pe care le-am schiţat mai sus, nu vă va fi foarte
+limpede pînă nu veţi încerca să rezolvaţi aceeaşi problemă în
+alt fel: atunci veţi vedea cum se justifică unele construcţii care
+par artificiale.
+
+<P>
+O ultimă observaţie preliminară: din comunicările
+prezentate la conferinţa USENIX (a utilizatorilor de Unix), peste
+40% sunt legate de sisteme de fi'siere: implement'ari, optimiz'ari,
+arhitecturi.  Deci domeniul este în plină evoluţie.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Structura de date</A>
+</H1>
+
+<P>
+Sistemul de fişiere foloseşte ca unitate de bază blocul de
+pe partiţie.  Cînd este nevoie de spaţiu se alocă un bloc întreg,
+chiar dacă e nevoie de mai puţin.  Asta simplifică gestiunea
+spaţiului liber.  Iată cum sunt folosite blocurile de pe o partiţie
+pentru a crea un sistem de fişiere:
+
+<P>
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="fs_partition"></A><A NAME="383"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 2:</STRONG>
+Structura unei partiţii Unix cu sistem de fişiere</CAPTION>
+<TR><TD><IMG
+ WIDTH="635" HEIGHT="54" BORDER="0"
+ SRC="img2.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=14cm\epsffile{fs_partition.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H2><A NAME="SECTION00041000000000000000">
+Blocul de boot</A>
+</H2>
+
+<P>
+Nucleul însuşi al sistemului de operare este de obicei
+ţinut sub forma unui fişier.  Însă procedurile care manipulează
+fişiere sunt parte a nucleului, aşa că pentru a porni (boot)
+sistemul de operare însuşi nu se pot folosi operaţiile pe fişiere,
+căci ele nu sunt încă citite de pe disc!  Din această cauză
+nucleul trebuie să fie accesibil şi direct, fără a fi nevoie să
+fie citit ca fişier.
+
+<P>
+Blocul de boot conţine tocmai informaţiile necesare pentru a
+citi nucleul: de obicei o listă a blocurilor de pe disc ocupate de
+fişierul-nucleu.  Cînd calculatorul porneşte un program mic (din
+ROM de exemplu) citeşte nucleul în memorie folosind aceste
+informaţii.
+
+<P>
+
+<H2><A NAME="SECTION00042000000000000000">
+Superblocul</A>
+</H2>
+
+<P>
+Superblocul este rezervat pentru a descrie cum sistemul de
+fişiere foloseşte partiţia.  Informaţiile pe care le cuprinde
+sunt:
+
+<P>
+
+<UL>
+<LI>un <EM>număr magic</EM> (o constantă rezervată) pentru a indica tipul
+sistemului de fişiere (ex.: sistem de fişiere SCO Unix);
+</LI>
+<LI>mărimea partiţiei;
+</LI>
+<LI>numărul de i-noduri (fişiere);
+</LI>
+<LI>numărul de i-noduri ocupate;
+</LI>
+<LI>numărul de blocuri libere;
+</LI>
+<LI>lista blocurilor libere;
+</LI>
+<LI>starea partiţiei (este cache-ul salvat pe disc?);
+</LI>
+<LI>i-nodul directorului rădăcină;
+</LI>
+<LI>etc.
+</LI>
+</UL>
+
+<P>
+Superblocul dă o descriere a informaţiilor <EM>globale</EM>
+referitoare la întreaga partiţie care conţine un sistem de
+fişiere.  Le vom pricepe cînd vom şti de fapt despre ce este vorba.
+
+<P>
+
+<H2><A NAME="SECTION00043000000000000000">
+I-nodurile</A>
+</H2>
+
+<P>
+În Unix numărul de fişiere care se pot afla la un moment
+dat pe un sistem de fişiere este limitat precis, încă de la crearea
+sistemului de fişiere (vedeţi secţiunea despre <TT>mkfs</TT>)!
+Fiecare fişier are un <EM>i-nod</EM> (i-node sau inode în engleza,
+abreviere de la Information Node) asociat, care conţine aproape toate
+informaţiile legate de acel fişier, mai puţin <EM>conţinutul</EM> şi
+<EM>numele</EM>.  Unele i-noduri sunt nefolosite la un moment dat.
+
+<P>
+Chiar dacă pe un disc mai există blocuri libere, în
+momentul cînd au fost folosite toate i-nodurile nu se mai pot crea
+noi fişiere.  Discul este plin.
+
+<P>
+Să ne uităm mai aproape la un i-nod:
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="107"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 3:</STRONG>
+Inod.</CAPTION>
+<TR><TD><IMG
+ WIDTH="447" HEIGHT="296" BORDER="0"
+ SRC="img3.png"
+ ALT="\begin{figure}{h}
+\begin{center}
+\begin{tabular}{\vert c\vert} \hline
+este i-nod...
+...\lq leg\u aturi'' (reference count) \\ \hline
+\end{tabular}\end{center}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H3><A NAME="SECTION00043100000000000000">
+Cîmpurile i-nodului</A>
+</H3>
+
+<P>
+Iată o scurtă descriere a semnificaţiei fiecăruia din
+cîmpurile de mai sus (nu uitaţi: anumite implementări pot avea şi
+altele).  Cele mai multe cîmpuri pot fi văzute cu ajutorul comenzii
+<TT>ls</TT>.  <TT>ls</TT> are ca argumente nume de fişiere, nu i-noduri, dar cum
+fiecare fişier are un singur i-nod (vom vedea cum se găseşte ce
+i-nod corespunde unui anumit nume mai încolo), <TT>ls</TT> ştie de unde să
+ia informaţiile.
+
+<P>
+Pentru a vedea ce i-nod corespunde unui fişier folosiţi <TT>ls
+-i</TT>; de exemplu la mine acasă:
+
+<P>
+<PRE>
+$ ls -i /bin/b*
+ 22363 /bin/bash      22905 /bin/binmail
+</PRE>
+
+<P>
+Deci fişierul <TT>/bin/bash</TT> are i-nodul cu numărul 22363, iar fişierul
+<TT>/bin/binmail</TT> are i-nodul 22905.
+
+<P>
+
+<H3><A NAME="SECTION00043200000000000000">
+este i-nodul liber?</A>
+</H3>
+
+<P>
+Aici este marcat un i-nod liber.  La crearea unui nou fişier
+un i-nod liber este alocat, marcat ocupat, şi cîmpurile celelalte
+înscrise corespunzător.  La ştergerea unui fişier i-nodul devine
+liber (atenţie: ``ştergerea'' în Unix este un fenomen destul de
+complicat!).
+
+<P>
+
+<H3><A NAME="SECTION00043300000000000000">
+uid (User IDentifier)</A>
+</H3>
+
+<P>
+Fiecare fişier în Unix aparţine cuiva.  Un identificator
+numeric asociat celui care posedă fişierul (de obicei cel care l-a
+creat) este marcat aici.  Al treilea cîmp de la <TT>ls -l</TT> indică
+utilizatorul.  Dacă vreţi valoarea numerică a UID daţi <TT>ls -ln</TT>.
+
+<P>
+Identificatorul acesta ridică oarecari probleme cînd un
+sistem de fişiere este folosit în reţea (ca sistemul NFS -- network
+file system), pentru că pe un calculator utilizatorul cu codul 10
+poate fi cineva, iar pe alt calculator altcineva!  (Aceasta este o
+deficienţă a Unix-ului care nu a fost proiectat originar pentru a
+opera în reţea -- cîrpelile nu merg prea bine.)
+
+<P>
+<PRE>
+$ ls -l /bin/bash
+-rwxr-xr-x   1 root     bin        279556 Feb  7  1994 /bin/bash
+               ^^^^     ^^^
+               UID      GID
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION00043400000000000000">
+gid (Group ID)</A>
+</H3>
+
+<P>
+În Unix utilizatorii fac parte din unul sau mai multe <EM>grupuri</EM>.  Fiecare fişier aparţine şi el unui anume grup, care este
+indicat aici.  Consideraţii asemănătoare cu cele de la UID se
+aplică şi aici.  Al patrulea cîmp din <TT>ls -ln</TT> este GID, sub
+formă numerică.
+
+<P>
+
+<H3><A NAME="SECTION00043500000000000000">
+drepturile</A>
+</H3>
+
+<P>
+Puteţi vedea drepturile în coloanele 2-10 din ceea ce
+tipăreşte <TT>ls -l</TT>.
+
+<P>
+<PRE>
+$ ls -l /bin/bash
+-rwxr-xr-x   1 root     bin        279556 Feb  7  1994 /bin/bash
+ ^^^^^^^^^
+ drepturile
+</PRE>
+
+<P>
+Drepturile vin sub forma a trei triplete de valori Da/Nu.
+Primul triplet arată ce poate face cu fişierul <EM>posesorul</EM> lui
+(un proces al unui utilizator cu UID egal cu cel al fişierului).  Al
+doilea arată ce pot face utilizatorii din grupul fişierului.  Al
+treilea triplet arată ce poate face restul lumii.
+
+<P>
+Fiecare grup de trei valori Da/Nu arată aşa:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">r</TD>
+<TD ALIGN="LEFT">w</TD>
+<TD ALIGN="LEFT">x</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Read</TD>
+<TD ALIGN="LEFT">Write</TD>
+<TD ALIGN="LEFT">eXecute</TD>
+</TR>
+<TR><TD ALIGN="LEFT">Citeşte</TD>
+<TD ALIGN="LEFT">Scrie</TD>
+<TD ALIGN="LEFT">Execută</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Ele arată dacă fişierul poate fi citit, modificat sau
+respectiv executat (pentru fişiere de tip director <EM>căutat</EM>) de
+persoana respectivă.  Pentru un exemplu concret să luăm un fişier
+cu drepturile:
+
+<P>
+<PRE>
+r-x-w---x
+\_/\_/\_/
+  \  \  \ restul lumii
+   \  \__grupul
+    \___posesorul
+</PRE>
+
+<P>
+Asta înseamnă că:
+
+<P>
+
+<UL>
+<LI>posesorul fişierului poate: citi şi executa acest fişier, dar
+<EM>nu</EM> modifica;
+
+<P>
+</LI>
+<LI>cei din grupul fişierului: pot modifica acest fişier, dar <EM>nu</EM>-l pot citi sau executa;
+
+<P>
+</LI>
+<LI>ceilalţi: pot doar executa fişierul, dar <EM>nu</EM> citi sau
+modifica.
+</LI>
+</UL>
+
+<P>
+
+<H3><A NAME="SECTION00043600000000000000">
+atributele tss</A>
+</H3>
+
+<P>
+Fişierele mai au trei atribute de forma Da/Nu (biţi).
+Acestea se numesc: bitul SUID, bitul SGID şi bitul <EM>sticky</EM>
+(lipicios).  Multă informaţie este condensată în aceşti trei
+biţi.
+
+<P>
+
+<UL>
+<LI>bitul SUID (Set User ID): un fişier cu acest bit pus pe Da
+arată faptul că un execuţia acestui fişier dă naştere unui
+proces care este posedat de posesorul <EM>fişierului</EM> şi nu de
+posesorul <EM>procesului</EM> care execută fişierul (discuţia
+depăşeşte cadrul sistemelor de fişiere aşa că ne oprim aici cu
+explicaţiile; poate vom reveni cu o altă ocazie).  Un bit SUID este
+indicat la <TT>ls -l</TT> printr-un <TT>s</TT> în loc de <TT>x</TT>:
+
+<P>
+<PRE>
+$ ls -l /bin/mount
+-rwsr-xr-x   1 root     bin         21508 Jan 28  1994 /bin/mount
+   ^
+   SUID
+</PRE>
+
+<P>
+Cînd utilizatorul <TT>mihai</TT> va executa acest fişier, procesul va
+avea UID <TT>root</TT>, şi nu <TT>mihai</TT>, din cauza bitului SUID.
+
+<P>
+</LI>
+<LI>bitul SGID (Set Group ID) are o funcţie similară, acţionînd
+asupra grupului procesului:
+
+<P>
+<PRE>
+$ ls -l /usr/bin/convfont
+-rwsr-sr-x   1 root     root         2272 Mar 16  1994 convfont
+   ^  ^
+   SUID si SGID
+</PRE>
+
+<P>
+Cum se vede şi din descriere, aceşti biţi nu au sens decît
+dacă fişierul este executabil.  Pentru fişiere ne-executabile ei
+sunt folosiţi pentru a indica faptul că folosirea fişierului se
+poate face <EM>numai</EM> după <EM>încuierea (lock)</EM> lor.  (Acesta
+este un mecanism care nu permite accesul simultan a două procese la
+un singur fişier.)  Aceşti biţi se vad cu litere mari <TT>S</TT>.
+
+<P>
+Biţii SUID la directoare indică faptul că toate fişierele
+create în acele directoare moştenesc drepturile de la director şi
+nu de la procesul care le crează.
+
+<P>
+Ar mai fi cîte ceva de spus despre lock-uri, dar ar merita un
+articol în sine.  Să mergem mai departe cu i-nodul.
+
+<P>
+</LI>
+<LI>bitul Sticky (lipicios), notat cu <TT>t</TT>
+
+<P>
+La fişiere executabile iniţial acest bit indica nucleului
+să optimizeze folosirea fişierului: odată executat (deci citit în
+memorie) nu mai trebuie scos de acolo, chiar dacă procesul se
+termină, pentru că probabil va fi folosit din nou în curînd.
+
+<P>
+Pentru directoare el indică o calitate foarte interesantă:
+în directoarele în care oricine poate scrie (<TT>----w-</TT>), cum e
+<TT>/tmp</TT>, teoretic oricine poate şterge orice fişier (după cum
+vom vedea un pic mai jos).  Un bit lipicios pe un astfel de director
+va permite însă ştergerea unui fişier <EM>numai</EM> de către
+posesorul lui (de către un proces avînd acelaşi UID cu i-nodul).
+
+<P>
+<PRE>
+$ ls -ld /tmp
+drwxrwxrwt   3 root     root         1024 Jul 26 00:10 /tmp/
+         ^
+         bit sticky
+</PRE>
+</LI>
+</UL>
+
+<P>
+Modificatorul <TT>d</TT> al lui <TT>ls</TT> este necesar pentru a lista
+drepturile directorului tmp şi nu ale tuturor fişierelor cuprinse
+în el.
+
+<P>
+
+<H3><A NAME="SECTION00043700000000000000">
+tipul fişierului</A>
+</H3>
+
+<P>
+<TT>ls -l</TT> va scrie tipul unui fişier în prima literă
+afişată.  Aceasta poate fi într-un Unix normal:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT">d</TD>
+<TD ALIGN="LEFT">pentru un director</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>-</TT></TD>
+<TD ALIGN="LEFT">pentru un fişier ordinar</TD>
+</TR>
+<TR><TD ALIGN="LEFT">l</TD>
+<TD ALIGN="LEFT">pentru o legătură simbolică (<EM>symbolic link</EM>)</TD>
+</TR>
+<TR><TD ALIGN="LEFT">s</TD>
+<TD ALIGN="LEFT">pentru o <EM>mufă (socket)</EM></TD>
+</TR>
+<TR><TD ALIGN="LEFT">c</TD>
+<TD ALIGN="LEFT">pentru un fişier special de tip caracter</TD>
+</TR>
+<TR><TD ALIGN="LEFT">b</TD>
+<TD ALIGN="LEFT">pentru un fişier special de tip bloc</TD>
+</TR>
+<TR><TD ALIGN="LEFT">p</TD>
+<TD ALIGN="LEFT">pentru o <EM>ţeavă cu nume (named pipe)</EM></TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Cele mai multe dintre aceste tipuri de fişiere sunt de fapt
+doar nişte nume asociate unor părţi ale nucleului, şi nu vor fi
+discutate în acest articol.  Primele trei au într-adevăr legătură
+cu sistemele de fişiere, dar numai despre primele două vom vorbi în
+acest articol, pentru că altfel iese prea mare.
+
+<P>
+
+<H3><A NAME="SECTION00043800000000000000">
+timpii</A>
+</H3>
+
+<P>
+Fiecare i-nod înregistrează în formatul tipic Unix (numit
+<TT>time_t</TT>, de obicei un întreg lung reprezentînd numărul de
+secunde scurse de la 1 ianuarie 1970) data (şi ora) creării,
+accesului şi modificării fişierului.  Timpii se pot obţine astfel
+cu <TT>ls</TT>:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3>
+<TR><TD ALIGN="LEFT"><TT>ls -l</TT></TD>
+<TD ALIGN="LEFT">timpul creării</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>ls -ul</TT></TD>
+<TD ALIGN="LEFT">timpul ultimului acces</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><TT>ls -lc</TT></TD>
+<TD ALIGN="LEFT">timpul ultimei modificări</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+
+<H3><A NAME="SECTION00043900000000000000">
+lungimea fişierului</A>
+</H3>
+
+<P>
+în octeţi este indicată de asemenea de <TT>ls -l</TT>:
+
+<P>
+<PRE>
+$ ls -l /bin/bash -rwxr-xr-x 1 root bin 279556 Feb 7 1994 /bin/bash
+                                        ^^^^^^ bash are 273K
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION000431000000000000000">
+lista blocurilor folosite</A>
+</H3>
+
+<P>
+nu poate fi văzută cu <TT>ls</TT>.  Ea este ţinută într-o formă foarte
+ingenioasă care permite accesul extrem de rapid în orice punct al
+fişierului.  Această listă indică pentru fiecare bloc din fişier
+ce bloc din partiţie corespunde (fiecare prim bloc din fiecare
+fişier ocupă alt loc în partiţie, fireşte).
+
+<P>
+Pentru a indica ce blocuri compun un fişier se folosesc
+<EM>pointeri</EM> la blocuri.  Un pointer la un bloc este pur şi simplu
+numărul de pe partiţie al unui bloc.  Pentru că blocul 0 nu poate
+fi al vreunui fişier (fiind blocul de boot) avem la dispoziţie şi o
+valoare care poate indica <EM>lipsa</EM> unui bloc.  (Vom vedea că in
+Unix un fişier poată avea ``găuri'': blocuri lipsă în mijloc!)
+
+<P>
+Schema este extrem de ingenioasă, dar un pic mai complicat de
+descris în cuvinte.  Pe scurt i-nodul conţine:
+
+<P>
+
+<UL>
+<LI>pointeri spre primele 10 blocuri ale fişierului;
+
+<P>
+</LI>
+<LI>dacă fişierul e mai lung de 10 blocuri, un pointer spre un bloc
+(numit <EM>blocul simplu indirect</EM>) în care se pun pointerii spre
+următoarele blocuri.  Cît de mulţi pointeri sunt în acest bloc
+depinde de mărimea blocului şi de mărimea pointerului (de obicei 32
+de biţi, dar poate mai mult!).
+
+<P>
+</LI>
+<LI>dacă fişierul are mai multe blocuri decît se pot reprezenta
+astfel, urmează un pointer la un bloc în care sunt pointeri la
+blocuri care ţin pointeri la blocurile fişierului: indirectare
+dublă.
+
+<P>
+</LI>
+<LI>în fine, dacă nici atît nu ajunge, urmează o indirectare
+triplă.
+</LI>
+</UL>
+
+<P>
+O schemă aproximativă ar arăta aşa:
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="fs_blocklist"></A><A NAME="389"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 4:</STRONG>
+Pointerii spre blocuri</CAPTION>
+<TR><TD><IMG
+ WIDTH="451" HEIGHT="507" BORDER="0"
+ SRC="img4.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=10cm\epsffile{fs_blocklist.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Cîte blocuri se pot indica astfel?  Dacă într-un bloc
+încap X pointeri avem lungimea maximă pentru un fişier:
+
+<P>
+10 + X + X*X + X*X*X blocuri
+
+<P>
+Pentru nişte valori tipice: bloc de 1024 octeţi şi pointer
+pe 4 octeţi avem X=1024/4=256.  Atunci valoarea de mai sus devine
+
+<P>
+(10 + 256 + 256*256 + 256*256*256) * 1K = 
+(10 + 256 + 65536 + 16777216) K &gt;= 16 Giga octeţi.
+
+<P>
+Pînă de curînd asta era destul de mult pentru un singur
+fişier.  Oricum, introducerea unui al patrulea nivel de indirectare
+ar ridica valoarea la 4 Tera octeţi, ceea ce ar trebui să ajungă
+pentru o vreme...
+
+<P>
+Din virtuţile acestei scheme: fişiere scurte rapide şi
+compacte (oricare din primele 10 blocuri se accesează imediat),
+dimensiune maximă foarte mare, acces rapid la orice bloc (maximum
+trei blocuri citite de pe disc pentru indirectări), fişiere care pot
+avea găuri.
+
+<P>
+
+<H3><A NAME="SECTION000431100000000000000">
+numărul de legături</A>
+</H3>
+
+<P>
+În Unix un fişier se poate ``afla'' simultan în mai multe directoare!
+Cîte apariţii distincte are el este indicat de numărul de
+legături.  De exemplu:
+
+<P>
+<PRE>
+$ ls -ld /usr/bin
+drwxr-xr-x   2 root     bin          7168 Jul 23 12:45 /usr/bin
+             ^
+             numarul de legaturi este 2!
+</PRE>
+
+<P>
+Cu alte cuvinte directorul <TT>/usr/bin</TT> este prezent în două
+directoare!  Vom vedea mai jos de ce.
+
+<P>
+Cu asta am epuizat structura i-nodului clasic.
+
+<P>
+
+<H2><A NAME="SECTION00044000000000000000">
+Zona de date</A>
+</H2>
+
+<P>
+Să revenim la studiul partiţiei: organizarea ei în sistem
+de fişiere.  După blocurile în care se ţin i-nodurile toate
+blocurile care urmează sunt alocate pentru a servi la memorarea
+conţinutului fişierelor.  Aceste blocuri sunt la început toate
+libere: nici unul nu este indicat de i-nodul vreunui fişier ca
+aparţinînd acelui fişier.  Pe măsură ce se scriu date în
+fişiere şi acestea cresc, se iau blocuri libere şi se adaugă
+fişierelor, făcînd i-nodurile să puncteze spre ele.
+
+<P>
+Cînd fişierele sunt şterse (sau trunchiate) blocurile revin
+pe lista blocurilor libere.
+
+<P>
+
+<H2><A NAME="SECTION00045000000000000000">
+Lista de blocuri libere</A>
+</H2>
+
+<P>
+Sistemul de fişiere ţine şi o listă a blocurilor libere,
+pentru a se aproviziona rapid cînd are nevoie să crească
+fişierele.  Cînd lista este goală discul este plin (în alt fel
+decît atunci cînd nu mai sunt i-noduri).
+
+<P>
+Lista blocurilor libere este şi ea structurată într-un mod
+inteligent: în superbloc există un pointer la un prim bloc liber.
+Acesta este plin cu pointeri la alte blocuri libere.  Ultimul dintre
+blocurile arătate de el conţine la rîndul lui pointeri spre blocuri
+libere ş.a.m.d.
+
+<P>
+<PRE>
+superbloc---&gt;primul bloc liber /--&gt;bloc liber /--&gt;bloc liber
+                     | | | | | |   | | | | |  |   | | | | |
+                     v v v v \-/   v v v v \--/   v v v v ...
+                    pointeri spre blocuri libere
+</PRE>
+
+<P>
+Această listă arată ca un arbore dezechilibrat: numai
+nodurile de pe ramura cea mai din dreapta au fii; toate celelalte sunt
+frunze.  De ce schema asta?  Pentru că modificarea listei se face de
+la început: se iau din blocurile libere punctate de primul, iar cînd
+toate s-au terminat mai puţin ultimul (din cele punctate de primul),
+chiar primul bloc liber se alocă şi superblocul punctează spre cel
+care era ultimul.  Se procedează invers pentru eliberarea de blocuri.
+
+<P>
+Schema este mai eficientă decît o listă simplu
+înlănţuită pentru că nu trebuie citit decît un bloc liber
+(primul) pentru a aloca X pointeri: cei pe care îi conţine.
+
+<P>
+
+<H2><A NAME="SECTION00046000000000000000">
+Crearea unui sistem de fişiere</A>
+</H2>
+
+<P>
+Deşi utilizatorii de DOS pot avea această impresie, nu orice
+partiţie trebuie să conţină un sistem de fişiere!  Ba chiar
+Unix-ul foloseşte în mod curent o partiţie (de <EM>swap</EM>) pentru a
+crea mecanismul de memorie virtuală.  Pe acea partiţie nu se află
+fişiere.
+
+<P>
+Operaţia prin care pe o partiţie formatată se crează un
+sistem de fişiere se numeşte în Unix <TT>mkfs</TT> (MaKe FileSystem) iar
+în DOS <TT>format</TT> (după cum se vede în DOS distincţia între
+partiţie şi sistem de fişiere nu este prea clară nici la nivel de
+nume al programelor utilitare).
+
+<P>
+Programul <TT>mkfs</TT> foloseşte driverul de disc pentru a crea
+blocul de boot, superblocul şi a iniţializa toate i-nodurile şi
+blocurile de date ca fiind goale.  Abia după ce el este executat
+poate fi folosit sistemul de fişiere de pe partiţie, <EM>montîndu</EM>-l
+(cu comanda-apel de sistem <TT>mount</TT>).
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Operaţiile pe fişiere</A>
+</H1>
+
+<P>
+După ce am aflat atîtea despre structura de date cu care se
+descrie un fişier putem să ne imaginăm cu uşurinţă cum se
+implementează operaţiile de citire/scriere în fişiere.  Să
+modelăm operaţia de scriere, care este mai complicată.
+
+<P>
+Să zicem că vrem să scriem octetul nr. 100000 cu valoarea 1
+într-un anumit fişier.
+
+<P>
+Prima etapă, de care încă n-am spus nimic, este de a găsi
+i-nodul fişierului cînd i se dă numele.  (Secţiunea despre
+directoare a articolului de faţă numai cu asta se ocupă.)  Această
+etapă verifică şi dacă am permisiunea de a face operaţia cerută
+pe acest fişier.  Dacă nu am voie, operaţia nu se face şi apelul de
+sistem care a invocat-o se termină cu o eroare.
+
+<P>
+După ce am găsit i-nodul, trebuie să găsim blocul pe disc
+în care e octetul nr. 100000.  Ştim cîţi octeţi sunt într-un
+bloc, aşa că aflăm al cîtulea bloc al fişierului este cel care
+are octetul 100000.  Presupunînd, ca mai sus, că un bloc are 1024 de
+octeţi, obţinem blocul 100000/1024 = 98 (rotunjind în sus).  Ca să
+ajung la blocul 98 trebuie să citesc pointerii din blocul de pointeri
+simplu indirecţi (el conţine pointerii pentru blocurile 11-266).
+Şi anume trebuie să caut al 88-lea pointer (nu uitaţi că primele
+10 blocuri au proprii pointeri).  Deci mă uit la blocul cu pointerii
+spre blocuri.
+
+<P>
+Dacă fişierul a fost mai scurt de 10 blocuri pînă acum,
+acest bloc (cel simplu-indirect) nu exista!  În acest caz îl aloc de
+pe lista de blocuri libere şi îl umplu cu pointeri zero, ca să
+arăt că e gol.
+
+<P>
+După ce am găsit blocul simplu-indirect mă uit la al 88-lea
+pointer din el.  Dacă e nenul, înseamnă că blocul 98, pe care
+vreau să-l modific, făcea parte deja din fişier.  Altfel trebuie
+să îl aloc tot eu.  O fac dacă e nevoie, înscriind în blocul
+simplu-indirect la pointerul 88 adresa blocului 98, proaspăt alocat.
+Blocul nou alocat îl umplu cu zerouri.
+
+<P>
+În fine, blocul la care am ajuns conţine octetul cu nr.
+100000.  Al cîtulea este?  Aflu făcînd restul împărţirii 100000
+la 1024 = 672.  Deci în acest bloc scriu în octetul 672 valoarea 1,
+după care pun blocul la loc pe disc.
+
+<P>
+Dacă lungimea fişierului era mai mică de 100000 (trecută
+în i-nod) o aduc la această valoare.  Pun şi timpul accesului şi
+modificării fişierului la ora curentă.
+
+<P>
+Dacă a fost nevoie pe drum şi nu s-a putut aloca un bloc
+liber, operaţia iar a eşuat.
+
+<P>
+Aţi prins schema?  Încercaţi să o urmăriţi pe hîrtie cu
+creionul.
+
+<P>
+Observaţi că nu este obligatoriu ca blocurile 1-97 să
+existe!  Un fişier poate avea doar octetul 100000, ocupînd pe disc
+doar două blocuri (cel simplu indirect şi cel cu octetul) în loc
+să aibă 99 de blocuri cu zerouri!
+
+<P>
+Aceasta este semantica operaţiei de scriere în fişier în
+Unix.  Citirea unui octet care nu există se soldează cu citirea unui
+zero.
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Directoarele</A>
+</H1>
+
+<P>
+Observaţi un lucru interesant: dacă ştii i-nodul unui
+fişier ştii toate informaţiile importante despre el şi ai acces la
+tot conţinutul lui.
+
+<P>
+Directoarele în Unix au un singur rol: să asocieze fiecărui
+<EM>nume</EM> de fişier un i-nod.  Se spune despre directoare că
+``leagă nume de i-noduri''.  Directoarele sunt din multe privinţe
+nişte fişiere.  Deosebirea esenţială însă este că directoarele
+sunt nişte fişiere care au <EM>o structură</EM>: sistemul de fişiere
+interpretează el însuşi octeţii care formează conţinutul unui
+director şi nu permite utilizatorului manipularea lor arbitrară.
+
+<P>
+Pe scurt un director este un vector de legături (links).
+Orice director arată aşa:
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="fs_dir"></A><A NAME="395"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 5:</STRONG>
+Link şi Director</CAPTION>
+<TR><TD><IMG
+ WIDTH="547" HEIGHT="133" BORDER="0"
+ SRC="img6.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{fs_dir.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Pe lîngă un bit care distinge link-urile folosite de cele
+libere (link-uri libere apar din cauza lui <TT>rm</TT> -- ştergerea),
+link-ul mai conţine doar două cîmpuri: un nume de fişier (care
+poate conţine aproape orice caractere, cea mai notabilă excepţie
+fiind <TT>/</TT>), şi un număr de i-nod.  O restricţie este ca toate
+numele aflate în link-urile dintr-un director sa fie distincte.  Nici
+unul din caracterele care compun numele unui fişier nu are vreo
+semnificaţie specială (cum de exemplu în DOS are punctul).
+
+<P>
+Spunem că fişierul <TT>bash</TT> se află în directorul <TT>bin</TT>
+dacă fişierul <TT>bin</TT>, de tip director, conţine un link al cărui
+nume este <TT>bash</TT>.
+
+<P>
+Directoarele pot conţine la rîndul lor directoare: pur şi
+simplu i-nodul dintr-un link este un i-nod de tip director.
+
+<P>
+După cum vedeţi de fapt fişierele nu sunt <EM>incluse</EM> în
+directoare, ci directoarele ţin nişte <EM>pointeri</EM> (numărul de
+i-nod) spre fişierele propriu-zise, asociindu-le şi un nume.  O
+primă întrebare care se poate ivi: nu poate un i-nod să fie prezent
+în două linkuri diferite?  Răspunsul este da: pot exista link-uri
+multiple la un acelaşi i-nod, în acelaşi director sau în
+directoare diferite!
+
+<P>
+Un director ar putea arăta aşa:
+
+<P>
+<PRE>
+nume  | vi  | ex  |     |
+i-nod | 100 | 100 | ... |
+</PRE>
+
+<P>
+Asta înseamnă că un <EM>acelaşi</EM> fişier este prezent de
+două ori, odată cu numele <TT>vi</TT>, altă dată cu numele <TT>ex</TT>.
+Modificarea fişierului numit <TT>vi</TT> se reflectă prin modificarea
+fişierului <TT>ex</TT>.
+
+<P>
+
+<H2><A NAME="SECTION00061000000000000000">
+Linkurile <TT>.</TT> şi <TT>..</TT></A>
+</H2>
+
+<P>
+Observaţi că datorită faptului că nu fişierul este în
+director ci un arătător spre fişier, <EM>arborele</EM> de directoare
+devine un graf: putem avea cicluri (directoare care se conţin
+reciproc) sau fişiere în mai multe directoare simultan.
+
+<P>
+Prin definiţie un director nu este niciodată gol (deşi la o
+adică putem să-l forţăm), ci conţine întotdeauna cel puţin
+două link-uri.  Unul se numeşte <TT>.</TT> (punct) şi este un link la
+i-nodul directorului însuşi, iar altul se numeşte <TT>..</TT> (punct
+punct) şi este un link la directorul <EM>tată</EM> (în care a fost
+creat cel despre care vorbim).  Să vedem un ipotetic exemplu:
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="fs_dotlinks"></A><A NAME="401"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 6:</STRONG>
+Legaturi intre directoare</CAPTION>
+<TR><TD><IMG
+ WIDTH="451" HEIGHT="299" BORDER="0"
+ SRC="img7.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=10cm\epsffile{fs_dotlinks.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+După cum vedeţi în directorul <TT>/usr</TT>, care are i-nodul 20,
+se află un link cu numele <TT>bin</TT> şi i-nodul 39.  Directorul cu
+i-nodul 39 conţine un link cu numele <TT>.</TT> spre i-nodul 39 (el
+însuşi) şi un link cu numele <TT>..</TT> spre directorul cu i-nodul 20
+(``tatăl'' lui).
+
+<P>
+Dacă mai ţineţi minte, i-nodul are un cîmp care arată
+cîte link-uri arată spre el însuşi.  Din cauza asta mai sus
+
+<P>
+<PRE>
+$ ls -ld /usr/bin
+drwxr-xr-x   2 root     bin          7168 Jul 23 12:45 /usr/bin
+             ^
+</PRE>
+
+<P>
+are două legături: una aflată în <TT>/usr</TT> (cu numele
+<TT>bin</TT>) şi una în el însuşi cu numele <TT>.</TT> (punct).
+
+<P>
+Dacă în <TT>/usr/bin</TT> ar mai fi fost subdirectoare, fiecare
+din ele ar fi avut un link cu numele <TT>..</TT> spre <TT>/usr/bin</TT>.
+
+<P>
+Comanda <TT>pwd</TT> (print working directory), care afişează
+directorul curent al procesului care o execută, lucrează astfel:
+urmăreşte link-urile <TT>..</TT> pînă la directorul rădăcină şi
+caută i-nodul de la link-ul <TT>.</TT> în directorul <TT>..</TT> pentru a afla
+numele (mai citiţi odată fraza, pe-ndelete).
+
+<P>
+
+<H2><A NAME="SECTION00062000000000000000">
+Directorul rădăcină</A>
+</H2>
+
+<P>
+Orice sistem de fişiere are un director privilegiat, care are
+link-ul <TT>..</TT> spre el însuşi.  Acesta este <EM>directorul
+rădăcină</EM> al sistemului de fişiere.  Toate căutările de fişiere
+care încep cu semnul <TT>/</TT> caută întîi în acest director.  Mai
+exact, sa vedem cum se fac
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Operaţiile pe directoare</A>
+</H1>
+
+<P>
+
+<H2><A NAME="SECTION00071000000000000000">
+Găsirea i-nodului unui fişier</A>
+</H2>
+
+<P>
+Principala operaţie pentru care se folosesc directoarele este
+pentru a găsi i-nodul unui fişier cînd ştiu directoarele care
+``duc'' la el (<EM>calea: path</EM>).
+
+<P>
+Orice proces în Unix are ceea ce se cheamă un <EM>director
+curent</EM> (în MS-DOS există un singur director curent pentru tot
+sistemul de operare).  Acesta este cunoscut procesului prin i-nodul
+său (şi se poate schimba cu apelul de sistem <TT>chdir</TT>).  Cînd un
+proces specifică o operaţie pe fişiere el indică <EM>întotdeauna</EM> un nume de fişier ca o listă de directoare separate
+prin semnul <TT>/</TT> (în MS-DOS acesta a fost înlocuit din motive
+obscure cu <code>\</code>).  Dacă primul semn dintr-un path este <TT>/</TT>
+atunci primul director în care se caută este directorul rădăcină.
+Altfel primul director în care se caută este cel curent.
+
+<P>
+Să vedem acum, pe un exemplu, cum nucleul găseşte i-nodul
+fişierului <TT>/usr/bin/cc</TT>.
+
+<P>
+Primul semn este <TT>/</TT>, deci deschide directorul rădăcină.
+I-nodul lui este marcat în superbloc, deci conţinutul lui este
+accesibil.
+
+<P>
+Primul nume este <TT>usr</TT>.  Caută deci printre toate link-urile
+din directorul rădăcină unul cu numele <TT>usr</TT>.  Dacă l-a găsit, se
+uită la numărul de i-nod al lui <TT>usr</TT>.  Citeşte apoi acest i-nod.
+Pentru că mai există nume în path după <TT>usr</TT>, i-nodul curent
+trebuie să aibă tipul director.
+
+<P>
+Presupunînd că aşa este, nucleul deschide fişierul aflat
+(<TT>usr</TT>) şi caută un link cu numele <TT>bin</TT>.  Găseşte i-nodul lui,
+citeşte fişierul (<TT>bin</TT>) şi caută link-ul <TT>cc</TT>.  Odată găsit, a
+aflat i-nodul lui <TT>cc</TT>, deci poate face orice operaţie cu acesta.
+
+<P>
+Mai trebuie spus că orice operaţie de deschidere a unui
+director pentru căutare este precedată de verificarea dreptului de a
+face această căutare.  Există două feluri de drepturi pentru
+directoare:
+
+<P>
+
+<UL>
+<LI>bitul <TT>r</TT> la un director arată dreptul de a citi conţinutul
+directorului (un array de link-uri).  Deci dreptul de a afla ce i-nod
+corespunde la un nume.
+
+<P>
+</LI>
+<LI>bitul <TT>x</TT> (em search!) arată dreptul de a citi
+conţinutul unui i-nod indicat de un link din acest director.
+</LI>
+</UL>
+
+<P>
+Dacă un director este accesibil are de obicei drepturi <TT>r-x</TT>.
+
+<P>
+Dacă are numai drepturi <TT>r-</TT> atunci se poate afla ce
+fişiere sunt în el, dar ele nu pot fi deschise prin aceste link-uri,
+şi nici i-nodurile lor nu pot fi accesate.  Puteţi face <TT>ls</TT> sau <TT>ls
+-i</TT> dar nu <TT>ls -l</TT> pe un astfel de director.
+
+<P>
+Dacă are numai drepturi <TT>-x</TT> <EM>nu</EM> puteţi vedea ce
+fişiere conţine, dar dacă <EM>ştiţi</EM> unul din nume, îl puteţi
+deschide!
+
+<P>
+Dacă are drepturi <TT>--</TT> pentru dumneavoastră, atunci
+uitaţi de el.
+
+<P>
+
+<H2><A NAME="SECTION00072000000000000000">
+Crearea şi distrugerea fişierelor</A>
+</H2>
+
+<P>
+Pentru a crea un fişier în primul rînd trebuie alocat un
+i-nod şi apoi construit un link.  În Unix <EM>toate</EM> operaţiile
+asupra fişierelor specifică numele fişierului, şi niciodată
+i-nodul.  Nu poţi accesa un fişier al cărui i-nod îl cunoşti:
+trebuie să ştii un path spre el.  Din cauza asta funcţionează
+securitatea în Unix: dacă nu există nici un path în care un
+utilizator să aibă dreptul de a citi toate directoarele componente,
+atunci el nu va putea ajunge niciodată să citească fişierul
+indicat de acel path.
+
+<P>
+Crearea fişierelor se poate face prin mai multe apeluri de
+sistem: <TT>open</TT>, <TT>creat</TT>, <TT>mknod</TT>, <TT>mkdir</TT>.  Toate specifică un path.
+Dacă procesul care le execută are dreptul de scriere în penultima
+componentă a path-ului (care este directorul în care se crează
+fişierul) atunci fişierul este creat, alocîndu-se un i-nod liber
+şi un link în acel director.
+
+<P>
+Fişierele nu pot fi şterse în Unix!  În Unix se pot doar
+şterge link-uri.  Singurul apel de sistem pentru aşa ceva este <TT>unlink</TT>.  Cînd este şters un link, i-nodului spre care acesta
+punctează i se decrementează numărul de referinţe.  Dacă acest
+număr devine 0, înseamnă că acest fişier nu mai este legat în
+nici un director.  <EM>Dacă</EM> acest fişier nu este în acea clipă
+deschis de nici un proces, atunci toate blocurile de date pe care el
+le posedă sunt trecute pe lista de blocuri libere, iar i-nodul lui
+este eliberat.  (Dacă este deschis, atunci el va fi eliberat numai
+cînd toate procesele vor închide fişierul).
+
+<P>
+Nu faceţi confuzie între operaţia de ştergere a unui link,
+care are nevoie de drept de scriere în directorul din care se şterge
+link-ul, şi operaţia de <EM>trunchiere</EM> a unui fişier (la lungime
+zero, de pildă) care are nevoie de drept de scriere <EM>doar</EM> în acel
+fişier.
+
+<P>
+<PRE>
+$ ls -la
+drwxr-x--x   7 mihai    users        1024 Jul 29 21:46 ./
+drwxr-xr-x   6 root     root         1024 Jul 26 22:50 ../
+-rw-rw-rw-   1 mihai    users        3735 Jul 29 19:18 ss
+</PRE>
+
+<P>
+Un alt utilizator decît <TT>mihai</TT> <EM>nu</EM> poate face <TT>rm ss</TT>,
+dar poate face <TT>cp /dev/null ss</TT>, cu care îl şterge!
+
+<P>
+În fine, o ultimă operaţie pe fişiere pe care o discutăm
+este cea de legare.  Se poate crea o legătură nouă la un fişier
+existent, cu apelul de sistem <TT>link</TT> (sau comanda shell-ului <TT>ln</TT>,
+care se foloseşte de acest apel).
+
+<P>
+<PRE>
+$ ln /bin/bash ./bb
+</PRE>
+
+<P>
+procedează astfel:
+
+<P>
+
+<OL>
+<LI>află i-nodul lui <TT>/bin/bash</TT>;
+
+<P>
+</LI>
+<LI>crează în directorul <TT>.</TT> un link cu numele <TT>bb</TT> (dacă
+are drept de scriere);
+
+<P>
+</LI>
+<LI>pune în acest link i-nodul aflat mai-nainte.
+</LI>
+</OL>
+
+<P>
+În mod normal numai ``super-user-ul'' poate face legături la
+un director.
+
+<P>
+Pentru că o legătură conţine un număr de i-nod, iar
+fiecare partiţie are propria ei numerotare independentă de a
+celorlalte pentru i-noduri, nu se pot face legături pe o partiţie
+care să arate la un fişier de pe alta.  Pentru asta au fost
+inventate legăturile simbolice, despre care vom vorbi altădată.
+
+<P>
+
+<H1><A NAME="SECTION00080000000000000000">
+Programul <TT>fsck</TT></A>
+</H1>
+
+<P>
+Un sistem de fişiere se poate strica din felurite motive (cel
+mai comun fiind că se stinge calculatorul printr-o procedură
+brutală şi anumite informaţii nu sunt salvate din cache).  Ca un
+filesystem să fie corect, anumite relaţii trebuie să fie adevărate
+între componentele sale.  De exemplu un bloc nu trebuie să fie
+simultan în două fişiere.
+
+<P>
+Un program sofisticat este oferit pentru a verifica
+integritatea unui sistem de fişiere.  <TT>fsck</TT> (File System ChecK) este
+rulat de obicei la fiecare pornire a calculatorului şi încearcă să
+determine toate discrepanţele care arată că un sistem de fişiere
+nu este integru, şi să le repare cu minimum de alteraţii ghicind ce
+s-a stricat de fapt.
+
+<P>
+Acest program <EM>nu</EM> lucrează cu fişiere şi directoare,
+ci analizează direct partiţia la nivel de bloc.  El nu trebuie să
+fie niciodată executat cînd partiţia este ``montată'' pentru că
+s-ar putea ca fişierele să fie modificate de procesele care rulează
+în timp ce sunt verificate, deci verificarea să iasă prost deşi
+totul este în regulă.
+
+<P>
+
+<H1><A NAME="SECTION00090000000000000000">
+Un experiment</A>
+</H1>
+
+<P>
+Ca să verificaţi că aţi înţeles cum funcţionează
+sistemul de fişiere din Unix (deşi multe lucruri au fost lăsate în
+suspensie, v-am dat toate informaţiile necesare), încercaţi să
+rezolvaţi următorul exerciţiu pe un Unix care vă oferă mai multe
+``ferestre'':
+
+<P>
+
+<OL>
+<LI>Deschideţi cîte un shell în două ferestre;
+
+<P>
+</LI>
+<LI>În prima tastaţi:
+
+<P>
+<PRE>
+$ sh
+$ cd
+$ mkdir bb
+$ cd bb
+$ ls
+$ pwd
+</PRE>
+
+<P>
+</LI>
+<LI>În a doua fereastră tastaţi:
+
+<P>
+<PRE>
+$ cd
+$ rm -r bb
+$ ls -a
+</PRE>
+
+<P>
+</LI>
+<LI>Reveniţi în prima şi tastaţi:
+
+<P>
+<PRE>
+$ ls
+$ pwd
+$ cd ..
+$ cd /
+</PRE>
+</LI>
+</OL>
+
+<P>
+Explicaţi ce se întîmplă.
+
+<P>
+
+<H1><A NAME="SECTION000100000000000000000">
+Răspuns:</A>
+</H1>
+
+<P>
+
+<UL>
+<LI>un shell (sh) face din <TT>bb</TT> directorul sau curent.
+</LI>
+<LI>alt shell şterge toate link-urile spre <TT>bb</TT> (cu <TT>rm -r</TT>)
+</LI>
+<LI>procesul <TT>sh</TT> nu poate face 
+
+<UL>
+<LI><TT>ls</TT> pentru că acesta lucrează cu link-ul <TT>.</TT> din directorul
+curent (fost <TT>bb</TT>), care nu mai există
+</LI>
+<LI><TT>pwd</TT> pentru că acesta încearcă să urmeze link-ul <TT>..</TT> din
+<TT>bb</TT>, care nu mai există
+</LI>
+<LI><TT>cd ..</TT> nu merge din aceleaşi motive
+</LI>
+</UL>
+</LI>
+</UL>
+
+<P>
+<BR><HR>
+
+</BODY>
+</HTML>

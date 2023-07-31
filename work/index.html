@@ -1,0 +1,557 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <title>Mihai Budiu</title><link rel="StyleSheet" href="mihai.css" type="text/css"></head>
+
+  <body>
+    <center>
+      <h1>Mihai Budiu's Web Page</h1>
+    </center>
+
+    <h2>About myself</h2>
+
+    <a name="me"></a>
+
+    <table>
+      <tbody><tr>
+          <td>
+            <table>
+              <tr><td><img src="mihai-budiu.jpg" width="150" alt="Mihai Budiu" align="left" border="0"></td></tr>
+              <tr><td>Mihai Budiu</td></tr>
+              <tr><td>Cell: (412) 216 8430</td></tr>
+              <tr><td>mbudiu (at) gmail</td></tr>
+              <tr><td>mbudiu (at) feldera.com</td></tr>
+              <tr><td><a href="cv.html">CV</a></td></tr>
+              <tr><td><a href="https://github.com/mihaibudiu">github</a></td></tr>
+            </table>
+          </td>
+
+          <td>
+                        <ul>
+
+            <li>2023-current: chief scientist,
+            <a href="https://www.feldera.com/">Feldera Inc.
+            </a>, an early stage start-up in the Bay Area, California.
+
+            <li>2016-2023: senior researcher
+            at <a href="https://research.vmware.com/">VMware
+            Research</a>, in Palo Alto, California.
+
+            <li>2014-2016: software engineer
+            at <a href="http://barefootnetworks.com">Barefoot
+            Networks</a>, a start-up in Palo Alto, California.
+
+            <li>2004-2014: senior researcher at the <a
+            href="https://www.zdnet.com/article/microsoft-to-close-microsoft-research-lab-in-silicon-valley/">Microsoft
+            Research Silicon Valley Lab</a>.
+
+            <li>2004: Ph.D. in computer science from <a
+            href="http://www.cs.cmu.edu">Carnegie Mellon
+            University</a>.
+
+            <li>Engineering degree from <a
+            href="http://cs.pub.ro">Politehnica University of
+            Bucharest</a>.
+
+            </ul>
+
+            <P>During the years I have participated in the design and
+              construction of several complex software artifacts.  I
+              like building systems based on strong theoretical
+              foundations.
+
+            <P>My research has spanned several broad areas of computer science:
+              <ul>
+                <li>Databases
+                <li>Software-defined networking and <a href="https://p4.org">P4</a>
+                <li>Cloud computing infrastructure: distributed computation
+                  platforms, monitoring, debugging, and performance analysis
+                  of large scale clusters
+                <li>Big data analysis and visualization
+                <li>Large scale machine learning
+                <li>Computer security
+                <li>Computer architecture
+                <li>Programming language and compiler design and implementation
+                <li>Reconfigurable hardware and hardware synthesis
+              </ul>
+          </td>
+      </tr></tbody>
+    </table>
+
+
+    <h2>Projects</h2>
+
+    Here are some projects that I have worked on:
+    
+   <ul>
+      <li>Incremental view maintenance (2021-today): DBSP (Database stream
+          processing), a <a href="http://budiu.info/work/budiu-vldb23.pdf">formal model</a> and
+          its <a href="https://github.com/feldera/dbsp">implementation</a>,
+          and a <a href="https://github.com/feldera/dbsp/tree/main/sql-to-dbsp-compiler">SQL compiler</a>
+          for a streaming and incremental query engine.
+
+      <li><a href="https://github.com/vmware/differential-datalog">Differential
+      Datalog</a>, a fully incremental programming language based on
+      Datalog (2018-2022).  DDlog is used in production at VMware in
+      the NSX network controller and as the data analytics engine
+      of <a href="https://www.vmware.com/support/services/skyline.html">
+      VMware Skyline</a>.
+
+      <li><a href="https://github.com/vmware/nerpa">Nerpa</a>: a
+        system for programming software-defined networks
+        (<a href="https://github.com/ryzhyk/nerpa">2017-2019</a>; 2021-2023).
+
+      <li><a href="http://github.com/vmware/hillview">Hillview</a>,
+      a spreadsheet for big data (2016-2021).
+
+      <li>The <a href="http://p4.org">P4</a> programming
+      language <a href="http://github.com/p4lang/p4-spec">design</a>
+      and its <a href="https://github.com/p4lang/p4c">reference
+      implementation</a> (2014-2023).  I have been a co-chair of the
+      P4 language design working group between 2018-2023.
+
+      <li>Compiling <a href="http://github.com/vmware/p4c-xdp">P4 to
+      eBPF</a> (2016-2021).
+
+      <li>The <a href="https://azure.microsoft.com/en-us/services/cosmos-db/">CosmosDB
+      Azure Cloud database</a> (at the time named DocumentDB) (2012-2014).  I have worked on the
+      design and implementation of the JSON-specific NoSQL query
+      engine (language and runtime).
+
+      <li>The <a href="http://research.microsoft.com/en-us/projects/dryad/">Dryad</a>
+      and <a href="http://research.microsoft.com/en-us/projects/DryadLINQ/">DryadLINQ</a>
+      software stack (2005-2014).  These are available under an
+      Apache2 license
+      on <a href="https://github.com/MicrosoftResearch/Dryad">GitHub</a>.
+
+      <ul>
+        <li>Dryad was the distributed execution engine of
+        the Bing Cosmos analytics engine, deployed on tens of thousands of
+        machines at Microsoft since 2006.
+        The <a href="cv.html#isard-eurosys07">Dryad
+        paper</a> has received the EuroSys 2017 Test of Time award.
+
+        <li>DryadLINQ is a compiler from .Net LINQ to Dryad.  A
+        commercial version of this compiler was shipped in 2011 by
+        Microsoft in beta under the
+        name <a href="http://msdn.microsoft.com/en-us/library/hh378101.aspx">LINQ
+        to HPC</a> but was afterwards discontinued.
+        The <a href="cv.html#yu-osdi08">DryadLINQ paper</a> won the
+        2008 OSDI best paper award, and the ACM SIGOPS 2018 Hall of Fame award.
+
+        <li>Daphne, <a href="cv.html#jagannath-hips11">DryadLINQ
+        JobBrowser and debugger</a>.  Techniques introduced by this
+        tool are used internally in Microsoft in the ScopeStudio
+        debugger (the tool used for programming the Bing analytics
+        engine).
+      </ul>
+
+      <li>Cloud infrastructure monitoring, debugging and optimization (2008-2014)
+      <ul>
+        <li>Artemis; tools evolved from
+        Artemis <a href="cv.html#goldszmidt-ladis09">have
+        been used</a> by Hotmail to improve cluster operations.
+        <li><a href="cv.html#erlingsson-sosp11">Fay</a>,
+        a distributed cluster monitoring system.
+      </ul>
+
+      <li>Large-scale applications (2008-2014)
+      <ul>
+        <li>training the <a href="cv.html#budiu-biglearn11">Kinect
+        body-parts classifier</a> (Microsoft Research Technology
+        Transfer Award in 2010)
+        <li><a href="cv.html#budiu-ipdps11">branch-and-bound</a> on a cluster
+        <li><a href="cv.html#budiu-egpgv16">Sketch</a>, a big-data spreadsheet.
+      </ul>
+
+      <li>Programming languages and compiler architecture.  I
+        have contributed to several compilers:
+      <a href="https://github.com/feldera/dbsp/tree/main/sql-to-dbsp-compiler">SQL to DBSP</a>,
+      <a href="https://github.com/feldera/dbsp">DBSP</a>,
+      <a href="https://github.com/vmware/differential-datalog">DDlog</a>,
+      <a href="http://github.com/vmware/differential-datalog/tree/master/sql">SQL to DDlog</a>,
+      <a href="http://github.com/p4lang/p4c">P4</a>,
+      <a href="https://azure.microsoft.com/en-us/services/cosmos-db">CosmosDB SQL</a>,
+      <a href="http://research.microsoft.com/en-us/projects/DryadLINQ">DryadLINQ</a>,
+      the
+      <a href="cv.html#budiu-esop13">compiler forest</a>,
+      <a href="http://www.cs.cmu.edu/~phoenix/compiler.html">CASH</a>
+      (Compiler for Application-Specific Hardware), and the
+      <a href="https://research.ece.cmu.edu/piperench/index.html">PipeRench</a>
+      compiler.
+
+      <li>Computer security (2005-2011):
+        <ul>
+          <li><a href="#abadi-ccs05">Control-Flow Integrity</a> (CFI).
+            Our 2005 ACM Conference on Computer and
+            Commnications Security (CCS) <a href="#abadi-ccs05">paper
+              on CFI</a> has received the 2015 ACM CCS <i>Test of
+              Time</i> award.  CFI is now supported by all major compilers
+              and microprocessors.
+          <li>Software sandboxing (<a href="#erlingsson-osdi06">XFI</a>)
+          <li><a href="cv.html#erlingsson-tocs12">Safe dynamic execution tracing</a>
+        </ul>
+
+      <li>Hardware synthesis, harware optimization, reconfigurable
+      computing, and computer architecture (1997-2007)
+      <ul>
+        <li><a href="http://www.cs.cmu.edu/~phoenix">CASH: A
+        Compiler for Application-Specific Hardware</a>
+        <li>asynchronous hardware design
+        <li><a href
+        href="https://research.ece.cmu.edu/piperench/index.html">PipeRench</a>
+        is a virtualized reconfigurable hardware chip.  I wrote the
+        <a href="cv.html#budiu-fpga99">PipeRench
+        compiler</a>.  PipeRench was licensed by two start-ups (SiliconMobius,
+        and Rapport, which commercialized it under the name
+        <a href="http://www.tomshardware.com/news/ibm-rapport-kilocore,2575.html">Kilocore</a>);
+        both start-ups are now defunct.
+        The <a href="cv.html#goldstein-isca99">PipeRench paper</a>
+        received the 2014 ACM SIGARCH/IEEE-CS TCCA Influential ISCA
+        Paper Award, recognizing the ISCA paper 15 years earlier that
+        has had the most impact on the field.  The paper was also
+        selected in the retrospective <a
+        href="https://sites.coecis.cornell.edu/isca50retrospective/papers/">
+        ISCA@50 25-year Retrospective 1996-2020</a>
+      </ul>
+    </ul>
+
+    <P>Some interviews I took:
+      <a href="http://www.budiu.info/blog/akeley.html">Kurt
+        Akeley</a>, <a href="http://www.budiu.info/blog/thacker.html">Chuck
+        Thacker</a> (later winner of the 2009 ACM Turing award),
+      and <a href="http://www.budiu.info/blog/lamport.html">Leslie
+        Lamport</a> (later winner of the 2014 ACM Turing
+      award), <a href="http://www.cs.cmu.edu/~mihaib/kernighan-interview/index.html">Brian
+        Kernighan</a> and <a href="http://www.cs.cmu.edu/~mihaib/maggs-interview/index.html">Bruce Maggs</a>.
+
+      <hr>
+      <a name="talks"> </a>
+
+      <H2>Some of my talks:</h2>
+
+      <table cellspadding=12 cellspacing=6>
+        <tr class="oddrow"><td>
+             <a href="sql-compiler-architecture23.pptx">SQL to DBSP --- compiler architecture</a><br>
+ 
+ Feldera Inc., 
+ Virtual presentation, 
+ June, 2023
+ 
+
+        <tr class="evenrow"><td>
+             <a href="p4-23.pptx">What's new in P4-16</a><br>
+ 
+ P4 Workshop, 
+ Intel, Santa Clara, CA, 
+ April 25, 2023
+ 
+
+        <tr class="oddrow"><td>
+             <a href="dbsp-calcite23.pptx">Building a streaming incremental view maintenance engine with Calcite</a><br>
+ <a href="https://www.youtube.com/watch?v=iT4k5DCnvPU">video</a>
+ Apache Calcite Meetup, 
+ virtual meeting, 
+ March 15, 2023
+ 
+
+        <tr class="evenrow"><td>
+             <a href="p4-geant22.pptx">P4</a><br>
+ 
+ <a href="https://wiki.geant.org/display/SIGNGN/10th+SIG-NGN+Meeting">GEANT (collaboration of European National Research and Education Networks)</a>, 
+ 10th SIG-NGN (Special Interest Group on Next Generation Networks) Meeting, 
+ November 29, 2022
+ 
+
+        <tr class="oddrow"><td>
+             <a href="dbsp-berkeley22.pptx">DBSP: Automatic Incremental View Maintenance for Rich Query Languages</a><br>
+ 
+ RISE/Sky seminar series, 
+ Berkeley University, 
+ September 2, 2022
+ 
+
+        <tr class="evenrow"><td>
+             <a href="flexnet22.pptx">Nerpa: Full-stack SDN</a><br>
+ 
+ FlexNet workshop, 
+ Rice University, 
+ August 25, 2022
+ 
+
+        <tr class="oddrow"><td>
+             <a href="dbsp-relationalai-cont22.pptx">DBSP: Automatic Incremental View Maintenance for Rich Query Languages, Part II: advanced queries</a><br>
+ 
+ Invited talk, 
+ Relational.ai, 
+ July 21, 2022
+ 
+
+        <tr class="evenrow"><td>
+             <a href="dbsp-relationalai22.pptx">DBSP: Automatic Incremental View Maintenance for Rich Query Languages</a><br>
+ 
+ Invited talk, 
+ Relational.ai, 
+ July 7, 2022
+ 
+
+        <tr class="oddrow"><td>
+             <a href="https://1drv.ms/u/s!AlywK8G1COQ_lbUpWSzT7c6BPWYrzQ?e=UsMTef">Distributed interactive big data visualization with Hillview</a><br>
+ 
+ <a href="https://www.hytradboi.com">Have You Tried Rubbing a Database On It?</a>, 
+ Virtual event, 
+ April 29, 2022
+ 
+
+        <tr class="evenrow"><td>
+             <a href="dbsp-stanford22.pptx">DBSP: Automatic Incremental View Maintenance for Rich Query Languages</a><br>
+ 
+ Stanford Systems Seminar, 
+ Stanford University, 
+ April 12, 2022
+ 
+
+        <tr class="oddrow"><td>
+             <a href="p4-compiler22.pptx">Understanding the open-source P4-16 compiler</a><br>
+ 
+ P4 Developer Days, 
+ online meeting, 
+ February 15, 2022
+ 
+
+        <tr class="evenrow"><td>
+             <a href="vmworld21.pptx">Differential Datalog (DDlog): A programming Language for Incremental Computation</a><br>
+ 
+ VMWorld 2021, 
+ Virtual Event, 
+ August, 2021
+ 
+
+        <tr class="oddrow"><td>
+             <a href="p4+ebpf-21.pptx">Comparing P4 and EBPF</a><br>
+ 
+ P4-ebpf task force, 
+ Virtual Presentation, 
+ January 21, 2021
+ 
+
+        <tr class="evenrow"><td>
+             <a href="hillview-fb19.pptx">Hillview: A trillion cell spreadsheet</a><br>
+ 
+ Facebook, 
+ Menlo Park, CA, 
+ September 24, 2019
+ 
+
+        </td></tr><tr class="oddrow"><td>
+             <a href="ddlog-dawn19.pptx">Differential Datalog</a><br>
+ 
+ Stanford DAWN Retreat, 
+ Menlo Park, CA, 
+ September 11, 2019
+ 
+
+        </td></tr><tr class="evenrow"><td>
+             <a href="vldb19.pptx">Hillview: A Trillion-cell spreadsheet for big data</a><br>
+ 
+ <a href="https://vldb.org/2019/">VLDB 2019</a>, 
+ Los Angeles, CA, 
+ August 28, 2019
+ 
+
+        </td></tr><tr class="oddrow"><td>
+             <a href="p4-tutorial-intel18.pptx">P4: Specifying data planes</a><br>
+ 
+ Intel, 
+ Hillsboro, OR, 
+ July 10, 2018
+ 
+
+        </td></tr><tr class="evenrow"><td>
+             <a href="p4+ebpf-intel18.pptx">Packet processing with P4 and EBPF</a><br>
+ 
+ Intel TC/P4 workshop, 
+ Santa Clara, CA, 
+ June 8, 2018
+ 
+
+        </td></tr><tr class="oddrow"><td>
+             <a href="p4c-workshop17.pptx">The architecture of the P4-16 Compiler</a><br>
+ 
+ P4 Workshop, 
+ Stanford, CA, 
+ May 17, 2017
+ 
+
+        </td></tr><tr class="evenrow"><td>
+             <a href="sketch-edinburgh16.pptx">A distributed billion-row spreadsheet</a><br>
+ 
+ Laboratory for Computer Science seminar, 
+ Edinburgh University, Edinburgh, UK, 
+ Sept 11, 2016
+ 
+
+        </td></tr><tr class="oddrow"><td>
+             <a href="egpgv16.pptx">Interacting with Large Distributed Datasets Using Sketch</a><br>
+ 
+ <a href="http://egpgv.visus.uni-stuttgart.de/egpgv2016/">Eurographics Symposium on Parallel Graphics and Visualization</a>, 
+ Groningen, Netherlands, 
+ June 7, 2016
+ 
+
+        </td></tr><tr class="evenrow"><td>
+             <a href="p4-netdev15.pptx">P4: Specifying data planes</a><br>
+ 
+ <a href="https://www.netdev01.org/">Linux netdev01</a>, 
+ Ottawa, Canada, 
+ February 15, 2015
+ 
+
+        </td></tr><tr class="oddrow"><td>
+             <a href="https://1drv.ms/p/s!AlywK8G1COQ_gZBg0tRsNILBrVRN-g?e=mbILu2">Systems for Data-Intensive Cluster Computing</a><br>
+ 
+ <a href="https://almada2013.ru/en">ALMADA Summer School</a>, 
+ Moscow, Russia, 
+ July 30-August 7, 2013
+ 
+
+        </td></tr><tr class="evenrow"><td>
+             <a href="parallel-artemis13.pptx">Interactive Parallel Data Visualization and Exploration</a><br>
+ 
+ Microsoft Research, Silicon Valley, 
+ Mountain View, CA, 
+ March 23, 2013
+ 
+
+        </td></tr><tr class="oddrow"><td>
+             <a href="ecec12.pptx">The Compiler Forest</a><br>
+ 
+ Workshop on Exploiting Concurrency Efficiently and Correctly, 
+ Berkeley, CA, 
+ July 7, 2012
+ 
+
+        </td></tr><tr class="evenrow"><td>
+             <a href="https://1drv.ms/p/s!AlywK8G1COQ_0yFAgNRhoYnipzHM?e=v8HSXi">Playing with Big Data</a><br>
+ 
+ HPDC 2012 Keynote Presentation, 
+ Delft, Netherlands, 
+ June 20, 2012
+ 
+
+        </td></tr><tr class="oddrow"><td>
+             <a href="hips11.pptx">Monitoring and Debugging Clusters with Daphne</a><br>
+ 
+ International Workshop on High-level Parallel Programming Models and Supportive Environments (HIPS), 
+ Anchorage, AK, 
+ May 20, 2011
+ 
+
+        </td></tr><tr class="evenrow"><td>
+             <a href="ipdps11.pptx">DryadOpt: Branch-and-Bound on Distributed Data-Parallel Execution Engines</a><br>
+ 
+ <a href="http://www.ipdps.org/ipdps2011/2011_cfp.html">IEEE International Parallel and Distributed Processing Symposium (IPDPS)</a>, 
+ Anchorage, AK, 
+ May 19, 2011
+ 
+
+        </td></tr><tr class="oddrow"><td>
+             <a href="nasa11.pptx">The Kinect Body Tracking Pipeline</a><br>
+ 
+ NASA Ames Reseach Center, 
+ Mountain View, CA, 
+ February 15, 2011
+ 
+
+        </td></tr><tr class="evenrow"><td>
+             <a href="wasl08.pptx">Hunting for Bugs with Artemis</a><br>
+ 
+ <a href="http://www.usenix.org/events/wasl08/">USENIX Workshop on the Analysis of System Logs (WASL)</a>, 
+ San Diego, CA, 
+ December 7, 2008
+ 
+
+        </td></tr><tr class="oddrow"><td>
+             <a href="intel-berkeley08.pptx">Cluster Computing for the masses with DryadLINQ</a><br>
+ 
+ Intel Research/UC Berkeley System Seminar Series, 
+ Intel Research, Berkeley, CA, 
+ October 9, 2008
+ 
+
+        </td></tr><tr class="evenrow"><td>
+             <a href="dryad-talk.pptx">Cluster Computing with Dryad</a><br>
+ 
+ Microsoft Live Labs, 
+ Bellevue, WA, 
+ March 4, 2008
+ 
+
+        </td></tr><tr class="oddrow"><td>
+             <a href="ml-dryadlinq.pptx">A Toolkit for Machine-Learning in DryadLINQ</a><br>
+ 
+ Microsoft Research SVC, 
+ Mountain View, CA, 
+ January 30, 2008
+ 
+
+        </td></tr><tr class="evenrow"><td>
+             <a href="dac07.ppt">Critical Path: A Tool for System-Level Timing Analysis</a><br>
+ 
+ Microsoft Research SVC, 
+ Mountain View, CA, 
+ May 23, 2007
+ 
+
+        </td></tr><tr class="oddrow"><td>
+             <a href="asid06.ppt">Architectural Support for Software-Based Protection</a><br>
+ 
+ ASID 2006, 
+ San Jose, CA, 
+ October 21, 2006
+ 
+
+        </td></tr>
+      </table>
+
+      <hr>
+      <a name="publications"> </a>
+      <H2>Some of my papers</h2>
+
+      A <a href="cv.html#pubs">complete publication list</a> is in my <a href="cv.html">my CV</a>.  Here's my dblp <a href="http://www.informatik.uni-trier.de/~ley/db/indices/a-tree/b/Budiu:Mihai.html">record</a>.  The copyrights of these publications are owned by various organizations, the papers are reproduced here for your convenience.
+
+      <table cellpadding=6>
+        <tr class=evenrow><td width="15%"><a href="https://www.vldb.org/2023">VLDB 23</a><br><a href="bibtex.html#budiu-vldb23">bibtex</a></td><td> <b><a name="budiu-vldb23"></a><b><a href="http://budiu.info/work/budiu-vldb23.pdf">DBSP: Automatic Incremental View Maintenance for Rich Query Languages</a></b></b><br> <em>Mihai Budiu, Tej Chajed, Frank McSherry, Leonid Ryzhyk, and Val Tannen</em><br> Proceedings of the VLDB Endowment (VLDB), Vancouver, Canada, August, 2023, pages 1601-1614 <br></td></tr>
+        <tr class=oddrow><td width="15%"><a href="https://www.vldb.org/2023">VLDB 23</a><br><a href="bibtex.html#rong-vldb23">bibtex</a></td><td> <b><a name="rong-vldb23"></a><b>Scaling a Declarative Cluster Manager Architecture with Query Optimization Techniques</b></b><br> <em>Kexin Rong, Mihai Budiu, Athinagoras Skiadopoulos, Lalith Suresh, and Amy Tai</em><br> Proceedings of the VLDB Endowment (VLDB), Vancouver, Canada, August, 2023 <br></td></tr>
+        <tr class=evenrow><td width="15%"><a href="https://conferences.sigcomm.org/hotnets/2022/">HOTNETS 22</a><br><a href="bibtex.html#sur-hotnets22">bibtex</a></td><td> <b><a name="sur-hotnets22"></a><b><a href="http://budiu.info/work/sur-hotnets22.pdf">Full-Stack SDN</a></b></b><br> <em>Debnil Sur, Ben Pfaff, Leonid Ryzhyk, and Mihai Budiu</em><br> ACM Workshop on Hot Topics in Networks (HotNets), Austin, TX, November 14-15, 2022 <br></td></tr>
+        <tr class=oddrow><td width="15%">JPC 22<br><a href="bibtex.html#budiu-jpc22">bibtex</a></td><td> <b><a name="budiu-jpc22"></a><b><a href="https://journalprivacyconfidentiality.org/index.php/jpc/article/view/779">Overlook: Differentially Private Exploratory Visualization for Big Data</a></b></b><br> <em>Budiu, Mihai, Thaker, Pratiksha, Gopalan, Parikshit, Wieder, Udi, and Zaharia, Matei</em><br> Journal of Privacy and Confidentiality, Vol. 12, no 1, Jul., 2022 <br>An expanded version of the conference paper from TPDP 2020.</td></tr>
+        <tr class=evenrow><td width="15%"><a href="https://opennetworking.org/2022-p4-workshop/">P 422</a><br><a href="bibtex.html#sur-p422">bibtex</a></td><td> <b><a name="sur-p422"></a><b><a href="http://budiu.info/work/nerpa-p422.pdf">Nerpa: Network Programming with Relational and Procedural Abstractions</a></b></b><br> <em>Debnil Sur, Ben Pfaff, Leonid Ryzhyk, and and Mihai Budiu</em><br> P4 Workshop, virtual event, May 24-26, 2022 <br></td></tr>
+        <tr class=oddrow><td width="15%"><a href="https://opennetworking.org/2022-p4-workshop/">P 422</a><br><a href="bibtex.html#pfaff-p422">bibtex</a></td><td> <b><a name="pfaff-p422"></a><b><a href="http://budiu.info/work/ofp4-p422.pdf">P4 in Open vSwitch with OFP4</a></b></b><br> <em>Ben Pfaff, Debnil Sur, Leonid Ryzhyk, and Mihai Budiu</em><br> P4 Workshop, virtual event, May 24-26, 2022 <br></td></tr>
+        <tr class=evenrow><td width="15%"><a href="http://p4.org"> </a><br><a href="bibtex.html#P4-16-22">bibtex</a></td><td> <b><a name="P4-16-22"></a><b><a href="https://p4.org/p4-spec/docs/P4-16-v-1.2.3.html">The P4-16 Language Specification, version 1.2.3</a></b></b><br> <em>The P4.org consortium</em><br> July, 2022 <br></td></tr>
+        <tr class=oddrow><td width="15%"><a href="https://tpdp.journalprivacyconfidentiality.org/2020/">TPDP 20</a><br><a href="bibtex.html#thaker-tpdp20">bibtex</a></td><td> <b><a name="thaker-tpdp20"></a><b><a href="http://budiu.info/work/TPDP2020.pdf">Overlook: Differentially Private Exploratory Visualization for Big Data</a></b></b><br> <em>Pratiksha Thaker, Mihai Budiu, Parikshit Gopalan, Udi Wieder, and Matei Zaharia</em><br> Theory and Practice of Differential Privacy (TPDP 2020), Orlando, FL, November 13, 2020 <br></td></tr>
+        <tr class=evenrow><td width="15%"><a href="https://vldb.org/2019/">VLDB 19</a><br><a href="vldb19.pptx">slides</a><br><a href="bibtex.html#budiu-vldb19">bibtex</a></td><td> <b><a name="budiu-vldb19"></a><b><a href="http://budiu.info/work/budiu-vldb19.pdf">Hillview: A trillion-cell spreadsheet for big data</a></b></b><br> <em>Mihai Budiu, Parikshit Gopalan, Lalith Suresh, Udi Wieder, Han Kruiger, and Marcos K. Aguilera</em><br> Proceedings of the VLDB Endowment (VLDB), Los Angeles, CA, August, 2019, pages 1442-1457 <br>A longer version available as <a href="https://arxiv.org/abs/1907.04827">https://arxiv.org/abs/1907.04827</a></td></tr>
+        <tr class=oddrow><td width="15%"><a href="https://sites.sju.edu/plw/datalog2/">DATALOG 19</a><br><a href="bibtex.html#ryzhyk-datalog19">bibtex</a></td><td> <b><a name="ryzhyk-datalog19"></a><b><a href="http://budiu.info/work/ddlog.pdf">Differential Datalog</a></b></b><br> <em>Leonid Ryzhyk and Mihai Budiu</em><br> Datalog 2.0, Philadelphia, PA, June 4-5, 2019 <br></td></tr>
+        <tr class=evenrow><td width="15%"><a href="https://www.linuxplumbersconf.org/event/2/">LPC 18</a><br><a href="bibtex.html#tu-lpc18">bibtex</a></td><td> <b><a name="tu-lpc18"></a><b><a href="http://budiu.info/work/p4c-xdp-lpc18-paper.pdf">P4C-XDP: Programming the Linux Kernel Forwarding Plane Using P4</a></b></b><br> <em>William Tu, Fabian Ruffy, and Mihai Budiu</em><br> Linux Plumber's Conference, Vancouver, Canada, November 13-15, 2018 <br></td></tr>
+        <tr class=oddrow><td width="15%"><a href="https://dl.acm.org/citation.cfm?id=3139645&amp;picked=prox">OSR 17</a><br><a href="bibtex.html#p4-osr17">bibtex</a></td><td> <b><a name="P4-osr17"></a><b><a href="http://budiu.info/work/p4-osr17.pdf">The P4-16 Programming Language</a></b></b><br> <em>Mihai Budiu and Chris Dodd</em><br> ACM SIGOPS Operating Systems Review, Vol. 51, no 1, August, 2017, pages 5-14 <br></td></tr>
+        <tr class=evenrow><td width="15%"><a href="http://conferences.sigcomm.org/sigcomm/2016/index.php">SIGCOMM 16</a><br><a href="bibtex.html#sivaraman-sigcomm16">bibtex</a></td><td> <b><a name="sivaraman-sigcomm16"></a><b><a href="http://budiu.info/work/sivaraman-sigcomm16.pdf">Packet Transactions: High-level Programming for Line-Rate Switches</a></b></b><br> <em>Anirudh Sivaraman, Alvin Cheung, Mihai Budiu, Changhoon Kim, Mohammad Alizadeh, Hari Balakrishnan, George Varghese, Nick McKeown, and Steve Licking</em><br> ACM SIGCOMM, Florian&oacute;polis, Brazil, August 22-26, 2016 <br></td></tr>
+        <tr class=oddrow><td width="15%">EGPGV 16<br><a href="egpgv16.pptx">slides</a><br><a href="bibtex.html#budiu-egpgv16">bibtex</a><br><a href="https://youtu.be/NkV5r7OzCoc">video</a></td><td> <b><a name="budiu-egpgv16"></a><b><a href="http://budiu.info/work/sketch.pdf">Interacting with Large Distributed Datasets Using Sketch</a></b></b><br> <em>Mihai Budiu, Rebecca Isaacs, Derek Murray, Gordon Plotkin, Paul Barham, Samer Al-Kiswany, Yazan Boshmaf, Qingzhou Luo, and Alexandr Andoni</em><br> Eurographics Symposium on Parallel Graphics and Visualization, Groningen, Netherlands, June 6-7, 2016, 13 pages <br>Also as University of Wisconsin-Madison Technical report TR1817</td></tr>
+        <tr class=evenrow><td width="15%"><a href="http://research.microsoft.com/en-us/events/lucacardellifest/">FESTSCHRIFT 14</a><br><a href="bibtex.html#budiu-festschrift14">bibtex</a></td><td> <b><a name="budiu-festschrift14"></a><b><a href="http://budiu.info/work/budiu-festschrift14.pdf">Multilinear Programming with Big Data</a></b></b><br> <em>Mihai Budiu and Gordon Plotkin</em><br> Festschrift for Luca Cardelli, September, 2014 <br></td></tr>
+        <tr class=oddrow><td width="15%">ESOP 13<br><a href="bibtex.html#budiu-esop13">bibtex</a></td><td> <b><a name="budiu-esop13"></a><b>The Compiler Forest</b></b><br> <em>Mihai Budiu, Joel Galenson, and Gordon Plotkin</em><br> European Symposium on Programming (ESOP), Rome, Italy, March 16-24, 2013, 20 pages <br></td></tr>
+        <tr class=evenrow><td width="15%"><a href="http://biglearn.org/">BIGLEARN 11</a><br><a href="bibtex.html#budiu-biglearn11">bibtex</a></td><td> <b><a name="budiu-biglearn11"></a><b><a href="http://budiu.info/work/budiu-biglearn11.pdf">Parallelizing the Training of the Kinect Body Parts Labeling Algorithm</a></b></b><br> <em>Mihai Budiu, Jamie Shotton, Derek G. Murray, and Mark Finocchio</em><br> Big Learning: Algorithms, Systems and Tools for Learning at Scale, Sierra Nevada, Spain, December 16-17, 2011 <br></td></tr>
+        <tr class=oddrow><td width="15%">SOSP 11<br><a href="bibtex.html#erlingsson-sosp11">bibtex</a></td><td> <b><a name="erlingsson-sosp11"></a><b><a href="http://budiu.info/work/fay-sosp11.pdf">Fay: Extensible Distributed Tracing from Kernels to Clusters</a></b></b><br> <em>&Uacute;lfar Erlingsson, Marcus Peinado, Simon Peter, and Mihai Budiu</em><br> ACM Symposium on Operating Systems Principles (SOSP), Cascais, Portugal, October 23-26, 2011 <br></td></tr>
+        <tr class=evenrow><td width="15%"><a href="http://www.cambridge.org/us/knowledge/isbn/item6542017/?site_locale=en_US">CHAPTER 11</a><br><a href="bibtex.html#mcsherry-chapter11">bibtex</a></td><td> Chapter in, <b><a name="mcsherry-chapter11"></a><b><a href="http://budiu.info/work/dryad-ml-book-chapter.pdf">Scaling Up Machine Learning</a></b></b><br> <em>Frank McSherry, Yuan Yu, Mihai Budiu, Michael Isard, and Dennis Fetterly</em><br> Large-Scale Machine Learning using DryadLINQ, Cambridge University Press, 2011 <br></td></tr>
+        <tr class=oddrow><td width="15%"><a href="http://www.usenix.org/event/osdi08/">OSDI 08</a><br><a href="bibtex.html#yu-osdi08">bibtex</a><br><a href="https://1drv.ms/i/s!AlywK8G1COQ_gZdCnMepIQuE7Qr13A">video</a></td><td> <b><a name="yu-osdi08"></a><b><a href="http://budiu.info/work/DryadLINQ.pdf">DryadLINQ: A System for General-Purpose Distributed Data-Parallel Computing Using a High-Level Language</a></b></b><br> <em>Yuan Yu, Michael Isard, Dennis Fetterly, Mihai Budiu, &Uacute;lfar Erlingsson, Pradeep Kumar Gunda, and Jon Currey</em><br> Symposium on Operating System Design and Implementation (OSDI), San Diego, CA, December 8-10, 2008, 14 pages <br>Best paper award. 2018 ACM SIGOPS Hall of Fame award. The video shows DryadLINQ used from Visual Studio.</td></tr>
+        <tr class=evenrow><td width="15%"><a href="https://www.dac.com/About/Conference-Archive/44th-DAC-2007">DAC 07</a><br><a href="dac07.ppt">slides</a><br><a href="bibtex.html#venkataramani-dac07">bibtex</a></td><td> <b><a name="venkataramani-dac07"></a><b><a href="http://budiu.info/work/dac07.pdf">Critical Path: A Tool for System-Level Timing Analysis</a></b></b><br> <em>Girish Venkataramani, Tiberiu Chelcea, Mihai Budiu, and Seth C. Goldstein</em><br> Design Automation Conference (DAC), San Diego, CA, June 4-8, 2007 <br>An expanded version is in the technical report CMU-CS-06-144</td></tr>
+        <tr class=oddrow><td width="15%">EUROSYS 07<br><a href="bibtex.html#isard-eurosys07">bibtex</a></td><td> <b><a name="isard-eurosys07"></a><b><a href="http://budiu.info/work/eurosys07.pdf">Dryad: Distributed Data-Parallel Programs from Sequential Building Blocks</a></b></b><br> <em>Michael Isard, Mihai Budiu, Yuan Yu, Andrew Birrell, and Dennis Fetterly</em><br> European Conference on Computer Systems (EuroSys), Lisbon, Portugal, March 21-23, 2007, pages 59-72 <br>Also as technical report MSR-TR-2006-140. EuroSys 2017 Test of Time Award.</td></tr>
+        <tr class=evenrow><td width="15%">ASID 06<br><a href="asid06.ppt">slides</a><br><a href="bibtex.html#budiu-asid06">bibtex</a></td><td> <b><a name="budiu-asid06"></a><b><a href="http://budiu.info/work/asid06.pdf">Architectural Support for Software-Based Protection</a></b></b><br> <em>Mihai Budiu, &Uacute;lfar Erlingsson, and Mart&iacute;n Abadi</em><br> Workshop on Architectural and System Support for Improving Software Dependability (ASID), San Jose, CA, October 21, 2006, pages 42-51 <br>Also as technical report MSR-TR-2006-115</td></tr>
+        <tr class=oddrow><td width="15%"><a href="http://www.usenix.org/events/osdi06">OSDI 06</a><br><a href="bibtex.html#erlingsson-osdi06">bibtex</a></td><td> <b><a name="erlingsson-osdi06"></a><b><a href="http://budiu.info/work/osdi06.pdf">XFI: Software Guards for System Address Spaces</a></b></b><br> <em>&Uacute;lfar Erlingsson, Mart&iacute;n Abadi, Michael Vrable, Mihai Budiu, and George C. Necula</em><br> Symposium on Operating System Design and Implementation (OSDI), Seattle, WA, November 6-8, 2006, pages 75-88 <br></td></tr>
+        <tr class=evenrow><td width="15%">ASPLOS 06<br><a href="bibtex.html#mishra-asplos06">bibtex</a></td><td> <b><a name="mishra-asplos06"></a><b><a href="http://budiu.info/work/asplos06.pdf">Tartan: Evaluating Spatial Computation For Whole Program Execution</a></b></b><br> <em>Mahim Mishra, Timothy J. Callahan, Tiberiu Chelcea, Girish Venkataramani, Mihai Budiu, and Seth C. Goldstein</em><br> International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS), San Jose, CA, October 21-25, 2006, pages 163-174 <br></td></tr>
+        <tr class=oddrow><td width="15%"><a href="http://www.acm.org/sigs/sigsac/ccs/CCS2005">CCS 05</a><br><a href="bibtex.html#abadi-ccs05">bibtex</a></td><td> <b><a name="abadi-ccs05"></a><b><a href="http://budiu.info/work/ccs05.pdf">Control-Flow Integrity</a></b></b><br> <em>Mart&iacute;n Abadi, Mihai Budiu, &Uacute;lfar Erlingsson, and Jay Ligatti</em><br> ACM Conference on Computer and Communication Security (CCS), Alexandria, VA, November 7-11, 2005, pages 340-353 <br>CCS Test of Time Award in 2015</td></tr>
+        <tr class=evenrow><td width="15%">ASPLOS 04<br><a href="asplos04.ppt">slides</a><br><a href="bibtex.html#budiu-asplos04">bibtex</a></td><td> <b><a name="budiu-asplos04"></a><b><a href="http://www.cs.cmu.edu/~mihaib/research/asplos04.pdf">Spatial Computation</a></b></b><br> <em>Mihai Budiu, Girish Venkataramani, Tiberiu Chelcea, and Seth Copen Goldstein</em><br> International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS), Boston, MA, October 9-13, 2004, pages 14-26 <br></td></tr>
+        <tr class=oddrow><td width="15%"><a href="http://www.ce.chalmers.se/conf2001">ISCA 01</a><br><a href="bibtex.html#goldstein-isca01">bibtex</a></td><td> <b><a name="goldstein-isca01"></a><b><a href="http://www.cs.cmu.edu/~seth/papers/goldstein-isca01.pdf">NanoFabrics: Spatial Computing Using Molecular Electronics</a></b></b><br> <em>Seth Copen Goldstein and Mihai Budiu</em><br> International Symposium on Computer Architecture (ISCA), G&ouml;teborg, Sweden, 2001, pages 178-189 <br>Selected for inclusion in <a href="https://sites.coecis.cornell.edu/isca50retrospective/papers/">ISCA@50 25-year Retrospective 1996-2020</a>.</td></tr>
+        <tr class=evenrow><td width="15%"><a href="http://www.informatik.uni-trier.de/~ley/db/conf/isca/isca99.html">ISCA 99</a><br><a href="bibtex.html#goldstein-isca99">bibtex</a></td><td> <b><a name="goldstein-isca99"></a><b><a href="http://www.cs.cmu.edu/~mihaib/research/isca99.pdf">PipeRench: a Coprocessor for Streaming Multimedia Acceleration</a></b></b><br> <em>Seth Copen Goldstein, Herman Schmit, Matthew Moe, Mihai Budiu, Srihari Cadambi, R. Reed Taylor, and Ronald Laufer</em><br> International Symposium on Computer Architecture (ISCA), Atlanta, GA, 1999, pages 28-39 <br>2014 ACM SIGARCH/IEEE-CS TCCA Influential ISCA Paper Award. Also Selected for inclusion in <a href="https://sites.coecis.cornell.edu/isca50retrospective/papers/">ISCA@50 25-year Retrospective 1996-2020</a>.</td></tr>
+      </table>
+      <hr>
+
+  </body>
+</html>

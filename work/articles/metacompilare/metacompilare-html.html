@@ -1,0 +1,744 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Verificarea automată a programelor</TITLE>
+<META NAME="description" CONTENT="Verificarea automată a programelor">
+<META NAME="keywords" CONTENT="metacompilare-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Verificarea automată a programelor</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- <TT>mihaib+@cs.cmu.edu</TT> 
+<BR><TT><A NAME="tex2html2"
+  HREF="http://www.cs.cmu.edu/~mihaib/">http://www.cs.cmu.edu/~mihaib/</A></TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>octombrie 2001</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Cuprins</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html23"
+  HREF="metacompilare-html.html">Bug-uri în Linux</A>
+<LI><A NAME="tex2html24"
+  HREF="#SECTION00030000000000000000">Testare şi verificare</A>
+<LI><A NAME="tex2html25"
+  HREF="#SECTION00040000000000000000">Proiectul ``Meta-Compilation'' (MC)</A>
+<LI><A NAME="tex2html26"
+  HREF="#SECTION00050000000000000000">Inferenţa automată a regulilor de testat</A>
+<LI><A NAME="tex2html27"
+  HREF="#SECTION00060000000000000000">Concluzii</A>
+<LI><A NAME="tex2html28"
+  HREF="#SECTION00070000000000000000">Alte surse de informaţie</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+Pe data de 8 august 2000 pe lista de e-mail numită ``Linux kernel'',
+care este folosită de către cei care meşteresc la nucleul
+sistemului de operare Linux pentru a comunica între ei, a apărut un
+mesaj care descria o serie de potenţiale probleme (bug-uri) din
+nucleu, trimis de Dawson Engler, un proaspăt profesor la
+universitatea Stanford.  Pe această listă se vehiculează adesea
+rapoarte de defecţiuni, aşa că unul în plus nu pare ceva deosebit.
+Mesajul cu pricina însă conţinea nu una, două, sau chiar zece
+erori, ci peste 160!  Şi mai interesant, toate aceste potenţiale
+erori au fost descoperite automat, folosind un program care studiază
+codul şi caută inadvertenţe.  În final nu toate rapoartele s-au
+dovedit a fi defecţiuni, dar multe dintre ele erau într-adevăr
+bug-uri importante.
+
+<P>
+Acest mesaj de poştă electronică este probabil cea mai
+``vizibilă'' aplicare a unei tehnologii încă relativ imature, dar
+care face progrese remarcabile, numită <EM>verificare formală</EM>.
+Verificarea formală este folosită pe scară relativ largă, dar mai
+ales de către proiectanţii de hardware; multe din circuitele
+procesoarelor moderne au fost certificate ca fiind corecte folosind
+verificarea formală.  O cercetare febrilă se desfăşoară pentru a
+adapta metodele dezvoltate pentru hardware şi la analiza programelor;
+software-ul are însă o natură substanţial diferită de a
+hardware-ului, şi probabil va fi nevoie de inventarea unor tehnici
+noi.
+
+<P>
+În acest articol voi descrie pe scurt metodele folosite de echipa de
+la Stanford condusă de Dawson Engler pentru a descoperi erori în
+programe, şi unele din rezultatele lor foarte interesante despre
+natura erorilor în nucleul Linux.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Bug-uri în Linux</A>
+</H1>
+
+<P>
+Un aforism spune că orice program are cel puţin un bug şi este cu
+cel puţin o linie prea lung.  Aplicînd această regulă în mod
+repetat putem deduce că orice program poate fi optimizat pînă este
+redus la o singură linie de cod, care este eronată.
+
+<P>
+Chiar dacă sistemul de operare Linux este lăudat pentru robusteţea
+sa deosebită, nu este scutit de imperfecţiuni.  Profitînd de
+disponibilitatea surselor C ale programului, cercetătorii de la
+Stanford au testat o nouă metodologie pentru a descoperi bug-uri pe
+21 de versiuni diferite ale nucleului, începînd de la versiunea 1.0,
+din ianuarie 1994, pînă la versiunea 2.4.7, din primăvara acestui
+an.  Trebuie menţionat dintru început că sistemul de la Stanford nu
+descoperă toate bug-urile, ci numai anumite tipuri de bug-uri,
+relativ simple; voi discuta metodologia folosită ceva mai încolo.
+Vom considera că bug-urile descoperite de acest sistem sunt
+reprezentative pentru toate bug-urile în general, cel puţin în
+anumite aspecte ale distribuţiilor statistice.  E de reţiunt deci
+că rezultatele pe care le prezint în continuare se referă la un
+subset al tuturor bug-urilor, care poate nu este reprezentativ.
+
+<P>
+Codul Linux e structurat din mai multe părţi relativ independente;
+putem factoriza codul însă în două mari clase: nucleul
+propriu-zis, şi driverele.  Driverele sunt mici programe care fac
+parte din nucleu şi care interfaţează nucleul cu dispozitivele
+periferice.  Datorită popularităţii PC-ului, există literalmente
+mii de periferice diferite, fiecare avînd nevoie de un driver
+separat<A NAME="tex2html3"
+  HREF="#foot56"><SUP>1</SUP></A>.  Ca atare, majoritatea
+codului Linux se află în drivere.  Cantitatea de cod din drivere
+variază între 50 şi 70 la sută din întregul sistem.
+
+<P>
+Între versiunile 1.0 şi 2.4.1 codul sistemului Linux a crescut de
+aproximativ 16 ori, de la 105 mii de linii de cod la 1,6
+milioane<A NAME="tex2html4"
+  HREF="#foot57"><SUP>2</SUP></A>  Cel mai mult au crescut driverele, datorită
+faptului că din ce în ce mai mulţi fabricanţi de hardware au
+publicat informaţii despre periferice sau chiar au contribuit cu cod.
+Alte subsisteme care au crescut sensibil între timp sunt sistemele de
+fişiere şi codul pentru protocoalele de reţea.
+
+<P>
+În total, în cele 21 de versiuni de nucleu sistemul de la Stanford a
+detectat peste 1000 de bug-uri distincte.  (Unele dintre bug-uri se
+manifestă în mai multe versiuni diferite de nucleu.)  Numărul de
+bug-uri este practic direct proporţional cu mărimea codului: nucleele
+mai mari aveau mai multe erori.
+
+<P>
+Bug-urile sunt însă departe de a fi uniform distribuite.  După cum
+ne aşteptăm, cele mai multe bug-uri sunt în drivere, pentru că
+driverele ocupă atît de mult din cod.  Putem normaliza numărul de
+bug-uri în două feluri: împărţim la numărul de linii, pentru a
+vedea la cîte linii avem un bug, sau putem împărţi la numărul de
+locuri în care acelaşi tip de bug s-ar fi putut manifesta.  De
+exemplu, dacă un bug care constă în lipsa verificării unui cod de
+eroare după apelul unei funcţii care poate eşua, densitatea de
+bug-uri este numărul de locuri în care nu verificăm eroarea
+împărţit la numărul de locuri în care apelăm funcţii care pot
+returna erori.
+
+<P>
+Chiar dacă normalizăm numărul de bug-uri, driverele stau însă
+destul de rău: densitatea de bug-uri în drivere este între 3 şi 7
+ori mai mare decît în nucleul propriu-zis.  Driverele sunt folosite
+doar de cei care au perifericele corespunzătoare, spre deosebire de
+nucleu, care e folosit practic de toată lumea.  Ca atare, driverele
+sunt mai puţin testate, deci este de aşteptăt să aibă mai multe
+bug-uri.
+
+<P>
+Înţelepciunea populară spune că cu cît un program e mai
+``bătrîn'', cu atît are mai puţine bug-uri; acest lucru este
+verificat şi de datele despre Linux: fişierele cele mai vechi au
+cele mai puţine bug-uri.  La nivel de funcţie, funcţiile mai lungi
+tind să aibă o densitate mai mare de bug-uri, ceea ce confirmă
+regula că programul trebuie spart în bucăţele mici şi
+independente, pentru a stăvili complexitatea.
+
+<P>
+Dacă facem un grafic al distribuţiei erorilor în raport cu
+fişierele în care apar, graficul este foarte neuniform: cele mai
+multe fişiere au cam 1 bug, pe cînd cîteva fişiere sunt
+responsabile pentru majoritatea bug-urilor.  Foarte adesea,
+programatorii au copiat un fragment de program eronat în mai multe
+locuri, multiplicînd apariţia unui singur bug.
+
+<P>
+Privind la versiuni succesive ale sistemului de operare, se poate
+observa în care versiune apare un bug şi în care dispare.  Folosind
+aceste date, se poate calcula durata medie de viaţă a unui bug în
+cod.  În pofida numărului mare de persoane care contribuie la Linux,
+durata medie de viaţă este relativ ridicată: un bug
+supravieţuieşte cam un an şi opt luni înainte de a fi corectat.
+
+<P>
+O ultimă statistică pe care o voi prezenta compară densitatea de
+bug-uri din Linux cu cea dintr-un alt sistem de operare dezvoltat
+open-source: OpenBSD.  Programatorii sistemului OpenBSD sunt foarte
+mîndri de faptul că periodic inspectează manual întregul cod, cu
+scopul de a detecta erori (în engleză această procedură se
+numeşte <EM>code audit</EM>).  Ca atare, ei spun că OpenBSD este cel
+mai sigur sistem de operare.  În mod surprinzător, densitatea de
+bug-uri în Linux este mai mică, fiind undeva între 1,2 şi 6 ori
+(cercetătorii au calculat cîte un raport pentru fiecare tip de bug
+pe care l-au analizat, de aceea prezintă mai multe numere diferite).
+Acest lucru demonstrează că într-adevăr o comunitate mai mare de
+programatori este mai eficace în a detecta probleme (Linux este mai
+popular decît OpenBSD) .
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Testare şi verificare</A>
+</H1>
+
+<P>
+Care este metodologia prin care aceste bug-uri au fost depistate?  Cum
+au putut cercetătorii să găsească probleme în bucăţi de cod pe
+care nici măcar nu le pot executa (de exemplu, este limpede că nu
+pot rula toate driverele, pentru că nu au la-ndemînă toate
+perifericele posibile)?
+
+<P>
+Există două metode diferite de a depana un program: metode dinamice
+şi metode statice.
+
+<P>
+Testarea este o metodă dinamică: programul este pornit, i se dau
+nişte date de intrare, şi comportarea lui este observată; eventual
+se poate folosi un debugger pentru a urmări evoluţia programului în
+timp şi pentru a-i putea inspecta măruntaiele.  Testarea este
+relativ uşor de înţeles şi folosit, dar are mai multe probleme,
+mai ales în contextul depanării unui sistem de operare:
+
+<P>
+
+<UL>
+<LI>Unele bug-uri se vor manifesta numai pentru anumite date de
+intrare; ca atare, reuşita unui test nu garantează că programul
+este corect;
+</LI>
+<LI>Am menţionat deja că driverele pentru perifericele care nu
+sunt instalate pe un sistem nu pot fi executate;
+</LI>
+<LI>În general, sistemul de operare nu operează asupra unui simplu
+se de date, ci manipulează programe, pachete de date care circulă
+în reţea, întreruperi de la hardware şi alte evenimente care sunt
+greu de controlat şi reprodus.
+</LI>
+</UL>
+
+<P>
+Ca atare, grupul de la Stanford foloseşte metode statice.  Metodele
+statice constau în analiza unui program înainte de a fi lansat în
+execuţie, independent de datele de intrare.  Cea mai familiară
+dintre aceste metode este chiar compilarea: un compilator modern
+verifică tot felul de proprietăţi ale programului, şi rejectează
+programele care nu respectă criteriile de corectitudine.  Alteori
+compilatorul poate da avertismente asupra unor construcţii care pot
+genera probleme la execuţie, cum ar fi de pildă variabile
+neiniţializate.
+
+<P>
+Metodele statice sunt extrem de puternice: ele pot raţiona despre
+comportarea unui program <EM>oricare</EM> ar fi datele sale de intrare.
+Compilatoarele de astăzi efectuează analize extrem de sofisticate
+asupra codului, pe care apoi îl optimizează.  Multe dintre
+optimizări pot fi aplicate numai în anumite condiţii; de exemplu, o
+atribuire poate fi eliminată dacă rezultatul ei nu mai este folosit
+în restul programului.  Pentru a demonstra că atribuirea este
+inutilă, compilatorul analizează codul şi demonstrează că, orice
+cărare prin program va urma execuţia, rezultatul atribuirii nu mai
+este folosit.
+
+<P>
+În general astfel de demonstraţii nu pot fi făcute: teoria
+calculabilităţii arată că chestiuni de genul acesta sunt <EM>nedecidabile</EM>.  De aceea, compilatoarele sunt conservatoare: aplică
+optimizări numai cînd sunt absolut sigure că sunt corecte, şi
+cîteodată nu aplică optimizări corecte pentru că nu pot demonstra
+legalitatea lor.  Cît de greu este de demonstrat o proprietate,
+depinde de mulţi factori, dar în primul rînd de limbajul de
+programare care este compilat.  La ora actuală se desfăşoară o
+cercetare extrem de febrilă în domeniul limbajelor de programare,
+scopul căreia este proiectarea unor limbaje mai restrictive.  În
+astfel de limbaje anumite tipuri de erori devin imposibile; limbajele
+trebuie să rămînă însă suficient de flexibile pentru a exprima
+în mod natural calcule arbitrar de complicate.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Proiectul ``Meta-Compilation'' (MC)</A>
+</H1>
+
+<P>
+Pentru că limbajul C în care este scris nucleul de Linux este un
+limbaj relativ primitiv, cercetătorii de la Stanford au făcut un
+compromis: au extins compilatorul de C cu informaţii specifice
+nucleului Linux.  Această metodologie dă şi numele proiectului:
+meta-compilare.
+
+<P>
+Un exemplu va clarifica cel mai bine tehnica folosită.
+
+<P>
+Pentru a preveni accesele concurente la unele structuri de date
+importante, nucleele folosesc <EM>regiuni critice</EM>.  Intrarea unui
+program într-o regiune critică este permisă numai după
+achiziţionarea unei încuietori (lock).  Un singur program poate
+obţine o încuietoare, care-i permite accesul în regiunea critică;
+la terminarea regiunii critice, programul eliberează încuietoarea.
+Dacă un program accesează încuietoarea cînd un altul este în
+regiunea critică, este blocat pînă cînd posesorul încuietorii
+iese din regiune şi eliberează încuietoarea.
+
+<P>
+De exemplu, funcţiile <TT>lock_kernel()</TT> şi <TT>unlock_kernel()</TT>
+încuie şi respectiv descuie anumite porţiuni din nucleu.  Aceste
+operaţii sunt implementate în două funcţii obişnuite.  Dar felul
+în care aceste funcţii sunt folosite este foarte specific: de
+exemplu, de fiecare dată cînd se foloseşte <TT>lock</TT>, trebuie să
+urmeze eventual <TT>unlock</TT> (altfel nimeni nu mai poate intra în
+regiunea critică, şi calculatorul probabil se va bloca).  De
+asemenea, nimeni nu poate face de două ori la rînd <TT>lock</TT>,
+fără a face între timp şi un <TT>unlock</TT>: a doua oară programul
+s-ar bloca din cauză că se află deja în regiunea critică.
+
+<P>
+Metacompilarea exploatează acest gen de informaţie, care nu ţine de
+limbajul de programare, ci de <EM>aplicaţia</EM> care este programată.
+Proiectul MC le permite programatorilor să scrie extensii ale
+compilatorului care încorporează astfel de informaţii.
+
+<P>
+MC foloseşte compilatorul de C numit gcc (Gnu C Compiler), care este
+compilatorul folosit în mod tradiţional pentru a compila nucleul
+Linux; acest compilator este disponibil, ca şi Linux, cu codul său
+sursă.  Cercetătorii de la Stanford au definit un limbaj foarte
+simplu, pe care l-au numit Metal.  Compilatorul extins cu Metal
+poartă numele de xgcc (eXtended gcc).  Iată un exemplu de program
+complet scris în Metal, care verifică folosirea corectă a
+instrucţiunilor de încuiere:
+
+<P>
+<PRE>
+{ #include "linux-includes.h" }
+
+// descriem un automat finit: state machine
+sm verifica_lock {
+   // Pattern-uri de cautat in cod
+   pat incuie = { lock_kernel(); }
+   pat descuie = { unlock_kernel(); }
+
+   // stari; prima stare e starea initiala
+   descuiat: incuie ==&gt; incuiat
+           | descuie ==&gt; { err("descuiere dubla"); }
+           ;
+
+   incuiat: descuie ==&gt; descuiat
+          | incuie ==&gt; { err("incuiere dubla"); }
+            // acest pattern indica sfirsitul functiei
+          | $end_of_path$ ==&gt; { err("functia se termina incuiata"); }
+          ;
+}
+</PRE>
+
+<P>
+Programele Metal sunt compilate şi transformate în programe C şi
+apoi executabile, care sunt apoi legate dinamic de compilatorul gcc.
+Cînd xgcc este executat pentru a compila nucleul, extensiile scrise
+în Metal sunt executate una cîte una.  Fiecare extensie analizează
+fiecare funcţie compilată şi o verifică.
+
+<P>
+Programele Metal descriu <EM>automate finite</EM>.  Programul de mai sus
+descrie automatul din figura&nbsp;<A HREF="metacompilare-html.html#automat">1</A>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="automat"></A><A NAME="154"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 1:</STRONG>
+<I>Automatul finit care testează folosirea
+corectă a instrucţiunilor de încuiere şi descuiere.  Două
+încuieri succesive, două descuieri succesive, sau terminarea
+procedurii în starea ``încuiat'' cauzează o eroare.</I></CAPTION>
+<TR><TD><IMG
+ WIDTH="360" HEIGHT="234" BORDER="0"
+ SRC="img1.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=8cm\epsffile{automat.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Acest automat finit este executat în mod abstract de către
+compilator pe program, pe fiecare procedură în mod separat.  În mod
+conceptual, compilatorul execută fiecare cărare posibilă din
+procedură şi face tranziţiile indicate de automat cînd
+întîlneşte pattern-urile indicate.  Dacă vreuna din cărări
+cauzează intrarea în starea de eroare, xgcc generează un mesaj de
+eroare.
+
+<P>
+Observaţi că acest automat ignoră cele mai multe operaţiuni din
+program, şi este interesat numai de apelurile funcţiilor <TT>lock_kernel()</TT> şi <TT>unlock_kernel()</TT>.  
+
+<P>
+Să ilustrăm funcţionarea automatului pe o procedură fictivă, al
+cărei schelet este următorul:
+
+<P>
+<PRE>
+f() {
+   lock_kernel();
+   ...
+   p = malloc(10);
+   if (!p)
+       return OUT_OF_MEMORY;
+   ...
+   unlock_kernel();
+   return OK;
+}
+</PRE>
+
+<P>
+Această procedură obţine încuietoarea după care încearcă să
+aloce 10 octeţi.  Dacă alocarea eşuează, returnează un cod de
+eroare.  Altfel procedura face tot felul de calcule, descuie nucleul,
+şi returnează un cod OK.
+
+<P>
+Execuţia poate urma două cărări prin această procedură,
+ilustrate în figura&nbsp;<A HREF="metacompilare-html.html#carari">2</A>: amîndouă intră pe la început,
+dar una iese în caz de eroare din procedură, pe cînd a doua descuie
+lacătul înainte de a ieşi.  Cu litere cursive în
+figura&nbsp;<A HREF="metacompilare-html.html#carari">2</A> am indicat starea curentă a automatului finit
+cînd parcurge cărările respective.  Observaţi că pe cărarea
+roşie automatul ajunge la sfîrşitul procedurii şi se află în
+starea ``încuiat''; ultima regulă din programul Metal va semnaliza
+în acest caz o eroare.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="carari"></A><A NAME="161"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 2:</STRONG>
+<I>Traiectoriile posibile ale programului printr-o
+procedură.  Cărarea indicată cu roşu va fi semnalată ca o eroare
+de programul Metal, pentru că execuţia procedurii se termină
+într-o stare încuiată.</I></CAPTION>
+<TR><TD><IMG
+ WIDTH="360" HEIGHT="452" BORDER="0"
+ SRC="img2.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=8cm\epsffile{carari.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+În realitate xgcc nu parcurge toate cărările posibile, ci
+calculează simultan toate stările în care se poate afla automatul
+în fiecare punct din program folosind o metodă numită <EM>interpretare abstractă</EM>.  Sper să pot consacra un articol special
+interpretării abstracte şi altor tehnici de verificare formală,
+aşa că nu voi mai discuta aici despre ea.
+
+<P>
+Toate analizele descrise în Metal sunt strict intraprocedurale,
+adică analizează fiecare funcţie separat<A NAME="tex2html7"
+  HREF="#foot92"><SUP>3</SUP></A>.  
+
+<P>
+Aceasta este şi una dintre limitările cele mai mari ale acestei
+scheme.  Vom ilustra falibilitatea ei printr-un alt exemplu.  Să
+presupunem că funcţia <TT>f()</TT> de mai sus este apelată în
+următorul fragment de cod:
+
+<P>
+<PRE>
+   ...
+   eroare = f();
+   if (eroare == OUT_OF_MEMORY)
+        unlock_kernel();
+   ...
+</PRE>
+
+<P>
+Atunci de fapt codul funcţiei <TT>f</TT> nu era eronat, pentru că
+pînă la urmă ambele cărări duc la o descuiere.
+
+<P>
+Astfel, analizele descrise în Metal sunt <EM>incomplete</EM>, şi pot
+genera alarme false, numite <EM>falsuri pozitive</EM>.  (Un fals negativ
+este o eroare reală care nu este semnalată).  xgcc poate fi folosit
+cu succes dacă cei care programează folosesc o disciplină şi un
+stil de programare consistent.  De exemplu, în general programatorii
+vor considera codul funcţie <TT>f</TT> de mai sus ca fiind defectuos,
+pentru că este asimetric: uneori descuiem în <TT>f()</TT>, alteori în
+apelantul lui <TT>f</TT>.
+
+<P>
+În proiecte atît de mari ca Linux, disciplina în programare este
+absolut esenţială.  Contributorilor le este bine-cunoscută
+atitudinea cvasi-dictatorială a lui Linus Torvalds în această
+privinţă: el va rejecta programe perfect funcţionale dacă nu este
+mulţumit cu stilul de programare.  Cu siguranţă că această
+disciplină de fier contribuie în mod substanţial la calitatea
+ridicată a nucleului Linux.
+
+<P>
+Cele aproximativ 1000 de bug-uri menţionate mai sus au fost detectate
+folosind 8 programe Metal, toate în jurul a 100 de linii de cod
+fiecare.  Alte extensii scrise pentru xgcc au avut rezultate mixte:
+deşi generau  erori, multe dintre ele erau falsuri pozitive.
+Din păcate, fiecare mesaj trebuie să fie inspectat manual pentru a
+decide dacă este o eroare adevărată sau nu.  Ca atare, extensiile
+Metal sunt utile mai ales dacă generează relativ puţine alarme
+false, altfel efortul necesar pentru verificarea mesajelor devine
+repede prohibitiv.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Inferenţa automată a regulilor de testat</A>
+</H1>
+
+<P>
+În mod interesant, nici unul dintre programatorii de la Stanford din
+proiectul MC nu este expert în nucleul Linux.  Ca atare, pentru a
+valida mesajele xgcc, ei trebuia sa scruteze codul pentru a înţelege
+ce se întîmplă de fapt.  Din această activitate le-a venit o idee
+foarte interesantă, care este subiectul unuia din cele mai recent
+articole pe care le-au scris, şi care vor fi prezentate în luna
+octombrie la conferinţa ``Symposium on Operating System Priciples''.
+
+<P>
+xgcc este atît de bun pe cît sunt extensiile scrise.  Dacă ştii ce
+fel de bug să cauţi, îl poţi găsi (de exemplu, trebuie să ştii
+că <TT>lock</TT>/<TT>unlock</TT> se folosesc împreună în felul
+indicat).  Cînd cercetătorii de la Stanford validau erorile, căutau
+exemple similare în cod, pentru a vedea cum trebuie făcute de fapt
+lucrurile.
+
+<P>
+De aici s-a născut ideea lor cea mai interesantă: avem la
+dispoziţie aproape două milioane de linii de cod.  De ce să nu
+folosim acest cod pentru a extrage automat regulile de programare?
+De exemplu, dacă în cod funcţiile <TT>lock</TT> şi <TT>unlock</TT> apar
+mereu împreună, şi în ordinea asta, înseamnă că asta e o
+regulă care trebuie respectată.
+
+<P>
+Bine, dar dacă în program sunt bug-uri?  Atunci regula va fi
+încălcată.  Pentru a infera reguli, vom căuta în program
+construcţii care apar foarte frecvent, chiar dacă nu apar
+întotdeauna.  Dacă în 999 de cazuri din 1000 <TT>lock</TT> este urmat
+de <TT>unlock</TT>, dar în 1 la mie nu, considerăm că am dat peste o
+regulă importantă.
+
+<P>
+A fost făcută o listă de tipuri de reguli care trebuie căutate în
+cod (de exemplu, <TT>&lt;A&gt;</TT> este mereu urmat de <TT>&lt;B&gt;</TT>, unde
+<TT>&lt;A&gt;</TT> şi <TT>&lt;B&gt;</TT> trebuie descoperite), şi apoi codul a fost
+analizat exhaustiv pentru a obţine posibile reguli (de exemplu,
+<TT>&lt;A&gt;</TT> este <TT>lock()</TT> şi <TT>&lt;B&gt;</TT> este <TT>unlock()</TT>).  Fiecare
+regulă a fost apoi analizată statistic, şi regulile au fost apoi
+sortate în raport cu deviaţia de la distribuţia uniformă.  Apoi
+regulile cele mai promiţătoare au fost transformate în programe
+Metal.
+
+<P>
+Ingeniozitatea cercetătorilor însă nu s-a oprit aici.  Dacă suntem
+nefamiliari cu nucleul, tot nu ştim dacă regulile acestea trebuie
+sau nu să fie respectate.  Analizînd regulile, cercetătorii au
+observat că folosirea unei anumite construcţii în cod implică
+faptul că programatorul are o anumită <EM>credinţă</EM> despre cum
+trebuie să arate codul.  De exemplu, dacă un programator compară un
+pointer cu zero, înseamnă că programatorul se aşteaptă că acel
+pointer să poată avea valoarea zero.
+
+<P>
+Cercetătorii au definit apoi nişte reguli simple care arată cum se
+propagă credinţele prin program şi care dintre credinţe sunt
+contradictorii.  Voi ilustra din nou acest lucru cu un exemplu simplu:
+
+<P>
+<PRE>
+  char* p = f();
+  b = *p;     /* credinta: p nu poate fi zero */
+  ...
+  if (p == 0) /* credinta: p poate fi zero */
+     ...
+</PRE>
+
+<P>
+În acest fragment de program, pointerul <TT>p</TT> este dereferenţiat
+(se citeşte valoarea la care punctează).  Asta înseamnă că
+programatorul nu se aşteaptă ca în acest punct valoarea pointerului
+să fie zero.  Dar, ceva mai departe în program, pointerul este
+comparat cu zero.  Programatorul nu ar fi făcut această comparaţie
+dacă nu s-ar fi aşteptat să reuşească ciţeodată.  Aceste două
+credinţe (că <TT>p</TT> nu poate fi zero, respectiv că <TT>p</TT> poate
+fi zero) sunt contradictorii.  Una dintre ele trebuie să fie o
+eroare!
+
+<P>
+Folosind această metodă au fost construite noi teste care au
+descoperit alte cîteva sute de bug-uri în Linux.
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Concluzii</A>
+</H1>
+
+<P>
+În acest articol am prezentat proiectul numit Meta-compilare, care
+augumentează compilatorul cu informaţii specifice programului
+compilat.  Compilatorul foloseşte aceste informaţii pentru a detecta
+posibile erori în program.  Tipul proprietăţilor care se pot
+verifica folosind această schemă este destul de restrîns: fiecare
+procedură din programul de analizat este redusă la un automat finit
+a cărui traiectorie este urmărită pentru a vedea dacă trece prin
+stări de eroare.  Am văzut de asemenea o schemă ingenioasă prin
+care codul este analizat pentru a extrage reguli de stil de programare
+în mod automat; cazuri în care regulile de stil sunt încălcate
+sunt potenţiale erori de programare.  Aceste exemple constituie o
+aplicare a tehnicilor de verificare formală pentru analiza automată
+a programelor.
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Alte surse de informaţie</A>
+</H1>
+
+<P>
+
+<UL>
+<LI>Articolul meu despre depanare din PC Report din iunie 1999 
+conţine consideraţii despre metodele statice şi dinamice:
+<TT><A NAME="tex2html8"
+  HREF="http://www.cs.cmu.edu/~mihaib/articles/articles.html#ddd">http://www.cs.cmu.edu/~mihaib/articles/articles.html#ddd</A></TT>.
+
+<P>
+</LI>
+<LI>Am vorbit despre teoria calculabilităţii în articolul meu din
+PC Report din decembrie 1999:
+<TT><A NAME="tex2html9"
+  HREF="http://www.cs.cmu.edu/~mihaib/articles/articles.html#complex">http://www.cs.cmu.edu/~mihaib/articles/articles.html#complex</A></TT>.
+
+<P>
+</LI>
+<LI>Am descris pe scurt automatele finite în articolul meu din PC
+Report din aprilie 2000:
+<TT><A NAME="tex2html10"
+  HREF="http://www.cs.cmu.edu/~mihaib/articles/articles.html#regex">http://www.cs.cmu.edu/~mihaib/articles/articles.html#regex</A></TT>.
+
+<P>
+</LI>
+<LI>Pagina de web a proiectului MC de la Stanford:
+<TT><A NAME="tex2html11"
+  HREF="http://hands.stanford.edu/linux">http://hands.stanford.edu/linux</A></TT>.
+
+<P>
+</LI>
+<LI>Pagina de web a lui Dawson Engler, liderul proiectului MC:
+<TT><A NAME="tex2html12"
+  HREF="http://www.stanford.edu/~engler">http://www.stanford.edu/~engler</A></TT>.  Aici puteţi găsi toate
+articolele publicate de acest grup despre Metacompilation pe care se
+bazează prezentarea din acest articol.
+
+<P>
+</LI>
+<LI>O pagină cu legături spre publicaţii care sintetizează starea
+curentă a metodelor de verificare formală:
+<TT><A NAME="tex2html13"
+  HREF="http://www.cerc.utexas.edu/~jay/fv_surveys">http://www.cerc.utexas.edu/~jay/fv_surveys</A></TT>
+<P>
+</LI>
+<LI>O biblioteca virtuală cu informaţii despre verificare
+formală: <TT><A NAME="tex2html14"
+  HREF="http://www.afm.sbu.ac.uk">http://www.afm.sbu.ac.uk</A></TT>
+<P>
+</LI>
+<LI>O excelentă introducere în metodologia verificării formale
+pentru hardware: C.-J. H. Seger, ``An Introduction to Formal Hardware
+Verification'', Technical Report 92-13, UBC, Department of Computer
+Science, Vancouver, B.C., Canada, June 1992, 
+<BR><TT><A NAME="tex2html15"
+  HREF="http://www.cerc.utexas.edu/~jay/fv_surveys/Seger.ps">http://www.cerc.utexas.edu/~jay/fv_surveys/Seger.ps</A></TT>
+</LI>
+</UL>
+
+<P>
+<BR><HR><H4>Note</H4>
+<DL>
+<DT><A NAME="foot56">...
+separat</A><A NAME="foot56"
+ HREF="metacompilare-html.html#tex2html3"><SUP>1</SUP></A>
+<DD>Desigur, dacă două periferice sunt compatibile
+între ele, pot folosi acelaşi driver, dar compatibilitatea pare să
+fie mai curînd excepţia decît regula.
+
+<DT><A NAME="foot57">...
+milioane</A><A NAME="foot57"
+ HREF="metacompilare-html.html#tex2html4"><SUP>2</SUP></A>
+<DD>Linux este cel mai portabil sistem de operare,
+rulînd pe zeci de procesoare diferite.  Informaţiile din textul de
+faţă sunt însă specifice versiunii de Linux pentru procesoarele
+x86, de pe PC-uri.
+
+<DT><A NAME="foot92">... separat</A><A NAME="foot92"
+ HREF="metacompilare-html.html#tex2html7"><SUP>3</SUP></A>
+<DD>Autorii au
+introdus şi un mecanism rudimentar prin care se pot efectua unele
+analize interprocedurale, facînd două treceri asupra programului,
+în prima trecere colectînd informaţii despre toate procedurile
+vizitate.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

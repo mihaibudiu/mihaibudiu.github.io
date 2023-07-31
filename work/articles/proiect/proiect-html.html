@@ -1,0 +1,1994 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Un proiect în Sisteme de Operare</TITLE>
+<META NAME="description" CONTENT="Un proiect în Sisteme de Operare">
+<META NAME="keywords" CONTENT="proiect-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Un proiect în Sisteme de Operare</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- mihaib+ at cs.cmu.edu, Raluca 
+Budiu -- ralucav+ at cs.cmu.edu
+<BR><TT>http://www.cs.cmu.edu/~mihaib/</TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>ianuarie 1998</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>cum se argumentează în sprijinul unei idei într-un
+articol
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>cunoştinţe destul de serioase despre
+funcţionarea sistemul de operare Unix
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>apel de sistem, intercepţie, performanţă,
+model teoretic
+</DD>
+<DT><STRONG>Articole</STRONG></DT>
+<DD>anterioare din PC Report utile (disponibile din pagina
+de web a autorului):
+
+<UL>
+<LI><a href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#nucleu">``Nucleul''</a>, octombrie-noiembrie 1996
+</LI>
+<LI><a href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#threads">``Multithreading''</a>, ianuarie 1996
+</LI>
+<LI><a href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#rapid-fs">``Eficienţa în sistemele de fişiere''</a>, octombrie 1997
+</LI>
+<LI><a href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#2fs">``Funcţionarea sistemului de fişiere din Unix''</a>, decembrie 1997
+</LI>
+<LI><a href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#linux">``Anatomia unui apel de sistem în Linux''</a>, ianuarie 1998
+</LI>
+<LI><a href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#3fs">``Sistemul de fişiere virtual''</a>, februarie 1998
+</LI>
+</UL>
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html44"
+  HREF="proiect-html.html">Informatica</A>
+<UL>
+<LI><A NAME="tex2html45"
+  HREF="#SECTION00021000000000000000">Teoria</A>
+<LI><A NAME="tex2html46"
+  HREF="#SECTION00022000000000000000">Sistemele</A>
+<LI><A NAME="tex2html47"
+  HREF="#SECTION00023000000000000000">Totul</A>
+</UL><BR>
+<LI><A NAME="tex2html48"
+  HREF="#SECTION00030000000000000000">Un raport tehnic în sisteme</A>
+<LI><A NAME="tex2html49"
+  HREF="#SECTION00040000000000000000">O propunere: ``cîini de pază''</A>
+<UL>
+<LI><A NAME="tex2html50"
+  HREF="#SECTION00041000000000000000">Aplicaţii</A>
+</UL><BR>
+<LI><A NAME="tex2html51"
+  HREF="#SECTION00050000000000000000">Arhitectura sistemului</A>
+<UL>
+<LI><A NAME="tex2html52"
+  HREF="#SECTION00051000000000000000">Terminologie</A>
+<LI><A NAME="tex2html53"
+  HREF="#SECTION00052000000000000000">Arhitectura</A>
+<LI><A NAME="tex2html54"
+  HREF="#SECTION00053000000000000000">Un exemplu de watchdog</A>
+</UL><BR>
+<LI><A NAME="tex2html55"
+  HREF="#SECTION00060000000000000000">O întrebare: eficacitatea</A>
+<UL>
+<LI><A NAME="tex2html56"
+  HREF="#SECTION00061000000000000000">Componentele costului</A>
+<LI><A NAME="tex2html57"
+  HREF="#SECTION00062000000000000000">Costul componentelor</A>
+<LI><A NAME="tex2html58"
+  HREF="#SECTION00063000000000000000">Performanţa relativă</A>
+<LI><A NAME="tex2html59"
+  HREF="#SECTION00064000000000000000">Utilitatea proiectului revizuită</A>
+<LI><A NAME="tex2html60"
+  HREF="#SECTION00065000000000000000">O măsurătoare a performanţei</A>
+</UL><BR>
+<LI><A NAME="tex2html61"
+  HREF="#SECTION00070000000000000000">O aplicaţie a mecanismului: un sistem de fişiere la
+distanţă</A>
+<UL>
+<LI><A NAME="tex2html62"
+  HREF="#SECTION00071000000000000000">Alţi candidaţi şi slăbiciunile lor</A>
+<LI><A NAME="tex2html63"
+  HREF="#SECTION00072000000000000000">Un serviciu de ``caching'' inteligent</A>
+<LI><A NAME="tex2html64"
+  HREF="#SECTION00073000000000000000">Serviciul de fişiere la distanţă</A>
+<LI><A NAME="tex2html65"
+  HREF="#SECTION00074000000000000000">Măsurători de performanţă</A>
+</UL><BR>
+<LI><A NAME="tex2html66"
+  HREF="#SECTION00080000000000000000">Concluzii</A>
+<LI><A NAME="tex2html67"
+  HREF="#SECTION00090000000000000000">Bibliografie</A>
+<LI><A NAME="tex2html68"
+  HREF="#SECTION000100000000000000000">Bibliography</A>
+<LI><A NAME="tex2html69"
+  HREF="#SECTION000110000000000000000">Traseul parcurs</A>
+</UL>
+<!--End of Table of Contents--><BR>
+<BR>
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Informatica</A>
+</H1>
+
+<P>
+Cea mai grosolană diviziune a ``ştiinţei calculatoarelor'' (cum o
+numesc anglo-saxonii), sau, dacă preferaţi, a ``informaticii'' (în
+accepţiunea francofonă a termenului) va segmenta domeniul în două
+zone relativ distincte prin natura cercetării şi metoda aplicată.
+Cele două zone sunt ``Teoria'' şi ``Sistemele''.  
+
+<P>
+
+<H2><A NAME="SECTION00021000000000000000">
+Teoria</A>
+</H2>
+
+<P>
+Despre prima este destul de limpede cum stau lucrurile: este o ramură
+a matematicii, care uzînd de arsenalul acesteia (definiţii, leme,
+teoreme, demonstraţii, etc.), manipulează o serie de abstracţii ale
+fenomenelor petrecute în calculatoare.  Multe părţi din
+informatică aparţin majoritar acestui domeniu; cele mai evidente
+sunt: teoria algoritmilor, teoria complexităţii, metodele numerice
+(numite şi ``scientific computing''), etc.  
+
+<P>
+Trebuie spus că aproape întotdeauna dezvoltarea teoretică a unei
+ramuri a calculatoarelor o precede pe cea practică; calculatoarele
+însele există pe hîrtie dinainte de anii 1930, deşi realizarea lor
+concretă început să prindă contur abia în timpul celui de-al
+doilea război mondial.
+
+<P>
+De fapt rolul teoriei în informatică este enorm; foarte puţini
+dintre ``butonari'' realizează în ce măsură sculele pe care le
+folosesc există numai pentru că au fost iniţial concepute în
+termeni matematici.  Un exemplu frapant este teoria compilării, care
+a fost dezvoltată la începutul anilor '70, şi care a deschis era
+unor limbaje mult mai clare şi mai coerente, care realmente au mărit
+enorm sfera de accesibilitate a calculatoarelor pînă la ``marele
+public''.
+
+<P>
+Scopul acestui articol <I>nu</I> este însă să vorbească despre
+această ramură, aşa că mă voi opri aici cu consideraţiunile care
+o privesc.
+
+<P>
+
+<H2><A NAME="SECTION00022000000000000000">
+Sistemele</A>
+</H2>
+
+<P>
+A doua parte a informaticii este un teren de activitate
+``inginerească''; denumirea sa dominantă pare să fie ``sisteme''.
+Trăsătura definitorie este că manipulează ``sisteme'' foarte
+complexe (din foarte multe părţi) a căror totalitate sau comportare
+nu se pretează foarte bine la o manipulare analitică (adică
+folosind uneltele teoretice).  Munca în acest domeniu se bazează pe
+o mare cantitate de fapte empirice (observate experimental) şi pe
+capacitatea de a agrega mental părţile componente într-un tot.
+
+<P>
+
+<H2><A NAME="SECTION00023000000000000000">
+Totul</A>
+</H2>
+
+<P>
+Dichotomia aceasta (teorie-sisteme) este exprimarea dichotomiei
+ştiinţă-tehnică.  Ştiinţa încearcă să descrie fenomene
+idealizate, simplificate, tehnica încearcă să aplice aceste
+descrieri obiectelor reale, care sunt o întreţesere încîlcită de
+fenomene simple, din care foarte adesea unele încă ``necunoscute''
+din punct de vedere ştiinţific.  Distanţa este cea de la
+ecuaţiile cîmpului magnetic ale lui Maxwell şi fizica cuantică la
+construcţia unui televizor<A NAME="tex2html1"
+  HREF="#foot57"><SUP>1</SUP></A>.
+
+<P>
+Din observaţiile mele personale aceste două arii de activitate cer
+însuşiri deosebite.  Există astfel teoreticieni renumiţi care nu
+ştiu mai mult decît cîteva comenzi ale unui calculator, pentru a
+manipula poşta electronică.  Există de asemenea ``legende vii'' în
+sisteme care nu ştiu prea multe metode de sortare.  Fireşte, există
+şi celelalte două extreme: matematicieni de forţă care totodată
+scriu şi manipulează sisteme extrem de complexe (două nume faimoase
+ar fi John von Neumann, care este unul dintre cei mai mari
+matematicieni ai secolului şi care este considerat părintele
+arhitecturii contemporane a calculatoarelor, şi Donald Knuth, care,
+pe lîngă cele 3 faimoase volume de teoria algoritmilor a scris
+programele TeX şi Metafont pentru tehnoredactare computerizată), şi
+există (marea masă a utilizatorilor de calculatoare) inşi care nu
+ştiu nici teorie şi nici sisteme.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Un raport tehnic în sisteme</A>
+</H1>
+
+<P>
+Acest articol îşi propune să arate ceva din natura cercetării
+ştiinţifice şi a argumentării în domeniul ``sistemelor''.  Eu
+însumi sunt un proaspăt învăţăcel, aşa că sunt mult mai multe
+fapte pe care nu le ştiu decît lucruri pe care le ştiu.  Cu toate
+acestea aş vrea să spun cîteva lucruri neevidente (cel puţin eu nu
+le-am ghicit de unul singur) care ar putea fi de folos celor care
+activează în acest domeniu.
+
+<P>
+Prezentarea se bazează pe un proiect de curs pe care l-am realizat
+în toamna lui 1997.  Proiectul şi raportul însoţitor au fost
+realizate de Raluca şi Mihai Budiu.  Textul care urmează este destul
+de ``greu''; mi-ar fi plăcut să mă pot apleca mai mult asupra unora
+dintre detalii, dar şi aşa textul a ieşit cam mare.  Voi folosi
+tacit informaţii dintr-o mulţime de articole pe care le-am publicat
+anterior în PC Report.
+
+<P>
+Textul care urmează va încerca să evidenţieze următoarele două
+aspecte care trebuie puse în valoare într-un raport tehnic:
+
+<P>
+
+<UL>
+<LI>Detaliile sunt cele care contează;
+</LI>
+<LI>O propunere de nouă tehnologie trebuie să demonstreze prin
+măsurători de performanţă o creştere a eficienţei faţă de
+vechile metode.
+</LI>
+</UL>
+
+<P>
+O să vedeţi că articolul poate părea plictisitor prin amănunte,
+mai ales în secţiunile de performanţă.  Specifică tot felul de
+detalii, parametrii cu care se fac măsurătorile, tipul maşinilor,
+încărcătura reţelei, ce se măsoară, cînd începe şi cînd se
+termină măsurătoarea, etc.  Cu toate acestea, este relativ tipic
+(nu ca nivel ştiinţific, ci ca alcătuire) pentru un articol de
+cercetare contemporan în ``sisteme''.
+
+<P>
+<BLOCKQUOTE>
+În absenţa acestor detalii nu există nimic; acestea trebuie să fie
+suficiente ca oricine să poată duplica experimentele întocmai.
+Valoarea unui singur parametru poate schimba complet rezultatele, deci
+trebuie încercată menţinerea sub control a tuturor parametrilor
+semnificativi.
+
+</BLOCKQUOTE>
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+O propunere: ``cîini de pază''</A>
+</H1>
+
+<P>
+Dorinţa noastră iniţială a fost nu prea ambiţioasă: să
+implementăm în cadrul sistemului de operare Linux un mecanism
+descris în urmă cu 10 ani într-un articol apărut în ``Computing
+Systems''.  Titlul articolului era ``Watchdogs -- Extending the UNIX
+File System'', de Brian Bershad si Brian Pinkerton, de la
+universitatea Washington din Seattle<A NAME="tex2html2"
+  HREF="#foot64"><SUP>2</SUP></A>.  Traducerea titlului ar fi ``Cîini de pază:
+o extensie a sistemelor de fişiere din Unix''.
+
+<P>
+Articolul propunea implementarea unui mecanism în interiorul
+nucleului prin care anumite fişiere pot fi supravegheate de către
+procese.  Cînd un alt proces încearcă să acceseze un fişier
+supravegheat, supervizorul (cel care este de fapt numit ``cîine de
+pază'') este executat şi i se pasează informaţii despre tipul
+accesului încercat.  Supervizorul decide care trebuie să fie
+rezultatul accesului.
+
+<P>
+
+<H2><A NAME="SECTION00041000000000000000">
+Aplicaţii</A>
+</H2>
+
+<P>
+Vom face mai tîrziu un desen care arată cum funcţionează un astfel
+de sistem.  Pentru început să observăm că numărul de aplicaţii
+al unui astfel de mecanism este uriaş.  Iată cîteva posibilităţi:
+
+<P>
+<DL>
+<DT><STRONG>ACL</STRONG></DT>
+<DD>(access control lists: liste de control al accesului): Unix
+oferă un sistem de protecţie al fişierelor relativ rudimentar,
+bazat pe diviziunea utilizatorilor în 3 categorii: utilizatorul
+(unic) care posedă un fişier, grupul utilizatorilor care posedă
+fişierul şi restul lumii.  Se pot imagina scheme mai flexibile, în
+care un fişier are drepturi pentru mai mulţi utilizatori, de genul:
+X are voie să scrie dar Y nu are voie să citească.  Un ``watchdog''
+ar putea implementa un astfel de control;
+
+<P>
+</DD>
+<DT><STRONG>fişiere active:</STRONG></DT>
+<DD>în Windows NT fişierele sunt obiecte
+``active'' în sensul că procesele pot să primească automat
+evenimente (events) atunci cînd alte procese acţionează asupra
+fişierelor.  În acest fel un manager de fişiere (File Manager)
+poate afişa permanent situaţia cea mai recentă a fişierelor.  În
+Unix aşa ceva nu este cu putinţă.  Un watchdog ar putea însă
+intercepta acţiunile şi trimite semnale proceselor interesate de
+schimbările pe fişiere;
+
+<P>
+</DD>
+<DT><STRONG>conţinut generat dinamic:</STRONG></DT>
+<DD>un watchdog poate genera dinamic
+conţinutul fişierelor în funcţie de anume parametri, cum ar fi
+identitatea procesului care accesează fişierul (cu alte cuvinte
+fiecare proces ar putea vedea altceva în acelaşi fişier).
+Acest mecanism ar putea fi folosit pentru a implementa un server de
+web simplu emulînd mecanismele cgi-bin, prin care serverul execută
+alte procese cînd i se cer anume fişiere.  Watchdog-ul poate subsuma
+aceste alte procese;
+
+<P>
+</DD>
+<DT><STRONG>managere pentru ``obiecte de memorie'':</STRONG></DT>
+<DD>sistemul de operare
+Mach permite utilizatorilor să construiască propriile lor sisteme de
+memorie virtuală; fiecare zonă de memorie are un proces responsabil
+care paginează zona.  În Unix de acest lucru se ocupă nucleul.  Un
+watchdog, împreună cu apelul de sistem <TT>mmap()</TT>, ar putea
+permite implementarea unor mecanisme ca cele din Mach: <TT>mmap()</TT>
+transformă un fişier într-o zonă de memorie, iar managementul
+fişierului este făcut de un watchdog.  Schema asta este foarte
+flexibilă; folosind-o se poate implementa de pildă un sistem de
+memorie partajată distribuită (DSM: distributed shared memory), în
+care mai multe procese de pe calculatoare diferite scriu în
+``aceeaşi'' zonă de memorie;
+
+<P>
+</DD>
+<DT><STRONG>colectare de statistici:</STRONG></DT>
+<DD>putem scrie un watchdog care numără
+accesele la fişiere pentru a permite eventual optimizarea plasării
+fişierelor des accesate sau studii despre obiceiurile programatorilor;
+
+<P>
+</DD>
+<DT><STRONG>mecanismul de portal din BSD Unix:</STRONG></DT>
+<DD>BSD 4.4 conţine un mecanism
+numit ``portal'' care foloseşte nume de fişiere pentru ``obiecte''
+din reţea; de pildă o legătură <TT>telnet</TT> TCP/IP la
+calculatorul foo.bar.org are un fişier numit
+<TT>/portal/tcpip/foo.bar.org/telnet</TT>.  Un proces care deschide
+acest fişier stabileşte de fapt o legătură telnet cu acel
+calculator.  (Un portal este un fel de URL).
+
+<P>
+</DD>
+<DT><STRONG>controlul versiunii:</STRONG></DT>
+<DD>sistemul de fişiere Translucent de la Sun
+crează pentru fiecare fişier cîte o ``versiune'' nouă atunci cînd
+este modificat, permiţînd astfel recuperarea versiunilor mai vechi.
+Watchdog-ul poate face ceva asemănător;
+
+<P>
+</DD>
+<DT><STRONG>fişiere la distanţă:</STRONG></DT>
+<DD>vom vedea această aplicaţie în
+articolul de faţă;
+
+<P>
+</DD>
+<DT><STRONG>etc.</STRONG></DT>
+<DD>mai putem imagina şi alte aplicaţii ale mecanismului de
+watchdog, dar ne oprim aici.
+</DD>
+</DL>
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Arhitectura sistemului</A>
+</H1>
+
+<P>
+
+<H2><A NAME="SECTION00051000000000000000">
+Terminologie</A>
+</H2>
+
+<P>
+Să stabilim nişte convenţii terminologice ca să simplificăm
+discuţia.  Voi numi ``watchdog'' atît procesul care supervizează
+accesul la un fişier cît şi structurile de date din nucleu prin
+care watchdog-ul este implementat.
+
+<P>
+Procesele care acţionează asupra fişierului supervizat vor fi
+numite ``clienţi'' ai watchdog-ului.
+
+<P>
+
+<H2><A NAME="SECTION00052000000000000000">
+Arhitectura</A>
+</H2>
+
+<P>
+Un singur lucru mai avem de lămurit: cum comunică procesul watchdog
+cu nucleul.  În Unix nu există nici un mecanism prin care nucleul
+să ceară servicii unui proces.  Am ales următoarea variantă,
+inspirată de sistemul de fişiere <TT>/proc</TT>: un watchdog
+comunică cu nucleul folosind apelurile de sistem pentru a scrie/citi
+fişiere.  (Această soluţie este diferită de cea oferită de
+articolul lui Bershad.)
+
+<P>
+Introducem un nou apel de sistem prin care nucleul crează un
+``fişier'' special, de tip ``watchdog''.  Să ne reamintim că în
+interiorul nucleului fişierele se reprezintă printr-o structură de
+date specială numită <I>vnod</I><A NAME="tex2html3"
+  HREF="#foot77"><SUP>3</SUP></A>.  Din multe puncte de vedere funcţionarea unui
+watchdog seamănă cu cea a unui <I>pipe</I> între două procese; în
+interiorul nucleului se vor implementa la fel, sub forma unor
+``fişiere'' (sau mai exact vnod-uri).
+
+<P>
+Figura&nbsp;<A HREF="proiect-html.html#arhitectura">1</A> ne arată cum lucrează un watchdog.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="arhitectura"></A><A NAME="278"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 1:</STRONG>
+Arhitectura unui watchdog</CAPTION>
+<TR><TD><IMG
+ WIDTH="622" HEIGHT="404" BORDER="0"
+ SRC="img1.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=14cm\epsffile{arhitectura.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Paşii execuţiei sunt următorii:
+
+<P>
+Întîi procesul supervizor execută apelul de sistem
+<TT>watchdog(fisier)</TT>, prin care anunţă nucleul că vrea să
+devină un watchdog pentru fişierul indicat.  Nucleul construieşte
+în interior un fişier (vnod) care este asociat procesului watchdog
+şi returnează acest fişier special (să-l numim în cele ce
+urmează <TT>wd</TT>).
+
+<P>
+
+<OL>
+<LI>Procesul watchdog încearcă să citească ceva din acest
+fişier special (cu <TT>read(wd, request, sizeof(wd_request))</TT>;
+nucleul blochează watchdog-ul în operaţia de citire pînă la
+apariţia unui client;
+
+<P>
+</LI>
+<LI>Un proces (client) încearcă să acceseze fişierul supervizat;
+
+<P>
+</LI>
+<LI>Nivelul VFSSW (Virtual File System Switch; descris în <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#vfs">articolul</a>
+citat mai sus din PC Report din februarie 1998) interceptează apelul
+de sistem;
+
+<P>
+</LI>
+<LI>Nucleul construieşte o structură de date (de tipul
+<TT>wd_request</TT>) care descrie apelul de sistem al clientului;
+pasează această structură în vnod-ul watchdog-ului.
+
+<P>
+</LI>
+<LI>Procesul client este suspendat şi watchdog-ul este trezit;
+
+<P>
+</LI>
+<LI>Procesul watchdog termină apelul de sistem început la pasul 0;
+rezultatul acelei citiri este structura <TT>wd_request</TT>;
+
+<P>
+</LI>
+<LI>Watchdog-ul descifrează structura şi acţionează în
+consecinţă;
+
+<P>
+</LI>
+<LI>Watchdog-ul ar putea decide să acceseze el însuşi fişierul
+supervizat;
+
+<P>
+</LI>
+<LI>Accesul watchdog-ului la acel fişier nu este interceptat ci
+merge direct la fişier;
+
+<P>
+</LI>
+<LI>Watchdog-ul pune rezultatul deciziei sale într-o structură de
+tipul <TT>wd_reply</TT> şi face un <TT>write(wd, reply,
+sizeof(wd_reply))</TT>, trimiţînd structura nucleului;
+
+<P>
+</LI>
+<LI>Nucleul decodifică răspunsul watchdog-ului;
+
+<P>
+</LI>
+<LI>Nucleul re-porneşte clientul blocat;
+
+<P>
+</LI>
+<LI>Nivelul VFSSW execută acţiunea indicată de watchdog; dacă
+watchdog-ul a trimis date acestea sunt pasate procesului;
+
+<P>
+</LI>
+<LI>Dacă watchdog-ul a spus că putem lăsa clientul să facă cu
+fişierul ce a cerut, atunci clientul accesează direct fişierul;
+
+<P>
+</LI>
+<LI>Apelul de sistem al clientului se termină.
+</LI>
+</OL>
+
+<P>
+Cu toţii sunt gata pentru un nou ciclu de operaţii de la pasul 0.
+
+<P>
+Observaţi că toată procesarea watchdog-ului este absolut
+independentă de tipul fişierului accesat (pentru că se petrece în
+nivelul VFSSW); fie că fişierul este DOS, Unix sau NFS, watchdog-ul
+face acelaşi lucru.  Din cauza asta un watchdog poate superviza orice
+fel de fişier sau obiect care se reprezintă în nucleu ca un
+fişier, cum ar fi un periferic, un pipe sau o conexiune de reţea
+(socket).
+
+<P>
+
+<H2><A NAME="SECTION00053000000000000000">
+Un exemplu de watchdog</A>
+</H2>
+
+<P>
+Iată o implementare a unui proces watchdog foarte simplu, care
+permite deschiderea unui fişier, dar nu scrierea în acel fişier.
+Cînd un proces citeşte din fişier, rezultatul va fi întotdeauna
+şirul ``Paseaza datele astea clientului cind citeste'' (sau un
+prefix, dacă clientul a citit mai puţin decît lungimea şirului).
+
+<P>
+<PRE>
+#include "watchdog.h"
+
+int main()
+{
+   int fd, /* Fisier de supervizat. */ 
+       wd; /* Interfata watchdog-ului cu nucleul. */
+   char buf[] = "Paseaza datele astea clientului cind citeste";
+
+   fd = open("nume_fisier", O_RDWR); /* e nevoie de permisiuni de scriere/citire. */
+   wd = watchdog(fd);   /* apel de sistem: ne inregistram ca watchdog. wd=descriptor de fisier */
+
+   while (1) {
+      struct wd_request wq;   /* nucleul va descrie apelul de sistem aici */
+      struct wd_reply   wr;   /* watchdog-ul raspunde nucleului aici */
+
+      read(wd, (char*)&amp;wq, sizeof(wq));     /* Asta blocheaza watchdog-ul pina
+                                               cind nucleul are ceva de zis */
+      switch (wq.operation) {
+        case WD_OPEN:
+                printf("Procesul %d deschide `nume_fisier', mod %d\n", wq.mode);
+                wr.action = WD_ALLOW;  /* lasam procesul sa faca ce a cerut */
+                break;
+        case WD_READ:
+                printf("Procesul %d citeste din `nume_fisier', offset %ld,"
+                        "marime %ld\n", wq.pid, wq.offset, wq.size);
+                wr.action = WD_FAKE;  /* Watchdog-ul o sa dea datele procesului */
+                if (wq.size &lt; sizeof(buf)) wr.size = wq.size;
+                else wr.size = sizeof(buf);  /* Ii dam atitea date pentru read() */
+                wr.buffer = buf;      /* Aici sunt datele de pasat procesului */
+                break;
+        case WD_WRITE:
+                printf("Procesul %d vrea sa scrie in `nume_fisier', offset %ld,"
+                        "marime %ld\n", wq.pid, wq.offset, wq.size);
+                wr.action = WD_DENY;  /* Nu permitem scrierea. */
+                break;
+      }
+      write(wd, (char *)&amp;wr, sizeof(wr));    /* Trimite raspunsul nucleului. */
+      if (wq.operation == WD_CLOSE) break;   /* Daca clientul a inchis fisierul, terminam*/
+   }
+   close(fd);  /* Gata cu supervizarea fisierului. */
+   close(wd);  /* Inchidem fisierul ``watchdog''. */
+}
+</PRE>
+<P>
+<FONT SIZE="-1">Iată cum arată în implementarea noastră informaţiile de la nucleu
+şi răspunsurile:
+</FONT>
+<P>
+<PRE>
+enum operation {                /* apeluri de sistem interceptate */
+        WD_READ, WD_WRITE, WD_OPEN, WD_CLOSE, WD_LSEEK
+};
+
+enum action {                   /* ce spune watchdog-ul nucleului */
+        WD_ALLOW,               /* :da-i voie sa faca ce a cerut */
+        WD_DENY,                /* :clientul nu are voie sa faca asta */
+        WD_FAKE                 /* :OK, paseaza datele la/de la
+                                        watchdog (nu din fisier) */
+};
+
+struct wd_request {     /* Descrierea operatiei, primita de watchdog de la nucleu */
+        enum operation operation; /* operatia */
+        int fd;                 /* care fisier */
+        int pid;                /* care proces */
+        int uid;                /* posesorul procesului */
+        int gid;                /* grupul procesului */
+        long offset;            /* unde in fisier se opereaza */
+        int size;               /* citi octeti se transfera */
+        int mode;               /* drepturile cu care se deschide fisierul */
+        int whence;             /* pentru lseek: de unde se face lseek */
+        int inode_count;        /* cite procese au deschis acest fisier */
+};
+
+struct wd_reply {               /* Raspunsuri de la watchdog la nucleu: */
+        enum action action;     /* ce actiune sa faca nucleul */
+        int fd;                 /* pe care fisier (pot fi mai multe simultan) */
+        char * buf;             /* daca e FAKE aici sunt datele pentru read/write */
+        int count;              /* cit de multe date pentru read/write */
+};
+</PRE>
+<P>
+<FONT SIZE="-1">Singura operaţie care merită explicaţii este <TT>FAKE</TT>
+(``simulează'').  Cînd un client face o citire şi watchdog-ul
+răspunde cu <TT>FAKE</TT>, nucleul trebuie să preia datele de citit
+nu din fişier ci din buffer-ul indicat de watchdog.
+</FONT>
+<P>
+<FONT SIZE="-1">Cînd un client face o scriere şi watchdog-ul zice <TT>FAKE</TT>,
+nucleul nu trebuie să scrie datele în fişier ci în buffer-ul
+indicat de watchdog.
+</FONT>
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+O întrebare: eficacitatea</A>
+</H1>
+<P>
+<FONT SIZE="-1">Iată deci principalul avantaj al unui astfel de mecanism:
+<I>flexibilitatea</I>.  Un watchdog ne permite să implementăm o
+sumedenie de servicii noi dar fără a modifica cu nimic interfeţele
+existente, păstrînd în întregime compatibilitatea.  Procesele care
+lucrează cu fişiere nu vor afla niciodată că de fapt vorbesc cu un
+watchdog, pentru ca folosesc exact aceleaşi apeluri de sistem ca
+mai-nainte.
+</FONT>
+<P>
+<FONT SIZE="-1">Nimic nu e pe gratis, însă.  Ce avem de plătit pentru această
+flexibilitate?
+</FONT>
+<P>
+<FONT SIZE="-1">Răspunsul este clar: performanţă.  De fiecare dată cînd un proces
+accesează un fişier cu watchdog avem de făcut multe alte lucruri
+în plus faţă de cazul ``normal''. 
+</FONT>
+<P>
+<FONT SIZE="-1">Aceasta este una din tezele acestui articol:
+</FONT>
+<P>
+
+<BLOCKQUOTE><FONT SIZE="-1"><EM>Înainte de a ne lansa în implementarea unui proiect trebuie să
+estimăm dacă merită.  Pentru asta trebuie să avem o idee despre
+performanţa sistemului.  
+</EM></FONT></BLOCKQUOTE>
+<P>
+<FONT SIZE="-1">Mai ales dacă avem de construit un sistem foarte mare, trebuie să ne
+facem o idee despre performanţă <I>înainte</I> de a construi
+sistemul.  Dacă rezultatul o sa fie de 10 ori mai lent decît orice
+există atunci nu merită; trebuie reconsiderat întreg proiectul.
+</FONT>
+<P>
+<FONT SIZE="-1">Hai deci să estimăm ce avem de pierdut.  Care este deci
+<I>cărarea critică</I>: traseul execuţiei care costă cel mai mult.
+</FONT>
+<P>
+
+<H2><A NAME="SECTION00061000000000000000">
+Componentele costului</A>
+</H2>
+<P>
+<FONT SIZE="-1">Din păcate cam toţi paşii din figura de mai sus&nbsp;<A HREF="proiect-html.html#arhitectura">1</A>
+sunt pe cărarea critică, mai puţin pasul 0, care este executat în
+paralel de watchdog şi de client.
+</FONT>
+<P>
+
+<H3><A NAME="SECTION00061100000000000000">
+Costul fără watchdog</A>
+</H3>
+<P>
+<FONT SIZE="-1">Dacă nu avem watchdog, o operaţie pe un fişier constă doar din
+paşii 1, 2, 13 şi 14.  Toţi ceilalţi paşi sunt suplimentari
+(overhead), iar costul lor <I>relativ</I> trebuie să fie scăzut ca
+operaţia watchdog-ului să nu fie disruptivă pentru performanţă.
+</FONT>
+<P>
+
+<H3><A NAME="SECTION00061200000000000000">
+Costul suplimentar cu watchdog</A>
+</H3>
+<P>
+<FONT SIZE="-1">Ia să vedem ce fel de costuri plătim pentru watchdog:
+</FONT>
+<P>
+
+<UL>
+<LI>2 comutări de privilegiu între nucleu şi spaţiul utilizator:
+una în pasul 5 cînd nucleul vorbeşte cu watchdog-ul şi una în
+pasul 9, cînd watchdog-ul raspunde; asta înseamnă cam cît costul
+unui apel de sistem obişnuit;
+
+<P>
+</LI>
+<LI>În pasul 7 watchdog-ul ar putea face el însuşi apeluri de
+sistem (depinde de funcţionalitatea pe care o oferă);
+
+<P>
+</LI>
+<LI>Pasul 8 al watchdog-ului ar putea costa foarte mult: cît un
+acces la fişier;
+
+<P>
+</LI>
+<LI>Paşii 12 sau 3 copiază date între proces şi watchdog; dacă
+datele sunt multe asta costă substanţial;
+
+<P>
+</LI>
+<LI>Paşii 4 şi 11 comută execuţia între proces şi watchdog;
+avem deci cel puţin două comutări de procese.
+</LI>
+</UL>
+<P>
+<FONT SIZE="-1">Ceilalţi paşi sunt relativ neglijabili în cost<A NAME="tex2html5"
+  HREF="#foot116"><SUP>4</SUP></A>.
+</FONT>
+<P>
+<FONT SIZE="-1">Rezultatele sunt prezentate într-un tabel:
+</FONT>
+<P>
+
+<DIV ALIGN="CENTER"><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">
+Operaţie suplimentară </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> Cantitate </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">  
+Apel de sistem          </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> 2 </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+Comutare de proces      </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> 2 -- zeci </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+Copiere a datelor       </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> 2 </FONT></TD>
+</TR>
+</TABLE></DIV>
+<P>
+
+<H4><A NAME="SECTION00061210000000000000">
+Copierea datelor între procese.</A>
+</H4>
+<P>
+<FONT SIZE="-1">Întrebarea este ``cum putem copia date între două procese''?
+Problema constă în faptul că atunci cînd un proces se execută,
+foloseşte propriul său spaţiu de memorie virtuală; fiecare proces
+are propria lui adresă 5, care nu coincide cu a nici unui alt proces.
+Atunci cum pot muta date de la o adresa 7 dintr-un proces la adresa 12
+a altui proces?  Nicicum direct, pentru că atunci cînd se execută
+primul, adresa celui de-al doilea nu are sens şi invers.
+</FONT>
+<P>
+<FONT SIZE="-1">Soluţia este ca datele să fie copiate în <I>interiorul
+nucleului</I>, care aparţine ambelor spaţii de adrese.  (Acesta este
+şi mecanismul folosit de <I>pipe</I> în Unix pentru a transfera
+datele între procese.)  Soluţia este deci următoarea:
+</FONT>
+<P>
+
+<UL>
+<LI>Pentru fiecare vnod watchdog alocăm în nucleu un buffer
+temporar (nu prea mare, pentru că memoria nucleului costă, nefiind
+paginabilă);
+
+<P>
+</LI>
+<LI>Ca să copiem date între două procese facem aşa: executăm
+primul proces, luăm date cît să umple buffer-ul, îl blocăm pe
+primul, după care comutăm la al doilea;
+
+<P>
+</LI>
+<LI>Cînd se execută al doilea golim buffer-ul, blocăm procesul
+şi ne întoarcem la primul;
+
+<P>
+</LI>
+<LI>Repetăm operaţia pînă am transferat toate datele.
+</LI>
+</UL>
+<P>
+<FONT SIZE="-1">Iată de ce transferul de date implică mai multe comutări de
+procese; numărul lor depinde de raportul dintre cantitatea de date
+transferate şi mărimea buffer-ului intern.  În implementarea
+noastră am folosit un buffer intern de 8Kb (două pagini).  Asta
+înseamnă că 1Mb de transferat implică 1000/8 = 125 de comutări de
+proces înainte şi înapoi.
+</FONT>
+<P>
+
+<H2><A NAME="SECTION00062000000000000000">
+Costul componentelor</A>
+</H2>
+<P>
+<FONT SIZE="-1">Acum hai să vedem cît costă <I>concret</I> fiecare componentă.
+Asta o să ne dea o idee despre fezabilitate.  Nişte măsurători
+simple<A NAME="tex2html6"
+  HREF="#foot129"><SUP>5</SUP></A> pentru sistemul pe
+care am implementat watchdog-ul (PII 266MHz cu 64M RAM, rulînd Linux
+2.0.30) au dat următoarele valori:
+</FONT>
+<P>
+
+<DIV ALIGN="CENTER"><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">
+Operaţie          </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> Cost în <IMG
+ WIDTH="17" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="img2.png"
+ ALT="$\mu$">s </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">  
+Apel de sistem     </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> 2 </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+Comutare de proces </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> 7.5 </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+Copiere de date    </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> 20 000-40 000/Mb </FONT></TD>
+</TR>
+</TABLE></DIV>
+<P>
+<FONT SIZE="-1">(Durata copierii depinde de mai mulţi factori; dimensiunea
+influenţează rata de succes în cache, care influenţează viteza.)
+</FONT>
+<P>
+<FONT SIZE="-1">Se vede că dominant este costul <I>copierii</I>, chiar pentru
+cantităţi mici de date (1Kb ar lua peste 10<IMG
+ WIDTH="17" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="img2.png"
+ ALT="$\mu$">s) pentru o copiere,
+iar noi avem de făcut două, una ``în sus'' şi una ``în jos''.
+</FONT>
+<P>
+
+<H2><A NAME="SECTION00063000000000000000">
+Performanţa relativă</A>
+</H2>
+<P>
+<FONT SIZE="-1">Toate aceste evaluări nu s-au preocupat de loc de costul accesului la
+disc.  Ori discul este un periferic extrem de lent; numai mutarea
+braţului durează de ordinul a 10ms (10 000 de <IMG
+ WIDTH="17" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="img2.png"
+ ALT="$\mu$">s!).  Costul
+<I>suplimentar</I> (overhead) al watchdog-ului pentru astfel de
+circumstanţe devine oarecum neglijabil.
+</FONT>
+<P>
+<FONT SIZE="-1">Citirea dintr-un fişier de pe disc (deschis dinainte) a 1Mb de date
+durează cam 150ms.  Costul operaţiilor watchdog-ului pentru o
+operaţie care implică 1Mb este cam de 40ms + 0.0075ms * 125 + 0.004
+= 41ms, deci cam de 25%.
+</FONT>
+<P>
+<FONT SIZE="-1">Pe scurt, iată importanţa costului suplimentar al unui watchdog, în
+funcţie de tipul operaţiei efectuate:
+</FONT>
+<P>
+
+<DIV ALIGN="CENTER"><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">
+Discul accesat  </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> Cantitate de date </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> Overhead </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">  
+nu              </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> puţine           </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 1000%   </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+nu              </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> multe             </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 200%    </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+da              </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> oricîte          </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 25-50%  </FONT></TD>
+</TR>
+</TABLE></DIV>
+<P>
+
+<H2><A NAME="SECTION00064000000000000000">
+Utilitatea proiectului revizuită</A>
+</H2>
+<P>
+<FONT SIZE="-1">Iată cum o simplă evaluare <I>teoretică</I> ne spune deja foarte
+multe lucruri despre mecanismul de watchdog: ne spune de pildă ce fel
+de servicii merită să fie oferite de watchdog şi care nu.  Dacă un
+serviciu costă mult mai puţin decît overhead-ul, atunci watchdog-ul
+este prea costisitor şi trebuie să căutăm altă soluţie.
+</FONT>
+<P>
+<FONT SIZE="-1">De exemplu nu rentează să implementăm ACL (controlul accesului) cu
+watchdog, pentru că astfel de operaţii nu transferă date şi nu
+accesează discul (decît prima oară cînd un fişier este deschis;
+următoarele accese vor merge în cache).  Pentru astfel de operaţii
+citim din tabelul de mai sus că watchdog-ul încetineşte operaţia
+de 10 ori!  Locul unui astfel de serviciu este în nucleul sistemului
+de operare.
+</FONT>
+<P>
+<FONT SIZE="-1">Un watchdog nu va fi prea costisitor în următoarele cazuri:
+</FONT>
+<P>
+
+<UL>
+<LI>Cînd operaţiile pe fişiere implică acces frecvent la disc
+(de exemplu datorită unei localităţi proaste în cache: accese
+aleatoare);
+
+<P>
+</LI>
+<LI>Cînd operaţiile se fac pe cantităţi mari de date şi pot
+beneficia de optimizări speciale specifice aplicaţiei.
+</LI>
+</UL>
+<P>
+
+<H2><A NAME="SECTION00065000000000000000">
+O măsurătoare a performanţei</A>
+</H2>
+<P>
+<FONT SIZE="-1">Acum că am văzut că un watchdog nu e complet inutil ne-am apucat
+să implementăm mecanismele necesare.  Am construit în nucleu
+intercepţia apelurilor de sistem şi am scris apoi un watchdog foarte
+foarte simplu (care seamănă cu cel din exemplul de cod anterior), cu
+care am măsurat performanţa reală.  Acum vom vedea dacă estimarea
+noastră teoretică de mai sus a fost realistă.
+</FONT>
+<P>
+<FONT SIZE="-1">Am făcut un set de 5 experimente, după cum urmează:
+</FONT>
+<P>
+
+<OL>
+<LI>Am executat un apel de sistem <TT>lseek()</TT> (nu atinge
+discul);
+</LI>
+<LI>Am executat un <TT>lseek()</TT> după care am citit din fişier
+un octet;
+</LI>
+<LI>Am executat <TT>lseek()</TT> şi am citit o pagină (4K);
+</LI>
+<LI><TT>lseek()</TT> urmat de citirea a 40K;
+</LI>
+<LI><TT>lseek()</TT> urmat de citirea a 1M.
+</LI>
+</OL>
+<P>
+<FONT SIZE="-1">Am măsurat costul acestor operaţii atunci cînd sunt efectuate de
+cinci entităţi diferite:
+</FONT>
+<P>
+
+<OL>
+<LI>Costul atunci cînd folosim pentru acelaşi scop două procese
+care comunică printr-un <I>named pipe</I> (am remarcat mai sus
+asemănarea dintre un watchdog şi un pipe); (operaţia
+<TT>lseek()</TT> nu are sens pe un pipe; se va termina mereu cu o
+eroare; am pus-o ca să măsurăm acelaşi lucru în toate cazurile);
+</LI>
+<LI>Costul operaţiei executate de sistemul de operare (SO);
+</LI>
+<LI>Costul operaţiei atunci cînd watchdog-ul interzice operaţia;
+</LI>
+<LI>Costul atunci cînd watchdog-ul zice ``da'' (ALLOWED) iar
+nucleul execută operaţia;
+</LI>
+<LI>Costul atunci cînd watchdog-ul execută el însuşi operaţia
+şi pasează datele clientului (FAKE).
+</LI>
+</OL>
+<P>
+<FONT SIZE="-1">Toate operaţiile se fac cu datele în cache; discul nu este folosit
+niciodată.  Iată rezultatele, în microsecunde:
+</FONT>
+<P>
+
+<DIV ALIGN="CENTER"><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">
+Operaţie </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> seek </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> read(1) </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> read(4096) </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> read(40K) </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> read(1M) </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">  
+SO       </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">   2.1  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 5.1    </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 8.6        </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 220       </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 21406    </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+pipe     </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">   2.2  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 11     </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 66         </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 720       </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 57812    </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+interzis </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">   17   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 33     </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 33         </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 33        </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 33       </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+permis   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">   17   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 35     </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 42         </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 270       </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 22968    </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+watchdog </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">   20   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 44     </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 88         </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 634       </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 50300    </FONT></TD>
+</TR>
+</TABLE></DIV>
+<P>
+<FONT SIZE="-1">Rezultatele par să confirme estimările noastre: interzicerea costă
+o valoare constantă: 17<IMG
+ WIDTH="17" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="img2.png"
+ ALT="$\mu$">s pentru fiecare serviciu (2 comutări de
+procese plus 1 apel de sistem).  Darea permisiunii adaugă un cost
+constant la operaţia cu SO: cel al comutării la watchdog şi
+înapoi.  Cînd watchdog-ul face operaţia el însuşi costul copierii
+datelor între watchdog şi client apare în ecuaţie şi domină la
+cantităţi mari de date.
+</FONT>
+<P>
+<FONT SIZE="-1">Demn de remarcat este că datorită unor optimizări simple,
+watchdog-ul este mai rapid ca un <I>pipe</I>.  Codul nostru foloseşte
+buffere în nucleu de două ori mai mari decît un pipe, (deci face de
+două ori mai puţine comutări), şi apoi permite unui apel de sistem
+<TT>read()</TT> să returneze mai mult decît o pagină de date (pipe
+nu permite aşa ceva), deci reduce numărul de apeluri de sistem
+executate de client.
+</FONT>
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+O aplicaţie a mecanismului: un sistem de fişiere la
+distanţă</A>
+</H1>
+<P>
+<FONT SIZE="-1">Un watchdog este un <I>mecanism</I>.  Avem nevoie de o aplicaţie
+pentru a demonstra utilitatea lui.  Am ales o aplicaţie al cărei
+cost intrinsec promitea să facă overhead-ul unui watchdog
+neglijabil: accesul la fişiere la distanţă, prin reţea.  Timpul
+mare de transfer al unei reţele este factorul pe care ne bazăm.
+Să observăm că latenţa (timpul de transfer) reţelelor este
+relativ mare, fiind limitată de viteza de transmisiune, care nu poate
+fi mai mare ca viteza luminii.  Cantitatea de date transmise
+(bandwidth sau throughput) este oarecum nelimitată; vezi reţelele
+giga-bit/secundă care devin populare.
+</FONT>
+<P>
+
+<H2><A NAME="SECTION00071000000000000000">
+Alţi candidaţi şi slăbiciunile lor</A>
+</H2>
+<P>
+<FONT SIZE="-1">Sisteme de fişiere la distanţă există de cînd lumea; NFS (Network
+File System) de la firma SUN este extrem de popular.  Ne-am propus să
+scriem serviciul nostru în aşa fel încît să batem NFS-ul.  Pentru
+asta trebuie să profităm de lucrurile la care NFS este slab.  NFS
+este (în implementarea pe Linux) foarte slab la scrieri: deşi ţine
+într-un cache la client datele citite, scrierile le trimite direct la
+server, ca nu cumva alţi clienţi care folosesc acelaşi fişier să
+nu le vadă.  Mărimea blocului de cache pentru NFS este de 8K.
+</FONT>
+<P>
+<FONT SIZE="-1">Un al doilea candidat faimos este sistemul de fişiere distribuit
+dezvoltat la Universitatea Carnegie Mellon numit AFS (Andrew File
+System).  Andrew este mult mai inteligent şi foloseşte mult mai bine
+cache-ul de la client<A NAME="tex2html7"
+  HREF="#foot272"><SUP>6</SUP></A>.  Mărimea blocului pentru cache-ul Andrew este de 64K.
+</FONT>
+<P>
+
+<H2><A NAME="SECTION00072000000000000000">
+Un serviciu de ``caching'' inteligent</A>
+</H2>
+<P>
+<FONT SIZE="-1">Am discutat pe larg despre performanţa în sistemele de
+fişiere într-un <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#rapid-fs">articol</a>
+publicat în PC Report în noiembrie 1997.  Voi recapitula aici faptele
+care ne interesează:
+</FONT>
+<P>
+<FONT SIZE="-1">Să observăm că pentru o aplicaţie scrierile şi citirile se
+comportă în mod deosebit:
+</FONT>
+<P>
+
+<UL>
+<LI>Durata scrierilor nu contează, pentru că odată trimise datele
+aplicaţia poate continua execuţia, iar datele se îndreaptă spre
+destinaţia lor în acelaşi timp.  Aplicaţia nu trebuie să aştepte
+terminarea scrierii.  Din cauza asta scrierile sunt <I>asincrone</I>.
+
+<P>
+</LI>
+<LI>Citirile costă, pentru că aplicaţia nu poate continua
+execuţia fără prezenţa datelor.  Dacă nu se folosesc tehnici
+speciale de anticipare a citirilor (read-ahead sau prefetching)
+citirile sunt practic <I>sincrone</I>.
+</LI>
+</UL>
+<P>
+<FONT SIZE="-1">Toate sistemele de fişiere de reţea încearcă să amortizeze
+latenţa reţelei făcînd transferuri în <I>blocuri mari</I> de
+date.  Cam tot atîta costă să aduci un octet cît costă 10K, aşa
+că de ce să nu aduci 10K; poate mai ai nevoie de ei.  Această
+caracteristică a cache-urilor, de a manipula blocuri mari, este
+uneori şi slăbiciunea lor.
+</FONT>
+<P>
+<FONT SIZE="-1">Iată de ce: problema constă în <I>scrierile mici</I>.  Cînd un
+proces scrie mai puţin de un bloc, pentru că cache-ul manipulează
+numai blocuri întregi, trebuie să aducă de la server blocul întreg
+şi să aplice scrierea peste bloc.  Din cauza asta <I>scrierile
+mici sunt sincrone</I>, ca şi citirile.
+</FONT>
+<P>
+<FONT SIZE="-1">Acest lucru este adevărat atît în NFS cît şi în AFS.
+</FONT>
+<P>
+<FONT SIZE="-1">Am scris deci propriul nostru serviciu de cache.  Am încercat să
+exploatăm slăbiciunile sistemelor de fişiere de reţea în două
+feluri:
+</FONT>
+<P>
+
+<UL>
+<LI>Cache-ul pe care l-am implementat nu mai foloseşte ca unitate
+de bază blocul, ci <I>intervalul</I>.  Dimensiunea intervalului nu
+mai este fixă; dacă utilizatorul manipulează 1Mega, atunci cache-ul
+stochează un mega şi eventual transmite un mesaj de 1M, fiind mult
+mai eficace decît multe mesaje mici;
+
+<P>
+</LI>
+<LI>Cache-ul nostru poate absorbi scrierile mici asincron; sunt doar
+nişte intervale ca toate altele.
+</LI>
+</UL>
+<P>
+<FONT SIZE="-1">Deşi este foarte interesant în sine, nu vom explora aici arhitectura
+cache-ului cu intervale.  Doar intern cache-ul manipulează datele tot
+în blocuri, iar mărimea blocului din cache are un oarecare impact
+asupra performanţei.  
+</FONT>
+<P>
+<FONT SIZE="-1">Să vedem cum este el folosit împreună cu un watchdog pentru a oferi
+servicii îmbunătăţite clienţilor.
+</FONT>
+<P>
+
+<H2><A NAME="SECTION00073000000000000000">
+Serviciul de fişiere la distanţă</A>
+</H2>
+<P>
+<FONT SIZE="-1">Am implementat deci un watchdog care este şi un cache manager.  Am
+implementat apoi un server care va comunica cu watchdog-ul prin
+TCP-IP.  Cache-ul este împărţit în două thread-uri care
+funcţionează asincron:
+</FONT>
+<P>
+
+<UL>
+<LI>``Jumătatea de jos'' (bottom half) se ocupă de comunicarea în
+reţea şi goleşte asincron cache-ul cînd e plin;
+</LI>
+<LI>``Jumătatea de sus'' (top half) este şi watchdog-ul:
+interceptează apelurile clienţilor şi copiază datele din/în
+cache.
+</LI>
+</UL>
+<P>
+<FONT SIZE="-1">Pachetul de thread-uri folosit a fost scris tot de
+autorul acestui articol, şi a fost <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#threads">prezentat</a>
+în PC Report din ianuarie 1997.
+</FONT>
+<P>
+<FONT SIZE="-1">Figura&nbsp;<A HREF="proiect-html.html#poornfs">2</A>
+prezintă arhitectura sistemului de fişiere.
+</FONT>
+<P>
+<FONT SIZE="-1">
+ </FONT>
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="poornfs"></A><A NAME="284"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 2:</STRONG>
+Arhitectura Sistemului de fişiere la distanţă.</CAPTION>
+<TR><TD><IMG
+ WIDTH="619" HEIGHT="262" BORDER="0"
+ SRC="img3.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=14cm\epsffile{poornfs.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H2><A NAME="SECTION00074000000000000000">
+Măsurători de performanţă</A>
+</H2>
+<P>
+<FONT SIZE="-1">Iată secţiunea crucială, cea a măsurătorilor de performanţă
+comparative.  Am făcut experimente numai pentru cazurile care ne
+interesează (unde anticipăm că sistemul nostru o să fie ``mai
+tare''), şi anume:
+</FONT>
+<P>
+
+<UL>
+<LI>Scrieri mici răspîndite, care în alte sisteme sunt sincrone;
+</LI>
+<LI>Operaţii cu date foarte multe, secvenţiale (unde intervalele
+mari transmise sunt foarte eficace).
+</LI>
+</UL>
+<P>
+<FONT SIZE="-1">În testele noastre am avut sub control calculatoarele client
+(întotdeauna maşina Linux descrisă mai sus).  Serverul pentru
+watchdog şi NFS a fost pe o maşină Sun SPARC4.  Maşinile nu erau
+încărcate la măsurători.  Maşinile sunt pe acelaşi cablu
+Ethernet, separate doar de bridge-uri.
+</FONT>
+<P>
+<FONT SIZE="-1">Nu am avut sub control:
+</FONT>
+<P>
+
+<UL>
+<LI>Încărcarea reţelei;
+</LI>
+<LI>Serverul AFS.
+</LI>
+</UL>
+<P>
+<FONT SIZE="-1">Din cauza asta am repetat măsurătorile de mai multe ori şi am
+considerat <I>cele mai bune</I> valori ale performanţei.
+</FONT>
+<P>
+
+<H3><A NAME="SECTION00074100000000000000">
+Teste secvenţiale</A>
+</H3>
+<P>
+<FONT SIZE="-1">Iată un test secvenţial care doar copiază un fişier de 2M între
+cele două maşini (cu comanda Unix <TT>cp</TT>).  Cache-ul nostru
+avea un bloc intern de 64K.  Cache-urile <I>erau goale</I> la
+începutul transferului.
+</FONT>
+<P>
+<FONT SIZE="-1">Cache-ul folosit de AFS şi NFS poate creşte pînă la aprox. 60M,
+mărimea memoriei calculatorului.  WD a avut un cache fixat la 640K
+capacitate totală.
+</FONT>
+<P>
+<FONT SIZE="-1">Comparăm 4 sisteme:
+</FONT>
+<P>
+<DL>
+<DT><STRONG>UFS:</STRONG></DT>
+<DD>Sistemul de fişiere din Unix de pe discul local;
+</DD>
+<DT><STRONG>NFS:</STRONG></DT>
+<DD>Sun Network File System;
+</DD>
+<DT><STRONG>AFS:</STRONG></DT>
+<DD>Andrew File System;
+</DD>
+<DT><STRONG>WD: </STRONG></DT>
+<DD>sistemul nostru de fişiere bazat pe watchdog.
+</DD>
+</DL>
+<P>
+<FONT SIZE="-1">Ceea ce măsurăm este <I>timpul total real al copierii</I> (adică
+cît timp trece de cînd începe pînă se termină); asta nu e totuna
+cu timpul de execuţie al proceselor, pentru că procesele vor dormi
+mult timp aşteptînd datele, deci nu vor consuma timp de procesor.
+Copierea se termină cu un apel de sistem <TT>fsync()</TT> care ne
+asigură că toate datele au fost trimise la destinaţie, şi că nu
+au rămas în cache-ul local!
+</FONT>
+<P>
+
+<DIV ALIGN="CENTER"><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">
+Protocol </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> Sursă           </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> Destinaţie     </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> Timp (s)</FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">  
+UFS      </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> disc local       </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> disc local      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 0.2  </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+NFS      </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> la distanţă    </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> disc local      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 8.4  </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+WD       </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> la distanţă    </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> disc local      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 6.9  </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+AFS      </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> la distanţă    </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> disc local      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 5.3  </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">  
+NFS      </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> disc local       </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> la distatţă   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 61.0   </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+WD       </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> disc local       </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> la distanţă   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 11.3 </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+AFS      </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> disc local       </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> la distanţă   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 9.5  </FONT></TD>
+</TR>
+</TABLE></DIV>
+<P>
+<FONT SIZE="-1">După cum se vede am reuşit să-l batem pe NFS.  NFS face citire
+anticipată (read-ahead), de aceea performanţa la citire este
+rezonabilă.  NFS trimite datele una cîte una în blocuri de 8K, deci
+pierde foarte mult timp la scrieri pentru a iniţia pachetele.
+</FONT>
+<P>
+<FONT SIZE="-1">AFS trimite blocuri de 64K, deci este foarte eficient.  AFS face şi
+el citire anticipată.  AFS este implementat în nucleul sistemului de
+operare (ca şi NFS), deci nu are overhead atît de mare ca WD pentru
+comutarea proceselor şi copierea datelor (mai ales!).  De aceea este
+mai performant.
+</FONT>
+<P>
+
+<H3><A NAME="SECTION00074200000000000000">
+Performanţa secvenţială variind bufferele</A>
+</H3>
+<P>
+<FONT SIZE="-1">Datele trebuie să circule între client şi server prin două canale:
+</FONT>
+<P>
+
+<UL>
+<LI>Între watchdog şi serverul la distanţă pe reţea;
+</LI>
+<LI>Între watchdog şi clientul local prin memorie.
+</LI>
+</UL>
+<P>
+<FONT SIZE="-1">Performanţa primului transfer este influenţată de mărimea blocului
+intern de cache folosit (deşi noi transmitem mai multe blocuri pe
+reţea într-o singură operaţie, pentru că folosim apelul de sistem
+<TT>writev()</TT>, acesta impune un număr maxim de 16 blocuri scrise
+simultan).  Performanţa celei de-a doua este influenţată de
+<I>cîte date cere clientul într-un apel de sistem</I>.  Cît cere un
+client într-un apel de sistem constituie pentru cache un interval.
+</FONT>
+<P>
+<FONT SIZE="-1">De exemplu, programul <TT>cp</TT> copiază datele în felii de cîte
+4K, chiar dacă fişierele sunt uriaşe.
+</FONT>
+<P>
+<FONT SIZE="-1">De aceea am scris un alt client, care face ce face şi <TT>cp</TT>,
+dar care face transferul datelor în felii mai mari.
+</FONT>
+<P>
+<FONT SIZE="-1">Iată performanţa măsurată, din nou în secunde:
+</FONT>
+<P>
+
+<DIV ALIGN="CENTER"><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1">
+Interval      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 1K </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 4K   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 16K </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 64K </FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1">  
+bloc în cache</FONT></TD>
+<TD ALIGN="CENTER" COLSPAN=4><FONT SIZE="-1"> Spre discul local</FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1">  
+     64K      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 8   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">  7   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1">  7  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 8 </FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+     32K      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 13  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 13   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 13  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 9 </FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+     16K      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 27  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 27   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 28  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 8 </FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+      8K      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 54  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 54   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 27  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 8 </FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1">  
+              </FONT></TD>
+<TD ALIGN="CENTER" COLSPAN=4><FONT SIZE="-1"> Spre discul distant</FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1">  
+     64K      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 10  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 10   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 10  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 4 </FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+     32K      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 16  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 16   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 16  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 4 </FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+     16K      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 30  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 23   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 4   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 4 </FONT></TD>
+</TR>
+<TR><TD ALIGN="RIGHT"><FONT SIZE="-1"> 
+      8K      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 48  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 57   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 4   </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 4 </FONT></TD>
+</TR>
+</TABLE></DIV>
+<P>
+<FONT SIZE="-1">Performanţa depinde mai puţin de mărimea internă a blocului (cum
+am spus, cache-ul poate trimite multe blocuri pe reţea dintr-un foc),
+cît de mărimea intervalului (cerută printr-un apel de sistem).  Cu
+cît intervalele sunt mai mari, cu atît performanţa este mai bună.
+</FONT>
+<P>
+<FONT SIZE="-1">Performanţa scrierilor este excelentă pentru că scrierile sunt
+asincrone tot timpul (indiferent de raportul interval/bloc).
+</FONT>
+<P>
+<FONT SIZE="-1">O anomalie avem în tabel pe coloana a treia, unde scăderea blocului
+creşte performanţa, un rezultat complet ne-intuitiv.  Acesta este un
+artifact al modului de implementare: inspectarea codului cache-ului a
+revelat faptul că în cazul în care intervalul este mai mare ca
+blocul, totul e în regulă, dar atunci cînd blocul este mai mare
+decît intervalul, cache-ul iniţiază operaţii care puteau fi
+evitate.  (Iată deci cum măsurătorile descoperă deficienţe de
+implementare şi sugerează îmbunătăţiri!)  Asta se întîmplă pe
+coloana a treia: cînd blocul devine mai mic decît intervalul
+performanţa creşte brusc.
+</FONT>
+<P>
+
+<H3><A NAME="SECTION00074300000000000000">
+Teste de acces aleator</A>
+</H3>
+<P>
+<FONT SIZE="-1">Programele de calcul intensiv (scientific computing) manipulează
+adesea cantităţi enorme de date într-un mod cvasi-aleatoriu şi în
+bucăţi mici (au deci localitate proastă în cache şi poate scrieri
+mici).  Am scris două aplicaţii (oarecum artificiale, dar
+reprezentative la o scară redusă, sperăm) care încearcă să
+simuleze astfel de accese:
+</FONT>
+<P>
+
+<UL>
+<LI>Un program care înmulţeşte două matrici de 50*50 de elemente
+direct într-un fişier (în total 10K);
+</LI>
+<LI>Un program care sortează prin selecţie 200 de numere aleatoare
+dintr-un fişier ``in situ'' (800 octeţi).
+</LI>
+</UL>
+<P>
+<FONT SIZE="-1">Am plasat fişierul la distanţă şi am pus blocul în WD la 4K.
+Iată timpii măsuraţi:
+</FONT>
+<P>
+
+<DIV ALIGN="CENTER"><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">
+Test    </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> Protocol </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> Durată (s) </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">  
+Matrici </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> UFS      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 1.6     </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+        </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> NFS      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 301.0     </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+        </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> WD       </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 22.5    </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+        </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> AFS      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 4.6    </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">  
+Sortare </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> UFS      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 0.2     </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+        </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> NFS      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 13.6    </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+        </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> WD       </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 1.7     </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+        </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> AFS      </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 0.4     </FONT></TD>
+</TR>
+</TABLE></DIV>
+<P>
+<FONT SIZE="-1">Performanţa lui NFS este îngrozitor de slabă (de 12
+ori mai lent decît metoda noastră!)  Măsurători care variau
+dimensiunea n a matricii au arătat că pentru valori mici ale lui n
+timpul lui NFS creşte ca n<sup>2</sup>.  Pentru că înmulţirea face
+n<sup>3</sup> citiri şi n<sup>2</sup> scrieri deducem că problema lui
+NFS sunt scrierile mici (exact cum am anticipat).
+</FONT>
+<P>
+<FONT SIZE="-1">AFS este excelent pentru că toate datele încap într-un singur bloc
+din cache (64K) care este adus imediat la început, deci face un
+singur transfer pe reţea.
+</FONT>
+<P>
+<FONT SIZE="-1">WD este mai slab din cauza overhead-ului comutării proceselor.
+</FONT>
+<P>
+
+<H3><A NAME="SECTION00074400000000000000">
+Un test greu pentru AFS: ``strides''</A>
+</H3>
+<P>
+<FONT SIZE="-1">Am vrut să găsim şi un test dificil pentru AFS.  Pentru că AFS
+aduce datele în blocuri de 64K soluţia era să facem un test care
+exploatează foarte puţin din fiecare felie de 64K, deci care-l pune
+pe AFS la muncă degeaba.
+</FONT>
+<P>
+<FONT SIZE="-1">Testul este simplu: scrie într-un fişier pre-existent de 2M petice
+de cîte 20 de octeţi (scrieri mici!) la distanţe variabile
+(distanţa dintre două scrieri o vom numi ``stride'').  Am făcut
+două serii de teste (blocul în cache-ul WD de 64K):
+</FONT>
+<P>
+
+<UL>
+<LI>În care cache-ul local la client era pre-încărcat cu
+fişierul (cache ``cald'');
+</LI>
+<LI>În care cache-ul local era gol (``rece'').
+</LI>
+</UL>
+<P>
+<FONT SIZE="-1">Iată rezultatele:
+</FONT>
+<P>
+
+<DIV ALIGN="CENTER"><TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">
+Protocol </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> Cache </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> Stride </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> Intervale scrise  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> Timp (s) </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">  
+AFS      </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> rece  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 1K     </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 64*25             </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 9.8 </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+AFS      </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> cald  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 1K     </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 64*25             </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 5.5 </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+AFS      </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> rece  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 64K    </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 25                </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 10.0 </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+AFS      </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> cald  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 64K    </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 25                </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 5.6 </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1">  
+WD       </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> rece  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 1K     </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 64*25             </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 6.3 </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+WD       </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> cald  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 1K     </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 64*25             </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 6.4 </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+WD       </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> rece  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 64K    </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 25                </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 6.4 </FONT></TD>
+</TR>
+<TR><TD ALIGN="LEFT"><FONT SIZE="-1"> 
+WD       </FONT></TD>
+<TD ALIGN="LEFT"><FONT SIZE="-1"> cald  </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 64K    </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 25                </FONT></TD>
+<TD ALIGN="RIGHT"><FONT SIZE="-1"> 6.4 </FONT></TD>
+</TR>
+</TABLE></DIV>
+<P>
+<FONT SIZE="-1">WD este remarcabil de constant, pentru că manipulează intervalele
+scurte (20 de octeţi) în exact acelaşi fel indiferent unde se află
+(practic datele sunt permanent în cache).  AFS este mai slab decît
+WD cînd are cache-ul gol, dar nu cu mult mai slab!
+</FONT>
+<P>
+<FONT SIZE="-1">Numerele arată că performanţa AFS nu depinde de cîte <I>date</I>
+se scriu, ci de cîte intervale de 64K se traversează; chiar dacă
+scriu 64*25 intervale sau doar 25, dacă ating acelaşi număr de
+blocuri, tot atîta contează.
+</FONT>
+<P>
+
+<H1><A NAME="SECTION00080000000000000000">
+Concluzii</A>
+</H1>
+<P>
+<FONT SIZE="-1">Acest proiect demonstrează un lucru foarte interesant:
+</FONT>
+<P>
+
+<BLOCKQUOTE><FONT SIZE="-1">Preţul flexibilităţii obţinute prin implementarea serviciilor
+înafara nucleului (un watchdog, de pildă) poate fi cîteodată
+răscumpărat dacă serviciile oferite se potrivesc foarte bine cu
+nevoile clientului.  Nucleul oferă un singur serviciu, care este
+eficace pentru o clasă largă de aplicaţii (de exemplu cele care au
+localitate bună în cache).  Dar folosind schema noastră putem
+implementa <I>simultan</I> diferite scheme de cache pentru aplicaţii
+diferite, potrivind comportarea cache-ului pentru fiecare aplicaţie,
+şi optimizînd independent.
+</FONT></BLOCKQUOTE>
+<P>
+
+<H1><A NAME="SECTION00090000000000000000">
+Bibliografie</A>
+</H1>
+<P>
+<FONT SIZE="-1">Deşi nu am citat aceste lucrări, raportul de faţă se bazează pe
+ele.  Rolul unei bibliografii într-un articol este enorm pentru
+cititori, dar despre asta altă dată<A NAME="tex2html9"
+  HREF="#foot247"><SUP>7</SUP></A>.
+</FONT>
+<P>
+ </FONT>
+<H2><A NAME="SECTION000100000000000000000">
+Bibliography</A>
+</H2><DL COMPACT><DD>
+<P>
+<P></P><DT><A NAME="watch">Bersh88</A>
+<DD>B. B. Bershad, C. B. Pinkerton. Watchdogs --
+Extending the UNIX File System. <I>Computing Systems, 1, 1988</I>,
+pp. 169.
+
+<P>
+<P></P><DT><A NAME="end-to-end">Saltz84</A>
+<DD>J. Saltzer, D. Reed, D Clark -- The
+End-to-End Argument in System Design. <I>ACM Transactions on
+Computer Systems, vol 2, nr. 4, 1984</I>, pp 277-288.
+
+<P>
+<P></P><DT><A NAME="proc">Faul91</A>
+<DD>R. Faulkner, R. Gomes. The Process File System
+and Process Model in UNIX System V. <I>Proceedings of the 1991
+Winter USENIX Conference</I>, Jan. 1991, pp.243-252.
+
+<P>
+<P></P><DT><A NAME="vnode">Klei86</A>
+<DD>S. R. Kleiman, 1986.  Vnodes: An Architecture
+for Multiple File System Types in Sun Unix. <I>USENIX Summer
+Conference Proceedings 1986</I>, pp. 238-247.
+
+<P>
+<P></P><DT><A NAME="vaha">Vaha96</A>
+<DD>Uresh Vahalia.  Chapters 9, 10, 11 in <I>UNIX
+Internals.</I>, Prentice Hall, 1996.
+</DL>
+<P>
+
+<H1><A NAME="SECTION000110000000000000000">
+Traseul parcurs</A>
+</H1>
+<P>
+<FONT SIZE="-1">Mai interesante decît concluziile (care ştiinţific vorbind nu sunt
+extraordinare) este drumul parcurs.  Să-l revedem:
+</FONT>
+<P>
+
+<OL>
+<LI>Un proiect este propus;
+
+<P>
+</LI>
+<LI>Este comparat cu alte proiecte similare sau disimilare (această
+secţiune este mai puţin reprezentată în acest articol);
+
+<P>
+</LI>
+<LI>O evaluare teoretică a performanţei este făcută; acesta este
+şi un studiu de fezabilitate; eventual proiectul este simulat sau
+evaluat din părţile componente;
+
+<P>
+</LI>
+<LI>Designul este adaptat pentru a ataca părţile slabe indicate de
+evaluare;
+
+<P>
+</LI>
+<LI>O serie de ipoteze asupra comportării sistemului sunt enunţate
+explicit;
+
+<P>
+</LI>
+<LI>Proiectul este implementat;
+
+<P>
+</LI>
+<LI>Proiectul este măsurat cu mare grijă, într-o varietate de
+circumstanţe, controlînd (pe cît posibil) toţi parametri
+influenţi;
+
+<P>
+</LI>
+<LI>Eventualele slăbiciuni sunt remediate;
+
+<P>
+</LI>
+<LI>Concluziile verifică în ce măsură ipotezele s-au dovedit
+corecte şi explică rezultatele obţinute;
+
+<P>
+</LI>
+<LI>Noi direcţii de cercetare şi întrebări sunt formulate
+(lipsesc din acest text).
+</LI>
+</OL>
+<P>
+<FONT SIZE="-1">Iată de ce spun că în sisteme totul stă în detalii: dacă pentru
+watchdog raportul valorilor duratelor diferitelor componente ar fi
+fost altul (de exemplu dacă un apel de sistem ar fi fost de 10 ori
+mai costisitor decît copierea datelor), atunci relevanţa şi
+aplicabilitatea watchdog-ului ar fi fost cu totul altele.  Cum spunea
+cineva în fizică:
+</FONT>
+<P>
+
+<BLOCKQUOTE><FONT SIZE="-1">Dacă ai de-a face cu valori [pentru un parametru] care diferă cu un
+ordin de mărime, de fapt ai de-a face cu două fenomene diferite.
+</FONT></BLOCKQUOTE>
+<P>
+<FONT SIZE="-1">Asta am avut de zis; probabil am fost cam ocolit...
+</FONT>
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot57">... televizor</A><A NAME="foot57"
+ HREF="proiect-html.html#tex2html1"><SUP>1</SUP></A>
+<DD>Paragraful acesta trebuie luat ca
+o opinie strict personală.
+
+<DT><A NAME="foot64">... Seattle</A><A NAME="foot64"
+ HREF="proiect-html.html#tex2html2"><SUP>2</SUP></A>
+<DD>Departamentul de
+calculatoare al acestei universităţi este clasat între primele 10
+din Statele Unite; Brian Bershad însuşi este o somitate în lumea
+sistemelor de operare.
+
+<DT><A NAME="foot77">...vnod</A><A NAME="foot77"
+ HREF="proiect-html.html#tex2html3"><SUP>3</SUP></A> <DD>Vedeţi şi <a
+ href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#vfs">articolul</a>
+ meu din PC Report din februarie 1998, a cărui copie este disponibilă
+ din pagina mea de web.
+
+<DT><A NAME="foot116">... cost</A><A NAME="foot116"
+ HREF="proiect-html.html#tex2html5"><SUP>4</SUP></A>
+<DD>Mai există
+un cost ascuns al serviciilor oferite de un watchdog: şi anume
+memoria watchdog-ului este paginabilă, spre deosebire de a
+nucleului.  Dacă implementăm un serviciu în nucleu ar putea fi mai
+rapid decît dacă îl punem în watchdog pentru că memoria nucleului
+rămîne tot timpul în memoria fizică.  Vom ignora acest lucru în
+acest articol.
+
+<DT><A NAME="foot129">...
+simple</A><A NAME="foot129"
+ HREF="proiect-html.html#tex2html6"><SUP>5</SUP></A>
+<DD>Sper să pot discuta într-un articol viitor despre
+metoda prin care am făcut aceste măsurători.
+
+<DT><A NAME="foot272">... client</A><A NAME="foot272"
+ HREF="proiect-html.html#tex2html7"><SUP>6</SUP></A>
+<DD>AFS este un sistem de fişiere
+``mondial''; sper să pot reveni într-un articol asupra lui.  Practic
+este un singur arbore de directoare pentru cîteva sute de instituţii
+din cîteva zeci de ţări; cu un simplu <TT>cd</TT> eu pot citi
+directoare aflate pe servere din Elveţia.  Toate calculatoarele din
+universitatea Carnegie Mellon sunt clienţi ai acestui sistem de
+fişiere.
+
+<DT><A NAME="foot247">... a</A><A NAME="foot247"
+HREF="proiect-html.html#tex2html9"><SUP>7</SUP></A> <DD>E adevărat că
+în textele trimise la PC Report am omis în mod sistematic
+bibliografiile.  Mea culpa.
+
+</DL><BR><HR>
+
+</BODY>
+</HTML>

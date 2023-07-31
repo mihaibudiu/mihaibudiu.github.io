@@ -1,0 +1,1089 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Sistemul Virtual de Fişiere</TITLE>
+<META NAME="description" CONTENT="Sistemul Virtual de Fişiere">
+<META NAME="keywords" CONTENT="3fs-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+<body>
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Sistemul Virtual de Fişiere</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- mihaib+ at cs.cmu.edu 
+<BR><TT>http://www.cs.cmu.edu/~mihaib/</TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>ianuarie 1998</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>VFS: Virtual File System
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>cunoştinţe generale despre sistemele
+de fişiere; familiaritate cu arhitectura unui sistem de fişiere;
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>vnod, sistem de fişiere virtual, montare,
+modularitate
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html25"
+  HREF="3fs-html.html">Interfaţă şi implementare</A>
+<LI><A NAME="tex2html26"
+  HREF="#SECTION00030000000000000000">Fişierul ca abstracţiune</A>
+<UL>
+<LI><A NAME="tex2html27"
+  HREF="#SECTION00031000000000000000">Vnodul: un i-nod virtual</A>
+<LI><A NAME="tex2html28"
+  HREF="#SECTION00032000000000000000">Vnoduri speciale</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html29"
+  HREF="#SECTION00040000000000000000">Sistemul de fişiere ca abstracţiune</A>
+<LI><A NAME="tex2html30"
+  HREF="#SECTION00050000000000000000">Montarea</A>
+<LI><A NAME="tex2html31"
+  HREF="#SECTION00060000000000000000">Sistemul de fişiere în acţiune</A>
+<UL>
+<LI><A NAME="tex2html32"
+  HREF="#SECTION00061000000000000000">Compilarea nucleului</A>
+<LI><A NAME="tex2html33"
+  HREF="#SECTION00062000000000000000">Boot-area</A>
+<LI><A NAME="tex2html34"
+  HREF="#SECTION00063000000000000000">Montarea</A>
+<LI><A NAME="tex2html35"
+  HREF="#SECTION00064000000000000000">Deschiderea unui fişier</A>
+<LI><A NAME="tex2html36"
+  HREF="#SECTION00065000000000000000">O operaţie pe un fişier</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html37"
+  HREF="#SECTION00070000000000000000">Concluzie</A>
+</UL>
+<!--End of Table of Contents-->
+<BR>
+<BR>
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Interfaţă şi implementare</A>
+</H1>
+
+<P>
+Ingineria programării ne învaţă că putem ascunde un acelaşi
+obiect sub o sumedenie de operaţii diferite, şi alternativ, că
+putem inventa seturi de operaţii distincte pentru a opera asupra unei
+aceleiaşi entităţi.
+
+<P>
+Avem deci o oarecare <I>independenţă</I> între <I>implementarea</I>
+unui obiect (de pildă o stivă poate fi implementată ca o listă sau
+ca un vector) şi <I>interfaţa</I> unui obiect, care este setul de
+operaţii pe care le efectuăm asupra lui (de exemplu o stivă va
+oferi operaţii de genul ``pune element (push)'', ``extrage element
+(pop)'', ``verifică dacă sunt elemente (empty?)'').
+
+<P>
+Aparent paradoxal, tradiţia ne învaţă că mai importantă decît
+implementarea unei creaturi informatice este interfaţa ei.  De ce?
+Din motive de <I>compatibilitate</I>.  Atîta vreme cît un obiect are
+aceeaşi interfaţă (şi un acelaşi comportament), toţi cei care
+care îl folosesc pot rămîne neschimbaţi, chiar dacă implementarea
+obiectului se schimbă.  De aceea este <I>extrem</I> de important să
+proiectăm interfeţele cum trebuie de la început.
+
+<P>
+Putem vedea importanţa acestui precept la scară industrială
+într-un exemplu izbitor.  Proiectanţii procesorului 8086 de la Intel
+nu au putut rezista tentaţiei de a introduce în setul de
+instrucţiuni al procesorului o mulţime de operaţii exotice (de
+exemplu operaţii pe şiruri de numere zecimale cu cifre pe cîte 4
+biţi), pentru că aveau destui tranzistori nefolosiţi pe circuitul
+integrat.  Şi-au zis: ``în definitiv ce ne costă?''.  Eroare
+fatală.  Setul de instrucţiuni este interfaţa unui procesor, şi ca
+atare trebuie să rămînă neschimbat chiar atunci cînd arhitectura
+internă (implementarea) procesorului se schimbă.  Aşa că aceste
+instrucţiuni pe care nu le foloseşte (practic) nimeni există şi
+în setul de instrucţiuni din 80486, Pentium, Pentium Pro şi Pentium
+II.  Şi ştiţi de ce nu există procesoare Pentium la mai mult de
+300Mhz, dar există procesoare Alpha la 600Mhz?  Din cauza setului de
+instrucţiuni: anumite instrucţiuni Pentium pur şi simplu nu pot fi
+implementate foarte rapid (una din ele fiind cea de mai sus).
+
+<P>
+Asta este drama: interfaţa unui produs longeviv tinde să
+supravieţuiască implementării.  Din cauza aceasta cel care
+proiectează o interfaţă trebuie să fie extrem de grijuliu, pentru
+că are de luptat cu un adversar colosal: timpul.  El trebuie să
+anticipeze evoluţia unei interfeţe şi a utilizării ei.
+
+<P>
+Vom vedea în acest articol o interfaţă excelent proiectată cu
+peste un sfert de secol în urmă, care a evoluat şi supravieţuit
+tuturor încercărilor la care a fost supusă.  Este vorba de
+interfaţa (setul de operaţii) cu fişiere în sistemul de operare
+Unix<A NAME="tex2html1"
+  HREF="#foot56"><SUP>1</SUP></A>.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Fişierul ca abstracţiune</A>
+</H1>
+
+<P>
+Un fişier în Unix este un simplu container de date; un fel de array
+de octeţi de o lungime (teoretic) arbitrară.  Independent de modul
+în care este implementat un fişier operaţiile pe el se fac cu un
+set extrem de redus de operaţii esenţiale (<TT>open(), close(),
+read(), write(), lseek()</TT>) la care se adaugă o sumedenie de operaţii
+secundare ca importanţă sau care sunt folosite pentru a manipula
+<I>directoare</I>.  Să ne reamintim pe scurt cum se folosesc aceste
+operaţii:
+
+<P>
+
+<UL>
+<LI><TT>open()</TT> ``deschide'' un fişier şi are ca rezultat un
+``mîner'' (file handle) cu care fişierul este apoi manipulat (un
+număr mic întreg);
+
+<P>
+</LI>
+<LI><TT>close()</TT> este folosită pentru a închide un fişier
+care nu mai este necesar;
+
+<P>
+</LI>
+<LI><TT>lseek()</TT> este folosită pentru a fixa locul în fişier
+unde se va face următoare operaţie de scriere/citire; scrierea şi
+citirea vor avansa acest ``cursor'' cu cantitatea de date pe care o
+transferă.  Astfel este favorizat în mod implicit accesul
+<I>secvenţial</I> la fişiere;
+
+<P>
+</LI>
+<LI><TT>read()</TT>, respectiv <TT>write()</TT> citesc şi scriu
+date dintr-un buffer din memorie în fişier.
+
+<P>
+</LI>
+</UL>
+
+<P>
+Avem un exemplu de folosire a funcţiilor de acces la fişiere în
+programul de mai jos, care copiază fişierul ``sursa'' în fişierul
+``destinatie''.
+
+<P>
+<PRE>
+#include &lt;unistd.h&gt;     /* pentru open(), exit() */
+#include &lt;fcntl.h&gt;      /*        O_RDWR */
+#include &lt;errno.h&gt;      /*        perror() */
+
+void fatal(char * mesaj_eroare)
+{
+        perror(mesaj_eroare);
+        exit(1);
+}       
+
+int main(void)
+{
+        int miner_sursa, miner_destinatie;
+        int copiat;
+        char buf[1024];
+
+        miner_sursa = open("sursa", O_RDONLY);
+        miner_destinatie = open("destinatie", O_WRONLY | O_CREAT, 0644);
+        if (miner_sursa &lt; 0 ||
+            miner_destinatie &lt; 0)
+                fatal("Nu pot deschide un fisier");
+        lseek(miner_sursa, 0, SEEK_SET);
+        lseek(miner_destinatie, 0, SEEK_SET);
+        while ((copiat = read(miner_sursa, buf, sizeof(buf)))) {
+                if (copiat &lt; 0)
+                        fatal("Eroare la citire");
+                copiat = write(miner_destinatie, buf, copiat);
+                if (copiat &lt; 0)
+                        fatal("Eroare la scriere");
+        }
+        close(miner_sursa);
+        close(miner_destinatie);
+        return 0;
+}
+</PRE>
+
+<P>
+
+<H2><A NAME="SECTION00031000000000000000">
+Vnodul: un i-nod virtual</A>
+</H2>
+
+<P>
+Un sistem de operare de tip Unix poate opera simultan cu mai multe
+tipuri de sisteme de fişiere.  De pildă toate sistemele suportă pe
+lîngă un sistem de fişiere pe un disc local un sistem de fişiere
+la distanţă numit NFS: network file system, creat de firma SUN.  Tot
+firma Sun Microsystems a construit mecanismele necesare suportării
+unei varietăţi de fişiere implementate complet diferit simultan de
+către un singur nucleu (de fapt nu cei de la Sun au inventat
+noţiunea, însă implementarea lor, descrisă în cele ce urmează, a
+devenit practic un standard).  Terminologia folosită in acest articol
+este deci cea propusă de Sun, deşi exemplele de cod C vor fi din
+sistemul de operare Linux.
+
+<P>
+Cheia constă în următorul fapt: toate sistemele de fişiere
+prezintă <I>aceeaşi interfaţă</I>.  Cu alte cuvinte, utilizatorul
+(şi vom vedea că şi nucleul în interiorul său) acţionează cu
+exact aceleaşi funcţii asupra tuturor fişierelor, indiferent că se
+află pe un disc local sau pe unul la distanţă sau pe un floppy DOS,
+etc.; programul de mai sus va fi scris în exact acelaşi fel pentru
+toate aceste cazuri.
+
+<P>
+În interiorul nucleului fiecare fişier este reprezentat printr-o
+structură de date numită <I>vnod</I>: un nod de informaţii virtual.
+În <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#sistem-f">articolul</a>
+anterior, despre structura sistemului de fişiere din Unix, din PC
+Report din decembrie 1996, am văzut că sistemul de fişiere tradiţional
+din Unix folosea pe disc o structură de date numită <I>inod</I> pentru
+a descrie atributele fişierelor.  Vnodul este o generalizare a
+inodului, care este însă rezidentă în memoria calculatorului, şi nu pe
+un disc, şi cu care nucleul reprezintă fiecare fişier deschis.
+
+<P>
+Vnodul conţine două feluri de cîmpuri în interiorul său:
+
+<P>
+
+<UL>
+<LI>O serie de cîmpuri comune tuturor sistemelor de fişiere; din
+această cauză aceste cîmpuri se mai numesc ``independente de
+sistemul de fişiere'';
+
+<P>
+</LI>
+<LI>Cîmpuri specifice fiecărui sistem de fişiere în parte.
+</LI>
+</UL>
+
+<P>
+Structura ar arăta deci (în principiu) cam aşa:
+
+<P>
+<PRE>
+struct vnode {
+    cimpuri_independente;
+    union {
+        struct msdos_inode_info msdos_i;
+        struct nfs_inode_info   nfs_i;
+        struct sysv_inode_info  sysv_i;
+        ....
+    } u;
+};
+</PRE>
+
+<P>
+Fiecare structură din uniunea <TT>u</TT> conţine atribute specifice
+fiecărui sistem de fişiere în parte.  Dacă aveţi un sistem Linux
+(o variantă de Unix ale cărei surse sunt disponibile gratuit oricui)
+puteţi vedea definiţia vnodului în fişierul de surse al nucleului
+<TT>/usr/src/linux/include/linux/fs.h</TT> (din păcate Linux
+foloseşte pentru aceste structuri de date -- cel puţin versiunile
+pînă la 2.0.30 -- alte nume decît restul lumii; numele structurii
+este <TT>struct inode</TT> în loc de vnode, dar nu o să lăsăm asta
+să ne descurajeze).
+
+<P>
+Cel mai important cîmp independent de structură este o structură cu
+pointeri spre funcţii.  Ca să fim concreţi vom folosi tot sursa
+Linux, unde numele structurii este <TT>struct inode_operations</TT>
+(numele ei corect ar fi <TT>struct vnode_operations</TT>).
+
+<P>
+Definiţia acestei structuri se găseşte în acelaşi fişier şi
+este extrem de interesantă; schematic arată aşa (am simplificat un
+pic pentru motive pedagogice):
+
+<P>
+<PRE>
+struct inode_operations {
+        int (*lseek) (struct inode *, struct file *, off_t, int);
+        int (*read) (struct inode *, struct file *, char *, int);
+        int (*write) (struct inode *, struct file *, char *, int);
+        int (*open) (struct inode *, struct file *);
+        void (*release) (struct inode *, struct file *);
+        int (*fsync) (struct inode *, struct file *);
+        int (*create) (struct inode *,const char *,int,int,struct inode **);
+        int (*lookup) (struct inode *,const char *,int,struct inode **);
+        int (*link) (struct inode *,struct inode *,const char *,int);
+        int (*unlink) (struct inode *,const char *,int);
+        ....
+}
+</PRE>
+
+<P>
+Vnodul conţine deci şi un pointer spre o structură care conţine
+pointeri către funcţiile care trebuie să opereze cu inodul
+însuşi!
+
+<P>
+Vom reveni mai jos asupra folosirii vnodurilor.
+
+<P>
+
+<H3><A NAME="SECTION00031100000000000000">
+Partea independentă de arhitectură</A>
+</H3>
+
+<P>
+Ce fel de atribute sunt prezente în orice vnod?  Putem să ne facem o
+idee în Linux privind în fişierul <TT>fs.h</TT> indicat mai sus;
+printre altele: discul (perifericul) pe care se află acest fişier,
+numărul acestui inod pe acel periferic, drepturile şi posesorul
+fişierului, data modificării, etc.  Mai sunt prezente structuri de
+date necesare nucleului pentru operaţii pe vnod: semafoare pentru
+sincronizarea accesului proceselor la vnod, liste înlănţuite de
+hash pentru căutarea rapidă a vnodurilor în memorie, structura cu
+funcţiile care operează asupra vnodului, descrisă mai sus.
+
+<P>
+
+<H3><A NAME="SECTION00031200000000000000">
+Partea dependentă de arhitectură</A>
+</H3>
+
+<P>
+Desigur, fiecare sistem de fişiere ţine informaţiile de care are
+nevoie în vnod în partea care-i este rezervată.  De exemplu, pentru
+un sistem de fişiere Unix clasic (descris într-un articol mai
+vechi), vnodul va conţine lista blocurilor de pe disc care aparţin
+fişierului.
+
+<P>
+Această listă de blocuri nu va fi prezentă în cazul vnodurilor
+pentru fişiere de tip NFS, pentru că acestea nu sunt prezente pe un
+disc pe calculatorul local, ci pe unul la distanţă.  Dimpotrivă, un
+vnod pentru un fişier NFS va conţine informaţii suficiente pentru a
+comunica cu serverul care deţine fişierul.
+
+<P>
+Pentru cazul sistemului de operare Linux, există pentru fiecare tip
+de sistem de fişiere care poate fi prezent în nucleu cîte un
+fişier header cu numele de tipul <TT>include/linux/*_fs_i.h</TT>
+care conţine structura de date privată respectivului sistem de
+fişiere; aruncaţi o privire prin ele.
+
+<P>
+Să facem în figura&nbsp;<A HREF="3fs-html.html#vnod">1</A> un desen ca să rezumăm situaţia
+aşa cum este ea acum.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="vnod"></A><A NAME="234"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 1:</STRONG>
+Vnodul</CAPTION>
+<TR><TD><IMG
+ WIDTH="452" HEIGHT="327" BORDER="0"
+ SRC="img1.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=10cm\epsffile{vnod.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+În limbajul programării orientate pe obiecte situaţia se descrie
+foarte sumar astfel: în nucleu există o clasă de bază virtuală
+numită vnod prin care nucleul reprezintă orice fişier; toate
+metodele acestei clase sunt pur virtuale (metodele sunt funcţiile din
+structura <TT>inode_operations</TT>).  Fiecare tip de fişier
+particular suportat de un nucleu este o <I>clasă derivată</I> din
+această clasă de bază.
+
+<P>
+
+<H2><A NAME="SECTION00032000000000000000">
+Vnoduri speciale</A>
+</H2>
+
+<P>
+În articolul din decembrie 1997 am explicat faptul că în Unix sub
+abstracţia de fişier se ascund multe alte creaturi: ţevile (pipes),
+perifericele (fişierele speciale), pseudo-perifericele şi chiar
+procesele!  Cu alte cuvinte toate aceste obiecte sunt accesate prin
+aceeaşi interfaţă, care include funcţiile descrise mai sus,
+<TT>read(), close()</TT>, etc.
+
+<P>
+<I>În interior nucleul reprezintă toate aceste obiecte în acelaşi
+fel, şi anume prin vnoduri.</I>  În consecinţă, pentru nucleu fiecare
+periferic ``deschis'' este un vnod; în particular o partiţie de disc
+este reprezentată intern în nucleu tot ca un vnod.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Sistemul de fişiere ca abstracţiune</A>
+</H1>
+
+<P>
+Toată povestea anterioară se repetă aproape identic pe un alt
+nivel: nucleul Unix se bazează pe lîngă abstracţia de fişier pe
+cea de <I>sistem de fişiere</I>.  Structura prin care se reprezintă
+în nucleu un sistem de fişiere se numeşte Sistem de Fişiere
+Virtual (Virtual File System, VFS).  Putem citi definiţia structurii
+pentru Linux în acelaşi fişier: <TT>include/linux/fs.h</TT>, unde
+(în terminologie specifică Linux) structura de date se cheamă
+<TT>struct super_block</TT>.
+
+<P>
+Dacă un vnod reprezintă un fişier individual care a fost deschis,
+un VFS reprezintă o întreagă partiţie care a fost montată în
+sistemul de fişiere (secţiunea următoare este consacrată acestei
+operaţii).
+
+<P>
+Tot aşa cum vnodul are o serie de metode (funcţii) care operează
+asupra lui, VFS conţine un pointer spre o serie de funcţii globale
+ale unui sistem de fişiere.  Pentru Linux acestea sunt declarate în
+acelaşi fişier, în structura <TT>struct super_operations</TT>;
+cele mai importante operaţii sunt cele care citesc/scriu de pe o
+partiţie un inod.  Iată un fragment din această structură:
+
+<P>
+<PRE>
+struct super_operations {
+        void (*read_inode) (struct inode *);
+        void (*write_inode) (struct inode *);
+        void (*put_inode) (struct inode *);
+        void (*put_super) (struct super_block *);
+        void (*write_super) (struct super_block *);
+        void (*statfs) (struct super_block *, struct statfs *);
+        .....
+};
+</PRE>
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Montarea</A>
+</H1>
+
+<P>
+Cum ajung mai multe sisteme de fişiere (nu neapărat diferite
+arhitectural) să fie folosite simultan de un sistem Unix?  În DOS
+sau Windows cînd se indică un fişier se indică (poate implicit)
+şi partiţia de disc unde fişierul se află (ex.: cu <TT>C:</TT>).
+
+<P>
+În Unix lucrurile stau puţin altfel: toate sistemele de fişiere
+disponibile utilizatorilor sunt <I>montate</I> (cu comanda
+<TT>mount</TT>) de către administratorul de sistem, de obicei cînd
+calculatorul boot-ează.  Comanda aceasta (care se foloseşte de un
+apel de sistem cu acelaşi nume) are două argumente importante: un
+nume de partiţie, şi un nume de director<A NAME="tex2html3"
+  HREF="#foot226"><SUP>2</SUP></A>.
+
+<P>
+De exemplu, presupunînd că am un hard disc numit <TT>/dev/hda2</TT>,
+pot să montez (dacă am drepturi de administrator) sistemul de
+fişiere aflat pe el peste directorul <TT>/mnt</TT> cu comanda:
+
+<P>
+<PRE>
+mount /dev/hda2 /mnt
+</PRE>
+
+<P>
+Să observăm în trecere că faptul că numai administratorul are
+dreptul de a monta sisteme de fişiere restrînge mult posibilitatea
+de propagare a viruşilor: un utilizator neprivilegiat nu poate accesa
+dischete sau discuri străine.
+
+<P>
+Ce înseamnă montarea?  Poate fi montată numai o partiţie
+formatată şi pe care se află un sistem de fişiere.  Prin montare
+directorul rădăcină al acelei partiţii este identificat cu
+directorul indicat la comanda <TT>mount</TT>, în cazul nostru
+<TT>/mnt</TT>.  După execuţia comenzii, de la directorul
+<TT>/mnt</TT> în jos se va afla întregul arbore de directoare de pe
+partiţia <TT>/dev/hda2</TT>.
+
+<P>
+Am văzut cîteva lucruri foarte simple; am putea spune aproape
+banale.  Uluitor este de pildă faptul că în interior nucleul
+foloseşte o singură structură de date, vnodul, pentru a reprezenta
+zeci de creaturi diferite:
+
+<P>
+
+<UL>
+<LI>Fişiere de naturi diferite de pe un acelaşi tip de sistem de
+fişiere (ex. directoare, fişiere);
+</LI>
+<LI>Fişiere de pe orice fel de tip de sistem de fişiere (ex. NFS,
+DOS, Unix);
+</LI>
+<LI>Fişiere speciale care reprezintă periferice (ex. partiţii de
+disc, consola, ecranul, benzi, mouse, etc);
+</LI>
+<LI>Pseudo-periferice (ex. ferestre din sistemul grafic, memoria
+virtuală a maşinii <TT>/dev/mem</TT>, gaura fără fund
+<TT>/dev/null</TT>, etc.);
+</LI>
+<LI>Procesele în curs de execuţie şi informaţiile despre ele
+(ex. <TT>/proc/*</TT>);
+</LI>
+<LI>Mecanisme de comunicare inter-proces (ex. ţevi (pipes, sockets,
+etc.)).
+</LI>
+</UL>
+
+<P>
+<I>Toate aceste obiecte sunt reprezentate în acelaşi fel
+pentru că oferă fiecare (un subset) al aceleiaşi interfeţe,
+bazată pe <TT>read(), write(), open(), close(), ioctl()</TT>.</I>
+
+<P>
+Acum vom încerca să vedem cum funcţionează aceste abstracţii.
+Să urmărim deci o serie de operaţii în sistemul de fişiere.
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Sistemul de fişiere în acţiune</A>
+</H1>
+
+<P>
+Vom parcurge mai multe etape:
+
+<P>
+
+<OL>
+<LI>Vom vedea de unde ştie nucleul să manipuleze atîtea feluri de
+sisteme de fişiere şi obiecte diferite;
+</LI>
+<LI>Vom vedea cum apare prima partiţie montată;
+</LI>
+<LI>Vom vedea cum celelalte partiţii sunt montate;
+</LI>
+<LI>Vom vedea cum se execută o operaţie asupra unui fişier care
+trebuie să traverseze o cărare pe mai multe partiţii.
+</LI>
+</OL>
+
+<P>
+Partea spectaculoasă este că, datorită interfeţei identice a
+tuturor fişierelor din sistem, codul care operează cu fişiere poate
+fi scris în mare măsură <I>complet independent de natura
+fişierelor</I>, fie ele DOS, Unix sau NFS sau altceva.  Vom vedea că
+cea mai mare parte a operaţiilor se petrec într-un nivel software
+care se comportă ca un comutator gigantic, care pe măsură ce
+acţionează asupra unor fişiere aflate pe partiţii diferite comută
+între codul feluritelor sisteme de fişiere.  Acest comutator se
+numeşte Virtual File System Switch, şi se abreviază cîteodată cu 
+<TT>vfssw</TT>.
+
+<P>
+Plasamentul acestui cod în interiorul nucleului este simbolizat în
+figura&nbsp;<A HREF="3fs-html.html#vfs">2</A>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="vfs"></A><A NAME="240"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 2:</STRONG>
+Sistemul de fişiere în nucleu</CAPTION>
+<TR><TD><IMG
+ WIDTH="451" HEIGHT="359" BORDER="0"
+ SRC="img2.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=10cm\epsffile{vfs.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H2><A NAME="SECTION00061000000000000000">
+Compilarea nucleului</A>
+</H2>
+
+<P>
+Fiecare sistem de fişiere îşi aranjează altfel datele pe disc;
+anumite sisteme ca NFS cer colaborarea unui client şi a unui server
+pentru a oferi servicii de fişiere.  Fiecare este implementat prin
+alte proceduri, chiar dacă oferă acelaşi set de operaţii.
+Administratorul de sistem hotărăşte la compilarea nucleului care
+din sistemele de fişiere disponibile vor face parte din nucleu.
+Fiecare pune la dispoziţie un set de funcţii pentru manipularea
+structurii vfs (cele din structura <TT>struct super_operations</TT> de
+mai sus) şi pentru manipularea fişierelor însele (vnoduri).
+
+<P>
+În cazul sistemului de operare Linux fiecare sistem de fişiere are
+sursele în propriul lui arbore de directoare plecînd din
+<TT>/usr/src/linux/fs/</TT>.
+
+<P>
+
+<H2><A NAME="SECTION00062000000000000000">
+Boot-area</A>
+</H2>
+
+<P>
+Cînd sistemul de operare bootează, înainte de lansarea proceselor,
+se execută o secţiune de iniţializări în care
+sunt chemate procedurile de iniţializare ale tuturor subsistemelor
+nucleului; fiecare driver se iniţializează şi apoi sistem de
+fişiere are ocazia să se iniţializeze.
+
+<P>
+Înainte de a lansa orice proces nucleul montează prima partiţie,
+partiţia rădăcină.  Această partiţie a fost configurată de
+administratorul de sistem la construirea sistemului.  Pe această
+partiţie se găsesc cele mai importante directoare ale sistemului,
+fără de care acesta nu poate funcţiona.  Acestea sunt:
+
+<P>
+<DL>
+<DT><STRONG><TT>/dev/</TT></STRONG></DT>
+<DD>care conţine toate numele fişierelor speciale şi
+inodurile lor; aici fiecare hard-disc are un nume şi un număr major
+şi minor<A NAME="tex2html5"
+  HREF="#foot140"><SUP>3</SUP></A> care indică nucleului ce partiţie fizică
+corespunde fiecărui nume;
+
+<P>
+</DD>
+<DT><STRONG><TT>/etc/</TT></STRONG></DT>
+<DD>care conţine toate fişierele de configurare ale
+sistemului şi scripturile care se execută la iniţializare;
+
+<P>
+</DD>
+<DT><STRONG><TT>/bin/</TT></STRONG></DT>
+<DD>care conţine toate fişierele executabile
+esenţiale, printre care shell-ul, comanda <TT>mount</TT>, utilitare
+de reparat discul, etc.
+</DD>
+</DL>
+
+<P>
+După montarea partiţiei nucleul deschide directorul rădăcină care
+va rămîne deschis pînă la oprirea sistemului.  Asta înseamnă că
+îi alocă un vnod pe care îl iniţializează corespunzător şi pe
+care îl păstrează în memorie; o variabilă globală punctează la
+acest vnod.  (Aceste operaţii sunt executate de nucleul Linux în
+funcţia <TT>mount_super()</TT> pe care o puteţi găsi prin surse
+într-un loc depinzînd de versiunea nucleului pe care o aveţi.)
+
+<P>
+Din clipa asta sistemul este funcţional.
+
+<P>
+Să vedem mai departe cum procedează nucleul pentru a monta o nouă
+partiţie în arborele de directoare şi cum nucleul procedează
+pentru a deschide un fişier.
+
+<P>
+
+<H2><A NAME="SECTION00063000000000000000">
+Montarea</A>
+</H2>
+
+<P>
+Să presupunem că avem doar o partiţie montată, cea rădăcină.
+Să vedem ce face nucleul la executarea comenzii:
+
+<P>
+<PRE>
+mount -t msdos /dev/hda1 /mnt
+</PRE>
+
+<P>
+care îi cere să monteze o partiţie cu sistem de fişiere
+de tip MS-DOS peste directorul <TT>/mnt</TT>.
+
+<P>
+Nucleul face următoarele operaţii:
+
+<P>
+
+<OL>
+<LI>Descifrează tipul sistemului de fişiere pentru a şti care
+porţiune de cod (dintre multiplele sisteme de fişiere ale nucleului)
+o să manipuleze structurile de date de pe această partiţie;
+
+<P>
+</LI>
+<LI>Deschide directorul indicat (<TT>/mnt</TT>); asta înseamnă
+citirea de pe disc a inodului acelui director într-un vnod din
+memorie; acest vnod va rămîne deschis atîta vreme cît sistemul de
+fişiere va fi montat deasupra lui;
+
+<P>
+</LI>
+<LI>Cheamă funcţia de iniţializare corespunzătoare acestui
+sistem de fişiere (msdos), care funcţie construieşte structura VFS
+(numită în Linux <TT>super_block</TT>) şi îi iniţializează
+cîmpurile, de obicei citind primele sectoare de pe hard-disc din
+partiţia indicată (<TT>/dev/hda1</TT>);
+
+<P>
+</LI>
+<LI>Deschide fişierul <TT>/dev/hda1</TT>, care este un fişier
+special de tip bloc corespunzînd unei partiţii de disc;
+
+<P>
+</LI>
+<LI>Deschide directorul rădăcină al partiţiei montate
+(<TT>/dev/hda1</TT>) într-un vnod în memorie;
+
+<P>
+</LI>
+<LI>Marchează faptul că cele două vnoduri (ale directorului
+<TT>/mnt</TT> şi al rădăcinii partiţiei noi) practic ``coincid'':
+asta va permite traversarea unor cărări de genul <TT>/mnt/tmp</TT>,
+care încep pe o partiţie şi se termină pe alta.
+</LI>
+</OL>
+
+<P>
+Puteţi citi codul apelului de sistem <TT>mount(2)</TT> pentru Linux
+în fişierul <TT>/usr/src/linux/fs/super.c</TT>; pe lîngă cele
+spuse codul mai face o sumedenie de verificări pe care le-am sărit.
+
+<P>
+
+<H2><A NAME="SECTION00064000000000000000">
+Deschiderea unui fişier</A>
+</H2>
+
+<P>
+Există două mari categorii de apeluri de sistem care operează cu
+fişiere: apeluri care primesc cărări (path) către un fişier, şi
+care primesc un descriptor de fişier (mîner, handle).  Descriptorii
+am văzut că se obţin deschizînd un fişier cu <TT>open()</TT>,
+căreia i se dă o cărare.
+
+<P>
+Pe scurt, pentru a opera asupra unui fişier trebuie întîi parcursă
+o cărare pînă la el.  După cum ştim există două feluri de
+cărări: relative la directorul curent al procesului sau absolute,
+care pornesc de la rădăcina sistemelor de fişiere (cele din urmă
+se scriu începînd cu semnul /).  Diferenţa constă doar în vnodul
+de la care porneşte operaţia de traversare a cărării: într-un caz
+este vnodul directorului curent al procesului, care este permanent
+menţinut de nucleu într-o variabilă asociată procesului, iar în
+celălalt caz directorul rădăcină, care este menţinut într-o
+altă variabilă asociată procesului (în Unix un proces poate
+să-şi schimbe ceea ce crede că este rădăcina întregului arbore
+de directoare cu apelul de sistem <TT>chroot(2)</TT>).
+
+<P>
+Pentru nucleu deschiderea unui fişier înseamnă:
+
+<P>
+
+<UL>
+<LI>Alocarea unui vnod liber în memorie;
+</LI>
+<LI>Citirea informaţiilor dependente şi independente de pe disc
+(sau de unde-or fi) în vnod.
+</LI>
+</UL>
+
+<P>
+
+<H3><A NAME="SECTION00064100000000000000">
+Starea iniţială</A>
+</H3>
+
+<P>
+Să revizuim însă structurile de date ale nucleului aşa cum se
+prezintă ele în această clipă; ele sunt înfăţişate în
+figura&nbsp;<A HREF="3fs-html.html#structuri">3</A>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="structuri"></A><A NAME="246"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 3:</STRONG>
+Structurile de date în nucleu</CAPTION>
+<TR><TD><IMG
+ WIDTH="438" HEIGHT="328" BORDER="0"
+ SRC="img3.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=10cm\epsffile{structuri.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H3><A NAME="SECTION00064200000000000000">
+Funcţia <TT>namei</TT></A>
+</H3>
+
+<P>
+Funcţia din nucleu care traduce o cărare într-un vnod în acest fel
+se numeşte în mod tradiţional în sistemele derivate din Berkeley
+Unix (şi în Linux) <TT>namei()</TT>, datorită faptului că traduce
+un nume de fişier într-un i(v)nod.  (Numele funcţiei în sisteme
+descendente din System V de la AT&amp;T este <TT>lookuppn()</TT>, de la
+lookup path name.)  Într-un pseudo-cod funcţia <TT>namei()</TT>
+arată cam aşa (cu detalii e mult mai complicată):
+
+<P>
+<PRE>
+vnode * namei(char * carare, vnode * start)
+{
+        char * componenta;
+        vnode * curent = start;
+
+        while (carare) {
+                if (carare &amp;&amp; !DIRECTOR(curent)) 
+                        return NULL;
+                componenta = extrage_prima_componenta(carare);
+                carare = elimina_prima_componenta(carare);
+                if (!strcmp(componenta, "..") &amp;&amp;
+                    curent-&gt;montat_pe) {
+                        if (curent != ROOT_VNODE)
+                                curent = curent-&gt;montat_pe;
+                        continue;
+                }
+                if (curent-&gt;montat_sub) {
+                        curent = curent-&gt;montat_sub;
+                        continue;
+                }
+                curent = curent-&gt;operatii-&gt;lookup(curent, componenta);
+                if (!curent) 
+                        return NULL;
+        }
+        return curent;
+}
+</PRE>
+
+<P>
+Să vedem pas cu pas cum operează nucleul pentru a deschide fişierul
+<TT>/mnt/tmp/a</TT>.
+
+<P>
+
+<OL>
+<LI>Este invocată funcţia <TT>namei("mnt/tmp/a", ROOT_VNODE)</TT>;
+
+<P>
+</LI>
+<LI>Pentru că mai avem componenente în cărare trebuie ca
+<TT>curent</TT> să fie un vnod de director; se verifică acest lucru;
+
+<P>
+</LI>
+<LI>Este extrasă prima componentă din cărare (<TT>mnt</TT>);
+cărarea rămîne <TT>tmp/a</TT>;
+
+<P>
+</LI>
+<LI><TT>curent = ROOT_VNODE</TT>; peste <TT>curent</TT> nu e montat
+nimic;
+
+<P>
+</LI>
+<LI>Se cheamă indirect funcţia
+<TT>curent-&gt;operatii-&gt;lookup(curent, "mnt")</TT>, care caută în
+directorul dat de vnodul <TT>curent</TT> un fişier cu numele
+<TT>mnt</TT> şi returnează vnodul său de pe aceeaşi partiţie
+(partiţia rădăcină în cazul nostru); aceasta este noua valoare a
+lui <TT>curent</TT>; dacă vnodul căutat nu se afla anterior
+căutării în memorie, funcţia <TT>lookup()</TT> îl alocă şi îl
+citeşte de pe disc; funcţia <TT>lookup()</TT> construieşte şi
+structura de <TT>-&gt;operatii</TT> din cadrul vnodului, păstrînd
+operaţiile de la directorul în care se caută (dacă două vnoduri
+sunt pe aceeaşi partiţie sunt deci din acelaşi sistem de fişiere
+şi deci au aceleaşi funcţii de acces!);
+
+<P>
+</LI>
+<LI>Se reia bucla <TT>while</TT>;
+
+<P>
+</LI>
+<LI>Pentru că pe directorul <TT>/mnt</TT> este montată partiţia
+<TT>/dev/hda1</TT>, valoarea lui <TT>curent-&gt;montat_sub</TT> este
+chiar vnodul care este rădăcina acestei partiţii (care este în
+memorie); <TT>curent</TT> ia această valoare iar bucla se reia prin
+execuţia lui <TT>continue</TT>;
+
+<P>
+</LI>
+<LI>În clipa asta <TT>curent</TT> punctează la un vnod dintr-un
+sistem de fişiere complet diferit (de tip MS-DOS); pe nucleu însă
+acest lucru nu-l interesează, pentru că vnodul are <I>aceleaşi
+operaţii</I>, inclusiv <TT>lookup</TT> (chiar dacă ele sunt
+implementate într-un mod complet diferit);
+
+<P>
+</LI>
+<LI>Într-un mod perfect similar se extrage prima componentă a
+cărării, <TT>tmp</TT> care este căutată (cu apelul funcţiei
+<TT>curent-&gt;operatii-&gt;lookup(curent, "tmp")</TT> în directorul al
+cărui vnod este <TT>curent</TT>; se schimbă valoarea lui
+<TT>curent</TT>;
+
+<P>
+</LI>
+<LI>O ultimă trecere prin buclă va găsi la fel vnodul fişierului
+<TT>a</TT> şi-l va încărca în memorie; acesta este rezultatul
+funcţiei <TT>namei()</TT>.
+</LI>
+</OL>
+
+<P>
+
+<H2><A NAME="SECTION00065000000000000000">
+O operaţie pe un fişier</A>
+</H2>
+
+<P>
+Cheia în implementarea funcţiei <TT>namei</TT> este apelul indirect
+de funcţie <TT>curent-&gt;operatii-&gt;lookup()</TT>.  Vom înţelege la ce
+foloseşte acest apel privind modul în care nucleul execută o
+operaţie pe un fişier deja deschis; să vedem un posibil cod al
+apelului de sistem <TT>write()</TT>:
+
+<P>
+<PRE>
+int write(int miner, char * buffer, unsigned cantitate)
+{
+        struct vnode * v;
+        struct file * f;
+
+        f = proces_curent-&gt;fisiere_deschise[miner];
+        v = f-&gt;vnode;
+        return v-&gt;operatii-&gt;write(v, buffer, cantitate);
+}
+</PRE>
+
+<P>
+(Am eliminat toate testele de corectitudine a argumentelor.)  Nucleul
+întîi indexează într-un array al procesului curent pentru a găsi
+vnodul <TT>v</TT> al fişierului deschis anterior al cărui ``mîner''
+a fost returnat utilizatorului (rolul structurii <TT>struct file</TT>
+nu ne interesează deocamdată; vom reveni asupra ei într-un alt
+articol).  Apoi nucleul cheamă din nou indirect funcţia
+<TT>write</TT>, aşa cum apare ea între operaţiile asociate vnodului
+găsit.
+
+<P>
+Frumuseţea acestei scheme este următoarea: fiecare sistem de
+fişiere îşi organizează altfel datele pe disc; Unix foloseşte o
+schemă complicată în care fişierele sunt descrise prin inoduri,
+MS-DOS descrie blocurile fişierelor printr-o structură numita FAT
+(file access table), etc.  Dar atîta vreme cît ambele sisteme de
+fişiere pun la dispoziţie o funcţie care scrie într-un fişier
+date, nu contează prea tare că această funcţie este complet
+diferit implementată pentru cele două sisteme.  Important este că
+are <I>aceeaşi interfaţă</I>!
+
+<P>
+Fiecare vnod poartă cu el din momentul în care este adus în memorie
+propriul lui vector de operaţii.  Vnodurile pentru sisteme Unix şi
+vnodurile pentru sisteme de fişiere MS-DOS au ambele o operaţie
+<TT>write()</TT>, care primeşte aceleaşi argumente şi returnează
+aceleaşi rezultate, chiar dacă intern se comportă complet diferit.
+
+<P>
+Din această cauză utilizatorii pot trata în Unix fişiere de naturi
+foarte diferite (şi nu numai fişiere) ca pe obiecte de acelaşi tip.
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Concluzie</A>
+</H1>
+
+<P>
+Există o oarecare independenţă între operaţiile pe care le putem
+face asupra unui obiect (interfaţa sa) şi modul în care acele
+operaţii sunt realizate (implementarea).  O interfaţă bine
+proiectată poate avea consecinţe dramatice.
+
+<P>
+Cu siguranţă flexibilitatea acestei interfeţe este unul dintre
+ingredientele care a asigurat succesul sistemului de operare Unix şi
+a paradigmelor sale.  Avem aici un exemplu splendid de
+<I>modularitate</I>: părţi complet diferite constitutiv au aceeaşi
+interfaţă încît pot fi practic substituite una alteia, ca nişte
+bucăţi de Lego.
+
+<P>
+Mai mult de jumătate din sursele C ale unui nucleu sunt drivere
+(pentru Linux 2.0.30 asta înseamnă aproape o jumătate de milion de
+linii de cod!).  Nici un om nu poate înţelege atît de mult cod.
+Dar datorită modularităţii nimeni nu trebuie să înţeleagă toate
+piesele: trebuie doar să cunoşti interfeţele; implementarea poate
+fi oricare.  Înţelegînd interfeţele înţelegi şi cum
+funcţionează întregul.
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot56">...  Unix</A><A NAME="foot56"
+HREF="3fs-html.html#tex2html1"><SUP>1</SUP></A> <DD>Am prezentat
+într-un <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#2fs">articol</a>
+din PC Report din decembrie 1997 această interfaţă pe larg; o copie a
+articolului este disponibilă din pagina de web a autorului.  Vom relua
+însă aici ideile esenţiale.
+
+<DT><A NAME="foot226">... director</A><A NAME="foot226"
+ HREF="3fs-html.html#tex2html3"><SUP>2</SUP></A>
+<DD>Articolul citat
+mai sus despre funcţionarea sistemelor de fişiere din Unix, din PC
+Report din decembrie 1997 explică cum se poate numi o partiţie
+folosind un nume ca al unui fişier, şi cum nucleul operează cu
+partiţiile.  Vom vedea mai jos că nucleul trebuie să aibă de la
+bootare montată cel puţin o partiţie, numită <I>partiţia
+rădăcină</I> (root filesystem) ca să poată continua cu celelalte.
+
+<DT><A NAME="foot140">... minor</A><A NAME="foot140"
+ HREF="3fs-html.html#tex2html5"><SUP>3</SUP></A>
+<DD>Despre numerele majore şi minore vedeţi articolul
+citat anterior.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

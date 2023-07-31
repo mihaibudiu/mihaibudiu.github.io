@@ -1,0 +1,1033 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>``Corect'' -- un ``spell-check''-er pentru limba română</TITLE>
+<META NAME="description" CONTENT="``Corect'' -- un ``spell-check''-er pentru limba română">
+<META NAME="keywords" CONTENT="rom-spell-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">``Corect'' -- un ``spell-check''-er pentru limba română</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- mihaib+ at cs.cmu.edu, <TT>http://www.cs.cmu.edu/~mihaib</TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>16 mai 1997</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>un corector de texte pentru limba română
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>familiaritate cu sisteme de prelucrare a
+textelor
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>spell-check, emacs, ispell, standard,
+inernaţionalizare
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html23"
+  HREF="rom-spell-html.html">Programul <TT>ispell</TT></A>
+<LI><A NAME="tex2html24"
+  HREF="#SECTION00030000000000000000">Un principiu de Design</A>
+<LI><A NAME="tex2html25"
+  HREF="#SECTION00040000000000000000">Pachetul pentru limba română</A>
+<UL>
+<LI><A NAME="tex2html26"
+  HREF="#SECTION00041000000000000000">Fişierele de prefixe/sufixe</A>
+<LI><A NAME="tex2html27"
+  HREF="#SECTION00042000000000000000">Problema internaţionalizării</A>
+<LI><A NAME="tex2html28"
+  HREF="#SECTION00043000000000000000">Dicţionarele</A>
+<LI><A NAME="tex2html29"
+  HREF="#SECTION00044000000000000000">Interfaţa cu emacs</A>
+<LI><A NAME="tex2html30"
+  HREF="#SECTION00045000000000000000">Fişierul de stil pentru L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X</A>
+<LI><A NAME="tex2html31"
+  HREF="#SECTION00046000000000000000">Interfaţa corectorului de limba română cu utilizatorul</A>
+</UL></UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+
+<P>
+Folosind programul <TT>ispell</TT> am construit un pachet de utilitare
+care uşurează scrierea şi corectarea textelor în limba română.
+Pachetul este, sper, relativ uşor de instalat şi folosit pe
+platforme Unix, şi este disponibil oricui fără restricţii.  
+
+<P>
+Poate fi obţinut prin web de la <a
+href="http://www.cs.cmu.edu/~mihaib/ftp/rom-spell.taz">http://www.cs.cmu.edu/~mihaib/ftp/rom-spell.taz</a>.
+În acest articol discut în oarece detaliu despre una dintre sculele pe
+care pachetul se bazează (excelentul program <TT>ispell</TT>) şi
+justific unele dintre deciziile pe care le-am luat cînd am construit
+pachetul.  Pe alocuri divaghez despre importanţa unui design clar
+separat, şi despre funcţia standardelor în ziua de azi.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Programul <TT>ispell</TT></A>
+</H1>
+
+<P>
+<TT>ispell</TT> este software ``free'', deci accesibil oricui.  Rolul lui
+este destul de simplu: analizează texte şi indică cuvintele a
+căror grafie nu o cunoaşte, permiţînd în felul acesta corectarea
+unora dintre erorile de dactilografie.  <TT>ispell</TT> vine de la
+``fabricanţi'' cu o întreagă suită de programe care permit
+construirea, manipularea şi întreţinerea de dicţionare.
+
+<P>
+<TT>ispell</TT> este prin natura lui un program nu prea inteligent: are
+la îndemînă un dicţionar cu <EM>toate</EM> cuvintele corecte, iar
+ceea ce face este să caute fiecare cuvînt din textul de corectat
+în dicţionar.  Dacă găseşte cuvîntul îl socoteşte bun, dacă
+nu, se uită în dicţionar după cuvinte care sunt ``apropiate'' ca
+scriere de cel absent, pe care apoi le propune spre înlocuire,
+presupunînd ca acel cuvînt a fost greşit scris.
+
+<P>
+Ce înseamnă că ``două cuvinte sunt aproape'' pentru <TT>ispell</TT>?  
+Un cuvînt este aproape de altul dacă se poate obţine printr-una din 
+următoarele operaţii:
+
+<P>
+
+<UL>
+<LI>Adăugarea unei litere;
+</LI>
+<LI>Ştergerea unei litere;
+</LI>
+<LI>Transpunerea a două litere consecutive.
+</LI>
+</UL>
+
+<P>
+De asemenea, <TT>ispell</TT> poate identifica lipsa unui spaţiu dintre
+două cuvinte.
+
+<P>
+Deşi un astfel de program nu poate oferi nici o garanţie în
+producerea de texte corecte, este extrem de eficace în a elimina o
+mare parte dintre erorile tipografice.
+
+<P>
+Chiar faptul că <TT>ispell</TT> nu are nici o cunoştinţă despre
+limbă îl face foarte util, pentru că permite folosirea lui cu texte
+scrise în orice limbă, cu condiţia posedării unui dicţionar
+potrivit.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Un principiu de Design</A>
+</H1>
+
+<P>
+Programe de genul <TT>ispell</TT> există de multă vreme în lumea Unix
+(de ex. programul <TT>spell</TT>; to spell = a scrie literă cu literă).
+Ceea ce face <TT>ispell</TT> atrăgător este universalitatea lui.
+<TT>ispell</TT> este un exemplu tipic de program care
+încarnează un foarte important principiu de proiectare în
+calculatoare.  Acest principiu se manifestă în separarea dintre <EM>mecanism</EM> şi <EM>politică</EM> (policy/mechanism).  Principiul indică
+faptul că un aparat trebuie să fie cît mai universal, ca să nu
+oblige pe cel care îl foloseşte la anumite feluri de manipulare,
+care să îi reducă utilitatea.
+
+<P>
+Tehnica este extrem de importantă în proiectarea sistemelor de
+operare, şi în general a programelor care servesc drept unelte<A NAME="tex2html1"
+  HREF="#foot69"><SUP>1</SUP></A>(de exemplu bibliotecile).  Un sistem de operare trebuie de exemplu
+să-ţi ofere toate metodele prin care să poţi controla <EM>cînd</EM>
+se vor executa programele tale, dar să nu impună o anumită ordine
+de execuţie a lor.  Sistemul de operare este cel care execută
+programele, dar utilizatorul este cel care indică ordinea şi
+priorităţile.
+
+<P>
+Un alt exemplu interesant este în reţelele de calculatoare: protocoalele
+de transmisiune a datelor ştiu să mute biţi de la un calculator la
+altul, chiar foarte îndepărtat.  În acest caz mecanismul este cel
+care transportă datele.  Politica de alegere a traseului pe care le
+urmează datele este însă complet separată de mecanismul de transport;
+ea este decisă de un set complet separat de protocoale, numite 
+protocoale de rutare.  Această flexibilitate permite construirea de
+protocoale de rutare noi şi înlocuirea celor vechi ``din mers'',
+fără a întrerupe funcţionarea reţelei în vreun fel.
+
+<P>
+Pe scurt: dacă faci un aparat complicat, nu restrînge modul în care
+poate fi folosit, ci construieşte-i suficiente mînere cît să
+poată fi controlat în cît mai multe feluri.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Pachetul pentru limba română</A>
+</H1>
+
+<P>
+Unde trebuie puse mînerele nu este întotdeauna evident.
+Proiectantul variantei internaţionale a lui <TT>ispell</TT>, Geoff
+Kuenning, a studiat cu atenţie locurile în care politica era
+îngropată în interiorul programului, şi a încercat să o extragă
+în afară.  Acest lucru este vizibil utilizatorului prin faptul că
+pentru a folosi <TT>ispell</TT> trebuie să scrii o grămadă de fişiere
+auxiliare, care controlează modul în care lucrează.  Ceea ce am
+şi făcut, pentru a putea face <TT>ispell</TT> utilizat cu texte
+româneşti.
+
+<P>
+În cele ce urmează voi descrie pe scurt conţinutul pachetului;
+această descriere îmi va prilejui identificarea porţiunilor din
+<TT>ispell</TT> care sunt supuse controlului utilizatorului.
+
+<P>
+
+<H2><A NAME="SECTION00041000000000000000">
+Fişierele de prefixe/sufixe</A>
+</H2>
+
+<P>
+Principala piesă din configurarea <TT>ispell</TT> este fişierul de
+afixe.  Numele nu este foarte fericit ales, pentru că funcţiunea
+acestuia este, pe lîngă de a indica metode de derivare cu prefixe
+şi sufixe (care pot fi folosite pentru a comprima dicţionarele), şi
+descrierea parametrilor funcţionării lui <TT>ispell</TT>.
+
+<P>
+O primă alegere cu care m-am confruntat a fost dacă dicţionarele
+vor conţine semne diacritice sau nu.  Pentru că nu m-am putut
+hotărî, pînă la urmă am construit două configuraţii şi două
+dicţionare, pentru ambele cazuri.
+
+<P>
+Pentru cazul semnelor diacritice a trebuit să fac faţă
+următoarelor două decizii:
+
+<P>
+
+<UL>
+<LI>Dacă folosesc sau nu noile reguli de scriere ale Academiei cu
+â;  rezultatul îl ghiciţi din textul de faţă, care este corectat
+cu <TT>ispell</TT>;
+
+<P>
+</LI>
+<LI>Cum voi reprezenta semnele diacritice.  Această problemă este
+extrem de spinoasă, şi îmi va da prilejul să fac o lungă digresiune:
+</LI>
+</UL>
+
+<P>
+
+<H2><A NAME="SECTION00042000000000000000">
+Problema internaţionalizării</A>
+</H2>
+
+<P>
+Calculatoarele depind într-o sumedenie de moduri subtile de faptul
+că au fost concepute de oameni care foloseau mai ales limba engleză
+(orice istorie a calculatoarelor va recunoaşte rolul americanilor
+şi, ceva mai puţin, al englezilor).  Modul în care sunt prelucrate
+textele, în care sunt afişate şi citite este adesea strîns legat
+de caracteristicile speciale ale limbii engleze.  De acest lucru
+şi-au dat seama cei care au încercat să universalizeze folosirea
+calculatoarelor, pentru a le adapta şi altor naţii.
+
+<P>
+Fără a avea pretenţia de a trata exhaustiv această problemă, să
+aruncăm o privire asupra influenţei limbii asupra programelor.
+
+<P>
+
+<H3><A NAME="SECTION00042100000000000000">
+Traseul informaţiei</A>
+</H3>
+
+<P>
+Pentru a prelucra texte avem trei categorii mari de operaţii:
+
+<P>
+
+<UL>
+<LI>Citirea textelor de la tastatură;
+</LI>
+<LI>Prelucrarea textelor prin feluriţi algoritmi;
+</LI>
+<LI>Afişarea (vizualizarea) textelor.
+</LI>
+</UL>
+
+<P>
+Pentru fiecare din aceste activităţi este responsabil un program
+distinct.  De citirea tastaturii se ocupă ``driver''-ul de terminal.
+Acesta are de obicei mai multe funcţiuni:
+
+<P>
+
+<UL>
+<LI>Deduce combinaţia de taste apăsată; o reprezintă printr-un
+şir de coduri;
+</LI>
+<LI>Traduce codurile la o reprezentare ``standard''; de exemplu
+cînd apeşi tasta pe care scrie ``A'' returnează codul ASCII al lui
+``a'', care e 97.
+</LI>
+<LI>Cîteodată face o minimă editare a textului: de exemplu dacă
+apeşi pe DELETE şterge un caracter.
+</LI>
+</UL>
+
+<P>
+În funcţie de sistemul de operare, utilizatorul are mai multe
+opţiuni la-ndemînă pentru a influenţa driverul: poate să
+citească direct codurile, să influenţeze modul în care se face
+traducerea, să evite editarea automată textului.
+
+<P>
+Dacă lucrezi pe un calculator la distanţă, de exemplu conectat prin
+<TT>telnet</TT> prin reţea, lucrurile se complică, pentru că între driver-ul 
+care citeşte tastatura (aflat pe calculatorul local) şi aplicaţia ta
+(aflată la distanţă) se mai interpun încă două programe care
+codifică fiecare tastă apăsată:
+
+<P>
+
+<UL>
+<LI>Programul local de <TT>telnet</TT>, citeşte tastele de la driver şi le
+traduce într-un mod standardizat pentru comunicaţia prin reţea;
+</LI>
+<LI>Programul de la distanţă, demonul <TT>telnetd</TT>, care primeşte de 
+la <TT>telnet</TT> codurile standard ale tastelor şi le traduce pentru maşina 
+de acolo.
+</LI>
+</UL>
+
+<P>
+Afişarea textelor este iarăşi de obicei sarcina unui ``driver''.
+Dacă avem de-a face cu un terminal alfa-numeric (sau o fereastră
+care emulează un astfel de terminal prin software), atunci de obicei
+driver-ului i se dau secvenţe de caractere ASCII, pe care ştie el
+cum să le afişeze; din cînd în cînd i se dau şi coduri numite
+``caractere de control'', care de obicei nu lasă urme pe ecran, ci
+îi spun terminalului <EM>cum</EM> să manipuleze caracterele ce urmează.  
+De exemplu putem indica, folosind caractere de control, în
+ce loc pe ecran să se scrie următorul caracter ASCII.  Care este
+secvenţa de caractere de control care spune acest lucru depinde
+de terminal; fiecare fabricant a inventat propriile convenţii.
+
+<P>
+De cînd firma Xerox a inventat ecranul grafic (``bitmapped screen''), 
+a deveni un lucru comun ca interfaţa dintre aplicaţie şi utilizator să 
+nu fie un simplu şir de caractere pe care terminalul le afişează, ci o
+matrice mare de punctuleţe care pot fi controlate individual.
+Aplicaţiilor li se pune la îndemînă posibilitatea de a desena
+orice formă doresc; foarte frecvent însă sistemul de operare pune
+la dispoziţie funcţii de bilbiotecă pentru a desena caractere cu
+felurite forme (``fonturi'').
+
+<P>
+În fine, ultimul aspect al prelucrării de texte este procesarea lor cu
+feluriţi algoritmi: căutări, sortări, tehnoredactare, corectură, editare,
+transmitere de poştă electronică, etc.  Vom reveni pe scurt asupra fazei
+de prelucrare după ce discutăm despre standardizare.
+
+<P>
+
+<H3><A NAME="SECTION00042200000000000000">
+Standardizarea</A>
+</H3>
+
+<P>
+Un element cheie în interacţiunea între aceste părţi (drivere,
+aplicaţii, biblioteci, sistemul de operare) este faptul că <EM>toate folosesc aceeaşi metodă de codificare</EM>.  Cînd apăsaţi tasta
+``A'', driverul de tastatură întoarce 97, iar aplicaţia ştie că a
+primit un ``A'', pe care îl poate da bibliotecii de afişare, care
+ştie că trebuie să deseneze o astfel de literă.
+
+<P>
+Oricine a lucrat pe o tastatură prost configurată, sau a încercat
+să acceseze de la distanţa o aplicaţie care decodifică ciudat
+tastatura, sau a manipulat tabele de translatare ale codurilor, sau a
+primit mail cu caractere internaţionale va înţelege importanţa
+acestei convenţii.  Literei ``A'' i se asociază codul 97 de către
+codul ASCII (American Standard Code for Information Interchange), care
+este standardizat de ANSI (American National Standard Institute); e un
+fel de STAS local.  Din fericire, datorită dominaţiei SUA în arena
+calculatoarelor, ASCII este practic implementat de toată lumea.  Şi
+organizaţia mondială a standardelor ISO (International Standards
+Organization) a acceptat ASCII sub numele ISO 646.  Codificarea ASCII
+însă recomandă numai 128 de simboluri (din care 32 nici măcar nu
+sunt vizibile, ci sunt ``caractere de control'').  De îndată ce
+ieşim din perimetrul acestora, domneşte haosul.
+
+<P>
+Pentru caractere pe 8 biţi există standardul ISO-8859, care oferă o
+duzină de interpretări pentru caracterele cu coduri peste 128.
+Pentru limba română cea mai interesantă interpretare este cea dată
+de ISO-8859-2, numită şi Latin-2, care conţine toate semnele
+speciale cu diacritice româneşti.  Problema acum este însă:
+înainte de a cădea de acord ce semn este cel cu codul 200, trebuie
+să cădem de acord ce cod folosim din duzina de variante ISO sau alte
+variante.  Plus că fiecare aplicaţie trebuie să fie capabilă să 
+interpreteze toate variantele, etc.
+
+<P>
+Tentative de standardizare şi mai îndrăzneţe s-au făcut: un
+consorţiu gigant, din care fac parte Microsoft, IBM, Xerox, Sun şi
+alte (zeci) de firme din lumea calculatoarelor, a fost înfiinţat, pe
+nume Unicode.  Acesta, cu ajutorul a zeci de experţi lingvişti a
+propus o standardizare uniformă a tuturor caracterelor, din toate
+limbile lumii, folosind pentru aceasta 16 biţi pe caracter.  Fiecare
+caracter ar avea astfel o reprezentare unică şi ne-ambiguă.
+Dificultăţile de înfrînt sunt enorme; de exemplu trebuie cumva
+luate în considerare standardele naţionale (cum ar fi cel elaborat
+de Japonezi) şi reconciliate.
+
+<P>
+Din păcate concordia nu este încă realizată, pentru că ISO a
+propus în acelaşi scop propriul ei standard, diferit de Unicode, 
+pe 32 de biţi, numit ISO DIS 10646.
+
+<P>
+Dificultatea la ora asta este deci nu că nu există standarde, ci că
+există prea multe.  O aplicaţie poate folosi propriile ei convenţii
+interne pentru citirea tastaturii/modificare/afişare, dar de îndată
+ce se pune problema <EM>schimbului</EM> de informaţii, absenţa unui
+standard unic (sau a unui număr mic de standarde) face problema intratabilă.
+
+<P>
+În general, viaţa noastră de toate zilele depinde enorm de
+standarde, într-un fel pe care nici nu-l realizăm.  Dacă nu am avea
+standarde trenurile nu ar pute circula pentru că ecartamentul ar fi
+diferit în ţări diferite (de altfel, la ruşi chiar este mai mare),
+aparatele electrice nu ar funcţiona decît unde au fost proiectate
+(şi aşa americanii merg la 110V), maşinile ar trebui să care
+benzina de acasă ca să se potrivească cifra octanică, am vedea la 
+televizor numai ce ar transmite bunica, cu care folosim aceeaşi codificare, 
+etc, etc.
+
+<P>
+
+<H3><A NAME="SECTION00042300000000000000">
+Prelucrările pe texte</A>
+</H3>
+
+<P>
+Înainte de a ne îndepărta de zona standardelor internaţionale, să
+mai aruncăm o privire asupra unor întrebări care sunt legate de
+reprezentarea caracterelor, şi al căror răspuns influenţează modul 
+în care algoritmii vor procesa textele:  
+
+<P>
+
+<UL>
+<LI>Nu toate limbile se scriu în aceeaşi direcţie; ebraica se
+scrie de la dreapta la stînga, iar japoneza pe verticală.  Cînd am
+un text englezesc cu citate din vechiul testament în ebraică, cum
+reprezint textul în calculator, în ce ordine?
+
+<P>
+</LI>
+<LI>Literele se pot scrie adesea în felurite moduri; chiar lăsînd
+la o parte informaţia legată de font, dimensiune şi orientare.  În
+arabă unele litere se scriu diferit în funcţie de vecinii lor;
+
+<P>
+</LI>
+<LI>Voi reprezenta ă ca două semne (a şi căciula) -- din care
+căciula este un semn care ``nu ocupă spaţiu'', deci se scrie peste
+cel anterior -- sau ca o singură literă?
+
+<P>
+</LI>
+<LI>Reprezint ``A'' şi ``a'' ca pe o aceeaşi literă, într-un caz
+modificată (mărită), sau ca pe două litere deosebite?
+
+<P>
+</LI>
+<LI>În anumite limbi un semn se comportă ca mai multe litere (în
+germană ß se sortează ca şi cum s-ar scrie ``ss''), dar se scrie
+ca una singură.  În alte limbi e invers: în Spaniolă ``ll'' este
+considerată o singură literă la sortare.  Algoritmii de sortare
+devin deci mult mai complicaţi, pentru că nu mai pot face simple
+comparaţii literă cu literă (o simplă sortare lexicografică).
+
+<P>
+</LI>
+<LI>În limba chineză literele nu sunt ordonate alfabetic, ci după
+numărul de liniuţe cu care se desenează.
+
+<P>
+</LI>
+<LI>Informaţii ca: sfîrşitul de paragraf, de pagină, indentarea,
+numărul de spaţii albe sunt sau nu reprezentabile prin caractere
+(cum sunt de exemplu în setul ASCII ``New-Line'' sau ``Tab'')?
+
+<P>
+</LI>
+<LI>Cînd scriu programe în C, cum reprezint caractere
+internaţionale pentru mesaje date utilizatorului?
+
+<P>
+</LI>
+<LI>Cum pot crea un fişier cu nume în Swahili?
+
+<P>
+</LI>
+<LI>Cum se scrie o expresie regulată în Kanji?
+</LI>
+</UL>
+
+<P>
+Oricare din aceste probleme poate fi rezolvată, dar pînă cînd nu
+toată lumea le va rezolva pe toate în acelaşi fel (prin intermediul
+unui standard), programele riscă să manipuleze obiecte pe care nu le
+mai înţelege nimeni în afară de autori.
+
+<P>
+Probabil că învingător în lupta standardelor va ieşi pînă la
+urmă Unicode, datorită suportului unor firme extrem de mari, şi
+datorită calităţilor sale tehnice.  Standardul este descris în 8
+cm<A NAME="tex2html2"
+  HREF="#foot101"><SUP>2</SUP></A> de hîrtie la ora actuală, şi mai creşte.
+
+<P>
+Sistemul de operare Windows NT de la Microsoft este construit
+integral cu Unicode în interior; totul, de la nume de fişiere la
+mesaje de eroare este construit pe 16 biţi.  Biblioteci speciale
+transformă datele manipulate de programele ``vechi'' (care lucrează
+cu caractere pe 8 biţi) în Unicode înainte de a ruga driverele din
+nucleu să le afişeze.  Chiar faptul ca Windows NT domină piaţa
+sistemelor de operare la ora actuală este un motiv major pentru ca
+Unicode să învingă.
+
+<P>
+
+<H3><A NAME="SECTION00042400000000000000">
+Reprezentarea diacriticelor</A>
+</H3>
+
+<P>
+Închei aici digresiunea mea despre standarde şi reprezentarea
+caracterelor internaţionale, şi revin la pachetul meu mult mai
+modest, care încearcă să rezolve unele dintre problemele limbii
+române.
+
+<P>
+Hotărîrea mea finală a fost să reprezint absolut tot textul
+folosind semne ASCII, lucru care o să mă scutească de o sumedenie
+de probleme de portabilitate, pentru că virtual toate terminalele din
+lume recunosc setul de caractere ASCII.  În schimb mi-am propus să
+folosesc o convenţie care să aibă următoarele proprietăţi:
+
+<P>
+
+<UL>
+<LI>Să folosească semnele ASCII într-un mod ne-ambiguu (de
+exemplu dacă aş fi folosit semnul <TT>a+</TT> pentru ă, aş fi avut
+mari dificultăţi în a distinge formulele matematice de texte cu
+diacritice; convenţia pe care am aleas-o în final nu e perfect 
+ne-ambiguă, dar e tolerabil de neambiguă, cred;
+
+<P>
+</LI>
+<LI>Ca o consecinţă a ne-ambiguităţii, ar trebui să fie foarte
+uşor de scris un program care să convertească un text scris cu
+diacritice folosind convenţia mea, în orice altă convenţie de 
+reprezentare.  Practic dacă fac un <EM>search-and-replace</EM> pe un text 
+pot obţine orice altă convenţie.  Par-examplu, dacă dvs. folosiţi pentru 
+ă semnele /a, şi eu folosesc {a}, atunci înlocuind uniform {a} cu /a
+convertesc un text din reprezentarea mea în a dumneavoastră.
+
+<P>
+</LI>
+<LI>Semnele pe care le folosesc să fie uşor de tastat.  În limba
+română există o sumedenie de cuvinte cu semne diacritice, deci
+mîna mea va trebui să nu se deplaseze prea mult pe tastatură pentru a
+scrie semnele însoţitoare; de preferabil să nu folosesc SHIFT sau
+ceva înrudit.
+
+<P>
+</LI>
+<LI>Metoda să se împace bine cu alte programe care manipulează texte.
+De exemplu eu scriu texte folosind editorul Emacs (vedeţi şi <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#emacs">articolul</a>
+meu din PC-Report pe Mai 1997), iar în Emacs tasta <TT>M-f</TT> se
+deplasează peste un cuvînt.  Aş fi vrut ca semnele diacritice pe care
+le folosesc să nu fie considerate de Emacs ca fiind înafara
+cuvintelor.
+</LI>
+</UL>
+
+<P>
+Pînă la urmă alegerea s-a oprit asupra semnului apostrof: ' .  De
+aceea voi scrie acum literele astfel: <code>'a 'i 's 't</code>
+ pentru ă, î, ş, ţ.
+
+<P>
+Probabil că alegerea pentru â a fost mai puţin fericită: am ales
+<code>"a</code>. <!--"-->
+
+<P>
+Dar să revenim la fişierele de configurare pentru <TT>ispell</TT><A NAME="tex2html3"
+  HREF="#foot110"><SUP>3</SUP></A>.
+
+<P>
+Odată ce am hotărît ce litere voi folosi, am purces la a scrie un
+fişier de configurare pentru <TT>ispell</TT>.  Formatul fişierului este
+documentat în paginile de manual ale programului <TT>ispell</TT>.  Acesta este
+conţinutul fişierului <TT>rom.signs.aff</TT>: fişierul de afixe pentru
+limba română cu semne diacritice (cel pentru configuraţia fără 
+diacritice este mai simplu).
+
+<P>
+<PRE>
+nroffchars    ().\\*
+texchars      ()\[]{}&lt;\>\\$*.%
+stringchar    "'a" "'A"
+stringchar    "'i" "'I"
+stringchar    "'s" "'S"
+stringchar    "'t" "'T"
+stringchar    "\"a" "\"A"
+wordchars     [a-z] [A-Z]
+</PRE>
+
+<P>
+Folosind un limbaj foarte simplu îi descriu lui <TT>ispell</TT> care
+caractere au semne speciale în fişierele scrise pentru <TT>nroff</TT>
+şi T<SMALL>E</SMALL>X (acestea sunt două programe foarte răspîndite în
+lumea Unix pentru tehnoredactarea de texte, care au folosesc nişte
+limbaje speciale pentru a descrie aranjarea în pagină a textului.
+Practic eu trebuie să îi spun lui <TT>ispell</TT> că atunci cînd
+manipulez un text scris pentru <TT>nroff</TT>, respectiv T<SMALL>E</SMALL>X, trebuie
+să ignore cuvintele care descriu aranjarea în pagină, şi să
+corecteze numai restul textului.)
+
+<P>
+Apoi îi indic lui <TT>ispell</TT> că voi interpreta perechile de semne
+apostrof-a, apostrof-A, etc. drept o singură literă în textele
+mele.  Asta este foarte important pentru că îi spune lui <TT>ispell</TT> că ``fîş'' este obţinut din ``fşî'' prin schimbarea a
+două litere (deci este ``aproape''), şi nu prin permutarea unui şir 
+de 4 caractere (cuvintele se vor scrie cu convenţia mea astfel:
+<code>f'i's    f's'i</code>).
+
+<P>
+În fine, indic faptul că semnele ASCII obişnuite pentru litere sunt
+componente ale cuvintelor.  <TT>ispell</TT> permite reguli şi mai
+rafinate, pentru a indica de pildă că anumite caractere sunt
+considerate litere numai dacă apar în interiorul unui cuvînt (cum
+ar fi de pildă liniuţa de unire -), sau pentru a indica faptul că
+<TT>nroff</TT> sau T<SMALL>E</SMALL>X denotă altfel un acelaşi caracter.
+
+<P>
+Observaţi cît de flexibil este <TT>ispell</TT>: comportarea programului
+este influenţată de o grămadă de parametri dinafară, din fişierul
+de configurare.  Aceasta este separarea de politică şi mecanism de
+care vorbeam, care îi permite lui <TT>ispell</TT> să fie simultan
+folosit în condiţii atît de diferite.
+
+<P>
+
+<H2><A NAME="SECTION00043000000000000000">
+Dicţionarele</A>
+</H2>
+
+<P>
+A doua problemă spinoasă era: de unde dicţionare?  La această
+întrebare am răspuns imediat.  
+
+<P>
+
+<H3><A NAME="SECTION00043100000000000000">
+Achiziţia de date</A>
+</H3>
+
+<P>
+<TT>ispell</TT> este un program interactiv, care este suficient de
+înţelept să fie de acord că nu ştie totul.  De fiecare dată
+cînd <TT>ispell</TT> găseşte un cuvînt necunoscut, pe lîngă faptul
+că îmi oferă o listă de posibile corecturi, îmi oferă
+posibilitatea de a introduce cuvîntul în dicţionar.  Exact pe asta
+m-am bazat şi eu: voi construi dicţionarul incremental, rulînd 
+<TT>ispell</TT> pe texte (cît se poate de) corecte.  După o fază 
+plictisitoare în care mă va întreba mai toate cuvintele, va învăţa 
+vocabularul meu de bază şi va deveni eficace.
+
+<P>
+Construcţia dicţionarelor este în plină desfăşurare, deşi
+ambele (cel cu diacritice şi cel fără) au cîte 40 de mii de
+cuvinte la ora actuală.  Principala mea sursă de vocabular este
+ediţia pe Internet a ziarelor ``România Literară'' şi ``Dilema'',
+plus, mai puţin, textele pe care le scriu eu însumi.
+
+<P>
+
+<H3><A NAME="SECTION00043200000000000000">
+Analiza statistică</A>
+</H3>
+
+<P>
+După ce am strîns cîteva mii de cuvinte, am folosit celelalte
+programe din pachetul cu care vine <TT>ispell</TT> pentru a face o
+analiză statistică a dicţionarelor.  Analiza este utilă pentru că
+în fişierele de configurare îi pot descrie lui <TT>ispell</TT> simple
+reguli de derivare cu prefixe şi sufixe, pe care apoi el le
+foloseşte pentru a reduce mărimea dicţionarelor, memorînd o
+singură dată rădăcinile comune.  Pachetul care conţine programul <TT>ispell</TT> oferă pentru acest scop programele <TT>findaffix</TT>, care
+analizează exhaustiv un dicţionar, generînd informaţii despre
+potenţialele derivări, şi <TT>tryaffix</TT>, care evaluează economia
+care se poate obţine folosind un anumit affix.
+
+<P>
+
+<H3><A NAME="SECTION00043300000000000000">
+Compresia prin prefixe şi sufixe</A>
+</H3>
+
+<P>
+Cum se folosesc afixele pentru a reduce mărimea dicţionarului?
+Pentru fiecare afix se defineşte (manual) cîte o prescurtare de o
+literă.  De exemplu, pentru prefixul ``re-'' am alocat litera E.
+Atunci, în loc ca în dicţionar să apară cuvintele ``educare'' şi
+``reeducare, va apărea doar o înregistrare de forma ``educare/E''.
+Practic am înlocuit un cuvînt întreg cu două litere (/ şi E).
+
+<P>
+Pachetul <TT>ispell</TT> vine împreună cu un alt program numit <TT>munchlist</TT>, care, dîndu-i-se un dicţionar şi o listă de afixe,
+comprimă dicţionarul la o reprezentare minimă.  Rezultatul este
+foarte eficace; chiar cu fişierele relativ primitive de afixe pe care
+le-am făcut am reuşit să reduc mărimea dicţionarelor la
+aproximativ 50-55%.
+
+<P>
+Restul fişierelor de configurare a afixelor este ocupat cu regulile
+prin care afixele se ataşează cuvintelor.  <TT>ispell</TT> ştie să
+opereze mici modificări asupra rădăcinilor; asta creşte enorm
+utilitatea afixelor.  Iată un fragment tipic dintr-o descriere a unui
+``flag'' din <TT>rom.signs.aff</TT>:
+
+<P>
+<PRE>
+suffixes
+
+flag *I:
+    U           &gt;       LUI             # bou  &gt; boului
+    [^UA]       &gt;       ULUI            # porc &gt; porcului
+    [GC] A      &gt;       -A,II           # vaca &gt; vacii
+    [^CG] A     &gt;       -A,EI           # baba &gt; babei
+</PRE>
+
+<P>
+Traducere: indicatorul I va funcţiona în 4 feluri, depinzînd de forma
+rădăcinii cuvîntului la care se aplică:
+
+<P>
+
+<OL>
+<LI>Dacă rădăcina se termină în ``U'', atunci indicatorul I va
+cauza concatenarea şirului ``lui''.  De exemplu, în dicţionar
+cuvîntul ``bou/I'' va genera simultan ``bou'' şi ``boului'';
+
+<P>
+</LI>
+<LI>Dacă rădăcina <EM>nu</EM> (negaţia este indicată de semnul 
+<code>^</code>) se termină în ``U'' sau ``A'', atunci adaug şirul ``ului'';
+
+<P>
+</LI>
+<LI>Dacă rădăcina se termină în ``ga'' sau ``ca'', atunci
+regula va şterge ``A''-ul de la coadă şi va concatena un ``ii'';
+
+<P>
+</LI>
+<LI>În fine, dacă rădăcina se termină în ``a'', dar nu în 
+``ca'' sau ``ga'', atunci şterg ``A''-ul şi adaug ``ei''.
+</LI>
+</OL>
+
+<P>
+Observaţi că aceste reguli nu sunt folosite pentru a <EM>genera</EM>
+noi cuvinte din cele existente, ci doar pentru a comprima un set de
+cuvinte dat, deci nu pot greşi dacă avem de-a face cu o excepţie
+(de exemplu cuvîntul ``poarta'', care după regulile de mai sus ar
+deveni ``poartei'').  Singura consecinţă este că ambele cuvinte 
+vor apărea în dicţionar, pentru că nu se poate aplica compresia 
+(voi avea şi ``poarta'' şi ``porţii'' în dicţionar).
+
+<P>
+
+<H2><A NAME="SECTION00044000000000000000">
+Interfaţa cu emacs</A>
+</H2>
+
+<P>
+<TT>ispell</TT> este prin construcţie un program interactiv: analizează
+textul, şi la prima eroare scrie pe ecran porţiunea de text
+suspicioasă, indicînd posibile corecturi, şi aşteptînd ca
+utilizatorul să ia măsuri.
+
+<P>
+Dl. Kuenning însă a fost suficient de înţelept pentru a înzestra
+<TT>ispell</TT> cu un mod de funcţionare ``batch'': ne-interactiv.
+Dacă <TT>ispell</TT> este pornit cu modificatorul <TT>-a</TT> atunci nu mai
+scrie nimic pe ecran şi nu mai citeşte tastatura, ci scrie şi
+citeşte de la intrarea şi ieşirea sa standard.  Practic de la
+intrare <TT>ispell</TT> citeşte un cuvînt, iar la ieşire trimite
+şiruri de caractere care descriu părerea lui despre acel cuvînt (dacă
+e corect, dacă nu ce variante sunt, etc).  De exemplu, (de data asta
+în engleză):
+
+<P>
+<PRE>
+$ echo helo | ispell -a 
+@(#) International Ispell Version 3.1.20 10/10/95
+&amp; helo 9 0: halo, held, hell, hello, helm, help, hero, he lo, he-lo
+$
+</PRE>
+
+<P>
+Convenţiile prin care <TT>ispell</TT> răspunde sunt uşor complicate;
+pe scurt, în linia de mai sus a spus că nu crede că acel cuvînt e
+corect, (prin semnul &amp;), şi a indicat apoi 9 posibilităţi corecte,
+separate prin virgule.
+
+<P>
+Aceasta este o altă instanţă a faimoasei separaţii dintre
+politică şi mecanism: mecanismul de corectare nu implementează şi
+politica de interacţiune.
+
+<P>
+Asta permite interfaţarea altor programe cu <TT>ispell</TT>.  De exemplu
+editorul de texte Emacs ştie să converseze cu <TT>ispell</TT>,
+bagîndu-i pe gît (intrarea standard) cuvintele dintr-un buffer unul
+cîte unul. În funcţie de răspuns discută el însuşi cu utilizatorul,
+pentru a înlocui cuvintele greşite.
+
+<P>
+
+<H2><A NAME="SECTION00045000000000000000">
+Fişierul de stil pentru L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X</A>
+</H2>
+
+<P>
+Pentru că îmi tehnoredactez fişierele în L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X, era natural să
+caut o metodă de a folosi convenţia de scriere cu apostroafe direct
+în L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X.  Nu a fost prea dificil, pentru că am dat peste un
+fişier de stil construit de Alexandru şi Dan Corlan pe care mi l-am
+însuşit, şi în care am operat nişte minuscule
+modificări.  Fişierul pune la-ndemînă un nou ``environment'', numit
+<TT>romana</TT>, în interiorul căruia semnul apostrof şi respectiv
+ghilimelele produc diacritice.  Practic pot scrie acum texte astfel:
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER">
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1" ALIGN="CENTER">
+<TR><TD ALIGN="LEFT" VALIGN="TOP" WIDTH=179><TABLE  WIDTH="277">
+<TR><TD>
+<PRE>
+\documentstyle[romana-]{article}
+\begin{document}
+'In aceast'a parte apostroful
+nu are nici o influen't'a.
+\begin{romana}
+Dar 'in aceast'a parte se 
+transform'a 'in diacritice.
+\end{romana}
+\end{document}
+</PRE></TD></TR>
+</TABLE></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=57><P>
+şi voi genera următorul document:
+
+<P></TD>
+<TD ALIGN="LEFT" VALIGN="TOP" WIDTH=179><TABLE  WIDTH="277">
+<TR><TD>
+'In aceast'a parte apostroful nu are nici o influen't'a.
+
+<P>
+Dar în această parte se transformă în diacritice.
+
+<P>
+</TD></TR>
+</TABLE></TD>
+</TR>
+</TABLE>
+</DIV>
+</DIV>
+<P></P>
+
+<P>
+Fişierul de stil ar putea beneficia de mici îmbunătăţiri, pentru
+că anumite combinaţii se comportă ciudat (de exemplu nu se mai pot
+scrie acolade după ghilimele), dar este mai adesea util decît
+dăunător.
+
+<P>
+
+<H2><A NAME="SECTION00046000000000000000">
+Interfaţa corectorului de limba română cu utilizatorul</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00046100000000000000">
+Instalare</A>
+</H3>
+
+<P>
+Pentru a putea folosi <TT>corect</TT>, trebuie întîi sa aveţi pachetul
+cu <TT>ispell</TT>.  Necesare sunt fişierele <TT>buildhash</TT> şi
+<TT>ispell</TT>; de celelalte vă puteţi lipsi.  Dacă aveţi un sistem
+Unix, le puteţi lua de la <a
+href="ftp://prep.ai.mit.edu/pub/gnu">ftp://prep.ai.mit.edu/pub/gnu</a></TT>.
+
+<P>
+Pagina lui <TT>ispell</TT> este la <a href="http://fmg-www.cs.ucla.edu/fmg-members/geoff/ispell.html">http://fmg-www.cs.ucla.edu/fmg-members/geoff/ispell.html</a>; acolo mai
+puteţi afla o grămadă de lucruri utile despre acest program.
+
+<P>
+Cel care instalează pachetul de fişiere are o misiune relativ
+simplă: trebuie să decidă locul unde fişierele se vor plasa şi
+cum ajung utilizatorii la ele.  Există două variante de bază:
+
+<P>
+
+<OL>
+<LI>Instalarea este făcută pentru întregul sistem (de
+administrator, în aşa fel încît toţi utilizatorii să poată
+beneficia);
+</LI>
+<LI>Un utilizator fără privilegii îşi instalează pachetul
+pentru uzul personal în contul lui.
+</LI>
+</OL>
+
+<P>
+Cel care instalează va trebui să citească <TT>Makefile</TT>-ul şi să
+modifice cîteva variabile.  Valorile care ar fi interesante sunt <TT>ROMSPELLBASE</TT> şi <TT>LATEXDIR</TT>, şi indică unde se vor plasa
+dicţionarele, respectiv fişierul de stil pentru L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X.
+
+<P>
+Pentru ca utilizatorii să poată accesa fişierul de stil, el trebuie
+să fie într-un loc în care L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>Xsă-l poată căuta.
+Administratorul îl poate pune acolo unde sistemul local are toate
+celelalte fişiere de stil.  Un utilizator obişnuit îl poate pune
+oriunde, şi apoi poate indica lui L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>Xacel loc folosind variabila
+<TT>TEXINPUT</TT>.  De exemplu, eu mi-am pus fişierul <TT>romana-.sty</TT>
+în <TT>$HOME/data/tex</TT> şi am pus variabila astfel: 
+
+<P>
+<PRE>
+export TEXINPUTS=".:$HOME/data/tex:"
+</PRE>
+
+<P>
+În plus, pentru ca Emacs să poată invoca <TT>ispell</TT> pentru a
+corecta texte româneşti, fişierul <TT>for-emacs</TT>, care este
+generat automat, ar trebui executat de Emacs-ul tuturor utilizatorilor
+care scriu în română.  Iarăşi, există două variante: fiecare
+utilizator poate concatena acest fişier la propriul fişier de
+iniţializare <TT>.emacs</TT>, sau acest fişier poate fi pus de
+administrator într-un fişier global de iniţializare al lui Emacs
+(de exemplu <TT>site-start.el</TT>).
+
+<P>
+
+<H3><A NAME="SECTION00046200000000000000">
+Utilizare</A>
+</H3>
+
+<P>
+După ce administratorul a făcut treburile murdare de instalare,
+folosirea corectorului ar trebui să fie banală.  Datorită unui mic
+script, tot ce trebuie făcut pentru a corecta un text este de a tasta:
+
+<P>
+<PRE>
+corect fisier-de-corectat
+</PRE>
+
+<P>
+Simplu ca bună ziua!
+
+<P>
+(Dacă fişierul este scris în română cu diacritice, tastaţi <TT>corect -s fisier</TT>.)
+
+<P>
+Pentru a corecta din Emacs folosiţi comenzile Emacs:
+
+<P>
+<PRE>
+M-x ispell-change-dictionary
+</PRE>
+
+<P>
+La întrebarea care urmează, răspundeţi <TT>romana</TT>, respectiv <TT>rom-diacritice</TT>, după cum doriţi.  Apoi tastaţi:
+
+<P>
+<PRE>
+M-x ispell-buffer
+</PRE>
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot69">... unelte</A><A NAME="foot69"
+ HREF="rom-spell-html.html#tex2html1"><SUP>1</SUP></A>
+<DD>
+Prin antiteză cu programele care fac ceva util ele însele: aplicaţiile.
+
+<DT><A NAME="foot101">...
+cm</A><A NAME="foot101"
+ HREF="rom-spell-html.html#tex2html2"><SUP>2</SUP></A>
+<DD>grosime.
+
+<DT><A NAME="foot110">...<TT>ispell</TT></A><A NAME="foot110"
+ HREF="rom-spell-html.html#tex2html3"><SUP>3</SUP></A>
+<DD>Ca dovadă că principiile enumerate mai sus au fost bune,
+iniţial alesem semnul \ pentru diacritic; schimbarea la
+apostrof a fost însă foarte simplă, şi a fost cauzată de dorinţa
+de a inter-opera cu L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X
+ pentru care semnul \ are o semnificaţie specială.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

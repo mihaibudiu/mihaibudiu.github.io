@@ -1,0 +1,1689 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>LATEX: un sistem de tehnoredactare pentru matematică</TITLE>
+<META NAME="description" CONTENT="LATEX: un sistem de tehnoredactare pentru matematică">
+<META NAME="keywords" CONTENT="latex-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X: un sistem de tehnoredactare pentru matematică</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- <TT>mihaib+@cs.cmu.edu</TT> 
+<BR><TT><A NAME="tex2html2"
+  HREF="http://www.cs.cmu.edu/~mihaib/">http://www.cs.cmu.edu/~mihaib/</A></TT></STRONG></P>
+<P ALIGN="CENTER"><STRONG>septembrie 2000</STRONG></P>
+
+<P>
+<DL>
+<DT><STRONG>Subiect:</STRONG></DT>
+<DD>sistemul de tehnoredactare computerizată L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X.
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>cunoştinţe elementare despre tehnoredactare
+</DD>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>tehnoredactare, macro, T<SMALL>E</SMALL>X, L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X, Knuth, Lamport
+</DD>
+</DL>
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Cuprins</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html53"
+  HREF="latex-html.html">Introducere</A>
+<LI><A NAME="tex2html54"
+  HREF="#SECTION00030000000000000000">Istoric</A>
+<UL>
+<LI><A NAME="tex2html55"
+  HREF="#SECTION00031000000000000000">Donald E. Knuth</A>
+<LI><A NAME="tex2html56"
+  HREF="#SECTION00032000000000000000">T<SMALL>E</SMALL>X</A>
+<LI><A NAME="tex2html57"
+  HREF="#SECTION00033000000000000000">METAFONT</A>
+<LI><A NAME="tex2html58"
+  HREF="#SECTION00034000000000000000">Leslie Lamport</A>
+<LI><A NAME="tex2html59"
+  HREF="#SECTION00035000000000000000">L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X</A>
+<LI><A NAME="tex2html60"
+  HREF="#SECTION00036000000000000000">L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X2e şi L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X3</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html61"
+  HREF="#SECTION00040000000000000000">O introducere rapidă în L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X</A>
+<UL>
+<LI><A NAME="tex2html62"
+  HREF="#SECTION00041000000000000000">Un exemplu de document foarte simplu</A>
+<LI><A NAME="tex2html63"
+  HREF="#SECTION00042000000000000000">Folosirea L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X</A>
+<LI><A NAME="tex2html64"
+  HREF="#SECTION00043000000000000000">Cuvinte cheie şi caractere speciale</A>
+<LI><A NAME="tex2html65"
+  HREF="#SECTION00044000000000000000">Formule matematice</A>
+<LI><A NAME="tex2html66"
+  HREF="#SECTION00045000000000000000">Enumerări şi liste</A>
+<LI><A NAME="tex2html67"
+  HREF="#SECTION00046000000000000000">Tabele şi matrici</A>
+<LI><A NAME="tex2html68"
+  HREF="#SECTION00047000000000000000">Font-uri</A>
+<LI><A NAME="tex2html69"
+  HREF="#SECTION00048000000000000000">Accente</A>
+<LI><A NAME="tex2html70"
+  HREF="#SECTION00049000000000000000">Index-uri, referinţe încrucişate, bibliografii</A>
+<LI><A NAME="tex2html71"
+  HREF="#SECTION000410000000000000000">Figuri</A>
+<LI><A NAME="tex2html72"
+  HREF="#SECTION000411000000000000000">Macro-uri şi definiţii</A>
+<LI><A NAME="tex2html73"
+  HREF="#SECTION000412000000000000000">Stiluri şi documente</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html74"
+  HREF="#SECTION00050000000000000000">Pachete suplimentare</A>
+<LI><A NAME="tex2html75"
+  HREF="#SECTION00060000000000000000">Alte scule legate de L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X</A>
+<LI><A NAME="tex2html76"
+  HREF="#SECTION00070000000000000000">Încheiere</A>
+<LI><A NAME="tex2html77"
+  HREF="#SECTION00080000000000000000">Alte surse de informaţie</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<BR>
+<BR>
+<BR>
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Introducere</A>
+</H1>
+
+<P>
+Acest articol este dedicat unei scule software, care pentru mine este
+de neînlocuit în activitatea zilnică.  Voi descrie în cele ce
+urmează un limbaj, numit L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X, şi un set de programe folosite
+pentru tehnoredactarea computerizată.  Dintru început simt nevoia
+însă să avertizez cititorul asupra <EM>dezavantajelor</EM> acestui
+sistem, comparat cu alte sisteme similare:
+
+<P>
+<DL>
+<DT><STRONG>E un limbaj:</STRONG></DT>
+<DD>L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X este un limbaj, şi nu un program.
+L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X seamănă cu limbajul HTML sau cu RTF (Rich Text Format).
+Pentru a formata un text folosim comenzi inserate între elementele
+textului pentru a descrie în ce fel trebuie să ``arate'' acest text.
+
+<P>
+</DD>
+<DT><STRONG>Nu e vizual:</STRONG></DT>
+<DD>înainte de a folosi L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X trebuie să ne
+familiarizăm cu o mulţime de comenzi noi.  Pentru HTML există
+editoare speciale, care ne permit să compunem paginile de web în mod
+vizual, fără să ştim ce fel de comenzi trebuie inserate pentru a
+obţine înfăţişarea dorită.  În cazul L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X însă aceste
+scule sunt mult mai primitive, şi în general pentru a obţine
+rezultate satisfăcătoare şi pentru a beneficia de întreaga lui
+putere, limbajul trebuie cunoscut.
+
+<P>
+</DD>
+<DT><STRONG>E complicat:</STRONG></DT>
+<DD>din motive istorice, pe care le vom trece pe scurt
+în revistă, L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X este un limbaj destul de obscur şi greu de
+folosit.  Chiar dacă unele elemente fundamentale sunt relativ uşor
+de învăţat, efortul necesar pentru stăpînirea majorităţii
+comenzilor este substanţial.
+
+<P>
+</DD>
+<DT><STRONG>Specializat:</STRONG></DT>
+<DD>pentru o mulţime de aplicaţii L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X este
+departe de a fi limbajul ideal.  De exemplu, deşi există
+translatoare automate din L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X în HTML, L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X nu este limbajul
+cel mai potrivit pentru a descrie pagini de web.
+
+<P>
+</DD>
+<DT><STRONG>Scule neprietenoase:</STRONG></DT>
+<DD>În fine, deşi L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X este implementat
+pe o mulţime de sisteme, incluzînd Windows, modul preferat de
+folosire este ``în linie de comandă''.  Textul de formatat,
+conţinînd comenzile L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X de aranjare în pagină, trebuie compus
+folosind un editor separat.  După aceea este invocată o comandă
+pentru a procesa textul, după care un alt program trebuie folosit
+pentru a vizualiza rezultatul; adesea alte programe trebuie folosite
+pentru a genera indexuri, bibliografii, sau pentru a tipări produsul
+final.  (Notă: în ultima vreme au început să apară scule mai
+prietenoase, care integrează aceste funcţionalităţi sub o singură
+interfaţă vizuală).
+
+<P>
+</DD>
+<DT><STRONG>Nu e ``curat'':</STRONG></DT>
+<DD>anumite construcţii din limbaj, care
+funcţionează bine izolat, atunci cînd sunt folosite împreună dau
+rezultate surprinzătoare, sau erori.  Acestea sunt probleme care
+rezultă din design-ul iniţial al limbajului şi sunt extrem de
+neplăcute, chiar şi pentru utilizatori avansaţi.
+
+<P>
+</DD>
+<DT><STRONG>Mesaje criptice:</STRONG></DT>
+<DD>atunci cînd un document conţine erori în
+comenzile de formatare, mesajele de eroare sunt adesea extrem de greu
+de interpretat, şi sursa erorii este foarte greu de găsit.  Acesta
+este un obstacol substanţial pentru novici.
+
+<P>
+</DD>
+<DT><STRONG>Acest articol e foarte sumar:</STRONG></DT>
+<DD>în secţiunea de bibliografii
+recomand cîteva cărţi despre L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X.  Descrierea completă a
+limbajului şi a o sumedenie de pachete suplimentare este cuprinsă
+în nu mai puţin de trei cărţi!  Ca atare textul de faţă este o
+introducere extrem de sumară în capabilităţile L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X.
+</DD>
+</DL>
+
+<P>
+Perfect.  Dacă aţi ajuns pînă aici cu cititul înseamnă că
+sunteţi gata să înfruntaţi toate aceste obstacole.  Iată şi
+unele dintre avantajele L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X:
+
+<P>
+<DL>
+<DT><STRONG>Formule:</STRONG></DT>
+<DD>L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X rămîne cea mai eficientă metodă pentru a
+tehnoredacta texte matematice.  În primul rînd, rezultatele grafice
+sunt extrem de plăcute, şi nici un alt program existent nu se
+ridică la înălţimea calităţii sale.  Editorul de ecuaţii din
+Microsoft Word este absolut jalnic în comparaţie cu L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X.  Vedeţi
+şi figura&nbsp;<A HREF="latex-html.html#math">5</A> pentru nişte exemple succinte.
+
+<P>
+</DD>
+<DT><STRONG>Standard:</STRONG></DT>
+<DD>L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X a fost conceput cu grijă pentru a se
+comporta la fel pe orice sistem.  L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X şi T<SMALL>E</SMALL>X sunt lingua-franca
+pentru schimbul de documente în multe domenii tehnice.  De exemplu,
+majoritatea, dacă nu toate articolele, trimise spre publicare în
+conferinţe şi jurnale ale societăţii americane de matematică, de
+fizică, sau de astronomie <EM>trebuie</EM> să fie scrise folosind
+L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X.  În plus, L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X este folosit foarte mult în comunitatea
+informaticienilor; toate articolele mele, inclusiv cel de faţă, sunt
+scrise în L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X<A NAME="tex2html3"
+  HREF="#foot67"><SUP>1</SUP></A>.
+
+<P>
+</DD>
+<DT><STRONG>Nu e vizual:</STRONG></DT>
+<DD>faptul că L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X nu e un sistem vizual de
+editare (WYSIWYG: What You See is What You Get) este considerat de unii
+ca un avantaj: în felul acesta autorul se concentrează asupra formei
+<EM>logice</EM> a documentului, şi nu asupra înfăţişării.  Mesajul
+textului este atunci mai bine transmis.
+
+<P>
+</DD>
+<DT><STRONG>E extensibil:</STRONG></DT>
+<DD>vom vedea imediat că L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X este un limbaj în
+care se pot defini noi construcţii.  Din cauza asta o sumedenie de
+adiţii au fost făcute de-a lungul timpului, care permit comenzi de
+formatare deosebit de sofisticate şi puternice.  Manualul L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X de
+bază descrie limbajul în anexa C în 70 de pagini, dar cartea despre
+module suplimentare are 500 de pagini!
+
+<P>
+</DD>
+<DT><STRONG>E configurabil:</STRONG></DT>
+<DD>Din cauză că este un limbaj bazat pe
+macro-uri (vom discuta despre asta un pic mai încolo), multe din
+comenzile de bază se pot redefini sau configura.  Din punct de vedere
+al ingineriei programării acesta nu e un lucru prea înţelept, şi
+unele din erorile criptice de aici provin.  Pe de altă parte,
+capacitatea de a reconfigura foarte multe elemente face schimbarea
+stilului unei prezentări extrem de simplă.  Fişiere de ``stil''
+conţin configuraţii complexe predefinite (asemănător cu Cascaded
+Style Sheets din HTML); schimbînd un cuvînt într-un fişier L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X putem schimba radical felul în care este înfăţişat textul.
+</DD>
+</DL>
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Istoric</A>
+</H1>
+
+<P>
+Evoluţia acestui limbaj de tehnoredactare este extrem de interesantă
+în ea însăşi, şi ne va cauza întîlnirea cu nişte giganţi ai
+informaticii.  Pe lîngă aceste aspecte anecdotice, multe din
+idiosincraziile limbajului provin din deciziile făcute de designer-ul
+iniţial, Donald Knuth.
+
+<P>
+
+<H2><A NAME="SECTION00031000000000000000">
+Donald E. Knuth</A>
+</H2>
+
+<P>
+Donald E. Knuth este una dintre figurile cele mai impresionante din
+istoria informaticii.  Deşi pagina sa de web este foarte
+comprehensivă, <TT><A NAME="tex2html4"
+  HREF="http://www-cs-faculty.stanford.edu/~knuth/">http://www-cs-faculty.stanford.edu/~knuth/</A></TT>,
+merită să ne oprim pe scurt asupra personajului.  Este genul de
+individ care are nevoie de o pagină şi jumătate pentru a face lista
+tuturor premiilor, distincţiilor academice şi doctoratelor onorifice
+pe care le-a primit (acestea din urmă deocamdată 21 în număr).
+Excelenţa sa academică în informatică este dublată de o cultură
+enciclopedică, care se reflectă în stilul său literar deosebit de
+interesant.  Chiar dacă, din punct de vedere tehnic, multe din
+cărţile sale sunt relativ greu de citit, ele sunt întotdeauna o
+combinaţie foarte plăcută de ştiinţă, literatură, umor şi
+înţelepciune.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="knuth"></A><A NAME="282"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura:</STRONG>
+Donald Knuth, creatorul T<SMALL>E</SMALL>X.</CAPTION>
+<TR><TD><IMG
+ WIDTH="224" HEIGHT="170" BORDER="0"
+ SRC="img2.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=5cm\epsffile{knuth.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Domnul Knuth este începînd din 1968 profesor la universitatea
+Stanford din California.  Doctoratul său este însă în matematică,
+obţinut în 1963 la universitatea Caltech.  Articolele sale în
+general sunt la intersecţia dintre matematică şi calculatoare, dar
+are foarte multe publicaţii de matematică pură; Don Knuth (cum este
+cunoscut printre prieteni şi admiratori) este responsabil de altfel
+pentru multe din metodele matematice de analiză a algoritmilor
+folosite astăzi în mod curent.  Multe din aceste metode au fost
+expuse în volumele publicate din ampla lucrare ``Arta programării
+calculatoarelor''.  Această serie a fost începută în 1969, şi
+trebuia să conţină şapte volume masive.  Primele trei au fost
+publicate în 1968, 1971 şi respectiv 1973, şi au fost traduse şi
+în româneşte, la Editura tehnică, între 1974 şi 1976; sunt cu
+siguranţă disponibile la o mulţime de biblioteci şi anticari.
+
+<P>
+Aceste cărţi se doreau a fi o incursiune în toate tehnologiile
+majore din informatică la vremea respectivă, dar conţin şi o
+mulţime de rezultate originale ale lui Don Knuth.  Ca urmare, în
+1974 i-a fost decernat cel mai prestigios premiu din informatică,
+``Nobel''-ul din calculatoare, premiul Turing.
+
+<P>
+Frustrat de dificultatea de a produce documente tipărite de bună
+calitate, care să conţină formule matematice, înainte de a începe
+volumul 4 din serie, Knuth s-a apucat să studieze problemele
+tipografiei digitale.  Astfel a început o excursie de un deceniu în
+acest domeniu, care a dus la crearea sistemelor T<SMALL>E</SMALL>X şi METAFONT,
+pentru tehnoredactare computerizată şi pentru crearea automată de
+seturi de caractere (font-uri).  Pentru a putea împărtăşi
+întregii lumi creaţiile sale, Knuth a făcut codul-sursă al lui
+T<SMALL>E</SMALL>X disponibil în întregime, gratuit dintru început.  Pentru a
+putea apoi explica codul sursă, Knuth a creat un sistem numit WEB (a nu se confunda cu World-Wide-Web), care permite compunerea
+simultană a unui program şi a documentaţiei sale.  Sistemul WEB este explicat de Knuth într-un articol celebru numit ``Literate
+Programming'', despre programarea ca o formă de literatură!
+Rezultatele acestui proiect în tipografia digitală au fost tipărite
+în 1986 sub forma a cinci volume numite ``Computers and Typesetting''
+(Calculatoarele şi tehnoredactarea).  Două dintre cărţi sunt
+manualele T<SMALL>E</SMALL>X şi respectiv METAFONT, alte două cărţi conţin
+codul sursă al programelor T<SMALL>E</SMALL>X şi METAFONT, descrise în sistemul
+CWEB (care este o implementare a sistemului WEB pentru limbajul
+C), iar ultimul volum conţine descrierile parametrilor şi
+programelor METAFONT utilizate de Knuth pentru a genera setul de
+caractere Computer Modern.
+
+<P>
+Creaţia lui Knuth nu se termină aici; este autorul a peste douăzeci
+de cărţi şi a cîteva sute de articole, de la matematică, analiza
+algoritmilor, tipografie digitală, pînă la analiza unor texte
+biblice!
+
+<P>
+Domnul Knuth are o pagină de web foarte comprehensivă, care
+reflectă propensiunile sale literare, dar a renunţat de mai bine de
+zece ani să mai folosească poşta electronică, din cauză că
+primea prea multe scrisori de la nenumăraţii fani.  În urmă cu
+cîţiva ani a ieşit la pensie, dar asta nu înseamnă că s-a oprit
+din activitatea didactică în întregime; ţine în continuare
+prelegeri la universitatea Stanford şi în alte locuri unde este
+invitat, şi afirmă că vrea să-şi dedice majoritatea timpului
+rămas completării celor şapte volume din ``Arta programării'', a
+căror serie a fost întreruptă temporar în urmă cu 26 de ani.
+Afirmă de asemenea că nu mai primeşte studenţi în calitate de
+îndrumător la doctorat, dar că va semna teza de doctorat a oricui
+rezolvă în timp scurt (2-3 săptămîni) una din problemele
+nerezolvate pe care le propune din cînd în cînd în prelegerile
+sale (aviz amatorilor de un doctorat pe fugă).
+
+<P>
+Aceasta este schiţa de portret a unuia dintre cele mai pitoreşti
+personaje din informatică.  Chiar dacă ne-am abătut de la subiectul
+acestui articol, nu am rezistat să nu vorbesc puţin despre el.
+
+<P>
+
+<H2><A NAME="SECTION00032000000000000000">
+T<SMALL>E</SMALL>X</A>
+</H2>
+
+<P>
+Vom vedea mai departe că L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X nu e nimic altceva decît un pachet
+de definiţii (macro-uri) în limbajul T<SMALL>E</SMALL>X creat de Knuth.  Ca atare
+vom arunca întîi o privire rapidă asupra acestui limbaj.
+
+<P>
+Versiunile succesive de T<SMALL>E</SMALL>X sunt numerotate cu zecimalele numărului
+<IMG
+ WIDTH="17" HEIGHT="19" ALIGN="BOTTOM" BORDER="0"
+ SRC="img3.png"
+ ALT="$\pi$">: la ora actuală s-a ajuns la versiunea 3.14159.
+
+<P>
+
+<H3><A NAME="SECTION00032100000000000000">
+Numele</A>
+</H3>
+
+<P>
+Primul lucru care trebuie clarificat este pronunţia: T<SMALL>E</SMALL>X se
+citeşte de fapt ``tech'', şi nu ``tex''.  Iată explicaţia lui Don
+Knuth pentru etimologie, extrasă din primul capitol al cărţii de
+T<SMALL>E</SMALL>X:
+
+<P>
+<BLOCKQUOTE>
+English words like `technology' stem from a Greek root beginning with
+the letters <!-- MATH
+ $\tau\epsilon\chi\ldots\,$
+ -->
+<IMG
+ WIDTH="60" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="img4.png"
+ ALT="$\tau\epsilon\chi\ldots\,$">; and this same Greek word means
+<I>art</I> as well as technology.  Hence the name T<SMALL>E</SMALL>X, which is an
+uppercase form of <!-- MATH
+ $\tau\epsilon\chi$
+ -->
+<IMG
+ WIDTH="34" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="img5.png"
+ ALT="$\tau\epsilon\chi$">.
+</BLOCKQUOTE>
+<P>
+<BLOCKQUOTE>Insiders pronounce the <IMG
+ WIDTH="17" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="img6.png"
+ ALT="$\chi$"> of T<SMALL>E</SMALL>X as a Greek chi, not as an `x',
+so that T<SMALL>E</SMALL>X rhymes with the word blecchhh.  It's the `ch' sound in
+Scottish words like <I>loch</I> or German words like <I>ach</I>;
+it's a Spanish `j' and a Russian `kh'.  When you say it correctly to
+your computer, the terminal may become slightly moist.
+
+</BLOCKQUOTE>
+
+<P>
+în traducere:
+
+<P>
+<BLOCKQUOTE>
+Cuvinte ca ``tehnologie'' sunt formate dintr-o rădăcină grecească
+care începe cu literele <!-- MATH
+ $\tau\epsilon\chi$
+ -->
+<IMG
+ WIDTH="34" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="img5.png"
+ ALT="$\tau\epsilon\chi$"> (tau, epsilon, chi);
+acest cuvînt grecesc înseamnă el însuşi ``artă'' dar şi
+``tehnologie''.  De aceea numele T<SMALL>E</SMALL>X, care este scrierea cu litere
+majuscule a cuvîntului <!-- MATH
+ $\tau\epsilon\chi$
+ -->
+<IMG
+ WIDTH="34" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="img5.png"
+ ALT="$\tau\epsilon\chi$">.
+</BLOCKQUOTE>
+<P>
+<BLOCKQUOTE>Cunoscătorii pronunţă litera <IMG
+ WIDTH="17" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="img6.png"
+ ALT="$\chi$"> din T<SMALL>E</SMALL>X ca pe grecescul
+``chi'', şi nu ca pe un ``x'', astfel încît T<SMALL>E</SMALL>X rimează cu
+cuvîntul blecchhh.  Este ca sunetul ``ch'' din cuvinte scoţiene ca
+<I>loch</I> sau cuvinte germane ca <I>ach</I>; este ``j''-ul spaniol
+şi ``kh''-ul rusesc.  Cînd este pronunţat corect în faţa
+calculatorului, va face ca terminalul să se umezească.
+
+</BLOCKQUOTE>
+
+<P>
+Tehnoredactat corect, litera E din T<SMALL>E</SMALL>X trebuie să apară mai jos
+decît celelalte (vedeţi şi figura&nbsp;<A HREF="latex-html.html#exemplu">4</A>), tocmai pentru a
+indica faptul că e vorba de un program de tehnoredactare.  Cînd se
+foloseşte un terminal ASCII cuvîntul se scrie cu T şi X mare şi E
+mic: TeX.
+
+<P>
+
+<H3><A NAME="SECTION00032200000000000000">
+Cutiuţe</A>
+</H3>
+
+<P>
+Conceptele fundamentale cu care T<SMALL>E</SMALL>X operează sunt <EM>cutiuţele</EM>
+şi <EM>lipiciul</EM> (boxes and glue).  Motorul care tehnoredactează nu
+ştie mare lucru despre fiecare caracter; tot ceea ce îi trebuie este
+să ştie dimensiunile unei cutii care cuprinde caracterul, ca în
+figura&nbsp;<A HREF="latex-html.html#cutii">2</A>.  T<SMALL>E</SMALL>X nu ştie nimic despre care puncte din cutie
+vor fi pictate cu cerneală şi care nu; aceasta este treaba altor
+scule.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="cutii"></A><A NAME="288"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura:</STRONG>
+Trei litere şi cutiile din care fac parte, puse
+una lîngă alta.  T<SMALL>E</SMALL>X operează tot timpul doar cu cutii, şi nu
+ştie nimic despre cum arată literele de fapt.  Cu linie punctată
+este indicată cutia obţinută din alipirea celor 3 litere.</CAPTION>
+<TR><TD><IMG
+ WIDTH="227" HEIGHT="95" BORDER="0"
+ SRC="img7.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=5cm\epsffile{cutii.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Textul este asamblat din astfel de cutiuţe pusă una lîngă alta.
+T<SMALL>E</SMALL>X aranjează cutiuţe una după alta pe orizontală formînd
+rînduri.  Cînd un rînd se termină, T<SMALL>E</SMALL>Xface din el o cutiuţă
+mai mare şi pune cutiuţele-rînduri una peste alta.  Fiecare pagină
+este tot o cutie, asamblată din mai multe rînduri puse unul peste
+altul.
+
+<P>
+Utilizatorul poate crea cutii cu dimensiuni negative; în felul acesta
+se pot obţine efecte speciale, micşorînd distanţa dintre caractere
+sau scriind caractere suprapuse.  Comenzi speciale pot muta cutiile
+(de exemplu dacă vrem să facem un exponent putem folosi semnul
+<code>^</code>, care va ridica cutia care urmează şi va micşora font-ul).
+
+<P>
+În T<SMALL>E</SMALL>X mai există şi un alt tip special de cutie, care se cheamă
+``clei''.  Ca şi cutiuţele, clei-ul are o anumită dimensiune, dar
+în plus are capacitatea de a se întinde şi comprima ca un elastic.
+Între cuvintele de pe o linie T<SMALL>E</SMALL>X pune automat lipici; asta permite
+spaţiilor dintre cuvinte să se întindă sau să se comprime pentru
+a ajusta frumos marginea din dreapta a liniei.  Cu cît se întinde
+mai mult lipiciul, cu atît mai ``dureros'' este rezultatul, pentru
+că aşezarea în pagină se depărtează de la cea ideală.
+
+<P>
+T<SMALL>E</SMALL>X foloseşte conceptul de lipici pentru a calcula despărţirea
+în rînduri ``optimă'' a unui text.  T<SMALL>E</SMALL>X foloseşte pentru asta o
+formulă matematică, care în funcţie de cît de întins este
+lipiciul din fiecare rînd calculează ``frumuseţea'' unui paragraf.
+Cînd programul desparte în rînduri un paragraf, foloseşte un
+algoritm deştept inventat de Knuth (folosind programare dinamică)
+pentru a calcula tăieturile care oferă cel mai plăcut efect
+estetic, dintre toate cele posibile.
+
+<P>
+Folosind tipuri speciale de lipici, care se întinde la infinit fără
+``dureri'', se pot obţine efecte speciale: de exemplu punînd lipici
+la marginea din dreapta a fiecărui rînd se pot obţine pagini la
+care rîndurile nu sunt egale, ci sunt aliniate la stînga.  Punînd
+lipici la ambele părţi se obţin rînduri centrate.
+
+<P>
+Asta e tot!  Folosind cutiuţe şi lipici împreună cu algoritmi
+inteligenţi de aranjare în pagină, T<SMALL>E</SMALL>X obţine tipografie de
+calitate extraordinară.
+
+<P>
+Trebuie menţionate aici formulele matematice: modul în care T<SMALL>E</SMALL>X formatează matematica este încă neîntrecut, deşi sistemul este
+vechi de peste douăzeci de ani.  Cînd are de tehnoredactat o
+formulă, T<SMALL>E</SMALL>X foloseşte un algoritm sofisticat care re-calculează
+dimensiunile şi plasamentele tuturor cutiuţelor în funcţie de
+tipurile de simboluri care apar: fiecare simbol este catalogat ca
+fiind într-una din 13 categorii: operator binar, operator
+relaţional, accent, un semn de punctuaţie, un tip de paranteză
+închisă sau deschisă, semn de fracţie, radical, etc.  Fiecare din
+aceste categorii de simbol se comportă într-un anume fel în raport
+cu vecinii săi; unele simboluri cresc cît este necesar pentru a se
+adapta la cutiile cu care sunt vecine (de exemplu linia de fracţie
+sau parantezele).
+
+<P>
+
+<H3><A NAME="SECTION00032300000000000000">
+Macro-uri</A>
+</H3>
+
+<P>
+T<SMALL>E</SMALL>X este un limbaj foarte original.  Principalul concept din acest
+limbaj este <EM>macro</EM>-instrucţiunea, numită familiar şi <EM>macro</EM>.  Cei care programează în C sunt familiarizaţi cu
+macro-urile, care sunt acolo definite cu comanda <code>#define</code>.  Un
+macro este practic o instrucţiune care arată cum un anumit text este
+substituit cu un altul.
+
+<P>
+Limbajul T<SMALL>E</SMALL>X este în întregime bazat pe macro-uri.  Fiecare
+variabilă este de fapt un macro care este substituit în text cu
+valoarea sa.  Limbajul are un set restrîns de operaţii primitive
+(cea mai primitivă operaţie fiind cea de a ``desena'' un caracter),
+şi toate celelalte operaţii sunt definite din acestea folosind
+macro-uri.  Unele macro-uri se pot expanda la rîndul lor într-un
+text care conţine macro-uri, care trebuie expandate la rîndul lor,
+etc.  În felul acesta, folosind macro-uri recursive, limbajul
+foloseşte un concept rudimentar de buclă.
+
+<P>
+Limbajele bazate pe macro-uri sunt extrem de puternice; de fapt sunt
+la fel de puternice ca orice alt limbaj; pentru demonstraţie Andrew
+Marc Greene de la universitatea MIT a scris în 1992, în 470 de linii
+de T<SMALL>E</SMALL>X (inclusiv comentarii) un interpretor complet de BASIC!  (Un
+alt limbaj bazat pe macro-uri foarte folosit este m4.)  Dar anumite
+complicaţii cu macro-urile fac de fapt folosirea lor extrem de
+dificilă.  Cele mai multe probleme apar din <EM>ordinea de
+evaluare</EM>: cînd avem un macro aplicat altui macro, care dintre ele
+trebuie expandat întîi?  În funcţie de ordine putem avea rezultate
+diferite.
+
+<P>
+În T<SMALL>E</SMALL>X problemele sunt exacerbate din cauză că <EM>nu există
+cuvinte rezervate</EM>, ca în toate limbajele cu care suntem obişnuiţi.
+Fiecare cuvînt sau chiar fiecare caracter poate fi transformat
+într-un macro, care se expandează în altceva!  Expansiunea unui
+macro poate genera o definiţie care schimba semnificaţia macroului
+însuşi!
+
+<P>
+
+<H3><A NAME="SECTION00032400000000000000">
+T<SMALL>E</SMALL>X: un limbaj imposibil</A>
+</H3>
+
+<P>
+Cu tot respectul pentru dl. Knuth, care a jucat un rol foarte
+important în 1968 în construirea primului compilator de Algol, şi
+care a contribuit la crearea unor importante concepte în teoria
+compilatoarelor, limbajul T<SMALL>E</SMALL>X este o varză completă.  Utilizatorul
+trebuie să consume un efort de imaginaţie substanţial pentru a face
+programele să funcţioneze, fiind foarte atent la ordinea de evaluare
+şi la efectele laterale ale fiecărui macro.
+
+<P>
+Pentru că unele macro-uri le redefinesc pe altele, avem o neplăcută
+problemă de dependenţă: efectul unui ``program'' T<SMALL>E</SMALL>X depinde de
+mediul în care este invocat.  Pentru că efectele prin variabile
+globale şi definiţii de macro-uri nu sunt întotdeauna controlate
+clar, programele T<SMALL>E</SMALL>X sunt foarte greu de scris şi de depanat.  Mai
+mult, unele concepte care funcţionează foarte frumos în izolare, au
+mari probleme cînd sunt folosite laolaltă (de exemplu, în L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X e
+foarte complicat să faci note de subsol în tabele).
+
+<P>
+Utilizatori sofisticaţi pot folosi T<SMALL>E</SMALL>X pentru a tehnoredacta texte
+relativ simple, dar doar o mînă de oameni poate exploata T<SMALL>E</SMALL>X cu
+uşurinţă.  Eu cred că design-ul mizerabil al limbajului este unul
+dintre motivele fundamentale pentru care T<SMALL>E</SMALL>X nu este folosit pe
+scară mai largă.  De fapt T<SMALL>E</SMALL>X ar fi trebuit de mult să fie scos
+din circulaţie de produse mai uşor de folosit; singura explicaţie
+pentru longevitatea sa este faptul că piaţa pentru un program de
+tehnoredactare de matematică este extrem de îngustă, iar
+dificultatea implementării unui program de tehnoredactare atît de
+sofisticat (cu toată publicarea algoritmilor şi a codului sursă)
+este enormă (Knuth este un programator colosal, cu o atenţie
+nemărginită pentru detaliu).
+
+<P>
+
+<H2><A NAME="SECTION00033000000000000000">
+METAFONT</A>
+</H2>
+
+<P>
+Simultan cu T<SMALL>E</SMALL>X, Knuth a construit un alt program foarte interesant,
+numit METAFONT, care poate genera familii întregi de font-uri
+dintr-o singură specificaţie.  Astfel, programatorul descrie forma
+generală a fiecărui caracter; fişiere de configuraţie pot apoi
+genera toate familiile de font-uri dintr-o singură descriere:
+caracterele <EM>oblice</EM>, <B>grase</B>, <TT>egale</TT>, <SMALL>CAPITALIZATE</SMALL>, <I>italice</I> şi variatele <FONT SIZE="+2">dimensiuni</FONT> şi
+<FONT SIZE="-1">mărimi</FONT>, cu şi <I>fără serife</I> sunt toate generate
+apoi automat din aceeaşi descriere.
+
+<P>
+METAFONT este tot un limbaj de programare care permite desenarea a
+felurite primitive geometrice, declaraţii de variabile, definirea de
+macro-uri şi bucle, folosirea a diferite creioane cu vîrfuri
+eliptice pentru a desena curbe spline cubice<A NAME="tex2html7"
+  HREF="#foot112"><SUP>2</SUP></A>, sisteme de ecuaţii lineare pentru
+definirea de variabile (rezolvate automat de interpretor).
+
+<P>
+
+<H2><A NAME="SECTION00034000000000000000">
+Leslie Lamport</A>
+</H2>
+
+<P>
+Înainte de a afla mai multe detalii despre L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X, ne întîlnim din
+nou cu o figură colosală a informaticii, Leslie Lamport.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="lamport"></A><A NAME="294"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 3:</STRONG>
+Leslie Lamport, creatorul L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X.</CAPTION>
+<TR><TD><IMG
+ WIDTH="223" HEIGHT="299" BORDER="0"
+ SRC="img8.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=5cm\epsffile{lamport.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Deşi mai puţin faimos decît Donald Knuth, Leslie Lamport este unul
+dintre cercetătorii cei mai renumiţi din domeniul calculatoarelor.
+Domeniul său de specialitate este teoria sistemelor distribuite şi
+verificarea formală.  După ce a obţinut un doctorat în matematică
+în 1972 de la universitatea Brandeis, a lucrat pentru o vreme la
+compania Stanford Research Institute (iniţial formată prin
+colaborare cu universitatea Stanford; SRI este unul din cele mai mari
+centre de cercetare din întreaga lume, care lucrează pe bază
+contracte).  În timp ce lucra aici Lamport a creat sistemul L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X,
+care este pretextul acestui articol.  După un scurt timp s-a mutat la
+centrul de cercetări Systems Research Center (SRC) al companiei
+Digital (care a fost între timp cumpărată de Compaq).  Lamport
+lucrează în continuare la Compaq SRC, unde puteţi găsi şi pagina
+sa de web: <TT><A NAME="tex2html9"
+  HREF="research.compaq.com/SRC/personal/lamport/home.html">research.compaq.com/SRC/personal/lamport/home.html</A></TT>.
+
+<P>
+Înainte de a discuta despre cea mai cunoscută creaţie a lui
+Lamport, L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X, se cuvine să menţionăm unele dintre contribuţiile
+lui fundamentale în teoria sistemelor concurente şi distribuite:
+
+<P>
+
+<UL>
+<LI>Lamport a clarificat în 1978 noţiunea de timp şi sincronizare
+într-un sistem distribuit, folosind noţiunea de acum clasică de
+ceasuri Lamport.
+
+<P>
+</LI>
+<LI>O problemă celebră în sisteme distribuite pentru care Lamport
+a oferit o soluţie în 1982 este cea a ``generalilor bizantini'',
+care discută despre posibilitatea ca un sistem distribuit să
+tolereze defecţiuni arbitrare în unele din componentele sale.
+
+<P>
+</LI>
+<LI>În 1990 Lamport a introdus noţiunea de logică temporală a
+acţiunilor, Temporal Logic of Actions, TLA, despre care se spune că
+este în continuare cel mai bun formalism pentru a descrie şi raţiona
+despre sisteme distribuite.  TLA şi extensii ale sale sunt folosite
+pentru a specifica, raţiona şi depana sisteme distribuite reale, cum
+ar fi de exemplu protocoale de coerenţă pentru multiprocesoare
+simetrice (vedeţi şi <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#smp">articolul</a>
+meu din PC Report din noiembrie 1998 despre acest subiect), sau
+protocoale de securitate.
+</LI>
+</UL>
+
+<P>
+
+<H2><A NAME="SECTION00035000000000000000">
+L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X</A>
+</H2>
+
+<P>
+În 1983 Lamport învăţase T<SMALL>E</SMALL>X de relativ puţină vreme, şi
+îşi construise un set de macro-uri foarte utile, care mutau
+operaţiile pe un nivel ceva mai înalt, în care descriai nu <EM>cum</EM> vrei să arate un document, ci care este <EM>structura</EM> lui
+logică.
+
+<P>
+Sistemul acesta de macro-uri a căpătat numele Lamport T<SMALL>E</SMALL>X, sau
+L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X.  Editura Addison-Wesley dorea să tipărească un manual
+despre un sistem de tehnoredactare pentru matematicieni şi ingineri,
+aşa că un redactor l-a contactat pe Lamport.  Ca urmare, Lamport a
+scris ``cartea de L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X'' (vedeţi şi secţiunea despre alte surse
+de informaţie), care a devenit un best-seller (s-au vîndut cîteva
+sute de mii de exemplare şi a fost retipărită de cel puţin şapte
+ori).  Cartea a propulsat setul de macro-uri al lui Lamport în
+celebritate; ca şi T<SMALL>E</SMALL>X, acestea sunt disponibile în cod sursă pe
+Internet.
+
+<P>
+Ceea ce L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X încearcă să facă este să ascundă întreaga
+maşinărie încîlcită a T<SMALL>E</SMALL>X-ului sub o faţadă netedă:
+redefinirea comenzilor este în mod implicit interzisă (dar poate fi
+făcută, dacă utilizatorul chiar doreşte), un set de comenzi
+esenţiale este oferit, care organizează documentul într-o formă
+logică, şi sunt introduse <EM>fişierele de stil</EM>, care grupează
+declaraţii care influenţează arhitectura întregului document;
+schimbarea stilului se poate face separat de cea a conţinutului.
+L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X introduce de asemenea suport pentru referinţe încrucişate
+(genul ``vezi figura X'', unde X este numerotat automat de sistem),
+etichete, cuprins, index, bibliografie, unele cu ajutorul unor
+programe suplimentare care procesează texte.
+
+<P>
+
+<H2><A NAME="SECTION00036000000000000000">
+L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X2e şi L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X3</A>
+</H2>
+
+<P>
+L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X face o treabă destul de bună; este un limbaj destul de
+rezonabil, în care se pot produce relativ repede rezultate atractive;
+matematica este tehnoredactată la întreaga putere a T<SMALL>E</SMALL>X-ului.  Dar
+implementarea L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X era greu de menţinut şi dezvoltat, aşa că
+începînd din 1993 o serie de voluntari şi programatori din
+întreaga lume au pornit un nou proiect numit L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X3 (versiunea de
+L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X la acea dată era 2.09).  L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X3 este un proiect în
+evoluţie, dar a fost deja lansată o versiune preliminară, numită
+L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X2e.
+
+<P>
+L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X a fost în întregime re-implementat într-o manieră
+asemănătoare cu programarea orientată pe obiecte, într-o serie de
+module separate.  Unele module se pot înlocui unele pe altele, şi
+felul în care utilizatorii pot contribui cu noi module este
+standardizat.  Asta a dat naştere la o cantitate remarcabilă de
+facilităţi noi aduse limbajului şi sistemul de folosire a
+font-urilor a fost extins şi perfecţionat, permiţînd L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X să
+folosească font-uri dezvoltate de terţi (şi nu numai Computer
+Modern).
+
+<P>
+L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X2e este compatibil cu 2.09, dar nu şi invers.  Instrucţiunile
+pe care le prezentăm în continuarea acestui articol funcţionează
+în ambele versiuni.  Limbajul de bază 2.09 este complet inclus în
+2e.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+O introducere rapidă în L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X</A>
+</H1>
+
+<P>
+În cele ce urmează voi prezenta pe scurt unele din cele mai
+importante construcţii ale limbajului.  Mi-e teamă că stăpînirea
+limbajului este imposibilă fără posesiunea cel puţin a cărţii de
+bază.  Pe Internet există cîteva cărţi de introducere, şi cel
+puţin una a fost publicată şi în română.  De asemenea, există o
+pleiadă de fişiere de ``help'' care descriu sumar comenzile.  Dar
+nici una nu poate înlocui în acoperire manualul lui Lamport.
+
+<P>
+
+<H2><A NAME="SECTION00041000000000000000">
+Un exemplu de document foarte simplu</A>
+</H2>
+
+<P>
+Figura&nbsp;<A HREF="latex-html.html#exemplu">4</A> arată un simplu document complet L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>Xşi
+rezultatul tehnoredactării sale.  Orice document începe cu o
+declaraţie de stil (<code>\documentstyle</code>) şi este cuprins între
+<code>\begin{document}</code> şi <code>\end{document}</code>.  În celelalte
+figuri voi omite aceste trei linii.
+
+<P>
+Înainte de a discuta unele dintre comenzile importante, va trebui să
+vă spun cum am obţinut fiecare din imaginile din acest text.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="exemplu"></A><A NAME="300"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 4:</STRONG>
+Un exemplu de document L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X împreună cu
+cuprinsul şi cîteva secţiuni.</CAPTION>
+<TR><TD><IMG
+ WIDTH="450" HEIGHT="792" BORDER="0"
+ SRC="img9.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=10cm\epsffile{exemplu.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H2><A NAME="SECTION00042000000000000000">
+Folosirea L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X</A>
+</H2>
+
+<P>
+Pentru a scrie textul din partea de jos din figurii&nbsp;<A
+HREF="latex-html.html#exemplu">4</A> am folosit un editor de texte
+obişnuit, în cazul meu emacs, care are un mod major care ajută
+editarea de documente T<SMALL>E</SMALL>X şi
+L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X (vedeţi şi <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#emacs">articolul</a>
+meu despre emacs din PC Report din mai 1997).
+
+<P>
+Am salvat fişierul sub numele <TT>exemplu.tex</TT>.  Sufixul <TT>.tex</TT>
+este folosit atît pentru fişiere T<SMALL>E</SMALL>X cît şi pentru fişiere
+L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X.  
+
+<P>
+Pentru a tehnoredacta fişierul am folosit apoi comanda: <TT>latex
+exemplu.tex</TT>.  Această comandă porneşte interpretorul T<SMALL>E</SMALL>X, care la
+rîndul lui încarcă un set de macro-uri fundamentale, numite
+<TT>plain.tex</TT>, şi care apoi încarcă setul de macro-uri numit
+<TT>latex.tex</TT>.  Apoi interpretorul citeşte fişierul
+<TT>exemplu.tex</TT> şi îl execută.  Comenzile (în general indicate
+de cuvinte care încep cu semnul <code>\</code>, backslash), sunt macro-uri,
+care sunt expandate.  Literele şi semnele speciale sunt
+tehoredactate, aşa cum am explicat mai sus în secţiunea despre
+cutiuţe.
+
+<P>
+(De fapt L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X trebuie executat de două, pentru că prima oară
+strînge informaţii despre unde se află fiecare secţiune pe care a
+la a doua rulare le foloseşte pentru a construi cuprinsul.)
+
+<P>
+Această execuţie produce mai multe fişiere, din care cel mai
+important este <TT>exemplu.dvi</TT>.  Sufixul <TT>.dvi</TT> înseamnă
+DeVice Independent, adică ``independent de dispozitivul de
+afişare''.  Fişierele dvi conţin o descriere a documentului
+tehnoredactat, în sensul că spun unde pe pagină trebuie plasată
+fiecare cutiuţă şi ce simbol se află în interiorul ei.  Un
+fişier dvi nu conţine însă nici un fel de informaţii despre
+<EM>cum</EM> arată caracterele, sau eventualele imagini incluse. 
+
+<P>
+Programul <TT>dvips</TT> transformă un fişierul <TT>exemplu.dvi</TT>
+într-un fişier Postscript <TT>exemplu.ps</TT> folosind comanda
+<TT>dvips -o exemplu.ps exemplu.dvi</TT>.  Acest fişier extrage
+informaţii despre font-uri din locuri dinainte stabilite, adaugă
+imaginile incluse în text şi generează un program în Postscript.
+Acesta este un program de sine-stătător, care conţine toată
+informaţia despre cum arată rezultatul final; acest ``program''
+poate fi fie vizualizat pe ecranul calculatorului folosind programul
+<TT>ghostview</TT>, fie tipărit la orice imprimantă care înţelege
+limbajul Postscript.
+
+<P>
+Toate aceste programe, <TT>tex</TT>, <TT>latex</TT>, <TT>dvips</TT>,
+<TT>ghostview</TT> sunt disponibile gratuit de pe Internet, laolaltă cu
+o sumedenie de fişiere de configurare, macro-uri şi font-uri, pentru
+o mulţime de sisteme de operare incluzînd Windows, Unix şi MacOS.
+
+<P>
+
+<H2><A NAME="SECTION00043000000000000000">
+Cuvinte cheie şi caractere speciale</A>
+</H2>
+
+<P>
+Programele L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X pot fi scrise folosind doar setul de caractere
+ASCII.  Pentru a genera semne care nu sunt pe tastatură se folosesc
+macro-uri speciale care folosesc font-uri speciale.  Acesta este un
+avantaj mare asupra programelor WYSIWYG: privind fişierul putem spune
+exact ce se va întîmpla; toate comenzile şi caracterele sunt
+descrise printr-un text clar (de exemplu în Microsoft Word trecerea
+de la text normal la text gras nu este vizibilă decît prin efectele
+sale).
+
+<P>
+Iată cum interpretează L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X diferitele construcţii:
+
+<P>
+<DL>
+<DT><STRONG>Toate literele şi cifrele</STRONG></DT>
+<DD>sunt caractere obişnuite, care apar
+în rezultatul final.
+
+<P>
+</DD>
+<DT><STRONG>Semne speciale:</STRONG></DT>
+<DD>Pentru a scrie macro-uri şi comenzi speciale,
+zece dintre caracterele ASCII au semnificaţii speciale; acestea sunt:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">Caracter</TD>
+<TD ALIGN="LEFT">Nume</TD>
+<TD ALIGN="LEFT">Semnificaţie</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><code>#</code></TD>
+<TD ALIGN="LEFT">Diez</TD>
+<TD ALIGN="LEFT">Număr de argumente într-un macro definit de
+utilizator</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><code>$</code></TD>
+<TD ALIGN="LEFT">Dolar</TD>
+<TD ALIGN="LEFT">Delimitează formule matematice</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><code>%</code></TD>
+<TD ALIGN="LEFT">Procent</TD>
+<TD ALIGN="LEFT">Începe un comentariu</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><code>&amp;</code></TD>
+<TD ALIGN="LEFT">Ampersand</TD>
+<TD ALIGN="LEFT">Separă coloanele în tabele</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><code>~</code></TD>
+<TD ALIGN="LEFT">Tilda</TD>
+<TD ALIGN="LEFT">Spaţiu unde nu se poate despărţi rîndul</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><code>_</code></TD>
+<TD ALIGN="LEFT">Subliniat</TD>
+<TD ALIGN="LEFT">Pentru a scrie indici</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><code>^</code></TD>
+<TD ALIGN="LEFT">Căciulă</TD>
+<TD ALIGN="LEFT">Pentru a scrie exponenţi</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><code>\</code></TD>
+<TD ALIGN="LEFT">Backslash</TD>
+<TD ALIGN="LEFT">Urmează un nume de macro</TD>
+</TR>
+<TR><TD ALIGN="CENTER"><code>{}</code></TD>
+<TD ALIGN="LEFT">Acolade</TD>
+<TD ALIGN="LEFT">Grupează mai multe caractere la un loc</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+</DD>
+<DT><STRONG>Alte semne:</STRONG></DT>
+<DD>De asemenea, caracterele | &lt; &gt; pot fi folosite
+numai în formule matematice (folosite în text dau naştere unor
+efecte ciudate).
+
+<P>
+</DD>
+<DT><STRONG>Un macro:</STRONG></DT>
+<DD>este indicat de un cuvînt format numai din litere
+în faţă căruia apare semnul <code>\</code>.  Literele mari şi mici sunt
+distincte, deci <code>\LaTeX</code> e diferit de <code>\LaTeX</code>.
+
+<P>
+</DD>
+<DT><STRONG>Semnul procent:</STRONG></DT>
+<DD><code>%</code> este folosit pentru a introduce
+comentarii în text: tot ce urmează pînă la sfîrşitul liniei este
+ignorat de către interpretorul L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X.
+
+<P>
+</DD>
+<DT><STRONG>Acoladele</STRONG></DT>
+<DD>sunt extrem de importante în
+L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X; ele au o dublă 
+funcţiune:
+
+<P>
+
+<UL>
+<LI>Grupează la un loc mai multe simboluri, pentru a fi tratate ca
+o singură entitate.  De exemplu, dacă scriem <code>$a^bc$</code> vom
+obţine ca rezultat a<sup>b</sup>c; dacă vrem să
+ridicăm a la exponentul bc trebuie să scriem <code>$a^{bc}$</code>,
+care generează a<sup>bc</sup>.
+
+<P>
+</LI>
+<LI>Creaza un nou <EM>mediu</EM> (environment); (aproape) toate
+definiţiile de macro-uri şi schimbările de font care sunt făcute
+între acolade dispar în momentul în care acolada închisă este
+întîlnită.
+</LI>
+</UL>
+
+<P>
+</DD>
+<DT><STRONG>Spaţiile</STRONG></DT>
+<DD>multiple sunt nesemnificative (includem aici
+caracterele blank, tab (<code>\t</code> în C) şi linie-nouă (<code>\n</code>
+sau <code>\r</code>); nu puteţi schimba deci alinierea textului tastînd
+mai multe spaţii.  Excepţii la această regulă sunt însă
+următoarele:
+
+<P>
+
+<UL>
+<LI>Sfîrşitul de linie termină un comentariu.  
+
+<P>
+</LI>
+<LI>Un spaţiu termină un nume de macro, dar nu e considerat ca
+spaţiu care separă două cuvinte.  De aceea, dacă vreţi să
+puneţi un spaţiu după un macro, trebuie să folosiţi semnul
+``<code>\ </code>'', (backslash urmat de spaţiu).  Trebuie deci să
+scrieţi:
+
+<P>
+<PRE>
+\LaTeX\ este un program.
+</PRE>
+
+<P>
+</LI>
+<LI>Două sau mai multe semne consecutive de ``linie nouă'' indică
+începutul unui nou paragraf.
+</LI>
+</UL>
+
+<P>
+</DD>
+</DL>
+
+<P>
+
+<H2><A NAME="SECTION00044000000000000000">
+Formule matematice</A>
+</H2>
+
+<P>
+După cum spuneam, T<SMALL>E</SMALL>X şi L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X sunt excepţionale în
+tehnoredactarea formulelor matematice.  O sumedenie de macro-uri sunt
+predefinite pentru toate soiurile de operatori matematici, care de
+care mai ciudaţi.
+
+<P>
+Formulele sunt delimitate de semne dolar <code>$</code>.  Există două
+feluri de formule: care apar în text, care sunt delimitate de un
+singur semn <code>$</code>, şi formule care apar de sine-stătător, care
+sunt separate cu cîte două semne: <code>$$</code>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="math"></A><A NAME="323"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 5:</STRONG>
+Exemple de formule complexe în mod matematic şi
+programele L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X care le generează.</CAPTION>
+<TR><TD><IMG
+ WIDTH="542" HEIGHT="689" BORDER="0"
+ SRC="img17.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{math.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Figura&nbsp;<A HREF="latex-html.html#math">5</A> arată unele simboluri folosite în formule
+matematice.
+
+<P>
+
+<H2><A NAME="SECTION00045000000000000000">
+Enumerări şi liste</A>
+</H2>
+
+<P>
+În L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X există două tipuri de macro-uri: macro-uri simple, care
+pot avea argumente, sau macro-uri de tip ``bloc'' (environment).
+Macro-urile de tip bloc apar întotdeauna în perechi begin-end;
+între <TT>begin</TT> şi <TT>end</TT> este activ macro-ul.
+
+<P>
+Trei macro-uri de tip bloc pot fi folosite pentru a obţine mai multe
+feluri de enumerări; acestea sunt <TT>itemize</TT>, <TT>enumerate</TT> şi
+<TT>description</TT>.  <TT>itemize</TT> va pune biluţe (sau alte semne) în
+faţa fiecărui element, <TT>enumerate</TT> va pune cifre iar
+<TT>description</TT> va pune ceea ce indică utilizatorul.  Vedeţi şi
+figura&nbsp;<A HREF="latex-html.html#liste">6</A> pentru un exemplu.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="liste"></A><A NAME="337"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 6:</STRONG>
+Exemple de liste şi enumerări în L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X şi
+codul care le-a generat.</CAPTION>
+<TR><TD><IMG
+ WIDTH="542" HEIGHT="761" BORDER="0"
+ SRC="img18.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=12cm\epsffile{liste.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H2><A NAME="SECTION00046000000000000000">
+Tabele şi matrici</A>
+</H2>
+
+<P>
+Figura&nbsp;<A HREF="latex-html.html#tabela">7</A> arată unele dintre lucrurile care se pot face
+folosind tabele.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="tabela"></A><A NAME="343"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 7:</STRONG>
+O tabelă şi codul L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X care a generat-o.</CAPTION>
+<TR><TD><IMG
+ WIDTH="496" HEIGHT="325" BORDER="0"
+ SRC="img19.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=11cm\epsffile{tabela.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Mediul ``tabular'' este urmat de o listă de poziţii ale coloanelor:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">Literă</TD>
+<TD ALIGN="LEFT">Engleză</TD>
+<TD ALIGN="LEFT">Semnificaţie</TD>
+</TR>
+<TR><TD ALIGN="LEFT">l</TD>
+<TD ALIGN="LEFT">left</TD>
+<TD ALIGN="LEFT">aliniat la stînga</TD>
+</TR>
+<TR><TD ALIGN="LEFT">c</TD>
+<TD ALIGN="LEFT">center</TD>
+<TD ALIGN="LEFT">centrat</TD>
+</TR>
+<TR><TD ALIGN="LEFT">r</TD>
+<TD ALIGN="LEFT">right</TD>
+<TD ALIGN="LEFT">aliniat la dreapta</TD>
+</TR>
+<TR><TD ALIGN="LEFT"><code>|</code></TD>
+<TD ALIGN="LEFT">bar</TD>
+<TD ALIGN="LEFT">bară verticală</TD>
+</TR>
+<TR><TD ALIGN="LEFT">p{marime}</TD>
+<TD ALIGN="LEFT">paragraph</TD>
+<TD ALIGN="LEFT">coloană de lăţime fixă</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Coloanele sunt separate cu semnul ampersand <code>&amp;</code>, şi liniile sunt
+terminate cu semnul <code>\\</code>.  Texte pe mai multe coloane se pot face
+folosind macro-ul <code>\multicolumn</code>, care are trei argumente.  Linii
+orizontale se pot face folosind <code>\hline</code>; linii orizontale
+parţiale cu <code>\cline</code>.
+
+<P>
+
+<H2><A NAME="SECTION00047000000000000000">
+Font-uri</A>
+</H2>
+
+<P>
+Rămînînd în interiorul aceleiaşi familii de font-uri se pot
+schimba font-urile cu diferite comenzi.  Figura&nbsp;<A HREF="latex-html.html#fonturi">8</A> arată
+cîteva exemple de comenzi şi fonturile obţinute.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="fonturi"></A><A NAME="349"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura:</STRONG>
+Exemple de comenzi de schimbare a font-ului
+în L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X; unele comenzi se pot combina, de exemplu <TT>
+\sl\tt</TT>.</CAPTION>
+<TR><TD><IMG
+ WIDTH="631" HEIGHT="619" BORDER="0"
+ SRC="img21.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=14cm\epsffile{fonturi.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H2><A NAME="SECTION00048000000000000000">
+Accente</A>
+</H2>
+
+<P>
+T<SMALL>E</SMALL>X şi L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X oferă o serie bogată de accente, care se pot
+folosi pentru a scrie în majoritatea limbilor cu alfabete latine,
+ilustrate în figura&nbsp;<A HREF="latex-html.html#accente">9</A>.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="accente"></A><A NAME="356"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 9:</STRONG>
+Accente L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X şi codul care a generat
+tabelul; pentru accente în mod matematic trebuie folosite alte
+comenzi.</CAPTION>
+<TR><TD><IMG
+ WIDTH="270" HEIGHT="241" BORDER="0"
+ SRC="img22.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=6cm\epsffile{accente.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+
+<H2><A NAME="SECTION00049000000000000000">
+Index-uri, referinţe încrucişate, bibliografii</A>
+</H2>
+
+<P>
+L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X generează automat numere pentru pagini, capitole, secţiuni,
+paragrafe, ecuaţii, figuri, tabele, etc.  Folosind macro-ul
+<code>\label</code> se generează automat nume pentru etichete.  De exemplu,
+<code>\label{sec}</code> plasată în text va da variabilei <TT>sec</TT>
+numărul secţiunii curente.  Plasînd <code>\label{fig}</code> în
+interiorul textului asociat unei figuri (vedeţi mai jos un exemplu),
+va da variabilei <TT>fig</TT> numărul figurii curente.
+
+<P>
+Folosind macro-ul <code>\ref</code> putem referi aceste variabile astfel:
+<code>vezi capitolul \ref{sec}</code>.
+
+<P>
+
+<H2><A NAME="SECTION000410000000000000000">
+Figuri</A>
+</H2>
+
+<P>
+Figurile sunt tot dreptunghiuri în L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X, dar sunt speciale pentru
+că plasamentul lor în text nu este fixat de la început, ci este
+aranjat în funcţie de restul textului.  Figurile se numesc de aceea
+``corpuri flotante'', pentru că ``plutesc'' prin textul
+înconjurător pentru a ajunge mereu unde a indicat utilizatorul.
+Există două tipuri de figuri, care funcţionează asemănător, dar
+sunt numerotate independent: figuri şi tabele.  Iată un exemplu de
+fragment cod L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X care generează un tabel:
+
+<P>
+<PRE>
+\begin{table}[ht]
+\begin{tabular}{lll}
+....
+
+\end{tabular}
+\caption{\label{culori}Culorile fundamentale.}
+\end{table}
+</PRE>
+
+<P>
+Acest tabel conţine chiar o tabelă (al cărei corp l-am omis), dar
+care asociază un text (capţiune) cu tabelul şi o etichetă, numită
+<TT>culori</TT>, care poate fi referită în text cu <code>\ref{culori}</code>.
+
+<P>
+Algoritmul de paginare va încerca să plaseze tabela după
+indicaţiile dintre parantezele pătrate (<code>[ht]</code> în exemplul 
+de mai sus), după posibilităţi, în ordine în locul în care apare
+în text (h = here), la partea de sus a unei pagini (t = top) sau la
+partea de jos a unei pagini (b = bottom).
+
+<P>
+
+<H2><A NAME="SECTION000411000000000000000">
+Macro-uri şi definiţii</A>
+</H2>
+
+<P>
+După cum am văzut pînă acum în exemple, există mai multe feluri
+de macro-uri.  Dar toate sunt construite din acelaşi obiect
+fundamental: un macro cu zero sau mai multe argumente.  Utilizatorii
+pot defini şi ei macro-urile lor, şi sunt chiar încurajaţi să
+facă asta.  Comanda <code>\newcommand</code> chiar asta face.
+
+<P>
+Pentru a defini un macro fără argumente folosim ceva de genul:
+
+<P>
+<PRE>
+\newcommand{\pcr}{PC Report}
+</PRE>
+
+<P>
+Iată şi un exemplu de macro cu două argumente, folosit pentru
+semnul ``combinări de x luate cîte y'':
+
+<P>
+<PRE>
+\newcommand{\comb}[2]{C^{#1}_{#2}}
+</PRE>
+
+<P>
+După cum puteţi ghici, semnul <code>#1</code> înseamnă ``primul
+argument''.  Pentru a folosi acest macro putem scrie ceva de genul: 
+
+<P>
+<PRE>
+\comb{5}{x}
+</PRE>
+
+<P>
+L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X permite de asemenea definirea unor macro-uri bloc; asta se
+face cu ajutorul comenzii <code>\newenvironment</code>.  Figura&nbsp;<A HREF="latex-html.html#macro">10</A>
+arată exemple de macrodefiniţii.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="macro"></A><A NAME="365"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figura 10:</STRONG>
+Definirea şi folosirea unor noi macro-uri;
+rezultatul obţinut şi codul care îl generează.</CAPTION>
+<TR><TD><IMG
+ WIDTH="496" HEIGHT="358" BORDER="0"
+ SRC="img23.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=11cm\epsffile{macro.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Cînd expansiunea unui macro generează un alt macro, acesta este
+expandat la rîndul lui; acest proces se încheie cînd se generează
+caractere sau macro-uri fundamentale (de exemplu nume de simboluri
+speciale).  Unele dintre macro-urile predefinite pot avea argumente
+opţionale, care sunt transmise între paranteze pătrate.
+
+<P>
+
+<H2><A NAME="SECTION000412000000000000000">
+Stiluri şi documente</A>
+</H2>
+
+<P>
+Prima linie din document este <code>\documentstyle</code>; acest macro are
+un argument care indică tipul de document care urmează.  Schimbînd
+argumentul puteţi schimba radical tipul de document.  Tipurile
+standard de document sunt <TT>article</TT>, <TT>report</TT>, <TT>book</TT>, sau
+<TT>letter</TT>.  Acest macro este înlocuit în versiunea L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X2e de
+macro-ul <code>\documentclass</code>.
+
+<P>
+<code>\documentstyle</code> poate avea tot felul de argumente opţionale,
+care pot influenţa dramatic stilul.  Font-ul standard e de 10 puncte,
+dar putem mări caracterele cu
+
+<P>
+<PRE>
+\documentstyle[12pt]{article}
+</PRE>
+
+<P>
+Dacă vrem să scriem pe două coloane, ajunge să facem:
+
+<P>
+<PRE>
+\documentstyle[twocolumn]{article}
+</PRE>
+
+<P>
+şi aşa mai departe, avem la dispoziţie o mulţime de opţiuni.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Pachete suplimentare</A>
+</H1>
+
+<P>
+În varianta L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X2e a fost introdusă o nouă metodă (care nu
+funcţionează în L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X2.09) de a încărca pachete de macro-uri,
+folosind comanda <code>\usepackage</code>.  Există efectiv mii de pachete
+de macro-uri, de la modificări şi extensii ale comenzilor standard
+pînă la pachete ultra-specializate pentru diferite domenii (chimie,
+fizică, matematică, algoritmi, etc.), marea majoritate fiind
+disponibile pe Internet, din arhivele CTAN (vedeţi mai jos secţiunea
+despre alte surse de informaţie).
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Alte scule legate de L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X</A>
+</H1>
+
+<P>
+O grămadă de alte scule pot opera cu fişiere L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X; iată aici
+unele dintre cele mai importante:
+
+<P>
+<DL>
+<DT><STRONG>latex2html</STRONG></DT>
+<DD>converteşte din L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X în HTML; face o treabă
+destul de bună, mai ales dacă documentele sunt scrise în L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X standard, fără cod T<SMALL>E</SMALL>X.
+
+<P>
+</DD>
+<DT><STRONG>makeindex</STRONG></DT>
+<DD>este un program care generează automat un index
+dintr-un document.  Cuvintele care trebuie să apară în index sunt
+marcate de editor cu comanda <code>\index</code> în text, dar restul
+procesării este automat.
+
+<P>
+</DD>
+<DT><STRONG>bibtex</STRONG></DT>
+<DD>este un utilitar care extrage, crează şi formatează
+bibliografii în mod automat din documente L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X şi fişiere
+speciale care conţin descrieri bibliografice, cu extensia
+<TT>.bib</TT>.
+
+<P>
+</DD>
+<DT><STRONG>xdvi</STRONG></DT>
+<DD>este un program care permite vizualizarea fişierelor dvi
+direct pe un sistem de ferestre X Windows (standard sub Unix)
+
+<P>
+</DD>
+<DT><STRONG>ghostview</STRONG></DT>
+<DD>este un utilitar care poate afişa sau converti
+fişiere Postscript.
+
+<P>
+</DD>
+<DT><STRONG>amstex</STRONG></DT>
+<DD>este un pachet de macro-uri scris de American
+Mathematical Society, pe care autorii de manuscrise matematice trebuie
+să-l folosească cînd vor să publice în revistele editate de
+societate.
+
+<P>
+</DD>
+<DT><STRONG>pdftex</STRONG></DT>
+<DD>este un program care generează din T<SMALL>E</SMALL>X direct
+fişiere în limbajul <TT>pdf</TT>, Portable Document Format.
+
+<P>
+</DD>
+<DT><STRONG>AUC-TeX</STRONG></DT>
+<DD>este un mod major pentru emacs care permite editarea
+şi procesarea fişierelor T<SMALL>E</SMALL>X şi L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X.
+
+<P>
+</DD>
+<DT><STRONG>dvips</STRONG></DT>
+<DD>este un utilitar care converteşte din format <TT>dvi</TT>
+în format <TT>Postscript</TT>.
+
+<P>
+</DD>
+<DT><STRONG>LyX</STRONG></DT>
+<DD>este un editor vizual, în curs de dezvoltare, care
+generează cod L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X.
+
+<P>
+</DD>
+<DT><STRONG>MathType</STRONG></DT>
+<DD>pentru Microsoft Word este un editor WYSIWYG de
+ecuaţii care generează T<SMALL>E</SMALL>X.
+
+<P>
+</DD>
+<DT><STRONG>Convertoare</STRONG></DT>
+<DD>între L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X şi alte procesoare de text sunt
+listate la 
+<BR><TT><A NAME="tex2html17"
+  HREF="http://www.kfa-juelich.de/isr/1/texconv/texcnv.html">http://www.kfa-juelich.de/isr/1/texconv/texcnv.html</A></TT>.
+
+<P>
+</DD>
+<DT><STRONG>texinfo</STRONG></DT> <DD>un limbaj în care proiectul GNU
+(vedeţi şi <a
+href="http://www.cs.cmu.edu/~mihaib/articles/articles.html#open">articolul</a>
+meu din PC Report din iunie 1998) construieşte documentaţia
+programelor; din <TT>texinfo</TT> se pot genera automat fişiere
+T<SMALL>E</SMALL>X pentru documentaţie tipărită şi fişiere
+<TT>info</TT> pentru manuale interactive hipertext.
+</DD>
+</DL>
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Încheiere</A>
+</H1>
+
+<P>
+L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X este un program foarte complicat, dar cu care se pot obţine
+cu uşurinţă rezultate spectaculoase, mai ales în tehnoredactarea
+de formule matematice.  Rămîne să decideţi dacă vă este sau nu
+util.  Învăţarea este cîteodată anevoioasă, şi limbajul este
+plin de idiosincrazii.  Dar, fie ca ne place, fie că nu, L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X va
+rămîne pentru viitorul apropiat singura alternativă decentă pentru
+tehnoredactarea computerizată de mare calitate a textelor matematice.
+
+<P>
+
+<H1><A NAME="SECTION00080000000000000000">
+Alte surse de informaţie</A>
+</H1>
+
+<P>
+Cele trei cărţi de L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X:
+
+<P>
+
+<OL>
+<LI>``<EM>LaTeX: A document Preparation System, User's guide and
+Reference manual</EM>'', de Leslie Lamport; Addison-Wesley, ediţia a
+doua, 1994, ISBN 0-201-52983-1.
+
+<P>
+</LI>
+<LI>``<EM>The LaTeX Companion</EM>'', de Michel Goossens, Frank
+Mittelbach, Alexander Samarin; Addison-Wesley, 1994, ISBN
+0-201-54199-8.
+
+<P>
+</LI>
+<LI>``<EM>The LaTeX Graphics Companion; Illustrating Documents with
+TeX and PostScript</EM>'', de Michel Goossens, Sebastian Rahtz, Frank
+Mittelbach; Addison-Wesley, 1994, ISBN 0-201-85469-4.
+</LI>
+</OL>
+
+<P>
+Cartea de T<SMALL>E</SMALL>X: ``<EM>The TeX book</EM> de Donald E. Knuth;
+Addison-Wesley, 1986, ISBN 0-201-13447-0 / 0-201-13448-9.
+
+<P>
+Tot software-ul şi documentaţia free despre T<SMALL>E</SMALL>X se află la arhiva
+numită Comprehensive Tex Archive Network şi oglinzile sale:
+<TT><A NAME="tex2html18"
+  HREF="http://www.ctan.org/">http://www.ctan.org/</A></TT>.
+
+<P>
+Site-ul de web al proiectului L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X: <TT><A NAME="tex2html19"
+  HREF="http://www.latex-project.org/">http://www.latex-project.org/</A></TT>
+<P>
+Legături despre METAFONT:
+<TT><A NAME="tex2html20"
+  HREF="http://www-cgrl.cs.mcgill.ca/~luc/metafont.html">http://www-cgrl.cs.mcgill.ca/~luc/metafont.html</A></TT>
+<P>
+Un articol despre formatarea logică şi vizuală scris de Leslie
+Lamport ``Document Production: Visual or Logical?'', 
+<BR><FONT SIZE="-1"><TT><A NAME="tex2html21"
+  HREF="http://www.research.digital.com/SRC/personal/lamport/pubs/document-production.ps">http://www.research.digital.com/SRC/personal/lamport/pubs/document-production.ps</A></TT></FONT>.
+
+<P>
+Un articol despre impactul L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>Xde Leslie Lamport ``How (La)TeX
+changed the face of Mathematics'', 
+<BR><FONT SIZE="-1"><TT><A NAME="tex2html22"
+  HREF="http://www.research.digital.com/SRC/personal/lamport/pubs/lamport-latex-interview.ps">http://www.research.digital.com/SRC/personal/lamport/pubs/lamport-latex-interview.ps</A></TT></FONT>.
+
+<P>
+<BR><HR><H4>Note</H4>
+<DL>
+<DT><A NAME="foot67">...L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X</A><A NAME="foot67"
+ HREF="latex-html.html#tex2html3"><SUP>1</SUP></A>
+<DD>PC Report foloseşte însă ca program de
+tehnoredactare QuarkXpress, care nu suportă L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X; ca atare, în
+textul pe care îl aveţi în faţa ochilor în revistă, numai unele
+dintre figuri au fost generate cu L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X şi apoi transformate în
+Postscript.  Articolele prezente în pagina mea de web sunt însă
+tehnoredactate în întregime cu L<SUP><SMALL>A</SMALL></SUP>T<SMALL>E</SMALL>X.
+
+<DT><A NAME="foot112">... cubice</A><A NAME="foot112"
+ HREF="latex-html.html#tex2html7"><SUP>2</SUP></A>
+<DD>Splinele cubice
+sunt curbe compuse din bucăţi care se ``unesc'' în mod
+``continuu'', şi pentru care fiecare fiecare bucată este descrisă
+de un polinom de gradul 3.
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

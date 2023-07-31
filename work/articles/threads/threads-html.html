@@ -1,0 +1,1723 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Multithreading</TITLE>
+<META NAME="description" CONTENT="Multithreading">
+<META NAME="keywords" CONTENT="threads-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Multithreading</H1>
+<P ALIGN="CENTER"><STRONG>Mihai BUDIU -- budiu@cs.cornell.edu</STRONG></P>
+<P ALIGN="CENTER"><STRONG>decembrie 1996</STRONG></P>
+
+<P>
+<B>Subiect:</B> Implementarea thread-urilor fără ajutorul SO. 
+
+<P>
+<B>Cuvinte cheie:</B> thread, proces, stivă, cadru (stack frame),
+context.
+
+<P>
+<B>Cunoştinţe necesare:</B> limbajul C, funcţii recursive, elemente de
+programare în limbaj de asamblare.
+
+<P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html19"
+  HREF="threads-html.html">Vedere de ansamblu</A>
+<LI><A NAME="tex2html20"
+  HREF="#SECTION00030000000000000000">Procese şi ``thread''-uri</A>
+<LI><A NAME="tex2html21"
+  HREF="#SECTION00040000000000000000">Recursie şi stive</A>
+<LI><A NAME="tex2html22"
+  HREF="#SECTION00050000000000000000">C exotic: <TT>longjmp</TT> şi <TT>setjmp</TT></A>
+<UL>
+<LI><A NAME="tex2html23"
+  HREF="#SECTION00051000000000000000"><TT>setjmp</TT></A>
+<LI><A NAME="tex2html24"
+  HREF="#SECTION00052000000000000000"><TT>longjmp</TT></A>
+</UL>
+<BR>
+<LI><A NAME="tex2html25"
+  HREF="#SECTION00060000000000000000">Un abuz</A>
+<LI><A NAME="tex2html26"
+  HREF="#SECTION00070000000000000000">Stive în stivă</A>
+<LI><A NAME="tex2html27"
+  HREF="#SECTION00080000000000000000">Funcţiile iniţiale</A>
+<LI><A NAME="tex2html28"
+  HREF="#SECTION00090000000000000000">Comutarea</A>
+<LI><A NAME="tex2html29"
+  HREF="#SECTION000100000000000000000">Întreruperi</A>
+<LI><A NAME="tex2html30"
+  HREF="#SECTION000110000000000000000">Rezumat</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Vedere de ansamblu</A>
+</H1>
+
+<P>
+Acest articol îşi propune să explice unul dintre conceptele
+esenţiale ale sistemelor de operare, ``thread-urile''.  (Din păcate
+nu ştiu nici un termen românesc foarte convenabil care să fie larg
+acceptat pentru a traduce ``thread''; numele folosit este de obicei
+``fir de execuţie'', dar îl găsesc prea lung.  Vă rog să
+toleraţi acest barbarism, şi probabil şi alte cîteva.)
+Bazîndu-se pe un minim de cunoştinţe, constînd în programarea cu
+funcţii recursive şi elemente de bază în C, articolul
+construieşte toate conceptele necesare, şi apoi şi o implementare,
+a unui pachet de funcţii care permite simularea execuţiei simultane
+a mai multor programe, fără nici un fel de suport special din partea
+sistemului de operare.
+
+<P>
+Din păcate implementarea se bazează pe folosirea în mod
+neconvenţional a unor instrucţiuni standard C (ANSI), şi s-ar putea
+să nu poată funcţiona întotdeauna.  Am testat programele pe trei
+sisteme diferite şi au mers, dar am avut într-un fel noroc: m-am 
+bazat pe faptul că (pentru că este mai simplu pentru cei care scriu
+compilatoare) anumite instrucţiuni fac mai mult decît spune manualul
+că trebuie să facă.
+
+<P>
+Structura de ansamblu a textului este următoarea: întîi
+noţiunile de thread şi proces sunt explicate, iar modul în care pot
+fi implementate schiţat.  Apoi urmează o discuţie despre rolul
+stivei în executarea programelor -- vedem faptul că o parte
+importantă despre starea unui program este ţinută pe stivă.
+
+<P>
+Explorăm apoi funcţionalitatea unor instrucţiuni C
+standard, dar care se comportă extrem de ciudat; vedem că ele
+acţionează în mod dramatic asupra stivei.  Urmează un experiment
+cu aceste instrucţiuni, a cărui menire este să verifice dacă nu
+cumva ele îşi îndeplinesc misiunea într-un mod de care ne putem
+folosi pentru a implementa thread-uri.
+
+<P>
+În fine, în caz că experimentul s-a dovedit reuşit, trecem
+la a pune la lucru aceste instrucţiuni pentru a scrie un set de
+funcţii care simulează multi-procesarea.
+
+<P>
+Programele au fost testate cu succes pe următoarele
+platforme: Windows NT, folosind compilatorul MS Visual C++ 4.0, SunOS
+4.x, şi 5.x cu gcc, Linux 2.x cu gcc.  Se pare că merg şi pe HP-UX.
+
+<P>
+Extensiile cu ``întreruperi'' ale programelor au fost testate
+numai pe sistemele Unix (Windows NT nu oferă funcţia <TT>alarm()</TT> pe
+care ele se bazează).
+
+<P>
+Practic textul prezintă un mini-nucleu de sistem de operare
+în esenţa lui; în orice sistem modern partea care se ocupă de
+manipularea proceselor are o structură asemănătoare.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Procese şi ``thread''-uri</A>
+</H1>
+
+<P>
+``Ce este un program'' probabil că toată lumea ştie.  Ce
+este un proces este un pic mai delicat, însă nu greu de înţeles.
+Cea mai scurtă definiţie ar fi: ``un proces este un program în curs
+de execuţie''.  E o mică diferenţă între cele două noţiuni: în
+timp ce un program este un concept ``static'', imuabil, un proces este
+un obiect care se schimbă într-una.  De exemplu, atunci cînd un
+program se execută, el modifică valorile variabilelor sale.  La
+fiecare moment de timp procesul deci arată altfel.  Distincţia este
+aceeaşi ca cea dintre un drum trasat pe o hartă (programul) şi o
+excursie reală pe acel traseu (procesul).  Nici măcar nu este
+obligatoriu ca la rulări diferite un acelaşi program să parcurgă
+aceleaşi faze: execuţia lui poate depinde de evenimente externe,
+care sunt diferite (ca de exemplu interacţiunea cu utilizatorul).
+
+<P>
+Putem vorbi despre ``starea'' unui proces la un anumit moment
+de timp.  Starea ar trebui să ne spună cam ``în ce fază de
+execuţie a programului am ajuns''.  Cum se poate descrie starea unui
+proces?
+
+<P>
+Ei bine, starea trebuie să cuprindă o indicaţie despre
+următoarea instrucţiune care se va executa.  La nivelul programelor
+în limbaj-maşină instrucţiunea următoare este indicată prin
+valoarea unui registru special, numit PC de obicei (``Program
+Counter'') (numai Intel se încăpăţînează să-i zică IP -
+``Instruction Pointer''), care arată adresa în memorie unde se află
+următoarea instrucţiune de executat.
+
+<P>
+PC-ul singur însă nu ajută: dacă suntem în mijlocul unei
+bucle, PC-ul nu ne poate spune de cîte ori s-a executat bucla.
+Descrierea starea unui proces mai trebuie să conţină şi descrierea
+<EM>valorii</EM> tuturor variabilelor cu care operează programul.
+
+<P>
+Din păcate nici atîta nu ajunge pentru a descrie starea unui
+proces.  Ca să va convingeţi iată un exemplu:
+
+<P>
+<PRE>
+int f(int a)
+{  
+  /* PC==&gt; */ printf("%d\n", a); 
+}
+
+int g(int a)
+{  f(a); }
+
+int main(void)
+{  int x = 5;  f(x); g(x); return 0; }
+</PRE>
+
+<P>
+Chiar dacă vă spun că PC-ul punctează unde am pus
+comentariul, în corpul funcţiei <TT>f()</TT>, şi vă dau valorile
+variabilelor, nu veţi putea spune ce se va întîmpla mai departe
+dacă nu ştiţi <EM>cine</EM> a chemat pe <TT>f()</TT>: <TT>main()</TT> sau
+<TT>g()</TT>?
+
+<P>
+O descrierea a stării procesului trebuie să includă deci
+şi <EM>istoricul</EM> apelurilor de funcţii: ce funcţii au început
+să se execute şi nu s-au terminat încă.  Vom vedea că această
+informaţie este de obicei menţinută pe o <EM>stivă</EM> de către
+calculator.
+
+<P>
+Să rezumăm: starea unui proces este descrisă de
+
+<P>
+
+<OL>
+<LI>programul care este executat
+</LI>
+<LI>valoarea PC
+</LI>
+<LI>valorile variabilelor
+</LI>
+<LI>funcţiile care tocmai se execută şi locurile în care ele s-au
+întrerupt.
+</LI>
+</OL>
+
+<P>
+Calculatoarele moderne ţin aceste informaţii în memorie (cu
+excepţia PC), în zone diferite, astfel:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">Informaţia</TD>
+<TD ALIGN="LEFT">Unde</TD>
+</TR>
+<TR><TD ALIGN="LEFT">programul</TD>
+<TD ALIGN="LEFT">``segmentul de cod''</TD>
+</TR>
+<TR><TD ALIGN="LEFT">variabile</TD>
+<TD ALIGN="LEFT">``segmentul de date''</TD>
+</TR>
+<TR><TD ALIGN="LEFT">funcţiile în curs de execuţie</TD>
+<TD ALIGN="LEFT">``segmentul de stivă''</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Practic dacă vreau să execut un program (să-l transform
+într-un proces), calculatorul trebuie să aloce cîte o zonă de
+memorie pentru fiecare din aceste părţi şi să pună în PC adresa
+primei instrucţiuni.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="proces"></A><A NAME="363"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 1:</STRONG>
+Un proces în memorie</CAPTION>
+<TR><TD><IMG
+ WIDTH="181" HEIGHT="250" BORDER="0"
+ SRC="img1.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=4cm\epsffile{proces.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Partea interesantă este că informaţia de mai sus este nu
+numai necesară ci şi suficientă pentru a descrie starea unui
+proces.  Mai exact, dacă ``salvăm'' cumva această descriere,
+stingem calculatorul, şi după o săptămînă restaurăm starea aşa
+cum era salvată, procesul îşi va continua nestingherit execuţia
+din locul în care a fost salvat, ca şi cum nimic nu s-ar fi
+întîmplat.
+
+<P>
+Tehnica asta este familiară de cînd există congelatoare: o
+găină pusă la îngheţat nu îşi schimbă starea de loc pînă o
+scoţi de acolo.  Toate variabilele care descriu starea ei (de
+descompunere) sunt înţepenite la valoarea pe care o aveau în
+momentul congelării.
+
+<P>
+Pe acest lucru se bazează şi sistemele de operare moderne
+cînd dau impresia executării simultane a mai multor procese:
+(time-sharing) de fapt ele execută un proces o vreme (cîteva
+milisecunde), apoi pun deoparte starea procesului, iau starea altui
+proces, îl execută pe ăsta o vreme, după aceea se întorc din nou
+la primul şi tot aşa.
+
+<P>
+Dacă cele două procese pe care le execuţi în ``paralel''
+încap simultan în memorie treaba este şi mai simplă: nu ai decît
+de mutat PC de la unul la altul, şi un indicator pentru care segment
+de date şi stiva se foloseşte în momentul curent!  Faptul că un
+proces foloseşte numai propriile lui zone de memorie asigură faptul
+că nu îl ``deranjează'' pe celălalt.
+
+<P>
+În dorinţa lor de perfecţiune, proiectanţii au observat
+că pot îmbunătăţi schema în cazul în care cele două procese
+execută acelaşi program (nu este o presupunere complet absurdă, mai
+ales dacă pe acelaşi calculator pot lucra mai multe persoane
+simultan).  Îmbunătăţirea se bazează pe faptul că (practic
+niciodată) segmentul de cod nu se schimbă.  Din cauza asta dacă ai
+două procese care au acelaşi segment de cod, le poţi aranja să
+folosească împreună acea parte de memorie.  Observaţi că asta nu
+înseamnă că fac exact acelaşi lucru la un moment dat: PC-urile lor
+pot avea valori complet diferite.
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="codcomun"></A><A NAME="369"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 2:</STRONG>
+Procese cu zona de cod comună</CAPTION>
+<TR><TD><IMG
+ WIDTH="226" HEIGHT="245" BORDER="0"
+ SRC="img2.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=5cm\epsffile{codcomun.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Odată ideea asta născută, a fost împinsă şi mai departe:
+datorită faptului că procesele nu au nici un fel de memorie
+modificabilă în comun, este destul de greu pentru două procese să
+schimbe informaţii (trebuie să folosească fişiere, ceea ce e
+complicat şi lent).  Ce-ar fi dacă am permite proceselor să aibă
+şi ceva memorie în comun?  Ele vor trebui să fie atente să nu se
+calce pe picioare (să nu modifice fiecare starea altuia cînd nu
+trebuie), dar ar putea cîştiga mult prin eficienţa mare a
+comunicării.
+
+<P>
+Aşa s-a născut noţiunea de ``thread'': două thread-uri
+sunt procese care au în comun şi segmentul de date, pe lîngă cel
+de cod.  Din cauză că thread-urile au în comun atît de mult,
+cîteodată conceptual sunt privite ca parte a aceluiaşi proces, dar
+care de data asta poate avea mai multe ``fire de execuţie'' simultan
+(traducerea termenului ``thread'' este fir).  Pentru utilizator e ca
+şi cum ai scrie un program care poate executa mai multe funcţii
+simultan (de altfel asta vom obţine şi noi în final).
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="thread"></A><A NAME="375"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 3:</STRONG>
+Folosirea memoriei de thread-uri</CAPTION>
+<TR><TD><IMG
+ WIDTH="226" HEIGHT="259" BORDER="0"
+ SRC="img3.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=5cm\epsffile{thread.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Distincţia dintre un proces şi un thread este doar de
+natură a folosirii în comun a memoriei: practic două procese care
+execută acelaşi program au memorii complet disjuncte, dar două
+thread-uri care execută acelaşi program folosesc segmentul de date
+în comun.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Recursie şi stive</A>
+</H1>
+
+<P>
+În secţiunea de faţă o să ne concentrăm privirea spre
+una singură din zonele de memorie de care are nevoie un proces (sau
+thread): stiva.  Vom vedea de ce e nevoie de ea, şi cum este ea
+folosită.  Vom vedea că unul dintre cele mai utile concepte ale
+limbajelor de programare moderne, recursia, este implementată
+folosind mecanismul de stivă.
+
+<P>
+Să considerăm un exemplu simplu, folosit de toată lumea:
+
+<P>
+<PRE>
+int factorial(int n)
+{
+    if (n == 1) 
+        return 1;
+    else 
+        return 
+               factorial(n-1)  /* &lt;= PC1 */
+               * n;
+}
+
+int main(void)
+{
+        int l;
+        l  = factorial(2);     /* &lt;= PC2 */
+        printf("%d\n", l);
+        l = factorial(4);
+        printf("%d\n", l);
+        return 0;
+}
+</PRE>
+
+<P>
+Cum merge?  Păi execuţia se desfăşoară aşa: începem cu
+prima instrucţiune din <TT>main()</TT>, care este chiar un apel al funcţiei
+<TT>factorial</TT>.  Pentru a executa <TT>factorial()</TT> programul pune bine la
+păstrare valoarea curentă a lui PC; cînd funcţia <TT>factorial()</TT> va
+termina valoarea păstrată va fi folosită pentru a continua
+execuţia.  (Dacă nu am salva valoarea lui PC cînd chemăm
+<TT>factorial()</TT>, nu am putea şti atunci cînd se va termina dacă a
+fost chemat prima oară, cu argumentul 2, sau a doua oară, cu 4.)
+
+<P>
+În continuare se procedează astfel: PC-ul este pus să arate
+la prima instrucţiune din corpul funcţiei <TT>factorial</TT>; am început s-o
+executăm.  Valoarea argumentului <TT>n</TT> este luată din valoarea cu
+care a fost chemat factorial, 2.  Programul se execută de sus în
+jos, <TT>n != 1</TT>, deci se execută <TT>return</TT>-ul după <TT>else</TT>.
+Însă <TT>return</TT> are nevoie de valoarea calculată de <TT>factorial(n-1)</TT> = <TT>factorial(1)</TT>!  Înainte de a termina prima
+invocare a funcţiei factorial, trebuie să începem o a doua.
+Trebuie să punem deoparte valoarea pe care o are <TT>n</TT> acum (2), ca
+<TT>factorial(1)</TT> să nu o strice.  Trebuie să ne amintim şi PC-ul
+curent, ca după ce <TT>factorial(1)</TT> se termină, să putem face
+înmulţirea şi să terminăm <TT>return</TT>-ul.
+
+<P>
+Deja figura se complică: ţinem minte locul de unde <TT>factorial</TT>
+a fost chemat din <TT>main</TT>, dar şi locul de unde s-a chemat singur, şi
+valorile variabilelor sale locale din acea clipă...Ne încurcăm.
+Avem nevoie de o structură care să facă ordine.
+
+<P>
+Observaţi două proprietăţi ale funcţiilor de care vom
+profita:
+
+<P>
+
+<OL>
+<LI>funcţiile se termină întotdeauna în ordinea inversă decît cea
+în care sunt invocate.  Dacă A cheamă pe B, B se va termina
+înaintea lui A.
+
+<P>
+</LI>
+<LI>de fiecare data cînd funcţia se execută se crează o nouă copie
+a variabilelor locale (putem include în această categorie şi
+argumentele funcţiei, cum este <TT>n</TT> al lui <TT>factorial</TT>).
+</LI>
+</OL>
+
+<P>
+De fapt noi folosim acelaşi nume pentru o mulţime de
+obiecte: la un moment dat pot exista multe <TT>n</TT>-uri.
+
+<P>
+Funcţiile recursive se implementează folosind <EM>cadre</EM>
+(``(stack) frames'' în engleză).  Un cadru este o structură de date
+care ţine în ea informaţiile necesare executării unei instanţe a
+unei funcţii -- fiecare factorial care se va executa va avea propriul
+lui cadru.
+
+<P>
+Un cadru de stivă arată cam aşa:
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="CENTER">argument 1</TD>
+</TR>
+<TR><TD ALIGN="CENTER">argument 2</TD>
+</TR>
+<TR><TD ALIGN="CENTER">...</TD>
+</TR>
+<TR><TD ALIGN="CENTER">argument n</TD>
+</TR>
+<TR><TD ALIGN="CENTER">PC pentru întoarcere</TD>
+</TR>
+<TR><TD ALIGN="CENTER">variabile locale</TD>
+</TR>
+<TR><TD ALIGN="CENTER">spaţiu de lucru temporar</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Cadrele sunt construite în două etape: prima parte (cea de
+deasupra liniei) este făcută de funcţia care o cheamă pe cea care
+posedă cadrul; prin această zonă chemătorul şi chematul
+comunică.
+
+<P>
+Partea a doua este construită de funcţia care foloseşte
+cadrul cînd începe să se execute.  Acolo îşi pune ea
+lucruşoarele pe care vrea să le folosească singură.
+
+<P>
+Ca o consecinţă a faptului că funcţiile se termină invers
+de cum au început, putem pune cadrele lor pe o stivă (stiva,
+ţineţi minte=ultimul venit-primul ieşit).  În fiecare moment
+funcţia care tocmai se execută foloseşte cadrul din vîrful stivei.
+
+<P>
+<DIV ALIGN="CENTER">
+<TABLE CELLPADDING=3 BORDER="1">
+<TR><TD ALIGN="LEFT">acţiune</TD>
+<TD ALIGN="LEFT">operaţie pe stiva</TD>
+</TR>
+<TR><TD ALIGN="LEFT">apel de funcţie</TD>
+<TD ALIGN="LEFT">se creaza un nou cadru în vîrf</TD>
+</TR>
+<TR><TD ALIGN="LEFT">return</TD>
+<TD ALIGN="LEFT">se distruge cadrul din vîrf</TD>
+</TR>
+<TR><TD ALIGN="LEFT">execuţia funcţiei</TD>
+<TD ALIGN="LEFT">se foloseşte cadrul din vîrful stivei</TD>
+</TR>
+</TABLE>
+</DIV>
+
+<P>
+Ca să fie şi mai clar, să vedem cum arată stiva în
+momente succesive, în timpul execuţiei programului de mai sus:
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="cadre"></A><A NAME="381"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 4:</STRONG>
+Cadrele în timpul execuţiei</CAPTION>
+<TR><TD><IMG
+ WIDTH="724" HEIGHT="242" BORDER="0"
+ SRC="img4.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=16cm\epsffile{cadre.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Figura&nbsp;<A HREF="threads-html.html#cadre">4</A> ne arată stiva in 4 momente succesive: la început,
+înainte ca <TT>main()</TT> să cheme <TT>factorial(2)</TT>, după aceea cu cadrul
+lui <TT>factorial(2)</TT> construit.  Observaţi cum cadrul lui
+<TT>factorial(2)</TT> conţine adresa de întoarcere (PC2) în <TT>main()</TT>.
+Funcţiile noastre nu au variabile temporare, iar singura variabilă
+locală este <TT>l</TT>, în <TT>main</TT>.
+
+<P>
+Apoi <TT>factorial(2)</TT> cheamă <TT>factorial(1)</TT>: cadrul lui
+<TT>factorial(2)</TT> continuă să existe, cu <TT>n</TT>=2, şi un nou cadru se
+crează, în care n=1.  Observaţi că <TT>factorial(1)</TT> ţine minte în
+cadrul lui că a fost chemat de <TT>factorial(2)</TT>, deci PC-ul după
+terminare trebuie să fie PC1.  Observaţi şi că pe stivă se află
+două valori ale lui n, una în cadrul lui <TT>factorial(1)</TT>, una în
+cadrul lui <TT>factorial(2)</TT>.  Regulile limbajului C spun că, dacă
+funcţia curentă vrea să ştie cît este n, valoarea cu care va
+lucra este cea din cadrul curent.
+
+<P>
+<TT>factorial(1)</TT> se termină repede, returnînd valoarea 1.
+Cadrul lui <TT>factorial(1)</TT> este distrus.  Cadrul curent devine cel
+vechi, al lui <TT>factorial(2)</TT>, a cărui execuţie se reia de după PC1.
+Ce se întîmplă apoi: <TT>factorial(2)</TT> tocmai a aflat cît e
+<TT>factorial(1)</TT> (=1), aşa că va continua evaluarea expresiei <TT>n *
+factorial(n-1)</TT>.  Valoarea folosită pentru n este 2, deci expresia
+este 2*1 = 1.  Aceasta este şi valoarea returnată de <TT>factorial(2)</TT>,
+care se întoarce la <TT>main()</TT>, la adresa salvată în cadrul propriu,
+PC2.
+
+<P>
+După ce <TT>main()</TT> tipăreşte ``2'', se va efectua un şir
+asemănător de operaţii, numai că la momentul de vîrf se vor afla
+pe stivă 4 cadre diferite pentru factorial.  Încercaţi să
+urmăriţi evoluţia.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+C exotic: <TT>longjmp</TT> şi <TT>setjmp</TT></A>
+</H1>
+
+<P>
+Standardul ANSI pentru limbajul C conţine printre
+instrucţiunile mai mult sau mai puţin ezoterice şi cerinţa ca
+orice compilator de C regulamentar să implementeze două foarte
+ciudate ``funcţii'', numite <TT>setjmp</TT> şi <TT>longjmp</TT>.  Prototipurile
+acestor funcţii sunt în headerul <TT>&lt;setjmp.h&gt;</TT>.
+
+<P>
+Poate cel mai bine ar fi să începem iarăşi printr-un
+exemplu; rulaţi următorul program:
+
+<P>
+<PRE>
+#include &lt;setjmp.h&gt;
+#include &lt;stdio.h&gt;
+
+jmp_buf cadru;
+
+void fun(void)
+{  
+   printf("fun se executa\n");
+   longjmp(cadru, 1);
+   printf("Nu ajung aici!\n");
+}
+
+int main(void)
+{  
+   if (setjmp(cadru) == 0) {    /* &lt;= PC salvat */
+      printf("setjmp s-a intors prima oara\n");
+      printf("Chem acum fun\n");
+      fun();
+      printf("Nu ajung aici!\n");
+   }
+   else {   /* setjmp != 0 */
+      printf("setjmp s-a intors a doua oara!\n");
+   }
+   printf("Gata.\n");
+   return 0;
+}
+</PRE>
+
+<P>
+Acum să vedem cum funcţionează...Ca mai întotdeauna
+în cazul limbajelor de programare, cel mai simplu mod pentru a
+explica ce face un program este de a explica fiecare instrucţiune
+componentă.
+
+<P>
+
+<H2><A NAME="SECTION00051000000000000000">
+<TT>setjmp</TT></A>
+</H2>
+
+<P>
+Instrucţiunea <TT>setjmp</TT> are ca argument un obiect de tip
+<TT>jmp_buf</TT> (tip declarat în headerul <TT>setjmp.h</TT>).  (E mai
+simplu să ne gîndim la această instrucţiune ca la un macro, nu ca
+la o funcţie.)  Execuţia lui <TT>setjmp(x)</TT> pune în structura <TT>x</TT> următoarele informaţii:
+
+<P>
+
+<OL>
+<LI>o descriere a <EM>poziţiei</EM> pe stivă a cadrului funcţiei curente (cea
+care conţine instrucţiunea <TT>setjmp()</TT>);
+</LI>
+<LI>valoarea curentă a PC (care punctează tocmai la instrucţiunea
+<TT>setjmp()</TT>, nu?);
+</LI>
+<LI>În plus, <TT>setjmp()</TT> dă ca rezultat o valoare 0
+</LI>
+</OL>
+
+<P>
+
+<H2><A NAME="SECTION00052000000000000000">
+<TT>longjmp</TT></A>
+</H2>
+
+<P>
+Instrucţiunea <TT>longjmp()</TT> are două argumente: unul de tip
+<TT>jmp_buf</TT>, în care un <TT>setjmp()</TT> anterior a scris ceva, şi o valoare
+numerică.  Efectul executării lui <TT>longjmp(x, v)</TT> este:
+
+<P>
+
+<OL>
+<LI>cadrul descris de <TT>x</TT> devine cel curent;
+</LI>
+<LI>valoarea salvată a PC in <TT>x</TT> devine cea curentă;
+</LI>
+<LI>se continuă execuţia; asta înseamnă că se re-execută <TT>setjmp()</TT>
+(pentru că acolo a fost salvat PC!).  De data asta însă rezultatul
+``evaluării'' lui <TT>setjmp()</TT> este <TT>v</TT>!
+</LI>
+</OL>
+
+<P>
+Să ne uităm la programul de mai sus din nou.  El va tipări:
+
+<P>
+
+<OL>
+<LI><TT>setjmp s-a intors prima oara</TT>
+</LI>
+<LI><TT>Chem acum fun</TT>
+</LI>
+<LI><TT>fun se executa</TT>
+</LI>
+<LI><TT>setjmp s-a intors a doua oara!</TT>
+</LI>
+<LI><TT>Gata.</TT>
+</LI>
+</OL>
+
+<P>
+Execuţia începe cu <TT>setjmp(cadru)</TT>.  Asta salvează în
+variabila <TT>cadru</TT> descrierea cadrului funcţiei curente, <TT>main()</TT>, şi valoarea PC, care punctează la linia cu comentariul.
+<TT>setjmp()</TT> întoarce 0, aşa că <TT>if</TT>-ul este ``adevărat''.
+Prima linie se tipăreşte acum, ca şi a doua.
+
+<P>
+Se cheamă <TT>fun()</TT>, care scrie linia a treia.
+
+<P>
+Partea interesantă începe: se execută <TT>longjmp(cadru,
+1)</TT>.  Aplicînd definiţia de mai sus, asta înseamnă:
+
+<P>
+
+<OL>
+<LI>cadrul curent devine cel salvat, al funcţiei <TT>main()</TT>.
+Practic cadrul lui <TT>fun()</TT> este ``şters'' de pe stivă.
+</LI>
+<LI>PC capătă valoarea din momentul lui <TT>setjmp</TT>: punctează
+la linia cu comentariul din nou; practic <TT>setjmp</TT> se execută din
+nou!
+</LI>
+<LI>valoarea execuţiei lui <TT>setjmp</TT> este 1, cum a indicat <TT>longjmp</TT>-ul.
+</LI>
+</OL>
+
+<P>
+Deci <TT>if</TT>-ul se execută din nou şi el, pe ramura
+<TT>else</TT> de data asta.  Asta cauzează apariţia liniei&nbsp;4.
+
+<P>
+Linia 5 apare apoi natural.
+
+<P>
+Interesant, nu?
+
+<P>
+Practic <TT>longjmp</TT> face o ``întoarcere în timp'', la
+situaţia pe care o avea execuţia unui program în momentul cînd a
+executat <TT>setjmp</TT>.
+
+<P>
+Care e folosul unor asemenea instrucţiuni?
+
+<P>
+<TT>setjmp</TT> şi <TT>longjmp</TT> au fost create pentru a uşura
+tratarea erorilor: dacă ceva se întîmplă undeva în adîncurile
+misterioase ale unor funcţii recursive, poţi imediat ``ieşi la
+suprafaţă'' cu un <TT>longjmp</TT>, fără să trebuiască să scrii fiecare
+funcţie de pe drum în aşa fel încît să verifice dacă nu cumva
+funcţiile pe care le cheamă au produs vreo eroare.
+
+<P>
+(Modul acesta de a trata erorile poate fi îmbunătăţit
+folosind limbaje care permit definirea şi tratarea excepţiilor, care
+funcţionează într-un mod asemănător, dar mai elegant.  De altfel
+compilatorul de C de la Microsoft pentru Windows NT chiar extinde
+limbajul C pentru a încorpora excepţii; însuşi sistemul de operare
+Windows NT ajută la asta).
+
+<P>
+Să mai observăm că în momentul executării instrucţiunii
+<TT>longjmp</TT> <EM>cadrul de stivă</EM> indicat de <TT>jmp_buf</TT>-ul dat
+ca argument lui <TT>longjmp</TT> <EM>trebuie</EM> sa existe!  (Dacă nu,
+dezastre se vor întîmpla.)  Din această cauză standardul ANSI
+spune despre <TT>longjmp</TT>: ``<TT>longjmp</TT> poate fi executată numai
+într-o funcţie care este un descendent direct din funcţia care a
+executat <TT>setjmp</TT>''.  Datorită modului în care se crează şi
+distrug cadre de stivă, această cerinţă îndeplinită va garanta
+existenţa cadrului la care se sare.
+
+<P>
+[Cu alte cuvinte nu se poate face aşa:
+
+<P>
+<PRE>
+jmp_buf x;
+
+int g()
+{  setjmp(x); }
+
+int h()
+{  longjmp(x); }
+
+int main()
+{  g(); h(); }
+</PRE>
+
+<P>
+pentru că atunci cînd <TT>h()</TT> face <TT>longjmp</TT>, cadrul
+salvat în <TT>x</TT>, al funcţiei <TT>g()</TT> nu mai este pe stivă,
+pentru că funcţia <TT>g()</TT> şi-a terminat execuţia -- <TT>h()</TT> nu
+este un descendent direct al lui <TT>g()</TT>.]
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Un abuz</A>
+</H1>
+
+<P>
+Am spus mai sus ca <TT>longjmp</TT> ``şterge'' de pe stiva toate
+cadrele pîna la cel salvat.  De fapt acest lucru este foarte
+costisitor, şi este mult mai simplu pentru <TT>longjmp</TT> doar să
+``mute'' vîrful stivei la cadrul indicat.  Este o şansă destul de
+mare ca stiva între cadrul la care se sare şi cel de la care se sare
+să rămînă neatinsă.
+
+<P>
+Mai trebuie să vedem şi dacă <TT>longjmp</TT> poate fi
+``prostită'' să sară în alte direcţii decît scrie la carte; să
+încercăm următorul program:
+
+<P>
+<PRE>
+#include &lt;setjmp.h&gt;
+#include &lt;stdio.h&gt;
+
+jmp_buf b[2];
+int setup = 0;
+
+void fun1(void);
+
+void delay(void) { for (long i=0; i &lt; 5000000; i++); }
+
+void fun0(void)
+{        
+        if (setjmp(b[0]) == 0)
+                fun1();
+        else {
+                printf("Fun 0\n");
+                delay();
+                longjmp(b[1], 1);
+        }
+}
+
+void fun1(void)
+{
+        if (!setup) setjmp(b[1]);
+        setup=1;
+        printf("Fun 1\n");
+        delay();
+        longjmp(b[0], 1);
+}
+
+int main(void)
+{       
+        fun0();
+        return 0;
+}
+</PRE>
+
+<P>
+Funcţiile <TT>fun0()</TT> şi <TT>fun1()</TT> nu au variabile locale şi
+nici argumente; practic cadrele lor nu conţin nici un fel de
+informaţii interesante.
+
+<P>
+Evoluţia programului nu este prea greu de urmărit, cel
+puţin pînă la executarea lui <TT>fun1()</TT>.  Practic <TT>main()</TT> cheamă
+<TT>fun0()</TT>, acesta îşi salvează cadrul în <TT>b[0]</TT>, <TT>fun0()</TT> cheamă
+apoi <TT>fun1()</TT>, care salvează cadrul lui personal in <TT>b[1]</TT>, şi scrie
+ceva pe ecran.
+
+<P>
+Partea interesantă începe: <TT>fun1()</TT> face un <TT>longjmp</TT> la
+<TT>b[0]</TT>; dacă avem noroc, aceasta mută PC la loc în <TT>fun0()</TT>, care
+se re-execută.  Vom obţine pe ecran:
+
+<P>
+<PRE>
+Fun1
+Fun0
+Fun1
+...
+</PRE>
+
+<P>
+Dacă programul compilat de dumneavoastră nu se comportă
+astfel, înseamnă că <TT>longjmp</TT> nu vrea să sară cînd cadrul
+descris de <TT>jmp_buf</TT> nu este anterior celui curent pe stivă.  Puteţi
+continua să citiţi textul mai departe, dar programele pe care le
+prezentăm nu vor funcţiona nici ele; desigur, se pot scrie altfel,
+fără a folosi <TT>setjmp</TT> şi <TT>longjmp</TT>, în limbaj de asamblare.
+Însă detaliile ar deveni mai proeminente decît tabloul însuşi.
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Stive în stivă</A>
+</H1>
+
+<P>
+Presupunînd că 
+
+<P>
+
+<OL>
+<LI><TT>longjmp</TT> poate sări în orice direcţie;
+</LI>
+<LI><TT>longjmp</TT> nu strică stiva atunci cînd se execută;
+</LI>
+</OL>
+
+<P>
+vom implementa acum pas cu pas un set de funcţii care
+simulează multithreading.  Ideea centrală este următoarea: pe
+stivă creăm mai multe cadre, a căror descriere o salvăm într-un
+vector de <TT>jmp_buf</TT>.  După aceea, să executăm thread-ul 10
+înseamnă să facem cadrul din căsuţa 10 a vectorului cadrul curent
+(cu un <TT>longjmp</TT>).  Să întrerupem thread-ul 5 din execuţie
+înseamnă să punem în căsuţa 5 a vectorului descrierea cadrului
+curent (cu un <TT>setjmp</TT>).
+
+<P>
+Avem o singură problemă reală: cum facem ca un thread să
+nu dea cu stiva peste cadrele care se află pe stivă ``sub'' el?
+(Stiva este una: va trebui să înghesuim pe ea mai multe cadre
+potenţial active simultan.)
+
+<P>
+Soluţia este extrem de ingenioasă şi simplă: pentru a crea
+două cadre la distanţă mare pe stivă, între ele trebuie să se
+afle un cadru (sau mai multe) foarte mari.
+
+<P>
+Dacă ne uităm puţin mai sus, vom vedea că un cadru
+conţine <EM>toate</EM> variabilele locale ale unei funcţii; deci o funcţie
+de genul:
+
+<P>
+<PRE>
+void f(void) { char c[100000]; }
+</PRE>
+
+<P>
+va avea un cadru de 100000 de octeţi cel puţin!
+
+<P>
+Avem deci la îndemînă următoarele operaţii pe stivă:
+
+<P>
+
+<OL>
+<LI>apelul de funcţie, care crează un cadru;
+</LI>
+<LI>terminarea unei funcţii, care distruge cadrul curent;
+</LI>
+<LI><TT>longjmp</TT>, care face un cadru indicat de pe stivă curent;
+</LI>
+<LI><TT>setjmp</TT> care salvează descrierea unui cadru.
+</LI>
+</OL>
+
+<P>
+Le putem combina pentru a obţine o serie de cadre, pe care să le
+salvăm, plasate la mari distanţe unele de altele.  Codul arată cam
+aşa:
+
+<P>
+<PRE>
+#include &lt;setjmp.h&gt;
+
+#define NR_THREADS 2
+#define SPATIU_STIVA 1024
+
+jmp_buf contexte[NR_THREADS];
+jmp_buf main_context;
+
+void salveaza(int);   /* declaratie forward */
+
+void aloca_stiva(int thread_no)
+    /* aloca spatiu pe stiva pentru thread-urile thread_no -&gt; NR_THREADS */
+{
+    char space[SPATIU_STIVA];     /* alocare esentiala a stivei */
+    
+    if (thread_no &gt;= NR_THREADS) /* am terminat? */ 
+        longjmp(main_context, 1);       
+    salveaza(thread_no);
+}
+
+void salveaza(int thread_no)
+    /* salveaza contexte pentru thread_no -&gt; NR_THREADS */
+{
+    if (setjmp(contexte[thread_no])) {
+        /* vom adauga cod aici */
+    }   
+    else
+        aloca_stiva(thread_no+1);
+}
+
+int main(void)
+{
+    if (!setjmp(main_context)) 
+        aloca_stiva(0);
+    return 0;
+}
+</PRE>
+
+<P>
+
+<P></P>
+<DIV ALIGN="CENTER"><A NAME="frames"></A><A NAME="387"></A>
+<TABLE>
+<CAPTION ALIGN="BOTTOM"><STRONG>Figure 5:</STRONG>
+Cadre de stivă succesive</CAPTION>
+<TR><TD><IMG
+ WIDTH="749" HEIGHT="413" BORDER="0"
+ SRC="img5.png"
+ ALT="\begin{figure}\centerline{\epsfxsize=16.5cm\epsffile{frames.eps}}\end{figure}"></TD></TR>
+</TABLE>
+</DIV><P></P>
+
+<P>
+Desenele 1-5 din figura&nbsp;<A HREF="threads-html.html#frames">5</A> arată evoluţia stivei
+pe măsură ce <TT>aloca_stiva()</TT> şi <TT>salveaza()</TT> se execută.
+Desenul 5 arată starea după execuţia lui <TT>longjmp(main_context, 1)</TT>, din funcţia <TT>aloca_stiva</TT>.  (Ne vom
+referi la desenele 6-8 mai tîrziu puţin.)
+
+<P>
+O descriere sumară a situaţiei: avem 3 cadre ale funcţiei
+<TT>salveaza</TT> descrise de vectorul <TT>contexte</TT>, şi cadrul curent
+este cel al funcţiei <TT>main()</TT>.  Dacă am fost norocoşi, faptul
+că am făcut un <TT>longjmp</TT> la <TT>main_context</TT> nu a stricat cu
+nimic cadrele pe care le-am pus la păstrare pe stivă.  (Norocoşi
+în sensul că implementarea lui <TT>longjmp</TT> funcţionează
+ne-distructiv, deşi standardul de C nu o obligă!)
+
+<P>
+Vom vedea că funcţia <TT>aloca_stiva</TT> construieşte nişte
+``cadre de sacrificiu'', pe care le vom folosi pentru a chema alte
+funcţii (spaţiul ocupat de cadrele lui <TT>aloca_stiva</TT> va fi
+re-folosit).
+
+<P>
+
+<H1><A NAME="SECTION00080000000000000000">
+Funcţiile iniţiale</A>
+</H1>
+
+<P>
+Mai avem de făcut puţini paşi pentru a obţine mai multe
+thread-uri: trebuie ca fiecare din cadrele (salvate în vectorul <TT>contexte</TT>) ale lui <TT>salveaza</TT> să poată invoca o altă funcţie
+atunci cînd va fi pornit.  Avem mai multe soluţii, dar cea mai
+simplă pare să construim un vector de pointeri spre funcţii: cîte
+unul pentru fiecare cadru salvat.  Cînd vom face acel cadru curent,
+el va invoca funcţia respectivă:
+
+<P>
+<PRE>
+/* modificari ale codului precedent */
+typedef void (*functie_initiala)(void);
+
+functie_initiala functie_start[NR_THREADS];
+
+void salveaza(int thread_no)
+    /* salveaza contexte pentru thread_no -&gt; NR_THREADS */
+{
+    if (setjmp(contexte[thread_no])) {
+        (functie_start[thread_no])();   /* invoca functia */
+    }   
+    else
+        aloca_stiva(thread_no+1);
+}
+
+int main(void)
+{
+    extern functie_initiala f, g;    /* functiile care vor fi
+                                        executate de threaduri;
+                                        undeva in alt fisier */
+    if (!setjmp(main_context)) 
+        aloca_stiva(0);
+    functie_start[0] = f;
+    functie_start[1] = g;
+    longjmp(contexte[0], 1);         /* porneste threadul 0 */
+    return 0;
+}
+</PRE>
+
+<P>
+Am văzut că starea stivei după executarea apelului lui <TT>aloca_stiva</TT> din <TT>main()</TT> este cea din figura&nbsp;<A HREF="threads-html.html#frames">5</A>, poza
+5.  După <TT>longjmp</TT>-ul din main situaţia devine cea din poza 6:
+cadrul curent este cel care a fost creat de <TT>salveaza(0)</TT> şi
+salvat în <TT>contexte[0]</TT>.  Acum <TT>salveaza()</TT> va chema funcţia
+din căsuţa 0 a vectorului <TT>functie_start</TT>; asta va transforma
+starea stivei ca în poza 7.
+
+<P>
+Primul thread a pornit!  Funcţia <TT>f</TT>, care este de fapt cea
+invocată, poate face acum orice.
+
+<P>
+Mai trebuie să concepem un mecanism prin care un thread se
+întrerupe şi dă drumul altuia.  Asta e deja o sarcină relativ
+simplă: va implica două acţiuni:
+
+<P>
+
+<UL>
+<LI>salvarea stării thread-ului curent (pentru a putea fi continuat mai
+tîrziu) se face cu <TT>setjmp</TT>;
+</LI>
+<LI>transformarea stării celuilalt în starea curentă folosind
+<TT>longjmp</TT>.
+</LI>
+</UL>
+
+<P>
+
+<H1><A NAME="SECTION00090000000000000000">
+Comutarea</A>
+</H1>
+
+<P>
+Pentru a fi civilizaţi vom împacheta operaţia de
+``comutare'' a thread-ului într-o funcţie.  Vom introduce şi o
+variabilă globală care ştie cine este thread-ul curent; se va
+dovedi foarte utilă:
+
+<P>
+<PRE>
+/* modificari la codul anterior */
+
+int thread_curent;
+
+void sari_la(int th)
+{
+    if (!setjmp(contexte[thread_curent])) {
+        thread_curent = th;
+        longjmp(contexte[thread_curent], 1);
+    }
+}
+</PRE>
+
+<P>
+Deja puteţi testa pachetul de thread-uri scriind ceva de
+genul pentru funcţiile iniţiale:
+
+<P>
+<PRE>
+void f(void)
+{
+   int x=0;
+
+   while (1) {
+        x++;
+        printf("Functia f, thread %d, x=%d\n", thread_curent, x);
+        sari_la(1-thread_curent);
+   }
+}
+
+void g(void)
+{
+   int x=0;
+
+   while (1) {
+        x++;
+        printf("Functia g, thread %d, x=%d\n", thread_curent, x);
+        sari_la(1-thread_curent);
+   }
+}
+
+int thread_curent = 0;  /* incepem cu thread-ul 0 */
+</PRE>
+
+<P>
+Faptul că în acest program nu se cheamă pur şi simplu <TT>f()</TT> şi <TT>g()</TT> alternativ, ci se <EM>continuă</EM> execuţia lor se
+vede din faptul că valorile pe care le folosesc pentru <TT>x</TT> cresc.
+
+<P>
+Într-un scenariu mai complicat, cu mai multe funcţii
+iniţiale mai sofisticate, situaţia stivei la un moment dat ar putea
+arăta ca în figura&nbsp;<A HREF="threads-html.html#frames">5</A>, poza 8: practic funcţiile
+iniţiale au chemat alte funcţii la rîndul lor (cum <TT>f()</TT>
+cheamă <TT>printf()</TT>), care la un moment dat şi-au întrerupt
+execuţia.  Cadrele lor sunt salvate (în figură asta este valabil
+pentru thread-urile 0 şi 2).  Unul dintre thread-uri tocmai se
+execută (în figură thread-ul nr.&nbsp;1), şi cadrul lui este cel
+curent.
+
+<P>
+De aici încolo nu mai avem mare lucru de făcut; ar fi
+elegant să concepem un set de funcţii care construieşte thread-uri
+noi în mod dinamic (să nu trebuiască să punem cu mîna pointerii
+la început), funcţii care să omoare thread-uri, şi poate o
+funcţie care să aleagă cine să se execute.
+
+<P>
+Pentru a ţine mai uşor socoteala despre starea fiecărui
+thread ar fi bine să strîngem toate informaţiile care ţin de el
+într-o singură structură (care va include cadrul şi funcţia
+iniţială); asta va necesita o ``periere'' a codului anterior, dar mai
+bine s-o facem acum, cît încă nu e prea mare.  Iată declaraţiile
+funcţiilor pe care ni le propunem:
+
+<P>
+<PRE>
+/* threads.h */
+#ifndef THREADSH
+#define THREADSH
+
+#include &lt;setjmp.h&gt;
+
+#define PUBLIC
+#define PRIVAT static    
+/* cuvintul cheie `static' este folosit in doua sensuri in C
+ * a) pentru a indica variabile locale ale unei functii care 
+ *    nu se aloca pe stiva ci in segmentul de date
+ * b) pentru a indica faptul ca o definitie dintr-un fisier
+ *    nu este vizibila in exterior
+ * Definim macro-ul PRIVAT pentru aceasta a doua semnificatie:
+ * va face programul mai usor de citit
+ */
+
+#define MAX_THREADS 10          /* numarul maxim */
+#define SPATIU_STIVA (32 * 1024)/* in octeti */
+
+typedef void (*functie_initiala)(void);
+
+struct thread {
+    jmp_buf context;
+    jmp_buf context_original;   /* contextul din salveaza() */
+    int stare;
+#define THREAD_GOL       0
+#define THREAD_GATA      1      /* gata de executie */
+#define THREAD_MORT      2
+#define THREAD_ASTEAPTA  3      /* nefolosit, deocamdata */
+    functie_initiala functie_start;
+};
+
+void initializeaza(void);
+
+int creaza_thread(functie_initiala);
+/* creaza un thread; intoarce un numar (-1 = eroare) */
+
+void omoara_thread(int);
+
+void porneste(int th);
+/* porneste executia incepind cu acest thread */
+
+void sari_la(int th);
+
+void alege(void);
+/* alege un thread pentru executie si sari la el */
+
+#endif   /* THREADSH */
+</PRE>
+
+<P>
+Funcţia <TT>alege()</TT> este ceea ce în engleză se cheamă
+<TT>scheduler()</TT>: partea care decide cine cînd se execută.  Vom folosi
+cea mai simplă implementare pentru ea, care în terminologia
+sistemelor de operare se cheamă ``round-robin'': o coadă circulară.
+
+<P>
+O implementare ar putea arăta cam aşa (am mai modificat şi
+funcţiile vechi pe ici-pe colo):
+
+<P>
+<PRE>
+/* threads.c */
+
+#include "threads.h"
+#include &lt;stdio.h&gt;     /* pentru printf */
+#include &lt;assert.h&gt;    /* pentru erori */
+
+#define pt_orice_thread(t) \
+  for ((t) = tabela_thread; (t) &lt; tabela_thread + MAX_THREADS; (t)++)
+#define NU_E_THREAD (tabela_thread + MAX_THREADS)
+
+PRIVAT struct thread tabela_thread[MAX_THREADS]; 
+PRIVAT int thread_curent;
+PRIVAT jmp_buf context_main;            /* folosit la initializare */
+
+PRIVAT void
+panica(char * s, int d)
+    /* eroare fatala */
+{
+    fprintf(stderr, "** panica: ");
+    fprintf(stderr, s, d);
+    fflush(stderr);
+    exit(1);
+}
+
+PRIVAT void 
+aloca_stiva(int thread_no, int maxthreads)
+    /* creaza spatiu pe stiva pentru thread_no pina la maxthreads */
+{
+    char space[SPATIU_STIVA];           /* spatiul de pe stiva */
+    void salveaza(int, int);
+    
+    if (thread_no &gt;= maxthreads) 
+        longjmp(context_main, 1);       /* le-am facut pe toate */
+    salveaza(thread_no, maxthreads);
+}
+
+PRIVAT void 
+salveaza(int thread_no, int max)
+{
+    char c;
+
+    if (setjmp(tabela_thread[thread_no].context)) {
+        tabela_thread[thread_no].functie_start();
+        
+        /* daca se ajunge aici functia s-a terminat; omoara-l */
+        omoara_thread(thread_no);
+    }   
+    else
+        aloca_stiva(thread_no+1, max); /*  nu se mai intoarce.. */
+}
+
+PRIVAT void
+copiaza_context(jmp_buf s, jmp_buf d)
+   /* muta date dintr-un jmp_buf intr-altul
+      (se bazeaza pe faptul ca sunt vectori:
+       a se vedea definitia din setjmp.h) */
+{
+    int i;
+    char *sb, *db;
+
+    sb = (char *) s;
+    db = (char *) d;
+    for (i = 0; i &lt; sizeof(jmp_buf); i++)
+        *db++ = *sb++;
+}
+
+PUBLIC void 
+initializeaza(void)
+{
+    struct thread* t;
+
+    if (!setjmp(context_main)) 
+        aloca_stiva(0, MAX_THREADS);
+
+    /* pastram o copie a cadrelor initiale de acum, ca sa le punem
+       la loc cind moare un thread */
+    pt_orice_thread(t)
+        copiaza_context(t-&gt;context, t-&gt;context_original);
+}    
+
+PUBLIC int
+creaza_thread(functie_initiala start)
+   /* facem un thread; intoarcem tid */
+{
+    struct thread *t;
+
+    /* cautam un loc gol in tabela */
+    pt_orice_thread(t)
+        if (t-&gt;stare == THREAD_GOL ||
+            t-&gt;stare == THREAD_MORT) break;
+    if (t == NU_E_THREAD) return -1;        /* n-am gasit */
+    t-&gt;functie_start = start;
+    t-&gt;stare = THREAD_GATA;
+    return t - tabela_thread;
+}
+
+#define thread_corect(x) ((x) &gt;= 0 &amp;&amp; (x) &lt; MAX_THREADS)
+/* verifica daca un thread are un numar corect */
+    
+PUBLIC void
+omoara_thread(int th)
+{
+    struct thread *t;
+
+    if (!thread_corect(th)) {
+        return;
+    }
+    t = tabela_thread + th;
+    t-&gt;stare = THREAD_MORT;
+    copiaza_context(t-&gt;context_original, t-&gt;context);
+    /* contextul acestui thread devine cel original, al functiei
+       salveaza(th); in acest fel putem construi un nou thread
+       folosind stiva acestuia */
+    alege();
+}
+
+PUBLIC void
+sari_la(int th)
+{
+    struct thread *t, *c;
+
+    if (! thread_corect(th)) return;
+    t = tabela_thread + th;
+    if (t-&gt;stare != THREAD_GATA) return;
+    assert(thread_corect(thread_curent));
+    c = tabela_thread + thread_curent;
+    
+    /* salvam starea curenta */
+    if (!setjmp(c-&gt;context)) {
+        thread_curent = th;
+        longjmp(t-&gt;context, 1);
+    }
+    else {
+        /* continuam chematorul (asta poate lipsi) */
+        thread_curent = c - tabela_thread;
+    }
+}
+
+PUBLIC void
+alege(void)
+{
+    struct thread *t;
+    static int ultimul = 0;
+    int i;
+
+    for (i=0; i &lt; MAX_THREADS; i++) {
+        t = tabela_thread + ultimul;
+        ultimul = (ultimul+1) % MAX_THREADS;
+        if (t-&gt;stare == THREAD_GATA) break;
+    }
+    if (i == MAX_THREADS) 
+        panica("Nu mai e nimeni gata\n", 0);
+    else sari_la(t - tabela_thread);
+
+    /* ne intoarcem la chemator */
+}
+
+PUBLIC void 
+porneste(int th)
+{
+    struct thread *t;
+
+    if (! thread_corect(th)) return;
+    t = tabela_thread + th;
+    if (t-&gt;stare != THREAD_GATA) return;
+    thread_curent = th;
+    longjmp(t-&gt;context, 1);
+}
+</PRE>
+
+<P>
+
+<H1><A NAME="SECTION000100000000000000000">
+Întreruperi</A>
+</H1>
+
+<P>
+Deja avem un pachet de funcţii prin care putem simula
+execuţia independentă ``paralelă'' a mai multor programe.  Singura
+neplăcere constă din faptul că programele trebuie să-şi paseze
+reciproc controlul, chemînd <TT>sari_la()</TT> sau <TT>alege()</TT>.
+
+<P>
+Am dori ca un mecanism extern să se ocupe de asta fără să
+trebuiască să ne batem capul prea tare.  Vom schiţa în continuare
+o soluţie, dar trebuie să atragem atenţia asupra faptului că este
+practic inutilă.
+
+<P>
+Cea mai simplă metodă este să avem un ``ceas'' care să
+întrerupă din timp în timp execuţia programului curent şi să
+zică: ``destul: este rîndul altcuiva''.  La nivel hardware asta se
+întîmplă pe orice calculator modern, prin <EM>întreruperi</EM>.
+
+<P>
+Pentru sistemul de operare Unix avem la dispoziţie toate
+mecanismele de care avem nevoie: semnale generate de nucleu.  Problema
+cea mare cu folosirea semnalelor este că dacă survin în timp ce
+procesul execută un apel de sistem (cum ar fi scrierea într-un
+fişier), ele opresc apelul din execuţie.  Din cauza asta codul care
+urmează este util numai pentru a ilustra cum se fac lucrurile în
+realitate în interiorul nucleului, şi nu şi pentru a scrie programe
+reale cu thread-uri care se comută singure.  Pentru că programul nu
+este lipsit de posibile învăţăminte, iată cam cum ar arăta:
+
+<P>
+Fiecare proces are în Unix pentru fiecare semnal asociată o
+funcţie care ``tratează semnalul'' (signal handler).  Apariţia unui
+semnal se soldează cu executarea funcţiei.  Mai precis, cînd
+nucleul sistemului are de trimis un semnal pentru un proces,
+construieşte pe stivă cadrul funcţiei de tratament, pe care după
+aceea o execută.  Funcţia asta se poate executa practic în orice
+moment, fără a fi chemată de program.
+
+<P>
+Cu funcţia de bibliotecă <TT>signal()</TT> se declară
+``handler''-e.
+
+<P>
+Unix ne mai pune la dispoziţie funcţia de bibliotecă <TT>alarm(timp)</TT>, care la <TT>timp</TT> secunde de la invocare va genera un
+semnal de tip <TT>SIGALRM</TT>.
+
+<P>
+O primă schiţă a tratamentului semnalelor ar fi: (indicăm
+adăugările faţă de funcţiile existente deja în codul precedent
+cu <TT>/**/</TT>)
+
+<P>
+<PRE>
+#include &lt;unistd.h&gt;     /* pentru alarm() */
+#include &lt;signal.h&gt;     /* pentru signal() */
+
+#define CUANTA 1        /* timp in sec. intre doua intreruperi */
+/* #definitia trebuie pusa in threads.h */
+
+PRIVAT int tratam_intrerupere;
+
+PRIVAT void 
+intrerupere(int ignor)
+{
+   if (tratam_intrerupere) 
+        panica("intrerupere in tratament de intrerupere", 0);
+   tratam_intrerupere++;
+   alarm(CUANTA);
+   signal(SIGALRM, intrerupere);
+   tratam_intrerupere--;
+   alege();
+}
+
+PUBLIC void 
+porneste(int th)
+{
+    struct thread *t;
+
+    if (! thread_corect(th)) return;
+    t = tabela_thread + th;
+    if (t-&gt;stare != THREAD_GATA) return;
+    thread_curent = th;
+/**/signal(SIGALRM, intrerupere);
+/**/alarm(CUANTA);              /* intrerupere */
+    longjmp(t-&gt;context, 1);
+}
+</PRE>
+
+<P>
+Aceste funcţii vor face ca periodic să fie invocat
+<TT>alege()</TT>.  Din păcate soluţia nu este suficient de grijulie, pentru
+că există riscul ca întreruperea să vină atunci cînd facem ceva
+important (de exemplu lucrăm în funcţia <TT>creaza_thread()</TT> şi am
+făcut jumătate din schimbări în a pune la punct starea procesului
+cel nou).  În general întreruperile nu trebuie să lase structurile
+de date ne-consistente.
+
+<P>
+Există o soluţie foarte elegantă pentru asta: funcţia
+<TT>intrerupere()</TT> va evita să cheme <TT>alege()</TT> dacă s-a ivit tocmai în
+mijlocul unei funcţii importante, şi va ruga chiar funcţia
+importantă să cheme <TT>alege()</TT> cînd se termină.
+
+<P>
+Ca să simplificăm povestea, vom face funcţiile <TT>sari_la()</TT>
+şi <TT>alege()</TT> private; oricum utilizatorul nu mai are nevoie de ele,
+pentru că sunt chemate automat.
+
+<P>
+<PRE>
+/* threads.h -- adaugiri sau modificari */
+
+#define CUANTA 2   /* sec */
+
+#if 0
+   /* functiile astea nu mai sunt publice */
+void sari_la(int th);
+void alege(void); /* alege un thread pentru executie si sari la el */
+#endif
+</PRE>
+
+<P>
+Modificările din <TT>threads.c</TT> sunt indicate cu /**/ (celelalte
+funcţii rămîn neschimbate):
+
+<P>
+<PRE>
+/* threads.c -- adaugiri sau modificari */
+
+#include &lt;unistd.h&gt;
+#include &lt;signal.h&gt;
+
+PRIVAT int tratam_intrerupere;  /* cind tratam intreruperi != 0 */
+PRIVAT int mod_nucleu ;         /* in functii importante != 0 */
+PRIVAT int realege;             /* intrerupere intirziata */
+
+PRIVAT int
+creaza_thread(functie_initiala start)
+   /* facem un thread; intoarcem tid */
+{
+    struct thread *t;
+
+    /* cautam un loc gol in tabela */
+/**/mod_nucleu++;
+    pt_orice_thread(t)
+        if (t-&gt;stare == THREAD_GOL ||
+            t-&gt;stare == THREAD_MORT) break;
+    if (t == NU_E_THREAD) {
+/**/    mod_nucleu--;
+        return -1;          /* n-am gasit */
+    }
+    t-&gt;functie_start = start;
+    t-&gt;stare = THREAD_GATA;
+/**/if (realege) alege();
+/**/mod_nucleu--;
+    return t - tabela_thread;
+}
+
+PUBLIC void
+omoara_thread(int th)
+{
+    struct thread *t;
+
+/**/mod_nucleu++;
+    if (!thread_corect(th)) {
+/**/    mod_nucleu--;
+        return;
+    }
+    t = tabela_thread + th;
+    t-&gt;stare = THREAD_MORT;
+    copiaza_context(t-&gt;context_original, t-&gt;context);
+    alege();
+/**/mod_nucleu--;
+}
+
+/* PRIVAT void sari_la(int th)... in loc de PUBLIC */
+
+PRIVAT void
+alege(void)
+{
+    struct thread *t;
+    static int ultimul = 0;
+    int i;
+
+/**/realege=0;
+    for (i=0; i &lt; MAX_THREADS; i++) {
+        t = tabela_thread + ultimul;
+        ultimul = (ultimul+1) % MAX_THREADS;
+        if (t-&gt;stare == THREAD_GATA) break;
+    }
+    if (i == MAX_THREADS) 
+        panica("Nu e nimeni gata!\n", 0);
+    else sari_la(t - tabela_thread);
+
+    /* ne intoarcem la chemator */
+}
+
+PRIVAT void 
+salveaza(int thread_no, int max)
+{
+    char c;
+
+    if (setjmp(tabela_thread[thread_no].context)) {
+/**/    mod_nucleu=0;
+        tabela_thread[thread_no].functie_start();
+        omoara_thread(thread_no);
+    }   
+    else
+        aloca_stiva(thread_no+1, max); /*  nu se mai intoarce.. */
+}
+
+
+PRIVAT void
+intrerupere(int ignor)
+{
+    tratam_intrerupere++;
+    alarm(CUANTA);
+    signal(SIGALRM, intrerupere);
+    if (tratam_intrerupere &gt; 1) {
+        tratam_intrerupere--;
+        return;
+    }           
+/**/if (mod_nucleu) {         /* aminam alegerea */
+/**/    tratam_intrerupere--;
+/**/    realege++;
+/**/    return;
+/**/}
+/**/else {
+/**/    tratam_intrerupere--;
+/**/    mod_nucleu++;
+        alege();
+/**/    mod_nucleu--;
+/**/}
+}
+</PRE>
+
+<P>
+Variabila <TT>mod_nucleu</TT> indică execuţia curentă a unei
+proceduri ne-intreruptibile.  O întrerupere venită în acest caz nu
+va face <TT>alege()</TT>, dar îşi va indica prezenţa prin <TT>realege++</TT>.
+Funcţiile importante care pot fi chemate de utilizator
+<TT>creaza_thread()</TT> şi <TT>omoara_thread()</TT> vor verifica înainte de a
+termina dacă nu a venit o întrerupere între timp, şi eventual vor
+chema ele <TT>alege()</TT>.
+
+<P>
+
+<H1><A NAME="SECTION000110000000000000000">
+Rezumat</A>
+</H1>
+
+<P>
+Am văzut că programele se execută în nişte universuri
+închise, pe care dacă le păstrăm neschimbate, putem întrerupe 
+rularea programelor fără nici un fel de consecinţe.  Am văzut cum
+putem folosi acest lucru pentru a executa mai multe programe pe o
+singură maşină.
+
+<P>
+Stiva este un mecanism extrem de simplu, de care ne folosim
+pentru a implementa funcţii recursive.  Un cadru de stivă este
+micro-universul în care se execută o funcţie.
+
+<P>
+Limbajul C ne oferă instrucţiuni prin care putem comuta
+între cadre diferite de pe o aceeaşi stivă: astfel obţinem mai
+multe thread-uri.
+
+<P>
+Prezenţa unui ceas extern ne ajută să comutăm automat
+între mai multe procese.
+
+<P>
+<BR><HR>
+
+</BODY>
+</HTML>

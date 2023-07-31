@@ -1,0 +1,1235 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//RO">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Nucleul</TITLE>
+<META NAME="description" CONTENT="Nucleul">
+<META NAME="keywords" CONTENT="nucleu-html">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-2">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="../articles.css">
+
+</HEAD>
+
+<BODY >
+
+<P>
+
+<P>
+<H1 ALIGN="CENTER">Nucleul</H1>
+<P ALIGN="CENTER"><STRONG>Mihai Budiu -- budiu@cs.cornell.edu</STRONG></P>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL>
+<LI><A NAME="tex2html19"
+  HREF="nucleu-html.html">Ce se dă şi ce se cere</A>
+<LI><A NAME="tex2html20"
+  HREF="#SECTION00030000000000000000">Maşina</A>
+<LI><A NAME="tex2html21"
+  HREF="#SECTION00040000000000000000">Nucleul ca bibliotecă de funcţii</A>
+<LI><A NAME="tex2html22"
+  HREF="#SECTION00050000000000000000">Nucleul ca interpretor</A>
+<LI><A NAME="tex2html23"
+  HREF="#SECTION00060000000000000000">Procesele - time-sharing</A>
+<LI><A NAME="tex2html24"
+  HREF="#SECTION00070000000000000000">Memoria virtuală</A>
+<LI><A NAME="tex2html25"
+  HREF="#SECTION00080000000000000000">Securitatea</A>
+<LI><A NAME="tex2html26"
+  HREF="#SECTION00090000000000000000">Modul nucleu şi modul utilizator</A>
+<LI><A NAME="tex2html27"
+  HREF="#SECTION000100000000000000000">Natura nucleului</A>
+<LI><A NAME="tex2html28"
+  HREF="#SECTION000110000000000000000">Tabela de procese</A>
+<LI><A NAME="tex2html29"
+  HREF="#SECTION000120000000000000000">Apelurile de sistem</A>
+<LI><A NAME="tex2html30"
+  HREF="#SECTION000130000000000000000">Reentranţa</A>
+<LI><A NAME="tex2html31"
+  HREF="#SECTION000140000000000000000">Erorile</A>
+<LI><A NAME="tex2html32"
+  HREF="#SECTION000150000000000000000">Comunicaţia inter-proces</A>
+<LI><A NAME="tex2html33"
+  HREF="#SECTION000160000000000000000">Micro-nuclee şi monoliţi</A>
+<LI><A NAME="tex2html34"
+  HREF="#SECTION000170000000000000000">Ce a mai rămas</A>
+</UL>
+<!--End of Table of Contents-->
+<P>
+<DL>
+<DT><STRONG>Cuvinte cheie:</STRONG></DT>
+<DD>nucleu, întrerupere, controler, time-sharing,
+securitate, proces
+</DD>
+<DT><STRONG>Nivelul tehnic:</STRONG></DT>
+<DD>programator cu 1-2 ani de experienţă
+</DD>
+<DT><STRONG>Cunoştinţe necesare:</STRONG></DT>
+<DD>un limbaj de asamblare
+</DD>
+</DL>
+
+<P>
+Cea mai importantă parte a unui sistem de operare, cea care
+se regăseşte în oricare implementare, de la MS-DOS la VMS, este
+<EM>nucleul</EM>.  Acest articol încearcă să explice pe scurt ce, cum,
+cînd şi de ce face un nucleu.
+
+<P>
+Ca să vă convingeţi de importanţa nucleului încercaţi
+să faceţi următorul experiment cu PC-ul dumneavoastră
+(presupunînd că folosiţi MS-DOS): ştergeţi <TT>msdos.sys</TT> de pe
+hard-disc (unul din fişierele care conţine nucleul sistemului) şi
+apoi încercaţi să folosiţi calculatorul fără dischete de boot.
+Dacă aţi reuşit, nu mai citiţi articolul ăsta.  Mai bine scrieţi
+unul.
+
+<P>
+Vom folosi pe alocuri pentru ilustraţii exemple din MS-DOS,
+Windows şi UNIX, însă conceptele discutate încearcă să fie
+independente de aceste sisteme de operare.
+
+<P>
+Anumiţi termeni sunt atît de consacraţi în engleză
+încît traducerea lor ar suna caraghios, şi nu ar face articolul
+mai lizibil.  Vom amesteca tacit astfel de barbarisme frecvent în
+text.
+
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Ce se dă şi ce se cere</A>
+</H1>
+
+<P>
+Un sistem de operare este în general compus dintr-o sumă de
+componente relativ independente, dar care toate concură spre un singur
+scop: a face viaţa utilizatorului mai uşoară.  A explica ce este un
+nucleu nu este foarte simplu atîta vreme cît nu este clar:
+
+<P>
+
+<UL>
+<LI>ce funcţii importante oferă sistemul de operare;
+</LI>
+<LI>ce poate face un calculator dacă nucleul nu există.
+</LI>
+</UL>
+
+<P>
+Din cauza asta trebuie sa aruncăm întîi o privire asupra a
+ceea ce ştie să facă un calculator fără a avea un nucleu, şi
+asupra a ceea ce nucleul adaugă.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Maşina</A>
+</H1>
+
+<P>
+Să luăm un calculator tipic.  Ce poate el să facă fără
+nici un fel de programe?  În primul rînd microprocesorul -- sau mai
+precis Unitatea Centrală (UC), care nu este întotdeauna un
+microprocesor -- ştie să <EM>interpreteze</EM> programe.  Cum face
+asta?  Are un pointer, numit Program Counter (PC), spre o adresă a
+memoriei, de unde citeşte cîte un număr.  Acesta este interpretat
+drept codul unei instrucţiuni, care este executată.  PC-ul este
+modificat şi apoi UC o ia de la capăt cu cititul numărului.
+
+<P>
+Ce fel de instrucţiuni ale UC există?  De transfer de date
+între memorie şi regiştri, pentru felurite operaţii
+aritmetice/logice, instrucţiuni pentru controlul execuţiei
+programului (<TT>if</TT>, <TT>goto</TT>, etc).  Coprocesorul matematic şi
+cu instrucţiunile lui îl includem tot în UC; o aproximaţie bună
+pentru nevoile noastre.
+
+<P>
+Calculatoarele moderne sunt echipate şi cu o unitate de
+management al memoriei, UMM.  Cîteodată ea este parte din
+microprocesor, ca la Intel, cîteodată un circuit separat, ca la
+Motorola.  Rolul ei este următorul: de fiecare data cînd cineva (de
+exemplu UC) intenţionează sa acceseze o locaţie de memorie
+indicînd o adresă, această adresă este verificată şi
+transformată după un set de reguli (care este sub controlul UC).
+Rezultatul transformării adresei este o altă adresă de memorie sau
+o eroare (excepţie) dacă ceva nu e în regulă.
+
+<P>
+Pe lînga UMM mai există o parte activă într-un calculator,
+de data asta mult mai greu de descris, pentru ca are o natura extrem
+de eterogenă.  În general apelativul aplicat este ``dispozitive
+periferice''.  Cu riscul de a fi prea generali şi de a nu respecta
+adevărul întotdeauna, putem să le descriem astfel: perifericele
+sunt dispozitive care permit comunicarea cu ``lumea exterioară''.  La
+nivelul cel mai de jos întruparea lor este ``controlerul'', care este
+un fel de microprocesor foarte specializat.  Controlerele primesc mici
+programe de executat de la UC, în limbajele lor specifice (fiecare
+controler are comenzile lui), şi apoi le execută.  Execuţia se
+soldează cu un transfer de date dinspre/spre memorie.  Unele
+controlere pot transfera singure date, altele doar pun datele la
+dispoziţia UC.
+
+<P>
+Instrucţiunile înţelese de controlere sunt de nivel extrem
+de scăzut.  De exemplu, pentru a scrie un şir de octeţi pe disc,
+trebuie trimis controlerului de disc un program care specifică locul
+precis pe disc (partiţie, cilindru, cap, sector, adresă), codul
+operaţiei (scriere), adresa în memorie unde se află octeţii,
+numărul lor.  După terminare trebuie aflat dacă totul a mers cum
+trebuie: poziţia pe disc la care s-a ajuns (dacă suntem în alt loc
+decît ne aşteptam e bucluc), dacă datele s-au scris, dacă nu de ce
+nu (eroare tranzitorie, disc protejat, time-out); dacă nu a mers bine
+trebuie încercat (dacă are sens) de mai multe ori, sau trebuie
+resetat controlerul, sau trebuie trimis capul hard-disc-ului la
+începutul discului (recalibrare), ca sa fim siguri unde se află --
+poate nu s-a mişcat cum trebuia -- sau cine mai ştie ce se poate
+întîmpla.
+
+<P>
+Metoda universal folosită actualmente, prin care controlerul
+atrage atenţia UC că s-a petrecut ceva interesant (de exemplu s-a
+terminat transferul, sau s-a produs o eroare, sau s-a întîmplat ceva
+``în lumea de-afară'' -- de exemplu s-a apăsat o tastă) este <EM>întreruperea</EM>.  Grosier descris, o întrerupere se soldează pentru
+UC cu încărcarea PC-ului cu o valoare anumită, care depinde de
+natura întreruperii.  Asta înseamnă de fapt un salt la o anume
+adresă, salt care se petrece fără a fi consecinţa executării
+programului curent, ci a ceva care s-a întîmplat ``înafară''.  Ca
+sa rămînem în cadrul exemplului de mai sus, după ce a programat
+controlerul de hard-disc să scrie ce are de scris, UC face altceva.
+Cînd controlerul a terminat operaţia (cu bine sau nu) generează o
+întrerupere pentru a atrage atenţia asupra sa.  UC ştie că trebuie
+să se ocupe de controler.
+
+<P>
+Întreruperi pot fi generate nu numai de periferice, ci şi de
+UMM, sau chiar de UC însăşi: de exemplu cînd cineva încearcă să
+împartă la 0 se poate produce o întrerupere generată de chiar UC.
+UC poate inhiba generarea de întreruperi (prin executarea unor
+instrucţiuni speciale) dacă doreşte, dar de obicei o face pentru
+perioade foarte scurte.  
+
+<P>
+Uneori avem de a face cu un controler special numai pentru
+întreruperi, care are grijă ca o întrerupere ignorată la un moment
+dat să fie livrată mai tîrziu, cînd UC permite.  Asta pentru că
+întreruperile semnifică evenimente importante, care nu pot fi
+trecute cu vederea.
+
+<P>
+Ei bine, cam atît poate face un calculator!  După cum
+vedeţi nu este prea simplu de folosit un calculator gol-goluţ:
+lucrurile pe care ştie să le facă sunt mult prea simple, şi este
+poate nevoie de mii de instrucţiuni numai pentru a scrie un număr pe
+ecran.  Aici intră nucleul în joc.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Nucleul ca bibliotecă de funcţii</A>
+</H1>
+
+<P>
+Una din primele utilizări la care se gîndeşte cineva cînd
+este întrebat despre nucleu, este drept colecţie de funcţii care
+sunt necesare marii majorităţi a programelor.  Cele mai evidente
+sunt funcţiile pentru intrare-ieşire; utilizatorul în loc să dea
+zeci de comenzi controlerului, să aştepte întreruperea, să
+verifice rezultatele, eventual să încerce din nou, să trateze
+erorile, cheamă o funcţie din nucleu (printr-un <EM>apel de sistem</EM>
+- un fel de apel de procedură mai simandicos), procedură care de
+exemplu ar putea avea numele mnemonic <TT>write_file</TT>, cu nişte
+argumente simple: un nume de fişier şi un array.
+
+<P>
+De altfel în cazul sistemului de operare MS-DOS nucleul --
+grosso modo -- la cam atîta se rezumă: la a oferi nişte funcţii
+foarte utile.  La MS-DOS nucleul este format din mai multe componente:
+una se cheamă BIOS, (Basic Input-Output System) şi este o suită de
+funcţii înscrise în memorii nevolatile.  De exemplu pe plăcile
+video VGA se află cîte un BIOS care oferă funcţii pentru a face un
+punct, o linie, a trece în modul text/grafic, a schimba rezoluţia, a
+şterge ecranul, etc.  Acestea sunt, logic vorbind, părţi ale
+nucleului.  MS-DOS mai oferă (ca mai toate sistemele de operare)
+funcţii pentru accesul discului.  Astfel, în loc de a avea de a face
+cu un obiect foarte complicat, care are capete, cilindri, şamd., avem
+o structură de directoare, care permite fişierelor să aibă nume,
+şi să crească fără să se calce pe picioare între ele.  Funcţii
+de genul ``adaugă un octet la sfîrşitul fişierului cutare'' sunt
+tot părţi din nucleu.  La MS-DOS, alte părţi ale nucleului (afară
+de BIOS) se citesc de pe disc la ``încălţarea'' sistemului
+(``boot''-are), din fişierele <TT>msdos.sys</TT> şi <TT>io.sys</TT>.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Nucleul ca interpretor</A>
+</H1>
+
+<P>
+Deja am început să ne facem o impresie (favorabilă) despre
+natura nucleului.  Cu ce poate fi el asemuit cel mai tare?  Din punct
+de vedere al utilizatorului, nucleul este un <EM>interpretor</EM>, pentru
+că oferă nişte noi instrucţiuni spre uzul tuturor (apelurile de
+sistem sunt aceste instrucţiuni).  Utilizatorul foloseşte aceste
+``instrucţiuni'' ca şi cum ele i-ar fi oferite de către maşina
+însăşi; de fapt ele sunt interpretate: sunt obţinute prin
+executarea funcţiilor din nucleu, care sunt scrise în termenii
+instrucţiunilor de bază ale maşinii.
+
+<P>
+Aproximaţia aceasta, a nucleului cu un interpretor, poate fi
+dusă la limită, cu nişte consecinţe foarte interesante.  În 1952
+a fost creat limbajul BASIC (nu dispreţuiţi, vă rog, venerabilul,
+chiar dacă uşor senil), tocmai pentru acest scop: pentru a ţine loc
+de nucleu al sistemului de operare, oferind <EM>numai</EM> instrucţiuni
+de nivel mai ridicat decît cele ale UC, UMM, etc.
+
+<P>
+O altă tentativă interesantă, care se bucură de ceva mai
+mult succes, este de a folosi un limbaj mult mai puternic pe post de
+nucleu, şi anume LISP.  LISP-ul este tot un limbaj interpretat (în
+esenţă), mult mai expresiv decît BASIC-ul, care poate folosi pe
+post de sistem de operare (aţi auzit de ``maşinile LISP''?).
+
+<P>
+În toate aceste cazuri nucleul transformă de fapt
+calculatorul într-o unealtă mult mai uşor de folosit: într-o <EM>maşină virtuală</EM>.
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Procesele - time-sharing</A>
+</H1>
+
+<P>
+Ei bine, este grozav să poţi scrie şi citi date de la
+periferice printr-un simplu apel de sistem.  Dar cine face citirea?
+``Programele'', o să spuneţi.  Da, dar care programe?  Suntem
+obişnuiţi ca într-o sesiune de utilizare a calculatorului să
+jonglăm cu o sumedenie de programe <EM>diferite</EM>, fără să ne dăm
+prea bine seama.  Editoare de texte, compilatoare, programe de
+gestiune, de poştă electronică, etc.
+
+<P>
+Una din foarte importantele funcţii ale nucleului unui sistem
+de operare este de a permite fişierelor (de exemplu <TT>bc.exe</TT>) să
+devină programe care se execută (şi care atunci capătă denumirea
+de <EM>procese</EM>).
+
+<P>
+Una din funcţiile auxiliare acestui scop este gestiunea
+resurselor calculatorului (memorie, etc.) în aşa fel încît
+simultan sau succesiv să poată exista <EM>mai multe</EM> procese distincte.
+(N-a fost dintotdeauna aşa!  În anii cincizeci porneai un calculator
+pentru a face o singură treabă; după aceea trebuia să-l stingi.
+Am avansat ceva.)
+
+<P>
+MS-DOS oferă de pildă un apel de sistem numit <TT>system()</TT>, prin care un utilizator poate indica nucleului un fişier,
+al cărui conţinut este un şir de instrucţiuni pe care îl doreşte
+executat.
+
+<P>
+E simplu sa foloseşti <TT>system()</TT>, dar nucleul are o
+treabă foarte grea de făcut.  El trebuie să găsească pentru noul
+proces un loc în memorie (poate le dă pe cele vechi afară), să
+citească întregul fişier (am văzut că asta nu e deloc simplu),
+şi apoi să sară la prima instrucţiune citită.
+
+<P>
+Lucrurile se complică şi mai tare dacă programul nou citit
+trebuie să se execute în paralel cu altele (nu e grozav să nu
+trebuiască să aştepţi pînă programul care tipăreşte la
+imprimantă termină de scos totul ca să lucrezi cu programul de
+scris texte?).  O astfel de coexistenţă a mai multor procese
+simultan se numeşte ``multitasking'' în engleză.  Utilizatorii de
+MS-DOS nu au văzut aşa ceva, dar cei de Windows, da.
+
+<P>
+Metoda prin care nucleul implementează de obicei
+multitasking-ul se numeşte, tot în engleză, ``time sharing''
+(punere în comun a timpului) şi este extrem de interesantă.  Să ne
+aplecăm asupra ei şi să vedem cum se poate ea obţine din
+instrucţiunile primitive ale maşinii.
+
+<P>
+Ideea de bază este simplă: toate calculatoarele au un
+``ceas'' (un periferic) care generează periodic întreruperi.
+Fiecare întrerupere cauzează, după cum am spus, întreruperea (cum
+altfel?)  programului care tocmai se execută, memorarea PC-ului din
+această clipă, şi saltul la o anumită procedură asociată
+întreruperii.  În mod normal toate aceste proceduri, care servesc la
+tratarea întreruperilor, sunt tot parte a nucleului (numele lor
+englezesc este ``interrupt handlers'').
+
+<P>
+Cum ziceam, vine întreruperea de ceas; tocmai se executa
+programul nr.1.  Se sare la procedura de tratare a întreruperii din
+nucleu, care se uită să vad;a cine se executa: programul nr.1.
+``Aha!'' zice nucleul, ``pentru moment îi ajunge.'', după care pune
+la loc sigur valoarea PC-ului (salvată de întrerupere), şi a
+celorlalţi regiştri.  Apoi ia din alt loc valoarea pe care o salvase
+pentru PC-ul programului nr.2, şi face un salt acolo.  Şi tot aşa.
+Rezultatul este executarea interclasată a instrucţiunilor celor
+două programe.
+
+<P>
+Lucrurile se petrec foarte frumos astfel; dacă programele nu
+accesează nici o zonă de memorie sau fişier sau periferic în
+comun, fiecare are impresia că este singurul care se execută pe acel
+calculator.  Programele nu trebuie scrise într-un fel special pentru
+a putea coexista, de aceea sarcina programatorului este mult mai
+simplă.
+
+<P>
+Inversa operaţiei de creere a unui proces este ``moartea''.
+Aceasta este realizată de nucleu scoţînd procesul defunct de pe
+lista proceselor care se vor executa şi eliberînd memoria alocată
+lui (plus alte resurse, cum ar fi fişiere, etc.).
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Memoria virtuală</A>
+</H1>
+
+<P>
+Poate am cerut prea mult de la programe mai sus, cînd am zis
+că ele nu trebuie să acceseze nimic în comun.  Memoria este una
+singură (de obicei), şi este cam greu să scrii un program în aşa
+fel încît să se poată împăca cu oricare altul.
+
+<P>
+Dar nucleul ne sare din nou în ajutor!  Orice sistem de
+operare mai evoluat (categorie la care MS-DOS nu se ridică cu toată
+bunăvoinţa în ziua de azi) transformă şi accesul la memorie în
+aşa fel încît procesele să nu se poată influenţa în moduri
+nedorite.  Mecanismul pe care îl descriem (numit ``memorie
+virtuală'') este extrem de util chiar şi în cazul în care nu avem
+multitasking.
+
+<P>
+Ideea este de a folosi UMM (care pentru asta a şi fost
+făcută) pentru a da impresia fiecărui proces care se execută pe
+maşină că toată memoria este a lui, de la adresa 0 la adresa
+infinit, dacă se poate, şi a nimănui altcuiva, chiar dacă
+lucrurile nu stau de fapt de loc aşa.
+
+<P>
+Soluţia este de a înghesui mai multe procese simultan în
+memoria disponibilă fizic, şi de a traduce fiecare acces la adresa X
+a unuia din procese la o altă adresă.
+
+<P>
+Cum ``un desen face cît o sută de cuvinte'' hai să vedem un
+exemplu extrem de simplificat:
+
+<P>
+<PRE>
+  procesul nr.1                 procesul nr.2
+----------------------      -------------------------
+|0                  N|      |0                     M|  adrese virtuale
+----------------------      -------------------------
+
+vvvvvvvvvvvvvvvvvvvvvv      vvvvvvvvvvvvvvvvvvvvvvvvv  UMM traduce
+
+-----------------------------------------------------
+|0                  N        N+1                 N+M|  adrese fizice
+-----------------------------------------------------
+</PRE>
+
+<P>
+Cînd procesul nr.1 face o referinţă la ceea ce el crede că
+este adresa 0, această referinţa este trimisă de UMM chiar la
+adresa 0 din memoria fizică.  Pe de altă parte, adresa 0 a
+procesului nr.2 este trimisă la adresa N+1 din memoria fizică.
+
+<P>
+Reamintiţi-vă că în realitate cele două procese nu se
+execută niciodată simultan<A NAME="tex2html1"
+  HREF="#foot147"><SUP>1</SUP></A>, ci pe rînd, cînd le sună ceasul.
+De fiecare dată cînd comută de la un proces la altul (deci cînd
+tratează întreruperea de la ceas), nucleul trebuie să schimbe şi
+felul în care UMM traduce adresele.  Acest lucru îl face UC
+discutînd cu UMM cam în acelaşi fel în care discută cu un
+controler: îi transmite tot felul de parametri.
+
+<P>
+Mecanismul simplu al memoriei virtuale poate fi exploatat şi
+în feluri mult mai exotice.  De exemplu se pot executa în
+time-sharing procese al căror total de memorie necesară depăşeşte
+cantitatea existentă.  Cum?  Simplu: cînd un proces este înlocuit
+cu altul, părţi din memoria ocupată de el sunt mutate pe disc (de
+exemplu într-un fişier).  Cînd vine din nou la rînd, acele părţi
+sunt aduse la loc în memoria fizică.  (Discul, de obicei, este mult
+mai mare decît memoria.)  Această tehnică se numeşte ``swapping''.
+
+<P>
+Ea este cu două tăişuri, pentru că scrierea/citirea de pe
+disc este mult mai lentă decît cea din memorie, şi nu-ţi poţi
+permite ca la fiecare zecime de secundă să te muţi la un alt
+program, iar mutarea să dureze 10 secunde.  Nucleul trebuie să fie
+zgîrcit în astfel de mutări.
+
+<P>
+Deocamdată atît despre memoria virtuală.
+
+<P>
+
+<H1><A NAME="SECTION00080000000000000000">
+Securitatea</A>
+</H1>
+
+<P>
+Izolarea proceselor în zone de memorie disjuncte face sarcina
+programatorului mai uşoară şi calculatorul mai eficient: se pot
+rula simultan programe ale unor utilizatori diferiţi, care nu se vor
+incomoda unul pe altul nicicum.  Un program nu poate scrie/citi din
+memoria altuia, pentru ca nici una din adresele pe care el le referă
+nu este tradusă de UMM în vreo adresă a celuilalt.
+
+<P>
+Acesta e unul dintre aspectele <EM>securităţii</EM> utilizării
+calculatoarelor, şi este iarăşi una din sarcinile nucleului.
+Sisteme ca MS-DOS sau Windows, care sunt concepute pentru a permite
+unui singur utilizator să folosească la un moment dat calculatorul,
+sunt mai laxe din punct de vedere al securităţii oferite: în
+definitiv îţi dai cu ciocanul peste propriile degete.  În realitate
+lucrurile nu stau chiar aşa, o dovadă fiind proliferarea viruşilor,
+care sunt procese care fac daune şi se multiplică modificînd
+fişiere; ele profită de slăbiciunea sistemului în această
+privinţă.
+
+<P>
+Securitatea are multe aspecte, plecînd de la a asocia fiecare
+proces cu un utilizator, un utilizator cu nişte drepturi, fiecare
+obiect (fişier, terminal, etc.) cu un utilizator, şi de a verifica
+dacă procesele accesează numai ceea ce trebuie şi cînd trebuie.
+Modelul interpretorului se arată iarăşi util.
+
+<P>
+Operaţiile pe care le poate face un proces sunt împărţite
+în două categorii: ``sigure'' şi ``periculoase''.
+Operaţiile sigure nu vor putea niciodată cauza neplăceri altcuiva
+decît procesului care le execută, aşa că pot fi executate
+oricînd.  Un exemplu este adunarea a două numere.
+
+<P>
+Operaţiile nesigure ar putea fi folosite întotdeauna pentru
+scopuri malefice de către un proces.  Toate operaţiile de acces la
+memorie intră în această categorie, precum şi toate operaţiile de
+comunicaţie cu perifericele (dacă oricine poate scrie pe disc poate
+şterge lucruri care nu-i aparţin).  Orice executare a unei operaţii
+nesigure este atent supervizată de către nucleu.  Iată în ce fel:
+
+<P>
+
+<UL>
+<LI>operaţiile de acces la memorie trec întotdeauna (la nivel
+hardware) prin UMM.  Dacă un acces este ilegal (de exemplu în figura
+de mai sus procesul nr.1 accesează o adresa mai mare ca N), atunci se
+declanşează o excepţie (``trap'').
+
+<P>
+</LI>
+<LI>toate operaţiile de intrare-ieşire sunt ilegale.  Procesele nu au
+voie sa facă aşa ceva niciodată.  Orice încercare se soldează cu
+o excepţie.
+</LI>
+</UL>
+
+<P>
+
+<H1><A NAME="SECTION00090000000000000000">
+Modul nucleu şi modul utilizator</A>
+</H1>
+
+<P>
+Bine, dar nu putem trăi fără operaţii de acces la
+periferice!  Nucleul însuşi are nevoie de aşa ceva.  Pentru a
+rezolva această dilemă, UC moderne au cel puţin două moduri de
+lucru: modul <EM>nucleu</EM> (kernel) şi modul <EM>utilizator</EM> (user),
+plus o pereche de instrucţiuni pentru a trece dintr-un mod în
+celălalt.  (Nefericită supraîncărcare a cuvîntului ``nucleu'',
+dar nu o coincidenţă, după cum vom vedea.)  În modul nucleu orice
+operaţie este permisă.  În modul utilizator operaţiile ilegale
+declanşează excepţii.  Instrucţiunile de schimbare a modului sunt
+ele însele ilegale, ca şi cele de control al întreruperilor.  Ce
+este o excepţie şi cum o foloseşte nucleul pentru a implementa
+securitatea?
+
+<P>
+O excepţie (trap) este de obicei un caz special de
+întrerupere: un obiect cu care ne-am mai întîlnit.  ``Special''
+pentru că trap-ul nu este generat de un periferic, ci de UMM sau
+chiar de UC.  În rest însă totul arată ca o întrerupere
+ordinară: salvarea PC-ului, saltul la rutina de tratare.
+
+<P>
+Ca totul să fie în regulă, mai trebuie aranjat ca orice
+întrerupere să cauzeze automat trecerea în mod nucleu a UC.
+
+<P>
+Să asamblăm componentele:
+
+<P>
+
+<OL>
+<LI>cînd calculatorul porneşte, UC este în modul nucleul.  Nucleul
+este citit de pe disc;
+
+<P>
+</LI>
+<LI>nucleul construieşte tabelele cu adresele procedurilor care
+tratează întreruperile (interrupt handlers) şi trap-urile; face în
+aşa fel încît întreruperile şi trap-urile să treacă UC automat
+în mod nucleu;
+
+<P>
+</LI>
+<LI>cînd nucleul vrea să predea controlul unui proces, trece
+maşina în mod utilizator şi apoi pune PC-ul la adresa de unde se va
+executa acel proces;
+
+<P>
+</LI>
+<LI>procesul se execută; fie că face ceva ilegal, fie că vine
+întreruperea de ceas (sau o alta), se trece în mod nucleu, şi se
+sare la procedura de tratare a întreruperii, care este parte din
+nucleu;
+
+<P>
+</LI>
+<LI>procedurile de tratare a trap-urilor investighează starea
+procesului care tocmai se executa cînd trap-ul a fost generat.  Din
+starea memoriei, PC-ul salvat, şi natura trap-ului (acces ilegal la
+memorie, instrucţiune de intrare/ieşire, etc.) handler-ul poate
+deduce dacă acea operaţie a fost într-adevăr ilegală.  Dacă da,
+procesul respectiv este probabil ``omorît''.
+</LI>
+</OL>
+
+<P>
+Schema este foarte simplă, şi are următoarele consecinţe
+(dacă sistemul este bine scris):
+
+<P>
+
+<UL>
+<LI>un proces nu poate strica <EM>nimic</EM>, pentru că la prima
+tentativă controlul este preluat de nucleu;
+
+<P>
+</LI>
+<LI>nucleul poate prelua <EM>întotdeauna</EM> controlul de la un
+proces, la apariţia unei întreruperi.  Ceasul generează
+întotdeauna întreruperi, mai devreme sau mai tîrziu.
+</LI>
+</UL>
+
+<P>
+
+<H1><A NAME="SECTION000100000000000000000">
+Natura nucleului</A>
+</H1>
+
+<P>
+Putem simboliza situaţia aşa cum o înţelegem acum astfel:
+
+<P>
+<PRE>
+                    --------------------------
+                    |                        |
+                    |    proces(e)           |
+                    |                        |
+                    |----O1------            |
+                    |           |            |
+                    |   nucleu  |            |
+                    |           |            |
+                    -----O2--O3------O3-------
+                    |                        |
+                    |     hardware           |
+                    --------------------------
+</PRE>
+
+<P>
+Am desenat un singur proces, pentru că impresia fiecăruia
+este că maşina îi aparţine în totalitate.
+
+<P>
+Asta s-ar citi cam aşa: procesele rulează ``deasupra''
+nucleului dar şi maşinii hardware, iar nucleul rulează deasupra
+hardware-ului direct.  Ce înseamnă ``X deasupra lui Y''?  Înseamnă
+că X foloseşte instrucţiuni sau funcţii oferite de Y.
+
+<P>
+<DL>
+<DT><STRONG>O1</STRONG></DT>
+<DD>sunt apelurile de sistem -- instrucţiuni oferite de nucleu
+proceselor.
+</DD>
+<DT><STRONG>O2</STRONG></DT>
+<DD>sunt instrucţiunile nesigure -- acestea pot fi executate
+numai de către nucleu.  
+</DD>
+<DT><STRONG>O3</STRONG></DT>
+<DD>sunt instrucţiunile sigure -- care pot fi executate direct
+de către procese, dar, fireşte, şi de către nucleu.
+</DD>
+</DL>
+
+<P>
+Nucleul nu foloseşte în această schemă niciodată
+instrucţiuni oferite de procese (există sisteme în care acest lucru
+nu este adevărat întotdeauna).
+
+<P>
+Vedeţi, noţiunea de ``nucleu'' nu este foarte corectă la
+acest nivel, în care discutăm structura nucleului însuşi: în
+realitate este vorba de o singură UC, care este succesiv în mod
+nucleu şi utilizator.  În fiecare mod UC poate executa anumite
+categorii de instrucţiuni.  ``Nucleul'' este o abstracţie: este o
+porţiune de cod (şi date), care este executată din cînd în cînd:
+atunci cînd utilizatorul o cere, sau atunci cînd este nevoie de
+serviciile sale, de exemplu cînd vine o întrerupere.
+
+<P>
+
+<H1><A NAME="SECTION000110000000000000000">
+Tabela de procese</A>
+</H1>
+
+<P>
+Nucleul este deci o colecţie de proceduri, care se invocă
+fie de către utilizator, prin apeluri de sistem, fie prin
+întreruperi sau trap-uri.  În acest sens este o entitate pasivă, al
+cărei singur sens este de a servi procesele utilizatorilor.
+
+<P>
+Putem însă privi nucleul şi invers: ca pe un dispecer, care
+îşi mută atenţia de la un proces la altul, şi îl ``ajută'' să
+se execute.  Pentru acest scop el posedă o structură de date care
+descrie informaţiile de care are nevoie pentru a identifica fiecare
+proces.  Este practic un array mare de tot de structuri identice, una
+pentru fiecare proces.  Acest array se cheamă ``tabela de procese''.
+
+<P>
+Ce trebuie să fie într-una din structuri?  Răspunsul,
+evident, depinde foarte mult de sistemul de care vorbim, dar putem
+extrage un ``cel mai mare numitor comun''.  Să aruncăm o privire
+deci asupra unor posibile cîmpuri; iată deci cum şi-ar putea descrie
+nucleul un proces:
+
+<P>
+
+<UL>
+<LI>o descriere a stării procesului (poate fi executat oricînd,
+aşteaptă un eveniment extern -- ex. apăsarea unei taste, e pe
+moarte, etc.);
+
+<P>
+</LI>
+<LI>o descriere a zonelor de memorie asociate procesului: cum trebuie
+configurată UMM cînd se execută acest proces, ce părţi din
+memoria lui sunt pe disc, ce adrese are voie să acceseze;
+
+<P>
+</LI>
+<LI>adresa la care procesul a fost întrerupt - PC-ul salvat la ultima
+întrerupere;
+
+<P>
+</LI>
+<LI>informaţii despre drepturile asociate; utilizatorul în contul
+căruia rulează acest proces;
+
+<P>
+</LI>
+<LI>timpi de rulare şi resurse consumate de acest proces;
+
+<P>
+</LI>
+<LI>structuri de date de nivel mai înalt: fişiere deschise şi starea
+lor (poziţia, lungimea, drepturi, etc.);
+
+<P>
+</LI>
+<LI>starea apelului de sistem în curs de execuţie;
+
+<P>
+</LI>
+<LI>starea comunicaţiei cu procesele vecine.
+</LI>
+</UL>
+
+<P>
+Unele dintre cîmpuri sunt evidente, alte vor fi descifrate
+în secţiunile care urmează.
+
+<P>
+Nucleul are tot timpul o variabilă globală numită <TT>procesul_curent</TT>, şi care indică dintre cîmpurile array-ului care
+este cel folosit în clipa de faţă.  Acesta este procesul care
+tocmai se execută.  Cînd un proces se întrerupe, informaţiile sunt
+salvate în căsuţa lui.  Cînd un proces se (re)porneşte
+informaţiile sunt preluate din căsuţa sa, iar variabila <TT>procesul_curent</TT> este pusă să arate spre această căsuţă.
+
+<P>
+Despre nucleu se spune la un moment dat că ``se execută în
+contextul procesului X'' dacă variabila <TT>procesul_curent</TT> are
+valoarea X în acel moment.  În general asta înseamnă că procesul
+X tocmai a făcut un apel de sistem.
+
+<P>
+
+<H1><A NAME="SECTION000120000000000000000">
+Apelurile de sistem</A>
+</H1>
+
+<P>
+Ce este deci un apel de sistem?  Este o ``instrucţiune''
+pusă la dispoziţia utilizatorului de către nucleu.  Cum se
+realizează concret?  De obicei printr-o instrucţiune ilegală, sau o
+instrucţiune specială a UC, care este folosită în acest scop.  Hai
+să presupunem că UC are o instrucţiune numită <TT>sys_call</TT>,
+care se comportă întocmai ca o instrucţiune ilegală: generează un
+trap.  Atunci un proces face un apel de sistem în felul următor:
+
+<P>
+
+<OL>
+<LI>pune într-un anumit loc convenit dinainte în memoria lui
+personală (de exemplu pe stivă, sau într-o anumită variabilă)
+informaţiile care descriu apelul de sistem:
+
+<P>
+
+<UL>
+<LI>un cod al apelului (de ex. <TT>write_file</TT>);
+</LI>
+<LI>parametrii necesari (de ex. un pointer spre numele fişierului, şi
+un pointer spre array-ul de scris).
+</LI>
+</UL>
+
+<P>
+</LI>
+<LI>execută instrucţiunea <TT>sys_call</TT>.
+
+<P>
+Ce se întîmplă apoi?
+
+<P>
+</LI>
+<LI><TT>sys_call</TT> generează un trap;
+
+<P>
+</LI>
+<LI>UC trece in mod nucleu şi începe să execute procedura asociată
+acelui trap;
+
+<P>
+</LI>
+<LI>procedura aceasta investighează (căutînd în zona convenită)
+codul apelului; găseşte <TT>write_file</TT>; sare la o procedură din
+nucleu care se ocupă de scrierea în fişiere;
+
+<P>
+</LI>
+<LI>procedura aceasta (pe care o putem numi abuziv tot <TT>write_file</TT>) se uită tot în locul convenit după argumente; le
+extrage;
+
+<P>
+</LI>
+<LI>procedura încearcă să se execute cu aceste argumente; se
+calculează cilindru, sector, etc., şi controlerul de disc este rugat
+să extragă informaţia cerută;
+
+<P>
+</LI>
+<LI>procesul curent este <EM>suspendat</EM> şi marcat ca aşteptînd
+completarea unui apel de sistem; informaţiile despre apelul de sistem
+care tocmai se execută sunt salvate în căsuţa din tabela de
+procese asociată lui;
+
+<P>
+</LI>
+<LI>se marchează într-o structură de date asociată controlerului
+faptul că i s-a dat de lucru pentru acest proces;
+
+<P>
+</LI>
+<LI>un alt proces este pus în execuţie, ca să nu se piardă timpul
+aşteptînd resurse lente;
+
+<P>
+</LI>
+<LI>timpul trece....
+
+<P>
+</LI>
+<LI>mai tîrziu, <EM>în contextul altui proces</EM> (pentru că cel
+despre care vorbeam este încă suspendat), controlerul de disc
+generează o întrerupere;
+
+<P>
+</LI>
+<LI>procedura asociată întreruperii investighează informaţia
+asociată controlerului pe care o scrisese la pasul 9; vede pentru ce
+proces a lucrat acesta;
+
+<P>
+</LI>
+<LI>procedura asociată întreruperii preia de la controler rezultatele
+(codul de eroare, de exemplu) şi le pune în căsuţa procesului care
+a făcut cererea, la descrierea apelului de sistem în curs de
+execuţie;
+
+<P>
+</LI>
+<LI>procesul suspendat este marcat din nou gata pentru execuţie;
+
+<P>
+</LI>
+<LI>cînd eventual este selectat pentru a fi rulat din nou acest
+proces, rezultatele sunt copiate din tabela de procese într-un alt
+loc convenit dinainte pentru a primi răspunsul;
+
+<P>
+</LI>
+<LI>se sare la adresa indicată de PC-ul salvat al acestui proces,
+continuîndu-se astfel execuţia lui.
+</LI>
+</OL>
+
+<P>
+Partea frumoasă este că deşi procesul crede că nu s-a
+întîmplat nimic altceva decît că i s-a executat o
+procedură-apel-de-sistem, în realitate între timp poate sute de
+alte procese au rulat şi au făcut treabă.  Asta da, eficienţă!
+
+<P>
+Observaţi că lucrul cerut de un proces se desfăşoară în
+două etape:
+
+<P>
+
+<UL>
+<LI>într-o primă etapă, între paşii 1 şi 8, nucleul lucrează
+pentru acest proces în propriul lui context;
+
+<P>
+</LI>
+<LI>paşii 12-16 se efectuează în contextul <EM>altuia</EM>.  În
+general întreruperile aduc de lucru nucleului pentru un anumit
+proces, care este altul decît cel care a fost întrerupt.  Cu toate
+acestea, ele se execută în contextul lui.
+</LI>
+</UL>
+
+<P>
+
+<H1><A NAME="SECTION000130000000000000000">
+Reentranţa</A>
+</H1>
+
+<P>
+Lucrurile se desfăşoară ca şi cum nucleul este o bucată
+de cod executabil <EM>comună</EM> tuturor proceselor.  Cînd procesele
+fac apeluri de sistem, de fapt UC execută cod din nucleu.  Codul din
+nucleu este deosebit de codul ordinar al unui proces prin faptul că
+accesul la el se poate face numai prin nişte puncte foarte precis
+controlate.  Nu se poate <EM>sări</EM> la o adresă din nucleu; în
+spaţiul de adrese al unui proces (practic) nu există nici o adresă
+care să fie a nucleului.  Saltul la codul nucleului se face prin
+trap-uri, care schimba nivelul UC de la ``utilizator'' la ``nucleu''
+şi modifică tabelele de translatare ale UMM în aşa fel încît
+adresele din nucleu devin accesibile.
+
+<P>
+Pe de altă parte situaţia nu este simetrică, pentru că
+procedurile din nucleu au nevoie să acceseze memoria unui proces: de
+exemplu procedura <TT>write_file</TT> descrisă mai sus trebuie să ia din
+spaţiul de memorie al procesului datele de scris şi să le trimită
+la perifericul pe care se află fişierul.  (Fireşte că nucleul va
+trebui să fie atent ca nu cumva să scoată afară pe disc tocmai
+zona de memorie în care lucrează controlerul în timp ce procesul
+este suspendat.)
+
+<P>
+Schema este deci următoarea: procesele se execută mai tot
+timpul în mod utilizator, din cînd în cînd însă au nevoie de
+serviciile nucleului (sau survine o întrerupere).  Atunci procesele
+continuă să se execute, dar în mod nucleu, iar codul care se
+execută este parte din nucleu (gîndiţi-vă din nou la nucleu ca la
+o bibliotecă de funcţii şi va fi mai clar).
+
+<P>
+<PRE>
+       ....suspendate.....   curent 
+       |     |     |     |     |        cod procese
+       |     |     |     |     |
+       |     |     |     |     |&lt;-
+       |     |     |     |     |
+                  [ ]&lt;-                 cod nucleu comun proceselor
+           -&gt;     [ ]     &lt;-
+     -&gt;           [ ]                   &lt;- = PC
+</PRE>
+
+<P>
+Nucleul este deci un fel special de cod, care se poate afla
+``de mai multe ori'' în execuţie la un moment dat.  Mai exact, un
+proces se execută, iar toate celelalte sunt <EM>oprite</EM>, iar
+PC-urile lor punctează toate undeva prin codul nucleului.
+
+<P>
+Acest gen de cod, care se află simultan în corpul mai multor
+procese se numeşte cod <EM>reentrant</EM>.  Codul reentrant este foarte
+greu de scris, pentru că nu se comportă deloc aşa cum suntem
+obişnuiţi cu programele ordinare.  De exemplu în codul reentrant
+variabilele globale nu pot fi folosite decît cu foarte mare grijă.
+
+<P>
+O procedură din nucleu nu poate folosi pur şi simplu o
+variabilă globală pentru a pasa parametri o alteia pe care o
+cheamă: dacă tocmai atunci survine o întrerupere care lucrează şi
+ea tocmai cu acea variabilă?  Între două instrucţiuni consecutive
+s-ar fi putut executa alte cîteva mii, din cine ştie ce parte a
+nucleului, ca rezultat al apariţiei întreruperii!
+
+<P>
+Programele scrise de utilizator sunt complet izolate de
+întreruperi (nu simt deloc efectele lor directe) datorită nucleului,
+şi de aceea sunt mult mai uşor de scris.
+
+<P>
+Coexistenţa mai multor procese care se execută interclasat
+mai are efecte foarte interesante.  Operaţii care sunt foarte clare
+în contextele unor procese izolate devin foarte şubrede cînd se
+combină.  Cel mai simplu exemplu: este relativ limpede ce înseamnă
+că un proces deschide un fişier: nucleul pregăteşte nişte
+structuri de date pentru accesul ulterior mai rapid la fişier.  Este
+de asemenea clar ce se întîmplă dacă un proces şterge un fişier:
+zona de date de pe disc alocată fişierului trebuie să dispară.
+Dar ce se întîmplă dacă un proces deschide un fişier şi altul
+îl şterge?  Dacă primul a scris deja ceva ce se întîmplă cu
+datele lui?  În ce va continua el să scrie, şamd.?  Răspunsul la
+astfel de întrebări nu este deloc evident, şi trebuie făcută o
+convenţie care să trateze aceste cazuri, întotdeauna în acelaşi
+mod.  Este tot treaba nucleului să extindă <EM>semantica</EM>
+(semnificaţia) operaţiilor şi pentru cazul cînd operaţiile se
+combină.
+
+<P>
+
+<H1><A NAME="SECTION000140000000000000000">
+Erorile</A>
+</H1>
+
+<P>
+Nucleele trebuie să fie foarte fiabile.  Nucleul se execută
+în mod nucleu, şi are acces la toată puterea maşinii: poate
+comunica cu orice periferic, poate accesa orice zonă de memorie.
+Nucleul trebuie să fie foarte atent, pentru că el se execută în
+contextele feluritor procese: nu cumva un proces să-l înşele
+dîndu-i nişte argumente ciudate la un apel de sistem, care să-l
+facă să o ia razna.  De exemplu un proces ar putea cere un <TT>write_file</TT>, dar da ca adresa a datelor o adresă care este înafara
+memoriei alocate lui.  Nucleul nu trebuie să încerce să citească
+de acolo, pentru că privilegiile sale ar putea duce la o catastrofă.
+
+<P>
+Procedurile din nucleu care execută apelurile de sistem vor
+verifica întotdeauna dacă procesul care a cerut ceva are dreptul să
+facă asta, şi dacă argumentele date au sens.
+
+<P>
+Adesea nucleul are de a face cu erori: fie cereri imposibil de
+executat, fie defecţiuni ale hardware-ului sau controlerelor.  Ce
+trebuie să facă în acest caz?  Nu poate pur şi simplu opri
+calculatorul în întregime zicînd ``eroare: nu e vîrîtă
+discheta''.
+
+<P>
+Erorile cauzate de cereri ilegale sunt relativ uşor de
+rezolvat, pentru că nucleul raportează proceselor care le-au făcut
+că ceva nu e în regulă cu argumentele.  Procesele se vor descurca
+cu această indicaţie de eroare.  Există însă erori care nu sunt
+vina proceselor, sau care nu pot fi atribuite cuiva anume: de pildă
+apariţia unui pachet eronat pe o reţea. Aceste erori nu pot fi nici
+ignorate, pentru că ar putea avea consecinţe fatale.
+
+<P>
+Metoda folosită este ca fiecare funcţie să verifice erorile
+care ar fi putut apărea la fiecare operaţie invocată, să încerce
+să le remedieze singură dacă poate, sau dacă nu să le raporteze
+funcţiei care a chemat-o.
+
+<P>
+Nucleele au de aceea nevoie de o metodă de raportare a
+erorilor: ``error logging''.  Cea mai simplă variantă este ca
+erorile să fie scrise într-un fişier, unde administratorii de
+sistem să le poată inspecta, pentru a remedia defecţiunile care nu
+pot fi remediate de software.
+
+<P>
+
+<H1><A NAME="SECTION000150000000000000000">
+Comunicaţia inter-proces</A>
+</H1>
+
+<P>
+În fine, una din ultimele slujbe ale nucleului, după ce a
+încercat să izoleze cît mai bine procesele unele de altele, este de
+a le permite să comunice, dar în moduri foarte controlate, în aşa
+fel încît să unul să nu poată influenţa pe altul mai mult decît
+este el dispus să se lase influenţat.
+
+<P>
+Nucleele pun la dispoziţie apeluri de sistem pentru
+transferul de date între procese.  Cele mai comune se folosesc de
+fişiere, dar pot exista metode mult mai exotice, ca zone de memorie
+comună mai multor procese sau mesaje.
+
+<P>
+Cîteodată ca sarcină a nucleului (de exemplu în BSD UNIX)
+este şi implementarea protocoalelor de comunicaţie între
+calculatoare diferite.  Prin acestea mai multe nuclee pun la
+dispoziţia proceselor un mijloc de comunicaţie inter-proces care
+permite transmiterea datelor între procese aflate pe maşini
+diferite.
+
+<P>
+
+<H1><A NAME="SECTION000160000000000000000">
+Micro-nuclee şi monoliţi</A>
+</H1>
+
+<P>
+Există două tendinţe mari în lumea calculatoarelor: de a
+pune cît mai mult în nucleu, sau de a pune cît mai puţin.  A doua
+tehnologie dă naştere micro-nucleelor.  Un micro-nucleu încearcă
+să conţină cît mai puţine funcţii: management-ul proceselor,
+foarte puţină grijă de memorie, dar mecanisme puternice de
+comunicaţie inter-proces.  
+
+<P>
+Funcţiile necesare tuturor utilizatorilor sunt atunci oferite
+de procese speciale, numite <EM>servere</EM>.  De exemplu putem imagina
+un nucleu care nu oferă nici un fel de operaţii pe fişiere.  O
+operaţie de genul <TT>write_file</TT> ar putea fi implementată de un
+server special pentru fişiere, căruia procesele doritoare (<EM>clienţii</EM>) îi trimit prin mesaje informaţiile necesare.
+
+<P>
+Cealaltă metodă, care este cea mai răspîndită
+actualmente, foloseşte nuclee <EM>monolitice</EM>.  Orice serviciu care
+implică un grad oarecare de pericol (ar putea fi folosit pentru a
+influenţa alte procese) este oferit direct de nucleu.  Windows95 şi
+UNIX sunt sisteme tipice monolitice.  Exemple de micronuclee:
+Windows&nbsp;NT, Mach, Chorus.
+
+<P>
+Sistemele de operare <EM>distribuite</EM> încearcă să
+transforme mai multe calculatoare într-o singură maşină virtuală;
+utilizatorul nu ar trebui să fie preocupat de locul în care
+procesele lui se execută.  În tehnologia curentă (încă la
+început) sistemele distribuite se bazează pe micro-nuclee care
+oferă funcţii speciale.  Sistemele uzuale erau proiectate ca şi cum
+calculatorul pe care rula nucleul era singurul; mecanismele de
+comunicaţie inter-proces pe alte maşini erau adăugiri care nu se
+potriveau foarte bine cu felul în care nucleele lucrează.  În
+sistemele distribuite fiecare nucleu este proiectat de la început cu
+ideea de a lucra într-o lume populată de multe alte nuclee, cu care
+poate colabora, dar în care nu poate avea întotdeauna încredere.
+
+<P>
+Un nucleu poate să aibă încredere în procesele care
+rulează pe maşina pe care el se află, pentru că ele au luat
+naştere numai datorită lui însuşi, şi au obţinut toate resursele
+prin operaţii aflate strict sub controlul său.  Aceasta nu mai este
+adevărat pentru procesele aflate pe alte maşini.
+
+<P>
+
+<H1><A NAME="SECTION000170000000000000000">
+Ce a mai rămas</A>
+</H1>       
+
+<P>
+Un sistem de operare -- se spune -- trebuie să ofere mult mai
+mult decît serviciile nucleului.  Ce anume mai face parte dintr-un
+sistem de operare, şi nu este nucleu:
+
+<P>
+
+<UL>
+<LI>biblioteci de funcţii care implementează apelurile de sistem
+(<TT>clib</TT> la UNIX); utilizatorul final nu trebuie nici măcar să
+ştie cum se face un apel de sistem; din cauza asta el primeşte de la
+fabricantul sistemului un set de funcţii gata compilate pe care le
+poate lega (linkedita) direct la programele sale.  Aceste funcţii
+sunt nişte ``wrappere'' -- ele ``îmbracă'' apelurile de sistem,
+transformîndu-le în simple funcţii pentru utilizator.  De exemplu
+ar putea exista funcţia:
+
+<P>
+<PRE>
+int write_file(char * file, int * array, int len);
+</PRE>
+
+<P>
+care nu face decît să pună argumentele în locul convenit de nucleu
+şi să invoce trap-ul pe care în secţiunea ``Apelurile de sistem''
+l-am numit <TT>sys_call</TT>.
+
+<P>
+</LI>
+<LI>un shell: un interpretor de comenzi care citeşte interactiv comenzi
+de la tastatură şi le transformă în invocări de procese.
+COMMAND.COM este un asemenea program pentru DOS.
+
+<P>
+</LI>
+<LI>compilatoare, linkeditoare, loadere -- programe folosite pentru
+a genera fişiere executabile, care pot fi transformate de nucleu în
+procese.
+
+<P>
+</LI>
+<LI>utilitare diverse - editoare de texte, programe de întreţinut şi
+reparat discurile, unelte pentru administraţie.  Cantitatea acestor
+programe domină întregul sistem în cazul UNIX-ului; la MS-DOS este
+redusă la minimum.
+</LI>
+</UL>
+
+<P>
+<BR><HR><H4>Footnotes</H4>
+<DL>
+<DT><A NAME="foot147">... simultan</A><A NAME="foot147"
+ HREF="nucleu-html.html#tex2html1"><SUP>1</SUP></A>
+<DD>Dacă avem de-a face cu un
+multiprocesor -- un calculator cu mai multe procesoare -- două
+procese se <EM>pot</EM> executa simultan, dar în esenţă funcţionarea
+memoriei virtuale este aceeaşi
+
+</DL>
+<BR><HR>
+
+</BODY>
+</HTML>

@@ -1,0 +1,133 @@
+
+   <ul>
+      <li>Incremental view maintenance (2021-today): DBSP (Database stream
+          processing), a <a href="https://mihaibudiu.github.io/work/budiu-vldb23.pdf">formal model</a> and
+          its <a href="https://github.com/feldera/dbsp">implementation</a>,
+          and a <a href="https://github.com/feldera/dbsp/tree/main/sql-to-dbsp-compiler">SQL compiler</a>
+          for a streaming and incremental query engine.
+
+      <li><a href="https://github.com/vmware/differential-datalog">Differential
+      Datalog</a>, a fully incremental programming language based on
+      Datalog (2018-2022).  DDlog is used in production at VMware in
+      the NSX network controller and as the data analytics engine
+      of <a href="https://www.vmware.com/support/services/skyline.html">
+      VMware Skyline</a>.
+
+      <li><a href="https://github.com/vmware/nerpa">Nerpa</a>: a
+        system for programming software-defined networks
+        (2017-2019; 2021-2023).
+
+      <li><a href="http://github.com/vmware/hillview">Hillview</a>,
+      a spreadsheet for big data (2016-2021).
+
+      <li>The <a href="http://p4.org">P4</a> programming
+      language <a href="http://github.com/p4lang/p4-spec">design</a>
+      and its <a href="https://github.com/p4lang/p4c">reference
+      implementation</a> (2014-2023).  I have been a co-chair of the
+      P4 language design working group between 2018-2023.
+
+      <li>Compiling <a href="http://github.com/vmware/p4c-xdp">P4 to
+      eBPF</a> (2016-2021).
+
+      <li>The <a href="https://azure.microsoft.com/en-us/services/cosmos-db/">CosmosDB
+      Azure Cloud database</a> (at the time named DocumentDB) (2012-2014).  I have worked on the
+      design and implementation of the JSON-specific NoSQL query
+      engine (language and runtime).
+
+      <li>The <a href="http://research.microsoft.com/en-us/projects/dryad/">Dryad</a>
+      and <a href="http://research.microsoft.com/en-us/projects/DryadLINQ/">DryadLINQ</a>
+      software stack (2005-2014).  These are available under an
+      Apache2 license
+      on <a href="https://github.com/MicrosoftResearch/Dryad">GitHub</a>.
+
+      <ul>
+        <li>Dryad was the distributed execution engine of
+        the Bing Cosmos analytics engine, deployed on tens of thousands of
+        machines at Microsoft since 2006.
+        The <a href="cv.html#isard-eurosys07">Dryad
+        paper</a> has received the EuroSys 2017 Test of Time award.
+
+        <li>DryadLINQ is a compiler from .Net LINQ to Dryad.  A
+        commercial version of this compiler was shipped in 2011 by
+        Microsoft in beta under the
+        name <a href="http://msdn.microsoft.com/en-us/library/hh378101.aspx">LINQ
+        to HPC</a> but was afterwards discontinued.
+        The <a href="cv.html#yu-osdi08">DryadLINQ paper</a> won the
+        2008 OSDI best paper award, and the ACM SIGOPS 2018 Hall of Fame award.
+
+        <li>Daphne, <a href="cv.html#jagannath-hips11">DryadLINQ
+        JobBrowser and debugger</a>.  Techniques introduced by this
+        tool are used internally in Microsoft in the ScopeStudio
+        debugger (the tool used for programming the Bing analytics
+        engine).
+      </ul>
+
+      <li>Cloud infrastructure monitoring, debugging and optimization (2008-2014)
+      <ul>
+        <li>Artemis; tools evolved from
+        Artemis <a href="cv.html#goldszmidt-ladis09">have
+        been used</a> by Hotmail to improve cluster operations.
+        <li><a href="cv.html#erlingsson-sosp11">Fay</a>,
+        a distributed cluster monitoring system.
+      </ul>
+
+      <li>Large-scale applications (2008-2014)
+      <ul>
+        <li>training the <a href="cv.html#budiu-biglearn11">Kinect
+        body-parts classifier</a> (Microsoft Research Technology
+        Transfer Award in 2010)
+        <li><a href="cv.html#budiu-ipdps11">branch-and-bound</a> on a cluster
+        <li><a href="cv.html#budiu-egpgv16">Sketch</a>, a big-data spreadsheet.
+      </ul>
+
+      <li>Programming languages and compiler architecture.  I
+        have contributed to several compilers:
+      <a href="https://github.com/feldera/dbsp/tree/main/sql-to-dbsp-compiler">SQL to DBSP</a>,
+      <a href="https://github.com/feldera/dbsp">DBSP</a>,
+      <a href="https://github.com/vmware/differential-datalog">DDlog</a>,
+      <a href="http://github.com/vmware/differential-datalog/tree/master/sql">SQL to DDlog</a>,
+      <a href="http://github.com/p4lang/p4c">P4</a>,
+      <a href="https://azure.microsoft.com/en-us/services/cosmos-db">CosmosDB SQL</a>,
+      <a href="http://research.microsoft.com/en-us/projects/DryadLINQ">DryadLINQ</a>,
+      the
+      <a href="cv.html#budiu-esop13">compiler forest</a>,
+      <a href="http://www.cs.cmu.edu/~phoenix/compiler.html">CASH</a>
+      (Compiler for Application-Specific Hardware), and the
+      <a href="https://research.ece.cmu.edu/piperench/index.html">PipeRench</a>
+      compiler.
+
+      <li>Computer security (2005-2011):
+        <ul>
+          <li><a href="#abadi-ccs05">Control-Flow Integrity</a> (CFI).
+            Our 2005 ACM Conference on Computer and
+            Commnications Security (CCS) <a href="#abadi-ccs05">paper
+              on CFI</a> has received the 2015 ACM CCS <i>Test of
+              Time</i> award.  CFI is now supported by all major compilers
+              and microprocessors.
+          <li>Software sandboxing (<a href="#erlingsson-osdi06">XFI</a>)
+          <li><a href="cv.html#erlingsson-tocs12">Safe dynamic execution tracing</a>
+        </ul>
+
+      <li>Hardware synthesis, harware optimization, reconfigurable
+      computing, and computer architecture (1997-2007)
+      <ul>
+        <li><a href="http://www.cs.cmu.edu/~phoenix">CASH: A
+        Compiler for Application-Specific Hardware</a>
+        <li>asynchronous hardware design
+        <li><a href
+        href="https://research.ece.cmu.edu/piperench/index.html">PipeRench</a>
+        is a virtualized reconfigurable hardware chip.  I wrote the
+        <a href="cv.html#budiu-fpga99">PipeRench
+        compiler</a>.  PipeRench was licensed by two start-ups (SiliconMobius,
+        and Rapport, which commercialized it under the name
+        <a href="http://www.tomshardware.com/news/ibm-rapport-kilocore,2575.html">Kilocore</a>);
+        both start-ups are now defunct.
+        The <a href="cv.html#goldstein-isca99">PipeRench paper</a>
+        received the 2014 ACM SIGARCH/IEEE-CS TCCA Influential ISCA
+        Paper Award, recognizing the ISCA paper 15 years earlier that
+        has had the most impact on the field.  The paper was also
+        selected in the retrospective <a
+        href="https://sites.coecis.cornell.edu/isca50retrospective/papers/">
+        ISCA@50 25-year Retrospective 1996-2020</a>
+      </ul>
+    </ul>

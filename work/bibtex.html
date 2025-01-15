@@ -14,11 +14,37 @@
    volume =	{53},
    month =	{March},
    year =	{2024},
+   abstract =	{We describe DBSP, a framework for incremental computation. Incremental
+                 computations repeatedly evaluate a function on some input values that
+                 are “changing”. The goal of an efficient implementation is to
+                 “reuse” previously computed results. Ideally, when presented with a
+                 new change to the input, an incremental computation should only perform
+                 work proportional to the size of the changes of the input, rather than
+                 to the size of the entire dataset. In databases “incremental
+                 computation” is known as Incremental View Maintenance (IVM); IVM has
+                 long been a central problem of database theory and practice. Many
+                 solutions have been proposed for restricted classes of computation or
+                 of changes, but we are seeking a general solution. We start by defining
+                 incremental computations as computations on data streams, i.e.,
+                 sequences of data values, by borrowing ideas from Digital Signal
+                 Processing. Using these tools, we give a general solution to the
+                 incremental computation problem in 4 steps: (1) we describe a simple
+                 but expressive language called DBSP for describing computations over
+                 data streams; (2) we give a new mathematical definition of incremental
+                 computation for DBSP programs; (3) we give a general algorithm for
+                 converting any DBSP program into an incremental program. The algorithm
+                 reduces the problem of incrementalizing a complex query to the problem
+                 of incrementalizing the primitive operations that compose the query.
+                 Finally, (4) we show that practical database query languages, such as
+                 SQL and Datalog, can be directly implemented on top of DBSP, using
+                 primitives with efficient incremental implementations. As a
+                 consequence, we obtain a general recipe for efficient IVM for
+                 essentially arbitrary queries written in all these languages.},
    note =	{A shorter and simpler version of the VLDB 2023 DBSP paper.},
    url =	{<a href="https://mihaibudiu.github.io/work/budiu-sigmod24.pdf">https://mihaibudiu.github.io/work/budiu-sigmod24.pdf</a>},
-   confweb =	{<a href="https://sigmodrecord.org/category/research-highlights/">https://sigmodrecord.org/category/research-highlights/</a>},
+   url2 =	{<a href="https://sigmodrecord.org/?smd_process_download=1&amp;download_id=13708">https://sigmodrecord.org/?smd_process_download=1&amp;download_id=13708</a>},
    no =	{1},
-   url2 =	{<a href="https://sigmodrecord.org/?smd_process_download=1&amp;download_id=13708">https://sigmodrecord.org/?smd_process_download=1&amp;download_id=13708</a>}
+   confweb =	{<a href="https://sigmodrecord.org/category/research-highlights/">https://sigmodrecord.org/category/research-highlights/</a>}
 }
 
 @Misc{<a name="goldstein-retrospective23a"><b>goldstein-retrospective23a</b></a>,
@@ -35,8 +61,8 @@
    title =	{A retrospective on ``{PipeRench}: A Coprocessor for Streaming Multimedia Acceleration},
    note =	{Original paper published in ISCA 1999},
    url =	{<a href="https://sites.coecis.cornell.edu/isca50retrospective/files/2023/06/goldstein_1999_piperench.pdf">https://sites.coecis.cornell.edu/isca50retrospective/files/2023/06/goldstein_1999_piperench.pdf</a>},
-   confweb =	{<a href="https://sites.coecis.cornell.edu/isca50retrospective/papers/">https://sites.coecis.cornell.edu/isca50retrospective/papers/</a>},
-   howpublished =	{ISCA@50 25-year Retrospective 1996-2020}
+   howpublished =	{ISCA@50 25-year Retrospective 1996-2020},
+   confweb =	{<a href="https://sites.coecis.cornell.edu/isca50retrospective/papers/">https://sites.coecis.cornell.edu/isca50retrospective/papers/</a>}
 }
 
 @InProceedings{<a name="budiu-vldb23"><b>budiu-vldb23</b></a>,
@@ -277,9 +303,9 @@
                  explore private data with minimal storage overhead -- tens of bytes --
                  on the server},
    url =	{<a href="https://mihaibudiu.github.io/work/TPDP2020.pdf">https://mihaibudiu.github.io/work/TPDP2020.pdf</a>},
+   confweb =	{<a href="https://tpdp.journalprivacyconfidentiality.org/2020/">https://tpdp.journalprivacyconfidentiality.org/2020/</a>},
    comment =	{A longer version at \url{https://arxiv.org/abs/2006.12018},
-                 subseqently published (with significant changes) in JPC 2022.},
-   confweb =	{<a href="https://tpdp.journalprivacyconfidentiality.org/2020/">https://tpdp.journalprivacyconfidentiality.org/2020/</a>}
+                 subseqently published (with significant changes) in JPC 2022.}
 }
 
 @Manual{<a name="P4-16-20"><b>P4-16-20</b></a>,
@@ -416,8 +442,8 @@
                  language, P4-16, and the reference implementation of the P4-16
                  compiler.},
    url =	{<a href="https://mihaibudiu.github.io/work/p4-osr17.pdf">https://mihaibudiu.github.io/work/p4-osr17.pdf</a>},
-   confweb =	{<a href="https://dl.acm.org/citation.cfm?id=3139645&amp;picked=prox">https://dl.acm.org/citation.cfm?id=3139645&amp;picked=prox</a>},
-   doi =	{<a href="https://dl.acm.org/citation.cfm?doid=3139645.3139648">https://dl.acm.org/citation.cfm?doid=3139645.3139648</a>}
+   doi =	{<a href="https://dl.acm.org/citation.cfm?doid=3139645.3139648">https://dl.acm.org/citation.cfm?doid=3139645.3139648</a>},
+   confweb =	{<a href="https://dl.acm.org/citation.cfm?id=3139645&amp;picked=prox">https://dl.acm.org/citation.cfm?id=3139645&amp;picked=prox</a>}
 }
 
 @Manual{<a name="P4-16"><b>P4-16</b></a>,
@@ -656,8 +682,8 @@
                  queries can equal or even surpass that of specialized monitoring tools.},
    note =	{An expanded version of the SOSP 2011 paper},
    url =	{<a href="https://mihaibudiu.github.io/work/fay-tocs12.pdf">https://mihaibudiu.github.io/work/fay-tocs12.pdf</a>},
-   confweb =	{<a href="https://tocs.acm.org">https://tocs.acm.org</a>},
-   doi =	{<a href="https://dx.doi.org/10.1145/2382553.2382555">https://dx.doi.org/10.1145/2382553.2382555</a>}
+   doi =	{<a href="https://dx.doi.org/10.1145/2382553.2382555">https://dx.doi.org/10.1145/2382553.2382555</a>},
+   confweb =	{<a href="https://tocs.acm.org">https://tocs.acm.org</a>}
 }
 
 @Misc{<a name="budiu-hpdc12"><b>budiu-hpdc12</b></a>,
@@ -668,8 +694,8 @@
    year =	{2012},
    note =	{Keynote to the 21st International Symposium on High-Performance
                  Parallel and Distributed Computing (HPDC)},
-   howpublished =	{https://mihaibudiu.github.io/work/hpdc12.pdf},
-   confweb =	{<a href="https://www.hpdc.org/2012">https://www.hpdc.org/2012</a>}
+   confweb =	{<a href="https://www.hpdc.org/2012">https://www.hpdc.org/2012</a>},
+   howpublished =	{https://mihaibudiu.github.io/work/hpdc12.pdf}
 }
 
 @InProceedings{<a name="budiu-biglearn11"><b>budiu-biglearn11</b></a>,
@@ -862,8 +888,8 @@
                  with efficient software implementations of a protected shadow call
                  stack and of access control for memory regions.},
    url =	{<a href="https://portal.acm.org/citation.cfm?id=1609960&amp;jmp=abstract&amp;coll=portal&amp;dl=ACM&amp;CFID=1071288&amp;CFTOKEN=87398879#">https://portal.acm.org/citation.cfm?id=1609960&amp;jmp=abstract&amp;coll=portal&amp;dl=ACM&amp;CFID=1071288&amp;CFTOKEN=87398879#</a>},
-   confweb =	{<a href="https://www.acm.org/tissec/">https://www.acm.org/tissec/</a>},
-   doi =	{<a href="https://doi.acm.org/10.1145/1609956.1609960">https://doi.acm.org/10.1145/1609956.1609960</a>}
+   doi =	{<a href="https://doi.acm.org/10.1145/1609956.1609960">https://doi.acm.org/10.1145/1609956.1609960</a>},
+   confweb =	{<a href="https://www.acm.org/tissec/">https://www.acm.org/tissec/</a>}
 }
 
 @InProceedings{<a name="goldszmidt-ladis09"><b>goldszmidt-ladis09</b></a>,
@@ -1016,9 +1042,9 @@
    note =	{Best paper award. 2018 ACM SIGOPS Hall of Fame award. The video shows
                  DryadLINQ used from Visual Studio.},
    url =	{<a href="https://mihaibudiu.github.io/work/DryadLINQ.pdf">https://mihaibudiu.github.io/work/DryadLINQ.pdf</a>},
-   confweb =	{<a href="https://www.usenix.org/event/osdi08/">https://www.usenix.org/event/osdi08/</a>},
+   video =	{<a href="https://1drv.ms/i/s!AlywK8G1COQ_gZdCnMepIQuE7Qr13A">https://1drv.ms/i/s!AlywK8G1COQ_gZdCnMepIQuE7Qr13A</a>},
    acceptancerate =	{26/193=13\%},
-   video =	{<a href="https://1drv.ms/i/s!AlywK8G1COQ_gZdCnMepIQuE7Qr13A">https://1drv.ms/i/s!AlywK8G1COQ_gZdCnMepIQuE7Qr13A</a>}
+   confweb =	{<a href="https://www.usenix.org/event/osdi08/">https://www.usenix.org/event/osdi08/</a>}
 }
 
 @TechReport{<a name="yu-tr08"><b>yu-tr08</b></a>,
@@ -1239,8 +1265,8 @@
                  processors to provide a performance advantage and their impact on a
                  dataflow model.},
    url =	{<a href="https://www.cs.cmu.edu/~mihaib/research/ispass05.pdf">https://www.cs.cmu.edu/~mihaib/research/ispass05.pdf</a>},
-   acceptancerate =	{27/92 = 29\%},
-   confweb =	{<a href="https://www.ispass.org/ispass2005">https://www.ispass.org/ispass2005</a>}
+   confweb =	{<a href="https://www.ispass.org/ispass2005">https://www.ispass.org/ispass2005</a>},
+   acceptancerate =	{27/92 = 29\%}
 }
 
 @InProceedings{<a name="budiu-odes05"><b>budiu-odes05</b></a>,
@@ -1342,8 +1368,8 @@
                  to high-end superscalar processors, while being within a factor of two
                  in performance.},
    url =	{<a href="https://www.cs.cmu.edu/~mihaib/research/asplos04.pdf">https://www.cs.cmu.edu/~mihaib/research/asplos04.pdf</a>},
-   acceptancerate =	{24/169 = 14\%},
-   doi =	{<a href="https://doi.acm.org/10.1145/1024393.1024396">https://doi.acm.org/10.1145/1024393.1024396</a>}
+   doi =	{<a href="https://doi.acm.org/10.1145/1024393.1024396">https://doi.acm.org/10.1145/1024393.1024396</a>},
+   acceptancerate =	{24/169 = 14\%}
 }
 
 @InProceedings{<a name="koes-msp04"><b>koes-msp04</b></a>,
@@ -1458,8 +1484,8 @@
                  in some detail a scalable compilation system that perform this task.},
    note =	{Invited paper},
    url =	{<a href="https://www.cs.cmu.edu/~mihaib/research/asap03.pdf">https://www.cs.cmu.edu/~mihaib/research/asap03.pdf</a>},
-   confweb =	{<a href="https://www-ece.rice.edu/asap2003/program03.html">https://www-ece.rice.edu/asap2003/program03.html</a>},
-   url2 =	{<a href="https://csdl.computer.org/comp/proceedings/asap/2003/1992/00/19920132abs.htm">https://csdl.computer.org/comp/proceedings/asap/2003/1992/00/19920132abs.htm</a>}
+   url2 =	{<a href="https://csdl.computer.org/comp/proceedings/asap/2003/1992/00/19920132abs.htm">https://csdl.computer.org/comp/proceedings/asap/2003/1992/00/19920132abs.htm</a>},
+   confweb =	{<a href="https://www-ece.rice.edu/asap2003/program03.html">https://www-ece.rice.edu/asap2003/program03.html</a>}
 }
 
 @PhdThesis{<a name="budiu-phd03"><b>budiu-phd03</b></a>,
@@ -1620,8 +1646,8 @@
                  href="https://sites.coecis.cornell.edu/isca50retrospective/papers/">ISCA@50
                  25-year Retrospective 1996-2020</a>.},
    url =	{<a href="https://www.cs.cmu.edu/~seth/papers/goldstein-isca01.pdf">https://www.cs.cmu.edu/~seth/papers/goldstein-isca01.pdf</a>},
-   confweb =	{<a href="https://www.ce.chalmers.se/conf2001">https://www.ce.chalmers.se/conf2001</a>},
-   doi =	{<a href="https://doi.acm.org/10.1145/379240.379262">https://doi.acm.org/10.1145/379240.379262</a>}
+   doi =	{<a href="https://doi.acm.org/10.1145/379240.379262">https://doi.acm.org/10.1145/379240.379262</a>},
+   confweb =	{<a href="https://www.ce.chalmers.se/conf2001">https://www.ce.chalmers.se/conf2001</a>}
 }
 
 @InProceedings{<a name="budiu-europar00"><b>budiu-europar00</b></a>,
@@ -1738,8 +1764,8 @@
                  href="https://sites.coecis.cornell.edu/isca50retrospective/papers/">ISCA@50
                  25-year Retrospective 1996-2020</a>.},
    url =	{<a href="https://www.cs.cmu.edu/~mihaib/research/isca99.pdf">https://www.cs.cmu.edu/~mihaib/research/isca99.pdf</a>},
-   doi =	{<a href="https://doi.acm.org/10.1145/300979.300982">https://doi.acm.org/10.1145/300979.300982</a>},
-   confweb =	{<a href="https://www.informatik.uni-trier.de/~ley/db/conf/isca/isca99.html">https://www.informatik.uni-trier.de/~ley/db/conf/isca/isca99.html</a>}
+   confweb =	{<a href="https://www.informatik.uni-trier.de/~ley/db/conf/isca/isca99.html">https://www.informatik.uni-trier.de/~ley/db/conf/isca/isca99.html</a>},
+   doi =	{<a href="https://doi.acm.org/10.1145/300979.300982">https://doi.acm.org/10.1145/300979.300982</a>}
 }
 
 @InProceedings{<a name="budiu-fpga99"><b>budiu-fpga99</b></a>,
